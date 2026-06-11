@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const SECTIONS = [
   {
-    title: "Use Omnigent",
+    title: "Use Cases",
     pages: [],
     subsections: [
       {
@@ -35,16 +35,29 @@ const SECTIONS = [
           { href: "/docs/build/tools", label: "MCP & Tools" },
         ],
       },
+      {
+        title: "Interfaces",
+        collapsed: false,
+        href: "/docs/interact/overview",
+        pages: [
+          { href: "/docs/interact/terminal", label: "Terminal" },
+          { href: "/docs/interact/web-ui", label: "Web UI" },
+          { href: "/docs/interact/mobile", label: "Mobile" },
+          { href: "/docs/interact/desktop", label: "Desktop App" },
+        ],
+      },
     ],
   },
   {
-    title: "Interact",
+    title: "Collaborative Server",
     pages: [
-      { href: "/docs/interact/overview", label: "Overview" },
-      { href: "/docs/interact/terminal", label: "Terminal" },
-      { href: "/docs/interact/web-ui", label: "Web UI" },
-      { href: "/docs/interact/mobile", label: "Mobile" },
-      { href: "/docs/interact/desktop", label: "Desktop App" },
+      { href: "/docs/deploy/overview", label: "Deployment Overview" },
+      { href: "/docs/deploy/database", label: "Database" },
+      { href: "/docs/deploy/docker", label: "Docker" },
+      { href: "/docs/deploy/cloud", label: "Cloud Platforms" },
+      { href: "/docs/deploy/cloud-runner", label: "Cloud Runner" },
+      { href: "/docs/collaborate/overview", label: "Collaboration" },
+      { href: "/docs/collaborate/auth", label: "Auth & SSO" },
     ],
   },
   {
@@ -53,24 +66,13 @@ const SECTIONS = [
       { href: "/docs/policies/overview", label: "Overview" },
       { href: "/docs/policies/builtin", label: "Builtin Policies" },
       { href: "/docs/policies/custom", label: "Custom Policies" },
-      { href: "/docs/policies/os-sandbox", label: "Omnibox" },
     ],
   },
   {
-    title: "Deploy",
+    title: "Omnibox",
     pages: [
-      { href: "/docs/deploy/overview", label: "Overview" },
-      { href: "/docs/deploy/database", label: "Database" },
-      { href: "/docs/deploy/docker", label: "Docker" },
-      { href: "/docs/deploy/cloud", label: "Cloud Platforms" },
-      { href: "/docs/deploy/cloud-runner", label: "Cloud Runner" },
-    ],
-  },
-  {
-    title: "Collaborate",
-    pages: [
-      { href: "/docs/collaborate/overview", label: "Overview" },
-      { href: "/docs/collaborate/auth", label: "Auth & SSO" },
+      { href: "/docs/omnibox", label: "Overview" },
+      { href: "/docs/policies/os-sandbox", label: "OS Sandbox Config" },
     ],
   },
 ];

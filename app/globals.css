@@ -224,6 +224,10 @@ hr {
 .hero-demo-video {
   display: block;
   width: 100%;
+  max-width: 52rem;
+  max-height: min(50vh, 28rem);
+  margin: 0 auto;
+  object-fit: contain;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg-soft);

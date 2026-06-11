@@ -13,11 +13,11 @@ export default function Nav() {
         <nav className="nav-links">
           <Link href="/quickstart/install" className="nav-link hide-sm">Quickstart</Link>
           <Link href="/docs" className="nav-link hide-sm">Docs</Link>
-          <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
-            <DiscordIcon /> Discord
+          <a href={GITHUB_URL} className="nav-icon" target="_blank" rel="noreferrer" aria-label="GitHub">
+            <GitHubIcon size={20} />
           </a>
-          <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-            <GitHubIcon /> GitHub
+          <a href={DISCORD_URL} className="nav-icon" target="_blank" rel="noreferrer" aria-label="Discord">
+            <DiscordIcon size={20} />
           </a>
         </nav>
       </div>

@@ -130,6 +130,22 @@ hr {
   background: var(--bg-soft);
   text-decoration: none;
 }
+.nav-link + .nav-icon {
+  margin-left: 0.5rem;
+}
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-soft);
+  padding: 0.4rem;
+  border-radius: 8px;
+}
+.nav-icon:hover {
+  color: var(--fg);
+  background: var(--bg-soft);
+  text-decoration: none;
+}
 
 /* ---- buttons ---- */
 .btn {

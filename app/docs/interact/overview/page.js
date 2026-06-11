@@ -26,12 +26,12 @@ export default function Page() {
 
       <p>Override executor values at runtime without editing the YAML:</p>
 
-      <pre><code>{"omni run agent.yaml --harness codex --model gpt-4.1 --profile <your-profile>"}</code></pre>
+      <pre><code>{"omni run agent.yaml --harness codex --model gpt-5.4-mini"}</code></pre>
 
       <p>
-        The <code>--harness</code>, <code>--model</code>, and <code>--profile</code> flags map
-        directly to the <code>executor</code> block. This lets you reuse the same config across
-        different LLM backends.
+        The <code>--harness</code> and <code>--model</code> flags map directly to the{" "}
+        <code>executor</code> block. This lets you reuse the same config across different LLM
+        backends.
       </p>
 
       <h2>Sessions and conversations</h2>

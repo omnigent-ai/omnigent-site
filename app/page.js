@@ -63,7 +63,7 @@ export default function Home() {
               </li>
               <li>
                 <strong><Link href="/docs/policies/os-sandbox">Secure OS sandbox</Link>:</strong> restrict filesystem
-                and network access, hide credentials from the agent, and broker access to them.
+                and network access. Hide credentials from the agent, and broker access to them.
                 Run YOLO mode safely.
               </li>
             </ul>

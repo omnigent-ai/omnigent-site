@@ -187,6 +187,16 @@ hr {
   font-size: 3.1rem;
   margin: 0 0 1.2rem;
 }
+.hero-logo {
+  margin: 0 0 1.5rem;
+}
+.hero-logo img {
+  display: block;
+  width: 100%;
+  max-width: 45rem;
+  height: auto;
+  margin: 0 auto;
+}
 .hero .lede {
   font-size: 1.25rem;
   color: var(--fg-soft);
@@ -218,18 +228,25 @@ hr {
   flex-shrink: 0;
 }
 .hero-demo {
-  margin-top: -5rem;
+  margin-top: 1rem;
   padding: 0 0 2.5rem;
 }
 .hero-demo-video {
   display: block;
   width: 100%;
+  max-width: 52rem;
+  max-height: min(50vh, 28rem);
+  margin: 0 auto;
+  object-fit: contain;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg-soft);
 }
 .features {
+  max-width: 34rem;
+  margin: 0 auto;
   padding-left: 1.2rem;
+  text-align: left;
 }
 .features li {
   margin: 0.5rem 0;

@@ -14,7 +14,7 @@ export default function Page() {
       </p>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/homepage.png" alt="Omnigent" style={{ width: "100%", borderRadius: "12px", margin: "0 0 1.5rem" }} />
+      <img src="/images/docs/desktop-app.png" alt="Omnigent native desktop app" style={{ width: "100%", borderRadius: "12px", margin: "0 0 1.5rem" }} />
 
       <p>
         Use the sidebar to navigate. The docs are organized by what you want to do:

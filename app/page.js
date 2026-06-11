@@ -3,6 +3,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import InstallTabs from "@/components/InstallTabs";
 import CtaButtons from "@/components/CtaButtons";
+import PillarsTabs from "@/components/PillarsTabs";
 
 export default function Home() {
   return (
@@ -77,59 +78,7 @@ export default function Home() {
         <section className="section section-pillars">
           <div className="wrap-wide">
             <h2>What Omnigent gives you</h2>
-            <div className="pillars">
-              <div className="pillar">
-                <figure className="pillar-icon pillar-icon-sm">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/images/composability-icon.svg"
-                    alt="Omnigent mascots stacked in layers to illustrate composability."
-                    width={80}
-                    height={81}
-                  />
-                </figure>
-                <h3>Composition</h3>
-                <p>
-                  Combine models, harnesses, and techniques for better results
-                  &mdash; and switch between them with one-line changes, no
-                  rewriting.
-                </p>
-              </div>
-
-              <div className="pillar">
-                <figure>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/images/sandbox.png"
-                    alt="Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent."
-                    width={420}
-                    height={230}
-                  />
-                </figure>
-                <h3>Control</h3>
-                <p>
-                  Stateful policies that enforce cost and access guardrails at
-                  the harness layer, not in the prompt.
-                </p>
-              </div>
-
-              <div className="pillar">
-                <figure>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/images/high-five.svg"
-                    alt="Two Omnigent mascots high-fiving to celebrate collaboration."
-                    width={231}
-                    height={102}
-                  />
-                </figure>
-                <h3>Collaboration</h3>
-                <p>
-                  Share a live session by URL &mdash; review, comment, and steer
-                  together in real time, the way you&rsquo;d share a doc.
-                </p>
-              </div>
-            </div>
+            <PillarsTabs />
           </div>
         </section>
 

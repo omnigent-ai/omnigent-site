@@ -30,12 +30,33 @@ export default function Home() {
         </section>
 
         <div className="wrap">
+          {/* Features */}
+          <section className="section">
+            <h2>Features</h2>
+            <ul className="features">
+              <li>
+                <strong>Composition:</strong> describe an agent in YAML, swap the
+                harness under it in one line.
+              </li>
+              <li>
+                <strong>Control:</strong> stateful policies allow, block, or
+                pause each action; an OS-level sandbox under every agent.
+              </li>
+              <li>
+                <strong>Collaboration:</strong> share a live session, co-drive,
+                fork, or resume it from your phone.
+              </li>
+            </ul>
+          </section>
+
+          <hr />
+
           {/* Architecture */}
           <section className="section">
             <h2>How it fits together</h2>
             <p className="lede-block">
-              A <strong>runner</strong> wraps any agent in a uniform session. A{" "}
-              <strong>server</strong> adds sandboxing, policies, and a shared
+              A <strong>runner</strong> wraps any agent in a sandboxed, uniform
+              session. A <strong>server</strong> adds policies and a shared
               history, and exposes every session over the terminal, the web, and
               a REST API.
             </p>
@@ -43,7 +64,7 @@ export default function Home() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/architecture.png"
-                alt="Omnigent architecture: CLI agents and custom agents run through a runner, then a server that adds sandboxing, policies, and history, reachable from a terminal, the web, and a REST API."
+                alt="Omnigent architecture: CLI agents and custom agents run through a runner that sandboxes them, then a server that adds policies and history, reachable from a terminal, the web, and a REST API."
                 width={930}
                 height={430}
               />

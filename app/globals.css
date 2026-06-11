@@ -168,6 +168,13 @@ hr {
   flex-wrap: wrap;
   margin-bottom: 2rem;
 }
+.features {
+  padding-left: 1.2rem;
+}
+.features li {
+  margin: 0.5rem 0;
+  line-height: 1.55;
+}
 .tag {
   display: inline-block;
   font-size: 0.78rem;

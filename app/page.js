@@ -14,7 +14,15 @@ export default function Home() {
         {/* Hero */}
         <section className="hero wrap">
           <span className="tag">Open source · Alpha</span>
-          <h1>A meta-harness for AI agents</h1>
+          <h1 className="hero-logo">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/omnigent-home-page-OG.png"
+              alt="Omnigent, a meta-harness for AI agents"
+              width={1200}
+              height={300}
+            />
+          </h1>
           <p className="lede">
             Build agents and use existing harnesses like Claude Code, Codex, and
             Pi behind one interface, then add what it takes to run them for real:
@@ -51,6 +59,26 @@ export default function Home() {
             >
               Your browser does not support the video tag.
             </video>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="wrap">
+            <h2>Features</h2>
+            <ul className="features">
+              <li>
+                <strong><Link href="/docs/use/builtin-agents">Polly &amp; Debby</Link>:</strong> built-in multi-AI agents (a
+                coding orchestrator and a model debate). Build your own in YAML.
+              </li>
+              <li>
+                <strong><Link href="/docs/policies/overview">Contextual Policies</Link>:</strong> stateful spend caps, model
+                routing, and risk-based escalation.
+              </li>
+              <li>
+                <strong><Link href="/docs/policies/os-sandbox">Flexible OS sandbox</Link>:</strong> restrict filesystem,
+                network, and env to run agents in YOLO mode safely.
+              </li>
+            </ul>
           </div>
         </section>
 

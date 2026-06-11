@@ -1,0 +1,84 @@
+import Link from "next/link";
+
+export const metadata = { title: "Tutorial: Try Polly" };
+
+export default function Page() {
+  return (
+    <>
+      <h1>Tutorial: Try Polly</h1>
+
+      <p>
+        Polly is a multi-agent coding orchestrator. It breaks your task into
+        sub-tasks and delegates each one to a different AI agent, with
+        cross-vendor code review built in. This tutorial shows you how it
+        looks in practice.
+      </p>
+
+      <p>
+        <strong>Time:</strong> 5 minutes. <strong>Everything runs locally.</strong>
+      </p>
+
+      <h2>1. Run Polly</h2>
+
+      <pre><code>{"omni polly"}</code></pre>
+
+      <p>
+        This starts Polly and opens a web UI at{" "}
+        <code>http://localhost:6767</code>.
+      </p>
+
+      <h2>2. Give it a task</h2>
+
+      <pre><code>{"Refactor the authentication module into separate files for OAuth, JWT, and session handling. Add tests for each."}</code></pre>
+
+      <p>
+        Polly breaks this into sub-tasks and delegates each one to a different
+        AI agent. Claude Code implements one piece, Codex implements another in
+        parallel, and a different agent reviews each PR.
+      </p>
+
+      <h2>3. Watch it in the web UI</h2>
+
+      <p>
+        Open <code>http://localhost:6767</code>. The right panel has four tabs:{" "}
+        <strong>Files</strong>, <strong>Agents</strong>,{" "}
+        <strong>Terminals</strong>, and <strong>Todos</strong>.
+      </p>
+
+      <p>Click the <strong>Agents</strong> tab to see every sub-agent Polly
+        dispatches, with live status (working, idle, finished).
+      </p>
+
+      <ul>
+        <li>Click any sub-agent to switch to its view and see its conversation, files, and terminal output.</li>
+        <li>Switch to the <strong>Terminals</strong> tab to see all running shells side by side.</li>
+        <li>Intervene at any point: send a message to a sub-agent, or switch back to Polly to see the orchestrator{"'"}s view.</li>
+      </ul>
+
+      <p>
+        This is where multi-AI orchestration becomes tangible: you can watch
+        Claude Code and Codex working on different parts of the same task
+        simultaneously, each in its own git worktree.
+      </p>
+
+      <p>
+        See <Link href="/docs/use/builtin-agents/polly">Polly reference</Link> for
+        the full details on skills like <code>/fanout</code>,{" "}
+        <code>/cross-review</code>, and <code>/investigate</code>.
+      </p>
+
+      <h2>What{"'"}s next</h2>
+
+      <ul>
+        <li>
+          <Link href="/quickstart/collaborate">Collaborate from anywhere</Link> to
+          deploy a server and share sessions with teammates.
+        </li>
+        <li>
+          <Link href="/docs/use/custom-agents">Build a custom agent</Link> with
+          your own multi-agent orchestration in YAML.
+        </li>
+      </ul>
+    </>
+  );
+}

@@ -11,9 +11,7 @@ export default function Page() {
         and GPT simultaneously, then lets them debate and refine each other{"'"}s answers.
       </p>
 
-      <pre><code>{`git clone https://github.com/omnigent-ai/omnigent.git
-cd omnigent
-omni examples/debby/`}</code></pre>
+      <pre><code>{"omni debby"}</code></pre>
 
       <h2>How it works</h2>
       <p>

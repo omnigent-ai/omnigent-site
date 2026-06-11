@@ -1,17 +1,5 @@
-import { Lato, Playfair_Display } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
-
-const lato = Lato({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-lato",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-});
 
 export const metadata = {
   metadataBase: new URL("https://omnigent.ai"),
@@ -34,7 +22,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${lato.variable} ${playfair.variable}`}>
+    <html lang="en">
       <body>
         {children}
         <Analytics />

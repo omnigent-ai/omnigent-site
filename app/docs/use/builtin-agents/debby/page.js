@@ -11,15 +11,9 @@ export default function Page() {
         and GPT simultaneously, then lets them debate and refine each other{"'"}s answers.
       </p>
 
-      <pre><code>{"omni examples/debby/"}</code></pre>
-
-      <div className="note">
-        <p>
-          If you installed via pip, clone the{" "}
-          <a href="https://github.com/omnigent-ai/omnigent" target="_blank" rel="noreferrer">repo</a>{" "}
-          first to access the examples directory.
-        </p>
-      </div>
+      <pre><code>{`git clone https://github.com/omnigent-ai/omnigent.git
+cd omnigent
+omni examples/debby/`}</code></pre>
 
       <h2>How it works</h2>
       <p>

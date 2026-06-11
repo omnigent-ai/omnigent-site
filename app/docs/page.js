@@ -21,10 +21,10 @@ export default function Page() {
       </p>
       <ul>
         <li><strong>Use Cases:</strong> run coding agents, try built-in multi-AI agents (Polly, Debby), or build your own custom agent.</li>
+        <li><strong>Interfaces:</strong> work from terminal, web UI, mobile, or desktop app, all synced to the same session in real time.</li>
         <li><strong>Collaborative Server:</strong> go from your laptop to a persistent server so your team can access agents from anywhere, then share a live session with a link, co-drive an agent with teammates, or fork a conversation.</li>
         <li><strong>Contextual Policies:</strong> enforce cost budgets, approval gates, and access controls that track state across the session, not just static rules.</li>
         <li><strong>Omnibox:</strong> a secure OS sandbox so agents can run unattended without access to your real credentials or file system.</li>
-        <li><strong>Interfaces:</strong> work from terminal, web UI, mobile, or desktop app, all synced to the same session in real time.</li>
       </ul>
     </>
   );

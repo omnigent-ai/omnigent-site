@@ -38,6 +38,16 @@ const SECTIONS = [
     ],
   },
   {
+    title: "Interfaces",
+    pages: [
+      { href: "/docs/interact/overview", label: "Overview" },
+      { href: "/docs/interact/terminal", label: "Terminal" },
+      { href: "/docs/interact/web-ui", label: "Web UI" },
+      { href: "/docs/interact/mobile", label: "Mobile" },
+      { href: "/docs/interact/desktop", label: "Desktop App" },
+    ],
+  },
+  {
     title: "Collaborative Server",
     pages: [
       { href: "/docs/deploy/overview", label: "Deployment Overview" },
@@ -62,16 +72,6 @@ const SECTIONS = [
     pages: [
       { href: "/docs/omnibox", label: "Overview" },
       { href: "/docs/policies/os-sandbox", label: "OS Sandbox Config" },
-    ],
-  },
-  {
-    title: "Interfaces",
-    pages: [
-      { href: "/docs/interact/overview", label: "Overview" },
-      { href: "/docs/interact/terminal", label: "Terminal" },
-      { href: "/docs/interact/web-ui", label: "Web UI" },
-      { href: "/docs/interact/mobile", label: "Mobile" },
-      { href: "/docs/interact/desktop", label: "Desktop App" },
     ],
   },
 ];

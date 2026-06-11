@@ -40,7 +40,7 @@ export default function Page() {
       </p>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/policy-info-panel.png" alt="The session info panel showing session cost and the add-policy button" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+      <img src="/images/docs/policy-add-policy.gif" alt="Opening the session info panel, picking a policy, and adding the Session Cost Budget" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <p>
         There are plenty of policies to choose from. For this tutorial we{"'"}ll
@@ -89,7 +89,7 @@ export default function Page() {
       </p>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/policy-soft-limit-approval.png" alt="Approval prompt shown after the session cost crosses the soft limit" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+      <img src="/images/docs/policy-soft-limit-approval.gif" alt="Approval prompt shown after the session cost crosses the soft limit" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <h3>Hit the hard limit</h3>
       <p>
@@ -99,7 +99,7 @@ export default function Page() {
       </p>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/policy-hard-limit-blocked.png" alt="Expensive models blocked after the session hits the hard cost limit, then unblocked by downgrading" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+      <img src="/images/docs/policy-hard-limit-blocked.gif" alt="Expensive models blocked after the session hits the hard cost limit, then unblocked by downgrading" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <p>
         That{"'"}s the whole loop: warn, ask, block. The same pattern applies to

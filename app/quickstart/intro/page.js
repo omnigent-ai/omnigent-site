@@ -103,7 +103,7 @@ export default function Page() {
 
       <p>
         Want to create something new?{" "}
-        <Link href="/docs/build/overview">Write a YAML config</Link> with your
+        <Link href="/docs/use/custom-agents">Write a YAML config</Link> with your
         own prompt, harness, tools, sub-agents, and{" "}
         <Link href="/docs/policies/overview">policies</Link>. Once your agent is
         running, the rest of the workflow (interact, deploy, collaborate,
@@ -121,6 +121,12 @@ export default function Page() {
           </strong>{" "}
           Already using Claude Code or Codex? Add Omnigent{"'"}s web UI,
           sessions, and policies on top with one command.
+        </li>
+        <li>
+          <strong>
+            <Link href="/quickstart/multi-agent">Multi-agent tutorial</Link>.
+          </strong>{" "}
+          Run Debby for a multi-model debate, or Polly for multi-agent coding orchestration.
         </li>
         <li>
           <strong>

@@ -1,22 +1,65 @@
 import Link from "next/link";
 
-export const metadata = { title: "Policies Overview" };
+export const metadata = { title: "Contextual Policies" };
 
 export default function Page() {
   return (
     <>
-      <h1>Policies</h1>
+      <h1>Contextual Policies</h1>
 
       <p>
-        Policies control what your omnigent can and cannot do. They intercept every action (tool
-        calls, LLM requests, file operations) and decide in real time whether to{" "}
-        <strong>allow</strong>, <strong>ask for approval</strong>, or <strong>deny</strong>.
+        Policies control what your omnigent can and cannot do. They intercept every
+        action (tool calls, LLM requests, file operations) and decide in real time
+        whether to <strong>allow</strong>, <strong>ask for approval</strong>, or{" "}
+        <strong>deny</strong>.
       </p>
 
+      <h2>Why &ldquo;contextual&rdquo;?</h2>
+
       <p>
-        Instead of hoping the LLM behaves, you enforce constraints. For example: cap spending,
-        require approval before destructive actions, restrict access to repos or services, block
-        PII, or route models.
+        Most agent frameworks offer static rules: allow this tool, deny that one.
+        Omnigent policies are different. They are <strong>stateful</strong> and{" "}
+        <strong>dynamic</strong>: each policy maintains its own state across the
+        entire session and makes decisions based on what has happened so far.
+      </p>
+
+      <p>This is what enables policies that static systems simply cannot express:</p>
+
+      <ul>
+        <li>
+          <strong>Cost budgets.</strong> Track cumulative LLM spend across every turn.
+          Warn at $3, block expensive models at $5. The policy remembers what
+          you{"'"}ve spent.
+        </li>
+        <li>
+          <strong>Rate limiting.</strong> Count tool calls over time and deny after a
+          threshold. The count persists across the session, not per-request.
+        </li>
+        <li>
+          <strong>Risk scoring.</strong> Accumulate a risk score from sensitive
+          operations (accessing credentials, modifying production data). Escalate
+          to human approval once the score crosses a threshold.
+        </li>
+        <li>
+          <strong>Model routing.</strong> Classify tasks as trivial or complex and
+          redirect trivial ones away from expensive models, based on conversation
+          context.
+        </li>
+      </ul>
+
+      <p>
+        Every policy evaluation receives the full session context: cumulative cost,
+        tool call history, data classification labels, and custom state you define.
+        This makes Omnigent{"'"}s policy system fundamentally more powerful than the
+        static security controls built into individual coding agents.
+      </p>
+
+      <h2>What you can enforce</h2>
+
+      <p>
+        For example: cap spending, require approval before destructive actions,
+        restrict access to repos or services, block PII, or route models. See{" "}
+        <Link href="/docs/policies/builtin">Builtin Policies</Link> for the full list.
       </p>
 
       <h2>How policies work</h2>

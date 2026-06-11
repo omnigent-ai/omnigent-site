@@ -15,7 +15,7 @@ export default function Page() {
       <div className="note">
         <p>
           Looking to restrict what your agent can access on the filesystem and network instead?
-          That{"'"}s the <Link href="/docs/policies/os-sandbox">OS Sandbox</Link>.
+          That{"'"}s <Link href="/docs/policies/os-sandbox">Omnibox</Link>.
         </p>
       </div>
 

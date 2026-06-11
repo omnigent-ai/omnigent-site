@@ -19,7 +19,7 @@ export default function Page() {
 
       <p>
         <code>omni run</code> starts a custom omnigent from a YAML config. See{" "}
-        <Link href="/docs/build/overview">Build a Custom Omnigent</Link> for how to write one.
+        <Link href="/docs/use/custom-agents">Custom Agents</Link> for how to write one.
       </p>
 
       <h3>CLI overrides</h3>

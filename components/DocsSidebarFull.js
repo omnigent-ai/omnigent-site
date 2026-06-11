@@ -6,14 +6,28 @@ import { useState } from "react";
 
 const SECTIONS = [
   {
-    title: "Build Your Omnigent",
-    pages: [
-      { href: "/docs/build/overview", label: "Overview" },
-    ],
+    title: "Use Omnigent",
+    pages: [],
     subsections: [
       {
-        title: "Config Reference",
-        collapsed: true,
+        title: "Coding Agents",
+        collapsed: false,
+        href: "/docs/use/coding-agents",
+        pages: [],
+      },
+      {
+        title: "Built-in Multi-AI Agents",
+        collapsed: false,
+        href: "/docs/use/builtin-agents",
+        pages: [
+          { href: "/docs/use/builtin-agents/polly", label: "Polly" },
+          { href: "/docs/use/builtin-agents/debby", label: "Debby" },
+        ],
+      },
+      {
+        title: "Custom Agents",
+        collapsed: false,
+        href: "/docs/use/custom-agents",
         pages: [
           { href: "/docs/build/harnesses", label: "Harnesses" },
           { href: "/docs/build/models", label: "Models & Credentials" },
@@ -25,16 +39,7 @@ const SECTIONS = [
     ],
   },
   {
-    title: "Set Omnigent Policies",
-    pages: [
-      { href: "/docs/policies/overview", label: "Overview" },
-      { href: "/docs/policies/builtin", label: "Builtin Policies" },
-      { href: "/docs/policies/custom", label: "Custom Policies" },
-      { href: "/docs/policies/os-sandbox", label: "OS Sandbox" },
-    ],
-  },
-  {
-    title: "Interact with Your Omnigent",
+    title: "Interact",
     pages: [
       { href: "/docs/interact/overview", label: "Overview" },
       { href: "/docs/interact/terminal", label: "Terminal" },
@@ -44,7 +49,16 @@ const SECTIONS = [
     ],
   },
   {
-    title: "Deploy Your Omnigent",
+    title: "Contextual Policies",
+    pages: [
+      { href: "/docs/policies/overview", label: "Overview" },
+      { href: "/docs/policies/builtin", label: "Builtin Policies" },
+      { href: "/docs/policies/custom", label: "Custom Policies" },
+      { href: "/docs/policies/os-sandbox", label: "Omnibox" },
+    ],
+  },
+  {
+    title: "Deploy",
     pages: [
       { href: "/docs/deploy/overview", label: "Overview" },
       { href: "/docs/deploy/database", label: "Database" },
@@ -54,7 +68,7 @@ const SECTIONS = [
     ],
   },
   {
-    title: "Collaborate with Your Team",
+    title: "Collaborate",
     pages: [
       { href: "/docs/collaborate/overview", label: "Overview" },
       { href: "/docs/collaborate/auth", label: "Auth & SSO" },
@@ -65,7 +79,10 @@ const SECTIONS = [
 function allHrefs(section) {
   const hrefs = section.pages.map((p) => p.href);
   if (section.subsections) {
-    section.subsections.forEach((s) => s.pages.forEach((p) => hrefs.push(p.href)));
+    section.subsections.forEach((s) => {
+      if (s.href) hrefs.push(s.href);
+      s.pages.forEach((p) => hrefs.push(p.href));
+    });
   }
   return hrefs;
 }
@@ -86,7 +103,8 @@ export default function DocsSidebarFull() {
       if (s.subsections) {
         s.subsections.forEach((sub, ci) => {
           const key = `${si}-${ci}`;
-          state[key] = !sub.collapsed || sub.pages.some((p) => p.href === path);
+          const hasActivePage = sub.pages.some((p) => p.href === path) || sub.href === path;
+          state[key] = !sub.collapsed || hasActivePage;
         });
       }
     });
@@ -123,21 +141,44 @@ export default function DocsSidebarFull() {
                 {section.subsections && section.subsections.map((sub, ci) => {
                   const subKey = `${si}-${ci}`;
                   const subIsOpen = subOpen[subKey];
+                  const subIsActive = sub.href === path;
 
                   return (
                     <li key={sub.title} style={{ listStyle: "none" }}>
-                      <span
-                        onClick={() => setSubOpen((o) => ({ ...o, [subKey]: !o[subKey] }))}
-                        role="button"
-                        tabIndex={0}
-                        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", padding: "0.25rem 0.6rem", borderRadius: "7px", fontSize: "0.9rem", color: "var(--fg-soft)" }}
-                      >
-                        {sub.title}
-                        <span style={{ fontSize: "0.5rem", opacity: 0.4, transition: "transform 0.15s", transform: subIsOpen ? "rotate(90deg)" : "rotate(0deg)" }}>
-                          ▶
+                      {sub.href ? (
+                        <span style={{ display: "flex", alignItems: "center", gap: 0 }}>
+                          <Link
+                            href={sub.href}
+                            className={subIsActive ? "active" : ""}
+                            style={{ flex: 1, display: "block", padding: "0.25rem 0.6rem", borderRadius: "7px", fontSize: "0.9rem" }}
+                          >
+                            {sub.title}
+                          </Link>
+                          {sub.pages.length > 0 && (
+                            <span
+                              onClick={() => setSubOpen((o) => ({ ...o, [subKey]: !o[subKey] }))}
+                              role="button"
+                              tabIndex={0}
+                              style={{ cursor: "pointer", padding: "0.25rem 0.5rem", fontSize: "0.5rem", opacity: 0.4, transition: "transform 0.15s", transform: subIsOpen ? "rotate(90deg)" : "rotate(0deg)" }}
+                            >
+                              ▶
+                            </span>
+                          )}
                         </span>
-                      </span>
-                      {subIsOpen && (
+                      ) : (
+                        <span
+                          onClick={() => setSubOpen((o) => ({ ...o, [subKey]: !o[subKey] }))}
+                          role="button"
+                          tabIndex={0}
+                          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", padding: "0.25rem 0.6rem", borderRadius: "7px", fontSize: "0.9rem", color: "var(--fg-soft)" }}
+                        >
+                          {sub.title}
+                          <span style={{ fontSize: "0.5rem", opacity: 0.4, transition: "transform 0.15s", transform: subIsOpen ? "rotate(90deg)" : "rotate(0deg)" }}>
+                            ▶
+                          </span>
+                        </span>
+                      )}
+                      {subIsOpen && sub.pages.length > 0 && (
                         <ul style={{ paddingLeft: "0.6rem", marginBottom: "0.3rem" }}>
                           {sub.pages.map((p) => (
                             <li key={p.href}>

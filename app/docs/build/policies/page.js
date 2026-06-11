@@ -11,7 +11,7 @@ export default function Page() {
         Policies are declarative guardrails that intercept agent actions and decide whether to
         allow, deny, or ask for approval. For the full reference (built-in policies, enforcement
         levels, and how to add them), see{" "}
-        <Link href="/docs/policies/overview">Set Omnigent Policies</Link>.
+        <Link href="/docs/policies/overview">Contextual Policies</Link>.
       </p>
     </>
   );

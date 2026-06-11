@@ -8,9 +8,16 @@ export default function Page() {
       <h1>Custom Omnigent Quickstart</h1>
 
       <p>
-        The <Link href="/quickstart/coding-agent">coding agent quickstart</Link> runs
-        an existing agent through Omnigent. This page shows how to create your
-        own from scratch in a short YAML file.
+        Why build on Omnigent instead of writing your own agent from scratch?
+        Because you get the entire platform for free: a web UI, persistent sessions,
+        team collaboration, multi-device access, deployment infrastructure, and{" "}
+        <Link href="/docs/policies/overview">contextual policies</Link> that no
+        other framework provides. You focus on what your agent does. Omnigent handles
+        everything around it.
+      </p>
+
+      <p>
+        A custom omnigent is defined in a short YAML file. No imperative code needed.
       </p>
 
       <h2>1. Start from a template</h2>
@@ -80,7 +87,7 @@ export default function Page() {
       </pre>
 
       <p>
-        See <Link href="/docs/build/overview">Build Your Omnigent</Link> for the
+        See <Link href="/docs/use/custom-agents">Custom Agents</Link> for the
         full config reference.
       </p>
 
@@ -108,7 +115,7 @@ export default function Page() {
       <p>
         See the{" "}
         <a
-          href="https://github.com/Omnigents/omnigents/tree/main/examples/polly"
+          href="https://github.com/omnigent-ai/omnigent/tree/main/examples/polly"
           target="_blank"
           rel="noreferrer"
         >

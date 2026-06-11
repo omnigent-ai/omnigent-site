@@ -38,27 +38,6 @@ export default function Home() {
         </section>
 
         <div className="wrap">
-          {/* Architecture */}
-          <section className="section">
-            <h2>How it fits together</h2>
-            <p className="arch-outro">
-              A runner wraps any agent in a sandboxed, uniform session. A server
-              adds policies and a shared history, and exposes every session over
-              the terminal, the web, and a REST API.
-            </p>
-            <figure className="framed">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/architecture.png"
-                alt="Omnigent architecture: CLI agents and custom agents run through a runner that sandboxes them, then a server that adds policies and history, reachable from a terminal, the web, and a REST API."
-                width={930}
-                height={430}
-              />
-            </figure>
-          </section>
-
-          <hr />
-
           {/* Three pillars */}
           <section className="section">
             <h2>What Omnigent gives you</h2>
@@ -127,6 +106,27 @@ export default function Home() {
                 </figure>
               </div>
             </div>
+          </section>
+
+          <hr />
+
+          {/* Architecture */}
+          <section className="section">
+            <h2>How it fits together</h2>
+            <p className="arch-outro">
+              A runner wraps any agent in a sandboxed, uniform session. A server
+              adds policies and a shared history, and exposes every session over
+              the terminal, the web, and a REST API.
+            </p>
+            <figure className="framed">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/architecture.png"
+                alt="Omnigent architecture: CLI agents and custom agents run through a runner that sandboxes them, then a server that adds policies and history, reachable from a terminal, the web, and a REST API."
+                width={930}
+                height={430}
+              />
+            </figure>
           </section>
 
           <hr />

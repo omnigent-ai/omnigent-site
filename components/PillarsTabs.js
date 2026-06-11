@@ -9,7 +9,7 @@ const PILLARS = [
     label: "Composition",
     title: "Composition",
     body:
-      "Combine models, harnesses, and techniques for better results — and switch between them with one-line changes, no rewriting.",
+      "Combine multiple models, harnesses, and techniques without rewriting code. Switch between Claude Code, Codex, Pi, and your own agents with one-line changes.",
     icon: {
       src: "/images/composability-icon.svg",
       alt: "Omnigent mascots stacked in layers to illustrate composability.",
@@ -29,7 +29,7 @@ const PILLARS = [
     label: "Control",
     title: "Control",
     body:
-      "Apply stateful, contextual policies that enforce cost and access guardrails at the harness layer — not in the prompt.",
+      "Stateful, data-centric policies that track agent actions and enforce guardrails like cost budgets and access controls at the meta-harness layer, not via prompts.",
     icon: {
       src: "/images/sandbox.png",
       alt: "Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent.",
@@ -48,7 +48,7 @@ const PILLARS = [
     label: "Collaboration",
     title: "Collaboration",
     body:
-      "Share a live session by URL: review, comment, and steer together in real time, the way you'd share a doc.",
+      "Share live agent sessions via URL with full history, so teammates can review, comment, and steer together in real time.",
     icon: {
       src: "/images/high-five.svg",
       alt: "Two Omnigent mascots high-fiving to celebrate collaboration.",

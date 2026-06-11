@@ -19,6 +19,14 @@ bun run build
 bun run start
 ```
 
+## Before Pushing to Github
+> Note: This will help maintain good developer hygiene
+```bash
+bun run lint
+bun run strip-lock-proxy && bun run strip-lock-proxy:check
+bun run lint:links
+```
+
 ## Structure
 
 - `app/page.js` — homepage (hero, architecture, the three pillars, quick start).

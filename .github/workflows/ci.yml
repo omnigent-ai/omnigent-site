@@ -1,0 +1,45 @@
+name: CI
+
+# Runs on every PR and on direct pushes to the integration (dev) and
+# production (main) branches. Installs deps with Bun from the committed
+# bun.lock (frozen), runs the deterministic link gate, and runs the
+# production Next.js build.
+#
+# Note: there is no typecheck step — the site is plain JS (no tsconfig /
+# `typecheck` script). Lint (`next lint`) is not gated yet.
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # The committed bun.lock is in sync with package.json, so a frozen
+      # install is reproducible and fails fast if the lockfile drifts.
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Deterministic link gate: internal routes, anchor fragments, and relative
+      # links only (no network). External links are checked, non-blocking, by the
+      # scheduled link-check-external.yml workflow — they're too flaky to gate PRs.
+      - name: Check internal links
+        run: bun run lint:links
+
+      - name: Build
+        run: bun run build

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MACOS_DOWNLOAD_URL } from "@/components/links";
 
 export const metadata = { title: "Desktop App" };
 
@@ -52,9 +53,7 @@ export default function Page() {
             <td>macOS</td>
             <td><code>.dmg</code></td>
             <td>
-              <a href="https://github.com/Omnigents/omnigents/releases" target="_blank" rel="noreferrer">
-                Download
-              </a>
+              <a href={MACOS_DOWNLOAD_URL}>Download</a>
             </td>
           </tr>
           <tr>

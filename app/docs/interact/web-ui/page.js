@@ -41,15 +41,15 @@ export default function Page() {
         Use cases: updating documentation sites, reviewing omnigent-generated plans, editing configs.
       </p>
 
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/markdown-editor.gif" alt="Omnigent file editor" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
-
       <h2>Code viewer and diffs</h2>
 
       <p>
         Review what your omnigent changed before accepting. Syntax-highlighted diffs show exactly
         what was added, modified, or removed.
       </p>
+
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/docs/file-editor.gif" alt="Omnigent file editor" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <h2>Inline comments and addressing</h2>
 
@@ -81,7 +81,7 @@ export default function Page() {
       </ul>
 
             {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/leave-comment.png" alt="Inline comments" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+      <img src="/images/docs/address-comment.png" alt="Addressing an inline comment" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <h2>Multi-modal input</h2>
 

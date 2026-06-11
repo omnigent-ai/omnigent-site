@@ -394,6 +394,7 @@ pre code {
   padding: 0;
   font-size: inherit;
   border-radius: 0;
+  border: none;
 }
 .term-prompt {
   color: #28c840;

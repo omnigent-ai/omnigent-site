@@ -47,18 +47,14 @@ export default function Home() {
 
         <section className="hero-demo" aria-label="Product demo">
           <div className="wrap-wide">
-            <video
-              className="hero-demo-video"
-              src="/videos/demo.mov"
-              autoPlay
-              muted
-              loop
-              playsInline
-              controls
-              preload="metadata"
-            >
-              Your browser does not support the video tag.
-            </video>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="hero-demo-img"
+              src="/images/hero-demo.webp"
+              alt="Omnigent web UI running two sub-agents in parallel on a shared session"
+              width={1651}
+              height={995}
+            />
           </div>
         </section>
 

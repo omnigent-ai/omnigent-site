@@ -21,7 +21,7 @@ export default function Page() {
       <pre><code>{"omni run examples/debby/"}</code></pre>
       <p>
         Ask a question and watch both models respond. Then type <code>/debate</code> to
-        start a multi-round critique where each model reviews the other's answer and
+        start a multi-round critique where each model reviews the other{"'"}s answer and
         refines its own.
       </p>
       <p>

@@ -77,7 +77,7 @@ instructions: AGENTS.md`}</code></pre>
     type: function
     callable: my_package.tools.summarize_file`}</code></pre>
 
-      <h3><Link href="/docs/build/policies">Policies</Link></h3>
+      <h3><Link href="/docs/policies/overview">Policies</Link></h3>
       <p>Declarative guardrails in YAML.</p>
       <pre><code>{`policies:
   rate_limit:

@@ -20,7 +20,15 @@ export default function Page() {
 
       <h2>1. Run Debby</h2>
 
-      <pre><code>{"omni run examples/debby/"}</code></pre>
+      <pre><code>{"omni examples/debby/"}</code></pre>
+
+      <div className="note">
+        <p>
+          If you installed via pip, clone the{" "}
+          <a href="https://github.com/omnigent-ai/omnigent" target="_blank" rel="noreferrer">repo</a>{" "}
+          first to access the examples directory.
+        </p>
+      </div>
 
       <p>
         This starts a session where every question you ask gets sent to both

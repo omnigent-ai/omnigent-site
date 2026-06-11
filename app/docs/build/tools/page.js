@@ -133,7 +133,7 @@ export default function Page() {
           <code>{"Authorization: \"Bearer ${API_TOKEN}\""}</code>)
         </li>
         <li>
-          <strong><code>databricks_profile</code></strong>: resolves an OAuth token from your{" "}
+          <strong><code>profile</code></strong> (under <code>auth:</code>): resolves an OAuth token from your{" "}
           <code>~/.databrickscfg</code>:
         </li>
       </ul>
@@ -144,7 +144,8 @@ export default function Page() {
   internal-api:
     type: mcp
     url: https://my-workspace.databricks.com/mcp
-    databricks_profile: my-profile`}
+    auth:
+      profile: my-profile`}
         </code>
       </pre>
 

@@ -61,9 +61,8 @@ export default function Page() {
 
       <div className="note">
         <p>
-          First boot creates an admin account. Check the service logs for the password:
+          First boot prompts you to create an admin account.
         </p>
-        <pre><code>{"docker compose logs omnigent | grep \"admin password\""}</code></pre>
       </div>
     </>
   );

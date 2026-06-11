@@ -33,7 +33,7 @@ export default function Page() {
 
       <p>
         <strong>Same network.</strong> Use your machine{"'"}s local IP instead of localhost (e.g.,{" "}
-        <code>http://192.168.x.x:8000</code>). Your phone needs to be on the same Wi-Fi network.
+        <code>http://192.168.x.x:6767</code>). Your phone needs to be on the same Wi-Fi network.
       </p>
 
       <p>

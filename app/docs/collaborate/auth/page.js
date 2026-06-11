@@ -51,8 +51,7 @@ export default function Page() {
       <pre><code>{"OMNIGENT_AUTH_ENABLED=1 omni server start"}</code></pre>
 
       <p>
-        <strong>Sign in.</strong> Open the web UI and sign in as <code>admin</code>. The first run
-        prints the password to the server logs.
+        <strong>Sign in.</strong> Open the web UI. First boot prompts you to create an admin account.
       </p>
 
       <p>
@@ -120,7 +119,7 @@ export default function Page() {
         everyone across so they keep their sessions and admin rights:
       </p>
 
-      <pre><code>{"omni debug migrate-accounts-to-oidc <database-url> --domain yourcompany.com"}</code></pre>
+      <pre><code>{"omni debug migrate-accounts-to-oidc <database-url> --domain yourcompany.com --commit"}</code></pre>
     </>
   );
 }

@@ -62,7 +62,7 @@ export default function Page() {
 
       <p>
         Both Render and Railway default to built-in <code>accounts</code> auth, so multi-user works
-        out of the box. First boot creates an admin (password in the service logs). To switch to
+        out of the box. First boot prompts you to create an admin account. To switch to
         OIDC, set the <code>OMNIGENT_OIDC_*</code> environment variables. See{" "}
         <Link href="/docs/collaborate/auth">Auth &amp; SSO</Link> for details.
       </p>

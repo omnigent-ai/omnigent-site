@@ -11,7 +11,15 @@ export default function Page() {
         and GPT simultaneously, then lets them debate and refine each other{"'"}s answers.
       </p>
 
-      <pre><code>{"omni run examples/debby/"}</code></pre>
+      <pre><code>{"omni examples/debby/"}</code></pre>
+
+      <div className="note">
+        <p>
+          If you installed via pip, clone the{" "}
+          <a href="https://github.com/omnigent-ai/omnigent" target="_blank" rel="noreferrer">repo</a>{" "}
+          first to access the examples directory.
+        </p>
+      </div>
 
       <h2>How it works</h2>
       <p>
@@ -27,7 +35,7 @@ export default function Page() {
         </thead>
         <tbody>
           <tr><td><code>claude</code></td><td><code>claude</code></td><td>Claude responder</td></tr>
-          <tr><td><code>gpt</code></td><td><code>openai</code></td><td>GPT responder</td></tr>
+          <tr><td><code>gpt</code></td><td><code>openai-agents</code></td><td>GPT responder</td></tr>
         </tbody>
       </table>
 

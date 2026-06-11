@@ -36,8 +36,7 @@ Agent: Created "docs-reviewer" agent. Opening a new session with it now.
         Every custom agent lives in its own directory with a <code>config.yaml</code> at
         the root. You can place the directory anywhere on disk. Run it with:
       </p>
-      <pre><code>{`omni run ./my-agent/              # directory containing config.yaml
-omni run ./my-agent/config.yaml   # or point to the file directly`}</code></pre>
+      <pre><code>{`omni run ./my-agent/              # directory containing config.yaml`}</code></pre>
 
       <h2>What you can configure</h2>
       <p>The config file supports these sections:</p>
@@ -91,8 +90,10 @@ prompt: |
   and summarize changes with validation results.
 
 executor:
-  harness: claude
-  model: claude-sonnet-4-6
+  type: omnigent
+  config:
+    harness: claude
+    model: claude-sonnet-4-6
 
 os_env:
   type: caller_process

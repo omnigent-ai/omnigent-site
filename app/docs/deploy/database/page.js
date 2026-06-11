@@ -33,7 +33,7 @@ export default function Page() {
         </li>
       </ul>
 
-      <pre><code>{"DATABASE_URL=postgresql://user:pass@host:5432/omnigents"}</code></pre>
+      <pre><code>{"DATABASE_URL=postgresql://user:pass@host:5432/omnigent"}</code></pre>
 
       <h2>SQLite</h2>
 

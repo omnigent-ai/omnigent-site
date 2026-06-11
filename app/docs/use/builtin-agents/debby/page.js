@@ -13,6 +13,14 @@ export default function Page() {
 
       <pre><code>{"omni run examples/debby/"}</code></pre>
 
+      <p>
+        The <code>examples/</code> path requires a clone of the{" "}
+        <a href="https://github.com/omnigent-ai/omnigent" target="_blank" rel="noreferrer">
+          framework repo
+        </a>
+        . Run the command from the repo root.
+      </p>
+
       <h2>How it works</h2>
       <p>
         Ask a question and both models respond independently. You see both perspectives

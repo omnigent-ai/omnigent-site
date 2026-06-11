@@ -20,6 +20,13 @@ export default function Page() {
 
       <h2>1. Run Debby</h2>
 
+      <p>
+        Debby lives in the <code>examples/</code> directory of the framework
+        repo, so clone it first:
+      </p>
+
+      <pre><code>{"git clone https://github.com/omnigent-ai/omnigent.git\ncd omnigent"}</code></pre>
+
       <pre><code>{"omni run examples/debby/"}</code></pre>
 
       <p>

@@ -101,7 +101,7 @@ def dotted(x1, y1, x2, y2):
             f'stroke-linecap="round" stroke-dasharray="0.1 7" fill="none"/>')
 
 
-W, H = 1200, 540
+W, H = 1200, 610
 parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
          f'font-family="{FONT}">', f'<defs>{OCTO}</defs>']
 
@@ -117,23 +117,25 @@ IFACE_X = 968
 iface_rows = [70, 138, 206, 274, 342]
 for ry in iface_rows:
     parts.append(dotted(848, MIDY, IFACE_X, ry + 26))
-# server -> infra (fan down)
-infra_y = 452
-infra_logos = [
-    ("PostgreSQL", data_uri("public/logos/observability/postgresql.svg")),
-    ("Docker",     data_uri("public/logos/observability/docker.svg")),
-    ("Railway",    data_uri("public/logos/platforms/railway.png")),
-    ("Fly.io",     data_uri("public/logos/platforms/flyio.png")),
-    ("MLflow",     data_uri("public/logos/gateways/mlflow.png")),
-    ("OpenTelemetry", data_uri("public/logos/observability/opentelemetry.svg")),
+# server -> infra. Three functional clusters, grouped by proximity (no labels):
+#   persistence (Postgres) | deploy (Docker/Railway/Fly.io) | tracing (MLflow/OTel)
+# Stacked vertically within each cluster to use vertical space instead of one wide row.
+CLUSTER_TOP = 438          # clusters share a top edge so they read as lanes
+PITCH = 60                 # row-to-row spacing inside a cluster
+clusters = [
+    (470, [("PostgreSQL", data_uri("public/logos/observability/postgresql.svg"))]),
+    (700, [("Docker", data_uri("public/logos/observability/docker.svg")),
+           ("Railway", data_uri("public/logos/platforms/railway.png")),
+           ("Fly.io",  data_uri("public/logos/platforms/flyio.png"))]),
+    (912, [("MLflow", data_uri("public/logos/gateways/mlflow.png")),
+           ("OpenTelemetry", data_uri("public/logos/observability/opentelemetry.svg"))]),
 ]
-n = len(infra_logos)
-infra_x0, infra_x1 = 470, 980
-step = (infra_x1 - infra_x0) / (n - 1)
-infra_cx = [infra_x0 + i * step for i in range(n)]
-# fan a connector to every infra logo (incl. OpenTelemetry)
-for cx in infra_cx:
-    parts.append(dotted(718, 352, cx, infra_y - 24))
+infra_positions = []       # (cx, cy, label, href) filled below, drawn after the boxes
+for cx, items in clusters:
+    for i, (label, href) in enumerate(items):
+        infra_positions.append((cx, CLUSTER_TOP + i * PITCH, label, href))
+    # one connector from the server down to the top of each cluster
+    parts.append(dotted(718, 352, cx, CLUSTER_TOP - 26))
 
 # ---------- left inputs (real agent logos) ----------
 AG = "public/logos/agents"
@@ -155,11 +157,36 @@ rx, ry, rw, rh = 320, 150, 178, 176
 parts.append(rrect(rx, ry, rw, rh, 16, "#ffffff", ACCENT, 2.5))
 parts.append(octo(rx + 18, ry + 16, 30))
 parts.append(text(rx + 56, ry + 38, 21, 700, FG).format("Runner"))
-# host chips (replaces Sandboxing / Reliability)
-hy = ry + 64
-for host in ["Your machine", "Modal", "Daytona"]:
-    parts.append(chip(rx + rw / 2, hy, rw - 36, host, 30))
-    hy += 38
+# host rows with logos (replaces the Sandboxing / Reliability pills)
+row_x, row_w, row_h = rx + 16, rw - 32, 34
+hy = ry + 60
+
+
+def host_row(y, draw_mark, label=None, full_logo=None, logo_w=22):
+    """A light pill holding a logo (+ optional label) for one runner host."""
+    out = [rrect(row_x, y, row_w, row_h, 9, GREY_PINK)]
+    cy = y + row_h / 2
+    if full_logo:  # wide lockup that already contains its name (Daytona)
+        out.append(img(row_x + row_w / 2, cy, row_w - 22, row_h - 14, full_logo))
+    else:
+        out.append(draw_mark(row_x + 17, cy))
+        out.append(text(row_x + 34, cy + 5, 14.5, 600, FG).format(label))
+    return "".join(out)
+
+
+def laptop(cx, cy):
+    return (f'<g stroke="{FG}" stroke-width="1.7" fill="none" stroke-linejoin="round">'
+            f'<rect x="{cx-10}" y="{cy-8}" width="20" height="13" rx="1.5"/>'
+            f'<path d="M{cx-13} {cy+8} L{cx+13} {cy+8}" stroke-linecap="round"/></g>')
+
+
+def modal_mark(cx, cy):
+    return img(cx, cy, 22, 22, data_uri("public/logos/runners/modal.png"))
+
+
+parts.append(host_row(hy, laptop, "Your machine"))
+parts.append(host_row(hy + 40, modal_mark, "Modal"))
+parts.append(host_row(hy + 80, None, full_logo=data_uri("public/logos/runners/daytona.png")))
 
 # ---------- Server box ----------
 sx, sy, sw, sh = 588, 120, 262, 232
@@ -192,9 +219,9 @@ for label, ry2 in zip(iface_labels, iface_rows):
     parts.append(text(x + 50, ry2 + 25, 15, 600, FG).format(label))
     parts.append(text(x + 50, ry2 + 42, 11.5, 400, FG_SOFT).format("screenshot"))
 
-# ---------- infra logo row ----------
-for (label, href), cx in zip(infra_logos, infra_cx):
-    parts.append(logo_tile(cx, infra_y, label, href))
+# ---------- infra clusters ----------
+for cx, cy, label, href in infra_positions:
+    parts.append(logo_tile(cx, cy, label, href))
 
 parts.append("</svg>")
 OUT.write_text("\n".join(parts))

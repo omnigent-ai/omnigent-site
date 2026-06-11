@@ -154,7 +154,7 @@ export default function Home() {
                 src="/images/architecture.svg"
                 alt="Omnigent architecture: CLI agents and custom agents run through a runner (on your machine, Modal, or Daytona), then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API."
                 width={1200}
-                height={540}
+                height={610}
               />
             </figure>
 

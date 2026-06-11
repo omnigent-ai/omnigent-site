@@ -14,10 +14,10 @@ export default function Home() {
         {/* Hero */}
         <section className="hero wrap">
           <span className="tag">Open source · Alpha</span>
-          <h1>
+          <p className="lede">
             The framework above your agent harnesses that runs them together,
             policy-driven and shareable. Use with Claude Code, Codex, or Pi.
-          </h1>
+          </p>
           <Command>pip install omnigent</Command>
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">

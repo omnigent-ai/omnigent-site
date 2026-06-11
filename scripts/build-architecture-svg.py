@@ -77,6 +77,12 @@ def chip(cx, y, w, label, h=30):
     return "".join(out)
 
 
+def img(cx, cy, w, h, href):
+    """Place an image centered in a (w x h) box, preserving aspect ratio."""
+    return (f'<image href="{href}" x="{cx-w/2}" y="{cy-h/2}" width="{w}" height="{h}" '
+            f'preserveAspectRatio="xMidYMid meet"/>')
+
+
 def logo_tile(cx, cy, label, href, tile=46, iw=None, ih=None):
     """White rounded tile with a centered logo + label below."""
     iw = iw or tile - 12
@@ -102,8 +108,8 @@ parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
 # ---------- connectors (draw first, sit behind boxes) ----------
 MIDY = 238
 # inputs -> runner
-parts.append(dotted(232, 150, 318, MIDY - 10))   # CLI agents
-parts.append(dotted(232, 392, 318, MIDY + 30))   # custom agents
+parts.append(dotted(186, 140, 318, MIDY - 16))   # CLI agents
+parts.append(dotted(186, 360, 318, MIDY + 36))   # custom agents
 # runner -> server
 parts.append(dotted(497, MIDY, 588, MIDY))
 # server -> interfaces (fan out)
@@ -125,20 +131,24 @@ n = len(infra_logos)
 infra_x0, infra_x1 = 470, 980
 step = (infra_x1 - infra_x0) / (n - 1)
 infra_cx = [infra_x0 + i * step for i in range(n)]
-for cx in (infra_cx[0], infra_cx[2], infra_cx[4]):
+# fan a connector to every infra logo (incl. OpenTelemetry)
+for cx in infra_cx:
     parts.append(dotted(718, 352, cx, infra_y - 24))
 
-# ---------- left inputs ----------
-def input_group(cx, label_y, title, items):
-    out = [text(cx, label_y, 17, 700, FG, "middle").format(title)]
-    y = label_y + 16
-    for it in items:
-        out.append(chip(cx, y, 122, it, 28))
-        y += 36
-    return "".join(out)
+# ---------- left inputs (real agent logos) ----------
+AG = "public/logos/agents"
+# CLI Agents: Claude Code, Codex, Pi
+parts.append(text(118, 58, 17, 700, FG, "middle").format("CLI Agents"))
+parts.append(img(118, 98, 50, 50, data_uri(f"{AG}/claude-code.png")))
+parts.append(img(92, 150, 42, 42, data_uri(f"{AG}/codex.png")))
+parts.append(img(146, 150, 42, 42, data_uri(f"{AG}/pi.png")))
 
-parts.append(input_group(125, 70, "CLI Agents", ["Claude Code", "Codex", "Pi"]))
-parts.append(input_group(125, 312, "Custom Agents", ["agent.yaml", "Agents SDK", "Claude SDK"]))
+# Custom Agents: YAML, OpenAI Agents SDK, Llama, Claude SDK
+parts.append(text(118, 262, 17, 700, FG, "middle").format("Custom Agents"))
+parts.append(img(118, 300, 44, 44, data_uri(f"{AG}/yaml.png")))
+parts.append(img(118, 344, 132, 34, data_uri(f"{AG}/openai-agents.png")))
+parts.append(img(90, 392, 44, 44, data_uri(f"{AG}/llama.png")))
+parts.append(img(156, 392, 92, 26, data_uri(f"{AG}/claude-sdk.png")))
 
 # ---------- Runner box ----------
 rx, ry, rw, rh = 320, 150, 178, 176

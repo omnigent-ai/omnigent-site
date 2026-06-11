@@ -1,222 +1,126 @@
 import Link from "next/link";
 
-export const metadata = { title: "Coding Agent Quickstart" };
+export const metadata = { title: "Tutorial: Coding Agent" };
 
 export default function Page() {
   return (
     <>
-      <h1>Coding Agent Quickstart</h1>
+      <h1>Tutorial: Coding Agent</h1>
 
       <p>
-        The fastest way to get started is to run a coding agent you already know
-        through Omnigent. Pick Claude Code or Codex. You get everything the
-        agent already does, plus a web UI, persistent sessions, policies, and
-        team collaboration layered on top.
+        Already using Claude Code or Codex? This tutorial shows you what Omnigent
+        adds on top: a web UI with file editing and inline comments, mobile access,
+        session sharing, and the ability to fork or switch agents mid-conversation.
+        None of this is possible with a native coding agent alone.
       </p>
 
       <p>
-        Under the hood, each coding agent runs as a{" "}
-        <strong>harness</strong>: the runtime that executes your agent loop.{" "}
-        <code>omni claude</code> starts the Claude Code harness.{" "}
-        <code>omni codex</code> starts the Codex harness. This walkthrough
-        applies to both.
+        <strong>Time:</strong> 5 minutes. <strong>Everything runs locally.</strong>
+      </p>
+
+      <h2>1. Start your coding agent</h2>
+
+      <pre><code>{"omni claude"}</code></pre>
+
+      <p>
+        This launches Claude Code in your terminal and opens a web UI at{" "}
+        <code>http://localhost:6767</code>. Both are connected to the same session
+        and stream output in real time.
+      </p>
+
+      <h2>2. Give it a task</h2>
+
+      <p>
+        Ask it to do something in your project. For example:
+      </p>
+
+      <pre><code>{"Write a Python function that reads a CSV file and returns the top 5 rows sorted by the second column."}</code></pre>
+
+      <p>
+        Watch it work in the terminal. Then open{" "}
+        <code>http://localhost:6767</code> in your browser to see the web UI.
       </p>
 
       <p>
-        <Link href="/quickstart/install">Install Omnigent</Link> first if you
-        haven{"'"}t already.
+        The web UI shows your conversation on the left and a right panel with
+        four tabs: <strong>Files</strong> (browse and edit files the agent
+        created), <strong>Agents</strong> (sub-agents if any),{" "}
+        <strong>Terminals</strong> (running shells), and{" "}
+        <strong>Todos</strong>. Everything syncs with the terminal in real time.
       </p>
-
-      <h2>1. Run it</h2>
-
-      <pre>
-        <code>
-          {"omni claude                 # Claude Code\nomni codex                  # Codex"}
-        </code>
-      </pre>
-
-      <p>That{"'"}s it. You{"'"}re up and running.</p>
-
-      <h2>2. Interact</h2>
-
-      <p>
-        Omnigent gives you three ways to work with your coding agent, all
-        connected to the same session in real time.
-      </p>
-
-      <h3>Native terminal</h3>
-
-      <p>
-        Omnigent launches the native CLI of your coding agent (Claude Code or
-        Codex). You keep the exact terminal experience you{"'"}re used to.
-      </p>
-
-      <h3>Web UI</h3>
-
-      <p>
-        A browser-based interface at{" "}
-        <strong>http://localhost:6767</strong> with features the terminal can
-        {"'"}t offer:
-      </p>
-
-      <ul>
-        <li>
-          <Link href="/docs/interact/web-ui#session-management">
-            Session management
-          </Link>
-          . Run multiple sessions, switch between them, resume previous ones.
-        </li>
-        <li>
-          <Link href="/docs/interact/web-ui#file-editor">File editor</Link>.
-          Browse and edit files the agent creates or modifies.
-        </li>
-        <li>
-          <Link href="/docs/interact/web-ui#inline-comments-and-addressing">
-            Inline comments
-          </Link>
-          . Leave feedback directly on code changes.
-        </li>
-        <li>
-          <Link href="/docs/interact/web-ui#multi-modal-input">
-            Multi-modal input
-          </Link>
-          . Paste screenshots, mockups, or diagrams into the conversation.
-        </li>
-        <li>Persistent history. Every conversation is saved automatically.</li>
-      </ul>
-
-      <p>
-        These are things you can do in Omnigent that you can{"'"}t do with Claude Code
-        or Codex alone:
-      </p>
-      <ul>
-        <li><strong>Comment on files</strong> and have the agent resolve your feedback inline.</li>
-        <li><strong>Access from your phone</strong> while the agent runs on your laptop or a server.</li>
-        <li><strong>Fork a session</strong> into a different coding agent to try a different approach.</li>
-        <li><strong>Invite teammates</strong> to your session for real-time pair programming.</li>
-        <li><strong>Switch agents mid-conversation</strong> without losing history.</li>
-      </ul>
-
-      <h3>Desktop app</h3>
-
-      <p>
-        A <Link href="/docs/interact/desktop">native app</Link> with OS
-        notifications and dock badges. Same UI as the browser, plus alerts when
-        your agent needs attention.
-      </p>
-
-      <p>Use whichever interface fits the moment, or all of them at once.</p>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/single-harness-demo.gif" alt="Omnigent running a single coding-agent session in the web UI" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+      <img src="/images/docs/single-harness-demo.gif" alt="Omnigent web UI running a coding agent session" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
-      <h2>3. Set policies</h2>
-
-      <p>
-        Control what your omnigent can do by asking it in plain language:
-      </p>
-
-      <pre>
-        <code>
-          {"You: Route trivial tasks to a cheaper model to save cost.\n\nYou: Ask me before running any shell commands.\n\nYou: Cap this session at $5 of LLM spend."}
-        </code>
-      </pre>
+      <h2>3. Try what native Claude Code can{"'"}t do</h2>
 
       <p>
-        Your omnigent picks the right policy, shows you what it{"'"}s about to
-        add, and asks for approval. The policy takes effect immediately.
+        Now that your agent has produced some output, try these features in
+        the web UI:
       </p>
+
+      <h3>Comment on the agent{"'"}s work</h3>
+      <p>
+        Click on a specific part of the agent{"'"}s output and leave an inline
+        comment like {'"'}make this more concise{'"'} or {'"'}use pandas instead{'"'}.
+        The agent sees exactly what you{"'"}re referring to and revises it.
+        No need to describe the location in chat.
+      </p>
+
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/docs/leave-comment.png" alt="Leaving an inline comment on agent output" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+
+      <h3>Edit files directly</h3>
+      <p>
+        Open any file the agent created in the built-in editor. Make changes
+        yourself with syntax highlighting. The agent can see your edits and
+        continue from there.
+      </p>
+
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/docs/markdown-editor.gif" alt="Editing a file in the Omnigent web UI" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+
+      <h3>Paste an image</h3>
+      <p>
+        Drag a screenshot, mockup, or diagram into the chat. The agent sees it
+        alongside your text. Try pasting a screenshot of a UI bug or a design spec.
+      </p>
+
+      <h3>Switch to a different agent</h3>
+      <p>
+        Mid-conversation, switch to a different coding agent (e.g. Codex) without
+        losing history. The new agent picks up where the old one left off.
+      </p>
+
+      <h2>4. Add a policy in plain language</h2>
 
       <p>
-        See <Link href="/docs/policies/overview">Policies</Link> for the full
-        list of options.
+        Type this into the chat:
       </p>
 
-      <h2>4. Deploy</h2>
+      <pre><code>{"Ask me before running any shell commands."}</code></pre>
 
       <p>
-        So far everything runs on your laptop. To access your agent from your
-        phone, share sessions with teammates, or keep it running while your
-        laptop is closed, deploy the server.
+        The agent adds a policy to the session. From now on, it pauses and asks
+        for your approval before executing anything in the shell. You can add
+        cost limits, access controls, and more the same way. See{" "}
+        <Link href="/docs/policies/overview">Contextual Policies</Link>.
       </p>
-
-      <p>The simplest option is a one-click deploy to Render:</p>
-
-      <ol>
-        <li>
-          Click the <strong>Deploy to Render</strong> button in the{" "}
-          <Link href="/docs/deploy/cloud">deployment docs</Link>.
-        </li>
-        <li>Render provisions a server with Postgres automatically.</li>
-        <li>Once deployed, connect your local machine:</li>
-      </ol>
-
-      <pre>
-        <code>
-          {"omni login https://your-app.onrender.com\nomni host https://your-app.onrender.com"}
-        </code>
-      </pre>
-
-      <p>
-        See <Link href="/docs/deploy/overview">Deployment</Link> for other
-        options including Railway, Fly.io, and Docker.
-      </p>
-
-      <h2>5. Mobile access</h2>
-
-      <p>
-        Once deployed, open your server URL on your phone{"'"}s browser (e.g.{" "}
-        <code>https://your-app.onrender.com</code>). No app install needed.
-      </p>
-
-      <p>
-        You see the same web UI with the same sessions. Send a prompt from your
-        phone, and it appears in the terminal and web UI on your desktop.
-      </p>
-
-      <h2>6. Team collaboration</h2>
-
-      <p>
-        In the web UI, click <strong>Share</strong> on any session to get a
-        shareable link. Send it to a teammate. They open it in their browser and
-        join the session in real time.
-      </p>
-
-      <p>Once in a shared session, teammates can:</p>
-
-      <ul>
-        <li>Watch the agent{"'"}s output as it streams</li>
-        <li>Send their own messages to the agent</li>
-        <li>Comment on and annotate the agent{"'"}s work</li>
-        <li>Fork the session to explore a different direction</li>
-      </ul>
-
-      <p>
-        See <Link href="/docs/collaborate/overview">Collaboration</Link> for
-        advanced options like CLI-based co-driving and session forking.
-      </p>
-
-      <h2>7. Cloud sandbox</h2>
-
-      <p>
-        Once deployed, you may want your agent to keep working after you close
-        your laptop. A{" "}
-        <Link href="/docs/deploy/cloud-sandbox">cloud sandbox</Link> runs the
-        agent in a remote container so it operates independently.
-      </p>
-
-      <hr />
 
       <h2>What{"'"}s next</h2>
 
       <ul>
         <li>
-          <Link href="/quickstart/multi-agent">Try multi-agent</Link> — run Debby
-          for a multi-model debate, or Polly for multi-agent coding orchestration.
+          <Link href="/quickstart/multi-ai">Try multi-AI agents</Link> to
+          see Claude and GPT debate each other.
         </li>
         <li>
-          <Link href="/quickstart/custom-omnigent">Build a custom agent</Link> — define
-          your own agent in a YAML file with custom tools, policies, and sub-agents.
+          <Link href="/quickstart/collaborate">Collaborate from anywhere</Link> to
+          deploy a server and share sessions with teammates.
+        </li>
+        <li>
+          <Link href="/docs/use/custom-agents">Build a custom agent</Link> with
+          your own tools, prompts, and policies.
         </li>
       </ul>
     </>

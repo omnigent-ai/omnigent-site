@@ -23,7 +23,7 @@ omni codex     # Codex`}</code></pre>
       </p>
 
       <p>
-        <strong><Link href="/quickstart/coding-agent">Follow the Coding Agent Quickstart</Link></strong>{" "}
+        <strong><Link href="/quickstart/coding-agent">Follow the Coding Agent tutorial</Link></strong>{" "}
         to get started in under a minute.
       </p>
     </>

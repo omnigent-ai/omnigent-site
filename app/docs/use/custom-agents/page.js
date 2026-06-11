@@ -113,10 +113,6 @@ policies:
     factory_params:
       limit: 50`}</code></pre>
 
-      <p>
-        <strong><Link href="/quickstart/custom-omnigent">Follow the Custom Omnigent Quickstart</Link></strong>{" "}
-        to build your first agent in under 5 minutes.
-      </p>
     </>
   );
 }

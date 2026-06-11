@@ -248,16 +248,13 @@ hr {
   margin-top: 1rem;
   padding: 0 0 1.75rem;
 }
-.hero-demo-wrap {
-  max-width: calc(1651px + 2px + 4rem);
-}
 .hero-demo-img {
   display: block;
   width: 100%;
-  /* content width = exactly half the 2x-retina source (3302px), so retina
-     maps 1:1 and 1x displays get an integer 2:1 downscale; +2px absorbs the
-     border under border-box */
-  max-width: calc(1651px + 2px);
+  /* content width = exactly a quarter of the 3302px source, so 2x-retina
+     displays get a clean integer 2:1 downscale (no fractional resampling);
+     +2px absorbs the border under border-box */
+  max-width: calc(825.5px + 2px);
   height: auto;
   margin: 0 auto;
   border: 1px solid var(--border);

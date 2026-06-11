@@ -33,7 +33,7 @@ export default function Home() {
         </section>
 
         <section className="hero-demo" aria-label="Product demo">
-          <div className="wrap-wide hero-demo-wrap">
+          <div className="wrap-wide">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="hero-demo-img"

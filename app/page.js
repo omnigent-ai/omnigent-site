@@ -164,12 +164,12 @@ export default function Home() {
             <div className="try-it">
               <h2>Try it</h2>
               <p className="muted">
-                Install, then start an agent in your terminal. A local web UI opens
-                too, for the browser or your phone.
+                Install, then run an agent in your terminal.
               </p>
               <pre className="section-code try-code">
                 <code>{`pip install omnigent
-omni polly     # Polly, the default multi-agent orchestrator`}</code>
+omni debby     # run a built-in multi-agent debate
+omni claude    # run your agent with a web UI and collaboration`}</code>
               </pre>
               <p>
                 Read the <Link href="/docs">Getting Started</Link> guide for more

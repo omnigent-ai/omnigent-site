@@ -9,6 +9,7 @@ const PAGES = [
   { href: "/quickstart/coding-agent", label: "Tutorial: Coding Agent" },
   { href: "/quickstart/polly", label: "Tutorial: Try Polly" },
   { href: "/quickstart/collaborate", label: "Tutorial: Collaborate" },
+  { href: "/quickstart/policies", label: "Tutorial: Contextual Policies" },
 ];
 
 export default function DocsSidebar() {

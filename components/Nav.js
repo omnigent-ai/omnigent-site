@@ -8,8 +8,7 @@ export default function Nav() {
       <div className="nav-inner">
         <Link href="/" className="brand">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/logo.png" alt="" width={26} height={26} />
-          omnigent
+          <img src="/images/logo.svg" alt="Omnigent" height={28} width={145} />
         </Link>
         <nav className="nav-links">
           <Link href="/quickstart/installing" className="nav-link hide-sm">Quickstart</Link>

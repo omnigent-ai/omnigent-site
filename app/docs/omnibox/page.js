@@ -14,8 +14,8 @@ export default function Page() {
       </p>
 
       <p>
-        The kernel enforces the rules, not the agent or its prompt: bubblewrap and seccomp on
-        Linux, Seatbelt (<code>sandbox-exec</code>) on macOS. Every process the agent spawns
+        The kernel enforces the rules, not the agent or its prompt: <code>bubblewrap</code> and{" "}
+        <code>seccomp</code> on Linux, Seatbelt (<code>sandbox-exec</code>) on macOS. Every process the agent spawns
         inherits the boundary, so a prompt-injected or misbehaving agent can{"'"}t opt out.
       </p>
 
@@ -69,7 +69,8 @@ export default function Page() {
       <ul>
         <li>
           <Link href="/docs/policies/os-sandbox">OS sandbox configuration</Link> — the full
-          reference: filesystem grants, egress rules, environment passthrough, backends.
+          reference: filesystem grants, egress rules, environment passthrough, and the{" "}
+          <code>bubblewrap</code>/Seatbelt backends.
         </li>
         <li>
           <Link href="/docs/deploy/cloud-sandbox">Cloud sandbox</Link> — controls <em>where</em>{" "}

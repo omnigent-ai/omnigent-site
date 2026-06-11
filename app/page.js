@@ -18,7 +18,7 @@ export default function Home() {
             The framework above your agent harnesses that runs them together,
             governed and shareable. Use with Claude Code, Codex, or Pi.
           </h1>
-          <Command>pip install omnigents</Command>
+          <Command>pip install omnigent</Command>
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
               <GitHubIcon /> View on GitHub
@@ -61,10 +61,10 @@ export default function Home() {
               too, for the browser or your phone.
             </p>
             <pre>
-              <code>{`pip install omnigents
-omnigents                 # pick a model and start chatting
-omnigents claude          # or launch a specific harness
-omnigents run my-agent/   # or run your own agent`}</code>
+              <code>{`pip install omnigent
+omnigent                 # pick a model and start chatting
+omnigent claude          # or launch a specific harness
+omnigent run my-agent/   # or run your own agent`}</code>
             </pre>
             <p>
               Read the <Link href="/docs/installing">installation guide</Link>,
@@ -96,7 +96,7 @@ omnigents run my-agent/   # or run your own agent`}</code>
             <h3>How do I run my own agent?</h3>
             <p className="muted">
               Write a short YAML file with a prompt and a harness, then run{" "}
-              <code>omnigents run</code> on it. See the{" "}
+              <code>omnigent run</code> on it. See the{" "}
               <Link href="/docs/custom-agent">custom agent guide</Link>.
             </p>
 

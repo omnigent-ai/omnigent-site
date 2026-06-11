@@ -8,7 +8,7 @@ export default function Page() {
       <h1>Custom Omnigent Quickstart</h1>
 
       <p>
-        The <Link href="/docs/coding-agent">coding agent quickstart</Link> runs
+        The <Link href="/quickstart/coding-agent">coding agent quickstart</Link> runs
         an existing agent through Omnigent. This page shows how to create your
         own from scratch in a short YAML file.
       </p>
@@ -38,7 +38,7 @@ export default function Page() {
 
       <p>
         This launches the agent with the terminal and web UI, just like the{" "}
-        <Link href="/docs/coding-agent">coding agent quickstart</Link>.
+        <Link href="/quickstart/coding-agent">coding agent quickstart</Link>.
       </p>
 
       <h2>3. Iterate</h2>
@@ -121,7 +121,7 @@ export default function Page() {
 
       <p>
         Once your agent is running, the rest of the workflow from the{" "}
-        <Link href="/docs/coding-agent">coding agent quickstart</Link> applies:
+        <Link href="/quickstart/coding-agent">coding agent quickstart</Link> applies:
         interact, set policies, deploy, mobile, collaboration, and sandboxing.
       </p>
     </>

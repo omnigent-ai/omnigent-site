@@ -41,6 +41,14 @@ a {
 a:hover {
   text-decoration: underline;
 }
+.docs-main a {
+  text-decoration: underline;
+  text-decoration-color: rgba(237, 28, 156, 0.3);
+  text-underline-offset: 2px;
+}
+.docs-main a:hover {
+  text-decoration-color: var(--accent);
+}
 
 h1, h2, h3 {
   font-family: var(--font-sans);
@@ -227,23 +235,66 @@ hr {
 code {
   font-family: var(--font-mono);
   font-weight: 400;
-  font-size: 0.88em;
-  background: var(--accent-soft);
+  font-size: 0.85em;
+  background: var(--bg-soft);
   color: #ad0c72;
-  padding: 0.12em 0.38em;
+  padding: 0.15em 0.4em;
   border-radius: 5px;
+  border: 1px solid var(--border);
 }
 pre {
-  background: var(--code-bg);
-  color: var(--code-fg);
+  position: relative;
+  background: #f6f3f7;
+  color: var(--fg);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1rem 1.15rem;
   overflow-x: auto;
   font-family: var(--font-mono);
   font-weight: 400;
-  font-size: 0.86rem;
-  line-height: 1.6;
+  font-size: 0.84rem;
+  line-height: 1.65;
   margin: 0 0 1rem;
+}
+pre .copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--fg-soft);
+  font-size: 0.72rem;
+  font-family: var(--font-sans);
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+pre:hover .copy-btn { opacity: 1; }
+pre .copy-btn:hover { color: var(--fg); background: var(--bg-soft); }
+
+/* ---- heading anchors ---- */
+.docs-main h1, .docs-main h2, .docs-main h3 {
+  position: relative;
+  scroll-margin-top: 5rem;
+}
+.heading-anchor {
+  margin-left: 0.4rem;
+  color: var(--border);
+  font-weight: 400;
+  text-decoration: none !important;
+  opacity: 0;
+  transition: opacity 0.15s;
+  font-size: 0.8em;
+}
+.docs-main h1:hover .heading-anchor,
+.docs-main h2:hover .heading-anchor,
+.docs-main h3:hover .heading-anchor {
+  opacity: 1;
+}
+.heading-anchor:hover {
+  color: var(--accent) !important;
 }
 pre code {
   background: none;
@@ -251,6 +302,7 @@ pre code {
   padding: 0;
   font-size: inherit;
   border-radius: 0;
+  border: none;
 }
 
 /* copy-able command block */
@@ -512,6 +564,7 @@ figcaption {
   padding: 0.8rem 1rem;
   border-radius: 0 8px 8px 0;
   margin: 1.5rem 0;
+  font-size: 0.93rem;
 }
 .note p:last-child { margin-bottom: 0; }
 .doc-next {
@@ -519,6 +572,77 @@ figcaption {
   padding-top: 1.5rem;
   border-top: 1px solid var(--border);
   font-size: 0.95rem;
+}
+
+/* ---- tabbed code ---- */
+.tabbed-code {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 0 0 1rem;
+  background: #f6f3f7;
+}
+.tab-bar {
+  display: flex;
+  gap: 0;
+  padding: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.tab-bar button {
+  padding: 0.5rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  border: none;
+  background: none;
+  color: var(--fg-soft);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.1s;
+}
+.tab-bar button:hover { color: var(--fg); }
+.tab-bar button.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+.tab-bar button.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+}
+.tabbed-code pre {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* ---- docs details/summary ---- */
+.docs-main details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 1rem 0;
+  padding: 0;
+}
+.docs-main details > summary {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.93rem;
+  color: var(--fg-soft);
+  background: var(--bg-soft);
+  border-radius: var(--radius);
+}
+.docs-main details[open] > summary {
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.docs-main details > :not(summary) {
+  padding: 0 1rem;
 }
 
 @media (max-width: 820px) {

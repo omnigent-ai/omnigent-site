@@ -4,12 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const PAGES = [
-  { href: "/quickstart/installing", label: "Installing" },
-  { href: "/quickstart/coding", label: "Running a coding agent" },
-  { href: "/quickstart/custom-agent", label: "Writing a custom agent" },
-  { href: "/quickstart/policies", label: "Policies" },
-  { href: "/quickstart/sandboxes", label: "Sandboxes" },
-  { href: "/quickstart/deploying", label: "Deploying the server" },
+  { href: "/quickstart/intro", label: "Introduction" },
+  { href: "/quickstart/install", label: "Install Omnigent" },
+  { href: "/quickstart/coding-agent", label: "Coding Agent Quickstart" },
+  { href: "/quickstart/custom-omnigent", label: "Custom Omnigent Quickstart" },
 ];
 
 export default function DocsSidebar() {

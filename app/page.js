@@ -146,8 +146,8 @@ omnigent claude          # or launch a specific harness
 omnigent run my-agent/   # or run your own agent`}</code>
             </pre>
             <p>
-              Read the <Link href="/quickstart/installing">installation guide</Link>,
-              then <Link href="/quickstart/custom-agent">write your own agent</Link> in
+              Read the <Link href="/quickstart/install">installation guide</Link>,
+              then <Link href="/quickstart/custom-omnigent">write your own agent</Link> in
               a few lines of YAML.
             </p>
           </section>

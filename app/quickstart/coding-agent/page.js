@@ -23,7 +23,7 @@ export default function Page() {
       </p>
 
       <p>
-        <Link href="/docs/installing">Install Omnigent</Link> first if you
+        <Link href="/quickstart/install">Install Omnigent</Link> first if you
         haven{"'"}t already.
       </p>
 

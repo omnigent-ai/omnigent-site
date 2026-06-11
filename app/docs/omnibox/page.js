@@ -15,8 +15,9 @@ export default function Page() {
 
       <p>
         The kernel enforces the rules, not the agent or its prompt: <code>bubblewrap</code> and{" "}
-        <code>seccomp</code> on Linux, Seatbelt (<code>sandbox-exec</code>) on macOS. Every process the agent spawns
-        inherits the boundary, so a prompt-injected or misbehaving agent can{"'"}t opt out.
+        <code>seccomp</code> on Linux, Seatbelt (<code>sandbox-exec</code>) on macOS. Every process
+        the agent spawns inherits the boundary, so a prompt-injected or misbehaving agent can{"'"}t
+        opt out.
       </p>
 
       <p>Omnibox combines three protections:</p>
@@ -37,31 +38,29 @@ export default function Page() {
         </li>
       </ul>
 
+      <h2>Filesystem isolation</h2>
+
+      <p>
+        Ungranted paths don{"'"}t exist from inside the sandbox, so a runaway agent can{"'"}t read
+        your SSH keys or write outside the workspace. Broad read grants stay safe: granting{" "}
+        <code>~</code> doesn{"'"}t expose <code>~/.ssh</code> or <code>~/.aws/credentials</code>,
+        because dotfiles are masked unless you allow them.
+      </p>
+
+      <h2>Network isolation</h2>
+
+      <p>
+        Default-deny egress means data can{"'"}t leave except to hosts you allow, which shuts down
+        exfiltration even if the agent is prompt-injected. Blocking private IPs and cloud metadata
+        endpoints keeps the agent away from your internal services.
+      </p>
+
       <h2>Credential injection</h2>
 
       <p>
-        Anything in an agent{"'"}s environment can be read by the model, echoed into logs, or
-        exfiltrated by a prompt-injected tool call. So Omnibox never puts the secret there: the
-        agent gets a placeholder token, and when a request matching your egress allow-list leaves
-        the sandbox, the proxy substitutes the real credential.
-      </p>
-
-      <ul>
-        <li>The agent can use the credential, but never read it.</li>
-        <li>
-          A leaked token is worthless: it only works through the proxy, against allowed hosts.
-        </li>
-        <li>Logs, transcripts, and model context only ever contain the placeholder.</li>
-      </ul>
-
-      <h2>Safe YOLO mode</h2>
-
-      <p>
-        Approval prompts exist because an agent with your shell can do anything you can. With
-        writes confined to the workspace, secrets out of reach, and egress allow-listed,
-        auto-approving every action is no longer a leap of faith. That{"'"}s what makes
-        long-running tasks, background agents, and{" "}
-        <Link href="/docs/deploy/cloud-sandbox">cloud sandboxes</Link> practical.
+        The agent can use a credential but never read it: only the placeholder appears in logs,
+        transcripts, and model context. A leaked token is worthless, since it only works through
+        the proxy, against allowed hosts.
       </p>
 
       <h2>Related</h2>

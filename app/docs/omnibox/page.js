@@ -9,25 +9,37 @@ export default function Page() {
 
       <p>
         Omnibox is Omnigent{"'"}s secure OS sandbox. It wraps any agent — Claude Code, Codex, or a
-        custom agent — in an OS-level boundary so you can run it unattended, in YOLO mode, without
-        giving it your real credentials, your real file system, or unrestricted network access.
+        custom agent — in a sandbox enforced by the operating system itself, so you can run it
+        unattended, in YOLO mode, without giving it your real credentials, your real file system,
+        or unrestricted network access.
       </p>
 
-      <p>Omnibox combines three protections:</p>
+      <p>
+        The enforcement happens at the OS level, not in the agent or its prompt. On Linux, Omnibox
+        uses bubblewrap namespaces and seccomp; on macOS, Seatbelt (<code>sandbox-exec</code>).
+        Every process the agent spawns — shells, scripts, build tools — inherits the same boundary.
+        A prompt-injected or misbehaving agent can{"'"}t opt out, because the kernel, not the
+        model, enforces the rules.
+      </p>
+
+      <p>Omnibox combines three OS-level protections:</p>
 
       <ul>
         <li>
-          <strong>Credential injection</strong> — the agent never holds your real credentials. It
-          sees a fake token; Omnibox{"'"}s proxy swaps in the real one at the network boundary.
+          <strong>Filesystem isolation</strong> — at the OS level, the agent can only see and write
+          the paths you grant. Everything else doesn{"'"}t exist from inside the sandbox: dotfiles
+          like <code>~/.ssh</code> and <code>~/.aws/credentials</code> are masked by default, and{" "}
+          <code>cwd</code> is read-only until you opt directories back in.
         </li>
         <li>
-          <strong>Restricted file system</strong> — the agent only reads and writes the paths you
-          grant. Dotfiles like <code>~/.ssh</code> and <code>~/.aws/credentials</code> are masked by
+          <strong>Network isolation</strong> — the sandbox has no direct network access. All
+          HTTP(S) traffic is forced through a default-deny proxy with an explicit allow-list of
+          methods, hosts, and paths; private IPs and cloud metadata endpoints are blocked by
           default.
         </li>
         <li>
-          <strong>Proxied network</strong> — all HTTP(S) traffic goes through a default-deny proxy
-          with an explicit allow-list.
+          <strong>Credential injection</strong> — the agent never holds your real credentials. It
+          sees a fake token; Omnibox{"'"}s proxy swaps in the real one at the network boundary.
         </li>
       </ul>
 

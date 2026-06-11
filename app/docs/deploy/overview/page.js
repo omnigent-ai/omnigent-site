@@ -69,10 +69,22 @@ export default function Page() {
       </p>
 
       <p>
-        The runner can also be launched in a remote{" "}
-        <Link href="/docs/deploy/cloud-sandbox">cloud sandbox</Link> like{" "}
-        <a href="https://modal.com" target="_blank" rel="noreferrer">Modal</a>, so your omnigent
-        executes in a cloud container instead of on your local machine.
+        The runner can also be hosted in the cloud as a{" "}
+        <Link href="/docs/deploy/cloud-runner">cloud runner</Link>, so your omnigent executes in a
+        cloud container instead of on your local machine. Supported hosting platforms:
+      </p>
+
+      <ul>
+        <li>
+          <a href="https://modal.com" target="_blank" rel="noreferrer">Modal</a>
+        </li>
+        <li>
+          <a href="https://www.daytona.io" target="_blank" rel="noreferrer">Daytona</a>
+        </li>
+      </ul>
+
+      <p>
+        More platforms are on the way.
       </p>
 
       <h3>UI</h3>
@@ -120,11 +132,11 @@ export default function Page() {
         <Link href="/docs/deploy/docker">Docker</Link> for ways to host it.
       </p>
 
-      <h2>Deploy the runner in a cloud sandbox</h2>
+      <h2>Host the runner in the cloud</h2>
 
       <p>
-        Moving the runner to a cloud{" "}
-        <Link href="/docs/deploy/cloud-sandbox">sandbox</Link> gives you:
+        Moving the runner to a{" "}
+        <Link href="/docs/deploy/cloud-runner">cloud runner</Link> gives you:
       </p>
 
       <ul>

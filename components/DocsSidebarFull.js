@@ -63,7 +63,7 @@ const SECTIONS = [
       { href: "/docs/deploy/database", label: "Database" },
       { href: "/docs/deploy/docker", label: "Docker" },
       { href: "/docs/deploy/cloud", label: "Cloud Platforms" },
-      { href: "/docs/deploy/cloud-sandbox", label: "Cloud Sandbox" },
+      { href: "/docs/deploy/cloud-runner", label: "Cloud Runner" },
     ],
   },
   {

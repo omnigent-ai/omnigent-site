@@ -54,16 +54,32 @@ export default function Page() {
 
       <ol>
         <li>
-          Create the first admin. The server never auto-generates a password. While
-          no admin exists it reports <code>needs_setup</code>: open the web UI and create the admin
-          account there, or run <code>omni server</code> on a terminal and answer the username and
-          password prompt. For headless deploys, preset the password with{" "}
-          <code>--admin-password</code> or <code>OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD</code>.
+          Create the first admin.
+          <ul>
+            <li>
+              The server never auto-generates a password. While no admin exists it reports{" "}
+              <code>needs_setup</code>.
+            </li>
+            <li>
+              Open the web UI and create the admin account there, or run <code>omni server</code> on
+              a terminal and answer the username and password prompt.
+            </li>
+            <li>
+              For headless deploys, preset the password with <code>--admin-password</code> or{" "}
+              <code>OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD</code>.
+            </li>
+          </ul>
         </li>
         <li>
-          Invite teammates. Go to <strong>Admin {">"} Members {">"} Invite</strong>{" "}
-          to create a single-use invite link. No email server needed; just send the link directly.
-          Signup is invite-only.
+          Invite teammates.
+          <ul>
+            <li>
+              Go to <strong>Admin {">"} Members {">"} Invite</strong> to create a single-use invite
+              link.
+            </li>
+            <li>No email server needed; just send the link directly.</li>
+            <li>Signup is invite-only.</li>
+          </ul>
         </li>
       </ol>
 

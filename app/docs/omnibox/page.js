@@ -23,19 +23,9 @@ export default function Page() {
       <p>Omnibox combines three protections:</p>
 
       <ul>
-        <li>
-          <strong>Filesystem isolation.</strong> The agent sees only the paths you grant. Dotfiles
-          like <code>~/.ssh</code> and <code>~/.aws/credentials</code> are masked by default, and{" "}
-          <code>cwd</code> is read-only until you opt in.
-        </li>
-        <li>
-          <strong>Network isolation.</strong> All HTTP(S) traffic goes through a default-deny proxy
-          with an explicit allow-list. Private IPs and cloud metadata endpoints are blocked.
-        </li>
-        <li>
-          <strong>Credential injection.</strong> The agent holds a fake token; the proxy swaps in
-          the real one at the network boundary.
-        </li>
+        <li><strong>Filesystem isolation</strong></li>
+        <li><strong>Network isolation</strong></li>
+        <li><strong>Credential injection</strong></li>
       </ul>
 
       <h2>Filesystem isolation</h2>

@@ -49,7 +49,7 @@ h1, h2, h3 {
 }
 
 h1 { font-size: 2.6rem; margin: 0 0 1rem; }
-h2 { font-size: 30px; margin: 3rem 0 3rem; }
+h2 { font-size: 30px; margin: 1.5rem 0 1rem; }
 h3 { font-size: 1.12rem; margin: 2rem 0 0.5rem; }
 
 p { margin: 0 0 1rem; }
@@ -57,7 +57,7 @@ p { margin: 0 0 1rem; }
 hr {
   border: none;
   border-top: 1px solid var(--border);
-  margin: 3.5rem 0;
+  margin: 2rem 0;
 }
 
 /* ---- layout ---- */
@@ -150,7 +150,7 @@ hr {
 
 /* ---- hero ---- */
 .hero {
-  padding: 5rem 0 1rem;
+  padding: 3.5rem 0 0.5rem;
   text-align: center;
 }
 .hero h1 {
@@ -248,7 +248,7 @@ pre code {
 
 /* ---- figure ---- */
 figure {
-  margin: 2.5rem 0;
+  margin: 1.75rem 0;
   text-align: center;
 }
 figure img {
@@ -270,8 +270,8 @@ figcaption {
 /* ---- pillars ---- */
 .pillars {
   display: grid;
-  gap: 2.2rem;
-  margin: 2rem 0;
+  gap: 1.6rem;
+  margin: 1.25rem 0;
 }
 .pillar h3 {
   margin: 0 0 0.4rem;
@@ -285,7 +285,7 @@ figcaption {
 .pillar p { color: var(--fg-soft); margin: 0; }
 
 /* ---- section helpers ---- */
-.section { padding: 1.5rem 0; }
+.section { padding: 0.75rem 0; }
 .section h2 { text-align: center; }
 .center { text-align: center; }
 .muted { color: var(--fg-soft); }
@@ -323,8 +323,8 @@ figcaption {
 /* ---- footer ---- */
 .footer {
   border-top: 1px solid var(--border);
-  margin-top: 5rem;
-  padding: 2.5rem 0;
+  margin-top: 3rem;
+  padding: 2rem 0;
   color: var(--fg-soft);
   font-size: 0.92rem;
 }

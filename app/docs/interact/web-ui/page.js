@@ -42,7 +42,7 @@ export default function Page() {
       </p>
 
             {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/markdown-editor.gif" alt="Omnigent file editor" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+      <img src="/images/docs/file-editor.gif" alt="Omnigent file editor" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <h2>Code viewer and diffs</h2>
 

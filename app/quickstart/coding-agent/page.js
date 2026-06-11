@@ -78,7 +78,7 @@ export default function Page() {
       </p>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/markdown-editor.gif" alt="Editing a file in the Omnigent web UI" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+      <img src="/images/docs/file-editor.gif" alt="Editing a file in the Omnigent web UI" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <h3>Paste an image</h3>
       <p>

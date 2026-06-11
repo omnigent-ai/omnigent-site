@@ -31,26 +31,41 @@ export default function Page() {
       <h2>Filesystem isolation</h2>
 
       <p>
-        Ungranted paths don{"'"}t exist from inside the sandbox, so a runaway agent can{"'"}t read
-        your SSH keys or write outside the workspace. Broad read grants stay safe: granting{" "}
-        <code>~</code> doesn{"'"}t expose <code>~/.ssh</code> or <code>~/.aws/credentials</code>,
-        because dotfiles are masked unless you allow them.
+        The agent sees only the paths you grant; everything else doesn{"'"}t exist from inside the
+        sandbox. Even <code>cwd</code> is read-only until you opt directories back in, so a runaway
+        agent can{"'"}t read your SSH keys or write outside the workspace.
+      </p>
+
+      <p>
+        Broad read grants stay safe: granting <code>~</code> doesn{"'"}t expose{" "}
+        <code>~/.ssh</code> or <code>~/.aws/credentials</code>, because dotfiles are masked unless
+        you allow them.
       </p>
 
       <h2>Network isolation</h2>
 
       <p>
-        Default-deny egress means data can{"'"}t leave except to hosts you allow, which shuts down
-        exfiltration even if the agent is prompt-injected. Blocking private IPs and cloud metadata
-        endpoints keeps the agent away from your internal services.
+        All HTTP(S) traffic goes through a default-deny proxy with an explicit allow-list of
+        methods, hosts, and paths. Data can{"'"}t leave except to hosts you chose, which shuts down
+        exfiltration even if the agent is prompt-injected.
+      </p>
+
+      <p>
+        Private IPs and cloud metadata endpoints are blocked by default, keeping the agent away
+        from your internal services.
       </p>
 
       <h2>Credential injection</h2>
 
       <p>
-        The agent can use a credential but never read it: only the placeholder appears in logs,
-        transcripts, and model context. A leaked token is worthless, since it only works through
-        the proxy, against allowed hosts.
+        The agent holds a fake placeholder token instead of the real secret. When a request
+        matching your allow-list leaves the sandbox, the proxy swaps in the real credential — so
+        the agent can use a credential but never read it.
+      </p>
+
+      <p>
+        Only the placeholder appears in logs, transcripts, and model context. A leaked token is
+        worthless, since it only works through the proxy, against allowed hosts.
       </p>
 
       <h2>Related</h2>

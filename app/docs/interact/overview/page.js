@@ -38,7 +38,7 @@ export default function Page() {
         The <code>--harness</code> and <code>--model</code> flags map
         directly to the <code>executor</code> block. This lets you reuse the same config across
         different LLM backends.
-      </p>
+</p>
 
       <h2>Sessions and conversations</h2>
 

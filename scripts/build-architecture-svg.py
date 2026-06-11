@@ -124,8 +124,8 @@ for ry in iface_rows:
 # like the agent clusters on the left. Gaps between clusters do the grouping.
 PG   = data_uri("public/logos/observability/postgresql.svg")
 DOCK = data_uri("public/logos/observability/docker.svg")
-RAIL = data_uri("public/logos/platforms/railway.png")
-FLY  = data_uri("public/logos/platforms/flyio.png")
+RAIL = data_uri("public/logos/platforms/railway.svg")
+FLY  = data_uri("public/logos/platforms/flyio.svg")
 MLF  = data_uri("public/logos/observability/mlflow.svg")
 OTEL = data_uri("public/logos/observability/opentelemetry.svg")
 infra_logos = [  # (cx, cy, w, h, href)
@@ -214,20 +214,50 @@ for i, p in enumerate(server_pills):
     parts.append(rrect(px, py, pw, ph, ph / 2, ACCENT))
     parts.append(text(px + pw / 2, py + ph / 2 + 5, 14.5, 600, "#ffffff", "middle").format(p))
 
-# ---------- right interfaces (placeholder screenshot frames) ----------
-iface_labels = ["Terminal UI", "Web UI", "Native App", "Mobile UI", "REST API"]
-ibw, ibh = 210, 52
-for label, ry2 in zip(iface_labels, iface_rows):
-    x = IFACE_X
-    parts.append(rrect(x, ry2, ibw, ibh, 10, GREY_PINK, BORDER, 1.5, dash="4 5"))
-    # little image-frame glyph
-    gx2, gy2 = x + 16, ry2 + 16
-    parts.append(rrect(gx2, gy2, 22, 20, 3, "#ffffff", FG_SOFT, 1.4))
-    parts.append(f'<circle cx="{gx2+6}" cy="{gy2+6}" r="2.4" fill="{FG_SOFT}"/>')
-    parts.append(f'<path d="M{gx2+3} {gy2+17} L{gx2+9} {gy2+10} L{gx2+14} {gy2+15} '
-                 f'L{gx2+18} {gy2+11} L{gx2+19} {gy2+17} Z" fill="{FG_SOFT}"/>')
-    parts.append(text(x + 50, ry2 + 25, 15, 600, FG).format(label))
-    parts.append(text(x + 50, ry2 + 42, 11.5, 400, FG_SOFT).format("screenshot"))
+# ---------- right interfaces (distinct icon per surface) ----------
+# NOTE: Matei asked for real screenshots of terminal/web/native/mobile, with
+# REST API as "an API symbol or the little octopus". These icons are the interim
+# stand-in until real captures exist; REST API uses an API-braces symbol.
+def _ic(cx, cy, body, sw=1.9):
+    return (f'<g transform="translate({cx} {cy})" fill="none" stroke="{ACCENT}" '
+            f'stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round">{body}</g>')
+
+def ic_terminal(cx, cy):
+    return _ic(cx, cy, '<rect x="-14" y="-11" width="28" height="22" rx="4"/>'
+                       '<path d="M-7 -2 l4 3 l-4 3"/><path d="M1 4 h6"/>')
+
+def ic_web(cx, cy):  # globe
+    return _ic(cx, cy, '<circle cx="0" cy="0" r="13"/><path d="M-13 0 h26"/>'
+                       '<path d="M0 -13 a18 18 0 0 1 0 26 a18 18 0 0 1 0 -26"/>'
+                       '<path d="M-9.5 -6 h19 M-9.5 6 h19"/>')
+
+def ic_native(cx, cy):  # desktop app window
+    return _ic(cx, cy, '<rect x="-14" y="-11" width="28" height="22" rx="4"/>'
+                       '<path d="M-14 -4 h28"/>'
+                       '<circle cx="-10" cy="-7.5" r="1.2" fill="' + ACCENT + '" stroke="none"/>'
+                       '<circle cx="-6" cy="-7.5" r="1.2" fill="' + ACCENT + '" stroke="none"/>'
+                       '<circle cx="-2" cy="-7.5" r="1.2" fill="' + ACCENT + '" stroke="none"/>')
+
+def ic_mobile(cx, cy):  # phone
+    return _ic(cx, cy, '<rect x="-8" y="-13" width="16" height="26" rx="3.5"/>'
+                       '<path d="M-2.5 9 h5"/>')
+
+def ic_api(cx, cy):  # { } braces
+    return _ic(cx, cy, '<path d="M-3 -11 q-5 0 -5 5 q0 4 -4 6 q4 2 4 6 q0 5 5 5"/>'
+                       '<path d="M3 -11 q5 0 5 5 q0 4 4 6 q-4 2 -4 6 q0 5 -5 5"/>'
+                       '<circle cx="0" cy="0" r="1.4" fill="' + ACCENT + '" stroke="none"/>')
+
+iface = [
+    ("Terminal UI", ic_terminal),
+    ("Web UI",      ic_web),
+    ("Native App",  ic_native),
+    ("Mobile UI",   ic_mobile),
+    ("REST API",    ic_api),
+]
+for (label, icon), ry2 in zip(iface, iface_rows):
+    cy = ry2 + 26
+    parts.append(icon(IFACE_X + 20, cy))
+    parts.append(text(IFACE_X + 48, cy + 6, 16, 600, FG).format(label))
 
 # ---------- infra clusters (bare logos, no labels) ----------
 for cx, cy, w, h, href in infra_logos:

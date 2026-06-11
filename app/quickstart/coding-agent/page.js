@@ -112,8 +112,8 @@ export default function Page() {
 
       <ul>
         <li>
-          <Link href="/quickstart/multi-ai">Try multi-AI agents</Link> to
-          see Claude and GPT debate each other.
+          <Link href="/quickstart/polly">Try Polly</Link> to
+          see multi-agent coding orchestration in action.
         </li>
         <li>
           <Link href="/quickstart/collaborate">Collaborate from anywhere</Link> to

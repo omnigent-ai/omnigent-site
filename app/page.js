@@ -92,7 +92,7 @@ export default function Home() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/images/sandbox.png"
-                    alt="Omnigent's mascot supervising smaller agents playing in a sandbox — an illustration of the OS-level sandbox that isolates every agent."
+                    alt="Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent."
                     width={420}
                     height={230}
                     style={{ maxWidth: "min(100%, 26rem)" }}

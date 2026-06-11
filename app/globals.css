@@ -440,9 +440,19 @@ figcaption {
 /* ---- pillars ---- */
 .pillars {
   display: grid;
-  gap: 1.6rem;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: start;
+  gap: 1.25rem;
   margin: 1.25rem 0;
 }
+.pillar {
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-soft);
+}
+.pillar figure { margin: 1rem 0 0; }
+.pillar figure img { max-height: 4.5rem; width: auto; }
 .pillar h3 {
   margin: 0 0 0.4rem;
   font-size: 1.25rem;
@@ -650,6 +660,7 @@ figcaption {
   .hero h1 { font-size: 2.3rem; }
   .hero .lede { max-width: 100%; }
   .arch-parts { grid-template-columns: 1fr; }
+  .pillars { grid-template-columns: 1fr; }
   .docs { grid-template-columns: 1fr; gap: 1.5rem; }
   .docs-side { position: static; }
   .docs-side ul { display: flex; flex-wrap: wrap; gap: 0.3rem; }

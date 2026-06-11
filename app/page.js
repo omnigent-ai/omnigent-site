@@ -59,7 +59,6 @@ export default function Home() {
                     alt="Omnigent mascots stacked in layers to illustrate composability."
                     width={80}
                     height={81}
-                    style={{ width: "min(100%, 14rem)", height: "auto" }}
                   />
                 </figure>
               </div>
@@ -81,7 +80,6 @@ export default function Home() {
                     alt="Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent."
                     width={420}
                     height={230}
-                    style={{ maxWidth: "min(100%, 26rem)" }}
                   />
                 </figure>
               </div>
@@ -101,7 +99,6 @@ export default function Home() {
                     alt="Two Omnigent mascots high-fiving to celebrate collaboration."
                     width={231}
                     height={102}
-                    style={{ maxWidth: "min(100%, 18rem)" }}
                   />
                 </figure>
               </div>

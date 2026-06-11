@@ -20,9 +20,17 @@ export const metadata = {
   },
 };
 
+// Runs before first paint to set the saved theme on <html>, preventing a
+// flash of the wrong theme. "auto" / unset falls through to the
+// prefers-color-scheme media query in globals.css.
+const themeInit = `(function(){try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',(t==='light'||t==='dark')?t:'auto');}catch(e){}})();`;
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+      </head>
       <body>
         {children}
         <Analytics />

@@ -8,11 +8,10 @@ export default function Page() {
       <h1>Omnibox: OS Sandbox</h1>
 
       <p>
-        Omnibox is Omnigent{"'"}s secure OS sandbox for any agent. It restricts filesystem
-        access, network traffic, and environment variables at the OS level: credential files like{" "}
-        <code>~/.aws/credentials</code> are masked by default, and secrets are injected into the
-        agent{"'"}s environment only when you explicitly name them. That lets you safely run agents
-        with minimal permissions or lock them down for unattended YOLO-mode execution.
+        Omnibox is Omnigent{"'"}s secure OS sandbox for any agent. It restricts filesystem and
+        network access at the OS level, and it hides credentials from the agent and brokers
+        access to them. Run agents with minimal permissions, or lock them down for unattended
+        YOLO-mode execution.
       </p>
 
       <p>

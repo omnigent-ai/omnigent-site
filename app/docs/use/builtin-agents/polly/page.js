@@ -27,8 +27,8 @@ export default function Page() {
           <tr><th>Sub-agent</th><th>Harness</th><th>Role</th></tr>
         </thead>
         <tbody>
-          <tr><td><code>claude_code</code></td><td><code>claude</code></td><td>Claude Code</td></tr>
-          <tr><td><code>codex</code></td><td><code>codex</code></td><td>Codex</td></tr>
+          <tr><td><code>claude_code</code></td><td><code>claude-native</code></td><td>Claude Code</td></tr>
+          <tr><td><code>codex</code></td><td><code>codex-native</code></td><td>Codex</td></tr>
           <tr><td><code>pi</code></td><td><code>pi</code></td><td>Pi (headless, any gateway model)</td></tr>
         </tbody>
       </table>

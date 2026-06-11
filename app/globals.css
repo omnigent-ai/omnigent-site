@@ -9,6 +9,7 @@
   --code-bg: #1a1620;
   --code-fg: #f4eef2;
   --max: 56rem;
+  --nav-h: 70px; /* matches the rendered height of .nav */
   --radius: 12px;
   --font-sans: system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
@@ -153,8 +154,20 @@ hr {
 
 /* ---- hero ---- */
 .hero {
-  padding: 3.5rem 0 0.5rem;
+  /* fill the first viewport, accounting for the sticky nav */
+  min-height: calc(100svh - var(--nav-h));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem 1.5rem;
   text-align: center;
+}
+.hero .tag {
+  align-self: center;
+}
+.hero .term {
+  /* auto margins disable flex stretch; restore full width up to the max */
+  width: 100%;
 }
 .hero h1 {
   font-size: 3.1rem;

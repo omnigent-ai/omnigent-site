@@ -14,11 +14,10 @@ export default function Home() {
         {/* Hero */}
         <section className="hero wrap">
           <span className="tag">Open source · Alpha</span>
-          <h1>A meta-harness for AI agents</h1>
+          <h1>The framework above your agent harnesses</h1>
           <p className="lede">
-            Run Claude Code, Codex, Pi, or a custom agent from one local server.
-            Reach any session from your terminal, browser, or phone, and share
-            it live.
+            Runs them together, governed and shareable. Use with Claude Code,
+            Codex, or Pi.
           </p>
           <ul className="hero-points">
             <li>

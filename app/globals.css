@@ -1,6 +1,7 @@
 :root {
   --bg: #ffffff;
   --bg-soft: #faf7f9;
+  --bg-grey-pink: #f6f3f7;
   --fg: #15131a;
   --fg-soft: #5c5765;
   --border: #ece8ee;
@@ -66,7 +67,7 @@ p { margin: 0 0 1rem; }
 hr {
   border: none;
   border-top: 1px solid var(--border);
-  margin: 2rem 0;
+  margin: 4rem 0;
 }
 
 /* ---- layout ---- */
@@ -74,6 +75,11 @@ hr {
   max-width: var(--max);
   margin: 0 auto;
   padding: 0 1.5rem;
+}
+.wrap-wide {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 /* ---- top nav ---- */
@@ -167,7 +173,7 @@ hr {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 2rem 1.5rem;
+  padding: 2rem 1.5rem 0;
   text-align: center;
 }
 .hero .tag {
@@ -197,7 +203,7 @@ hr {
 .hero-desktop {
   font-size: 0.9rem;
   color: var(--fg-soft);
-  margin: -1rem 0 2rem;
+  margin: -1rem 0 0;
 }
 .hero-desktop a {
   display: inline-flex;
@@ -210,6 +216,17 @@ hr {
 .hero-desktop a svg {
   display: block;
   flex-shrink: 0;
+}
+.hero-demo {
+  margin-top: -5rem;
+  padding: 0 0 2.5rem;
+}
+.hero-demo-video {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-soft);
 }
 .features {
   padding-left: 1.2rem;
@@ -244,7 +261,7 @@ code {
 }
 pre {
   position: relative;
-  background: #f6f3f7;
+  background: var(--bg-grey-pink);
   color: var(--fg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -441,18 +458,39 @@ figcaption {
 .pillars {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  align-items: start;
-  gap: 1.25rem;
-  margin: 1.25rem 0;
+  gap: 0.75rem;
+  margin: 2rem 0;
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 .pillar {
-  padding: 1.25rem 1.35rem;
-  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+  border: none;
   border-radius: var(--radius);
-  background: var(--bg-soft);
+  background: var(--bg-grey-pink);
+  transition: background 0.15s;
 }
-.pillar figure { margin: 1rem 0 0; }
-.pillar figure img { max-height: 4.5rem; width: auto; }
+.pillar:hover {
+  background: var(--accent-soft);
+}
+.pillar figure {
+  margin: 0 0 1rem;
+  text-align: left;
+}
+.pillar figure img {
+  display: block;
+  width: 6rem;
+  height: 6rem;
+  object-fit: contain;
+  object-position: left center;
+}
+.pillar-icon-sm img {
+  width: 4rem;
+  height: 4rem;
+}
 .pillar h3 {
   margin: 0 0 0.4rem;
   font-size: 1.25rem;
@@ -462,11 +500,14 @@ figcaption {
   font-variant-numeric: tabular-nums;
   margin-right: 0.5rem;
 }
-.pillar p { color: var(--fg-soft); margin: 0; }
+.pillar p { color: var(--fg-soft); margin: 0; flex: 1; }
 
 /* ---- section helpers ---- */
-.section { padding: 0.75rem 0; }
+.section { padding: 2.5rem 0; }
+.section-no-top { padding-top: 0; }
 .section h2 { text-align: center; }
+.section-pillars { padding-top: 5rem; }
+.section-pillars .pillars { margin-top: 4rem; }
 .center { text-align: center; }
 .muted { color: var(--fg-soft); }
 .lede-block {
@@ -498,6 +539,16 @@ figcaption {
   margin: 0 auto 2rem;
   color: var(--fg-soft);
   font-size: 1.05rem;
+}
+.section-graphic {
+  margin: 0;
+}
+.section-graphic img {
+  width: 100%;
+}
+.section-code {
+  width: 100%;
+  max-width: none;
 }
 
 /* ---- footer ---- */

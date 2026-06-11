@@ -161,7 +161,7 @@ parts.append(img(90, 392, 44, 44, data_uri(f"{AG}/llama.png")))
 parts.append(img(156, 392, 92, 26, data_uri(f"{AG}/claude-sdk.png")))
 
 # ---------- Runner box (Sandboxing + Reliability, per Matei's slide) ----------
-rx, ry, rw, rh = 316, 132, 216, 214
+rx, ry, rw, rh = 316, 128, 216, 220
 parts.append(rrect(rx, ry, rw, rh, 16, "#ffffff", ACCENT, 2.5))
 parts.append(octo(rx + 16, ry + 14, 30))
 parts.append(text(rx + 54, ry + 36, 21, 700, FG).format("Runner"))
@@ -170,14 +170,14 @@ inner_x = rx + 14
 inner_w = rw - 28
 cxin = inner_x + inner_w / 2
 
-# Sandboxing box: the cloud sandbox providers + a "more coming" hint
-sb_y, sb_h = ry + 56, 94
+# Sandboxing box: the cloud sandbox providers on one line, "more coming" below
+sb_y, sb_h = ry + 56, 106
 parts.append(rrect(inner_x, sb_y, inner_w, sb_h, 12, GREY_PINK))
 parts.append(text(cxin, sb_y + 22, 14.5, 600, FG, "middle").format("Sandboxing"))
-logo_cy = sb_y + 60
-parts.append(img(cxin - 56, logo_cy, 28, 28, data_uri("public/logos/runners/modal.png")))
-parts.append(img(cxin + 12, logo_cy, 80, 26, data_uri("public/logos/runners/daytona.png")))
-parts.append(text(cxin + 76, logo_cy + 6, 17, 700, FG_SOFT, "middle").format("(…)"))
+logo_cy = sb_y + 54
+parts.append(img(cxin - 49, logo_cy, 32, 32, data_uri("public/logos/runners/modal.png")))
+parts.append(img(cxin + 21, logo_cy, 88, 28, data_uri("public/logos/runners/daytona.png")))
+parts.append(text(cxin, sb_y + 88, 17, 700, FG_SOFT, "middle").format("(…)"))
 
 # Reliability box
 rb_y, rb_h = sb_y + sb_h + 12, 32

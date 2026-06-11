@@ -12,7 +12,8 @@ export default function Page() {
         laptop, continue on your phone.
       </p>
 
-      {/* TODO: Add screenshot of mobile web UI showing a conversation */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/docs/mobile-demo.gif" alt="Omnigent running on a mobile browser" style={{ display: "block", maxWidth: "320px", width: "100%", height: "auto", borderRadius: "8px", margin: "1rem 0" }} />
 
       <h2>The use case</h2>
 

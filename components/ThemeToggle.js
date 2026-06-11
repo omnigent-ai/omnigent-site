@@ -22,7 +22,7 @@ export default function ThemeToggle() {
   // Render a stable default on the server and first client paint to avoid a
   // hydration mismatch; the inline script in <head> has already applied the
   // real theme to <html>, so there is no flash of the page itself.
-  const [mode, setMode] = useState("auto");
+  const [mode, setMode] = useState("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function ThemeToggle() {
     } catch (e) {
       /* localStorage unavailable (e.g. private mode) */
     }
-    setMode(stored === "light" || stored === "dark" || stored === "auto" ? stored : "auto");
+    setMode(stored === "light" || stored === "dark" || stored === "auto" ? stored : "light");
     setMounted(true);
   }, []);
 

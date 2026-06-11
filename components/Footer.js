@@ -5,7 +5,7 @@ import { GITHUB_URL, DISCORD_URL, DATABRICKS_URL, NEON_URL } from "./links";
 export default function Footer() {
   return (
     <footer className="footer">
-      <div className="wrap footer-inner">
+      <div className="wrap-wide footer-inner">
         <span>
           Built by the{" "}
           <a href={DATABRICKS_URL} target="_blank" rel="noreferrer">Databricks AI team</a>{" "}

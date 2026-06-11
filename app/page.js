@@ -142,7 +142,7 @@ export default function Home() {
           <div className="wrap-wide">
             <hr />
 
-            <h2>How it fits together</h2>
+            <h2>Architecture</h2>
             <p className="arch-outro">
               A runner wraps any agent in a sandboxed, uniform session. A server
               adds policies and a shared history, and exposes every session over
@@ -160,22 +160,21 @@ export default function Home() {
 
             <hr />
 
-            <h2>Try it</h2>
-            <p className="muted">
-              Install, then start an agent in your terminal. A local web UI opens
-              too, for the browser or your phone.
-            </p>
-            <pre className="section-code">
-              <code>{`pip install omnigent
-omni                     # Polly, the default multi-agent orchestrator
-omni claude              # or launch a specific harness
-omni run my-agent/       # or run your own agent`}</code>
-            </pre>
-            <p>
-              Read the <Link href="/quickstart/install">installation guide</Link>,
-              then <Link href="/docs/use/custom-agents">write your own agent</Link> in
-              a few lines of YAML.
-            </p>
+            <div className="try-it">
+              <h2>Try it</h2>
+              <p className="muted">
+                Install, then start an agent in your terminal. A local web UI opens
+                too, for the browser or your phone.
+              </p>
+              <pre className="section-code try-code">
+                <code>{`pip install omnigent
+omni                     # Polly, the default multi-agent orchestrator`}</code>
+              </pre>
+              <p>
+                Read the <Link href="/docs">Getting Started</Link> guide for more
+                information.
+              </p>
+            </div>
           </div>
         </section>
 

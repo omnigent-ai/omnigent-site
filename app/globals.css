@@ -583,6 +583,15 @@ figcaption {
   width: 100%;
   max-width: none;
 }
+.try-it {
+  text-align: center;
+}
+.try-it .try-code {
+  width: 55%;
+  max-width: 55%;
+  margin: 1.25rem auto;
+  text-align: left;
+}
 
 /* ---- footer ---- */
 .footer {
@@ -754,4 +763,5 @@ figcaption {
   .docs-side { position: static; }
   .docs-side ul { display: flex; flex-wrap: wrap; gap: 0.3rem; }
   .nav-link.hide-sm { display: none; }
+  .try-it .try-code { width: 100%; max-width: 100%; }
 }

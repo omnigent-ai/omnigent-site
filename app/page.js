@@ -33,24 +33,10 @@ export default function Home() {
           {/* Architecture */}
           <section className="section">
             <h2>How it fits together</h2>
-            <div className="arch-parts">
-              <div className="arch-part">
-                <p>
-                  <strong>Runner</strong> wraps any CLI agent or custom agent in a
-                  uniform session interface.
-                </p>
-              </div>
-              <div className="arch-part">
-                <p>
-                  <strong>Server</strong> adds sandboxing, reliability, a history
-                  catalog, policies, MCPs, artifacts, and skills.
-                </p>
-              </div>
-            </div>
             <p className="arch-outro">
-              Because everything sits behind one interface, every session is
-              reachable from a terminal, the web, a native app, your phone, and a
-              REST API — for a coding agent and a custom agent alike.
+              A runner wraps any agent in a sandboxed, uniform session. A server
+              adds policies and a shared history, and exposes every session over
+              the terminal, the web, and a REST API.
             </p>
             <figure className="framed">
               {/* eslint-disable-next-line @next/next/no-img-element */}

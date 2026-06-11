@@ -46,7 +46,6 @@ export default function Home() {
                 width={930}
                 height={430}
               />
-              <figcaption>One runner and one server behind every agent.</figcaption>
             </figure>
           </section>
 

@@ -46,7 +46,6 @@ export default function Home() {
                 width={930}
                 height={430}
               />
-              <figcaption>One runner and one server behind every agent.</figcaption>
             </figure>
           </section>
 
@@ -97,10 +96,6 @@ export default function Home() {
                     height={230}
                     style={{ maxWidth: "min(100%, 26rem)" }}
                   />
-                  <figcaption>
-                    Every agent runs in an isolated sandbox, supervised but free
-                    to move.
-                  </figcaption>
                 </figure>
               </div>
 
@@ -121,9 +116,6 @@ export default function Home() {
                     height={102}
                     style={{ maxWidth: "min(100%, 18rem)" }}
                   />
-                  <figcaption>
-                    Share a session, co-drive, and celebrate when it clicks.
-                  </figcaption>
                 </figure>
               </div>
             </div>

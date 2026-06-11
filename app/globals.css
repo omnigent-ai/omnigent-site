@@ -637,8 +637,8 @@ figcaption {
   text-align: center;
 }
 .try-it .try-code {
-  width: 55%;
-  max-width: 55%;
+  width: fit-content;
+  max-width: 100%;
   margin: 1.25rem auto;
   text-align: left;
 }

@@ -47,6 +47,13 @@ export default function Page() {
         mid-investigation.
       </p>
 
+      <p>
+        In the <Link href="/docs/interact/web-ui">web UI</Link>, hit <strong>Share</strong> and send
+        the link to your teammate.
+      </p>
+
+      <p>From the terminal:</p>
+
       <pre><code>{"omni attach <session_id>"}</code></pre>
 
       <p>
@@ -60,6 +67,13 @@ export default function Page() {
         Clone a conversation and continue independently from the fork point. The original session is
         unaffected.
       </p>
+
+      <p>
+        In the <Link href="/docs/interact/web-ui">web UI</Link>, click{" "}
+        <strong>Clone Session</strong>.
+      </p>
+
+      <p>From the terminal:</p>
 
       <pre><code>{"omni run --fork <session_id>"}</code></pre>
 

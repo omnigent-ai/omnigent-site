@@ -24,9 +24,10 @@ export default function Home() {
             />
           </h1>
           <p className="lede">
-            Build agents and use existing harnesses like Claude Code, Codex, and
-            Pi behind one interface, then add what it takes to run them for real:
-            a session API, policies, sandboxing, and a UI on every device.
+            A common layer over Claude Code, Codex, Pi, and the agents you
+            write yourself: swap or combine harnesses without rewriting, keep
+            them in check with policies and sandboxing, and pick the same live
+            session back up anywhere, on your phone or with a teammate.
           </p>
           <InstallTabs />
           <div className="hero-cta">

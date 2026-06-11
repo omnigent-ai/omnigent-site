@@ -77,7 +77,7 @@ export default function Page() {
           <code>bubblewrap</code>/Seatbelt backends.
         </li>
         <li>
-          <Link href="/docs/deploy/cloud-sandbox">Cloud sandbox</Link>: controls <em>where</em>{" "}
+          <Link href="/docs/deploy/cloud-runner">Cloud runner</Link>: controls <em>where</em>{" "}
           the runner executes. Omnibox controls <em>what it can access</em>. They compose.
         </li>
         <li>

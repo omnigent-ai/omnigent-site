@@ -152,7 +152,7 @@ export default function Home() {
             </p>
             <pre className="section-code">
               <code>{`pip install omnigent
-omni                     # pick a model and start chatting
+omni                     # Polly, the default multi-agent orchestrator
 omni claude              # or launch a specific harness
 omni run my-agent/       # or run your own agent`}</code>
             </pre>

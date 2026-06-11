@@ -79,6 +79,19 @@ omni examples/debby/`}</code></pre>
         Both models respond independently. Read both perspectives. Then type:
       </p>
 
+      <figure>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/docs/debby-results-scroll-short.gif"
+          alt="Debby sends one prompt to Claude and GPT, then scrolls through both independent answers"
+          style={{ width: "100%", borderRadius: "8px" }}
+        />
+        <figcaption>
+          Debby fans one prompt out to Claude and GPT, waits for both partners,
+          and then brings their independent takes back into the same session.
+        </figcaption>
+      </figure>
+
       <pre><code>{"/debate"}</code></pre>
 
       <p>
@@ -86,6 +99,19 @@ omni examples/debby/`}</code></pre>
         refines its own. The debate converges toward a stronger synthesis than
         either model would produce alone.
       </p>
+
+      <figure>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/docs/debby-debate-synthesis-tight.png"
+          alt="Debby summarizes how Claude and GPT challenged each other during debate"
+          style={{ width: "100%", borderRadius: "8px" }}
+        />
+        <figcaption>
+          After <code>/debate</code>, Debby summarizes how the models challenged
+          each other and where the final synthesis changed.
+        </figcaption>
+      </figure>
 
       <p>
         See <Link href="/docs/use/builtin-agents/polly">Polly</Link> and{" "}

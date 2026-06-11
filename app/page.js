@@ -16,9 +16,9 @@ export default function Home() {
           <span className="tag">Open source · Alpha</span>
           <h1>A meta-harness for AI agents</h1>
           <p className="lede">
-            Run Claude Code, Codex, Pi, or a custom agent from one local server.
-            Reach any session from your terminal, browser, or phone, and share
-            it live.
+            One interface over all your agent harnesses (Claude Code, Codex, Pi)
+            and SDKs for custom agents. Sandboxing, stateful policies, shared
+            sessions, and a UI on the terminal, web, and phone.
           </p>
           <Command>pip install omnigents</Command>
           <div className="hero-cta">

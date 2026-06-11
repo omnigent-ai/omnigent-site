@@ -617,7 +617,7 @@ async function fetchWithTimeout(url, method, timeout) {
       redirect: "follow",
       signal: ctrl.signal,
       headers: {
-        "User-Agent": "omnigent-link-checker/1.0 (+https://github.com/Omnigent/Omnigent)",
+        "User-Agent": "omnigent-link-checker/1.0 (+https://github.com/omnigent-ai/omnigent)",
       },
     });
   } finally {

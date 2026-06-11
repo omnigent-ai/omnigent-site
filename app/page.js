@@ -14,14 +14,11 @@ export default function Home() {
         {/* Hero */}
         <section className="hero wrap">
           <span className="tag">Open source · Alpha</span>
-          <h1>A meta-harness for AI agents</h1>
-          <p className="lede">
-            Omnigent wraps the agents you already use — Claude Code, Codex, the
-            Claude and OpenAI SDKs — behind one interface, then adds what it
-            takes to run them for real: a session API, policies, sandboxing, and
-            a UI on every device.
-          </p>
-          <Command>pip install omnigent</Command>
+          <h1>
+            The framework above your agent harnesses that runs them together,
+            governed and shareable. Use with Claude Code, Codex, or Pi.
+          </h1>
+          <Command>pip install omnigents</Command>
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
               <GitHubIcon /> Star on GitHub
@@ -33,15 +30,6 @@ export default function Home() {
         </section>
 
         <div className="wrap">
-          <p className="center muted" style={{ maxWidth: "40rem", margin: "0 auto" }}>
-            Built at Databricks for our own engineers, researchers, and product
-            teams, and released under Apache 2.0. It is a layer above any single
-            harness — so the agent you describe today keeps working when a better
-            model or harness ships next month.
-          </p>
-
-          <hr />
-
           {/* Architecture */}
           <section className="section">
             <h2>How it fits together</h2>
@@ -68,13 +56,11 @@ export default function Home() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/architecture.png"
-                alt="The Omnigent architecture: CLI agents and custom agents feed into a runner that handles sandboxing and reliability, then a server that adds history, catalog, policies, MCPs, artifacts, and skills, exposed through a terminal UI, web UI, native app, mobile UI, and REST API."
+                alt="Omnigent architecture: CLI agents and custom agents run through a runner, then a server that adds sandboxing, policies, and history, reachable from a terminal, the web, and a REST API."
                 width={930}
                 height={430}
               />
-              <figcaption>
-                One runner, one server, five front-ends — no extra work per agent.
-              </figcaption>
+              <figcaption>One runner and one server behind every agent.</figcaption>
             </figure>
           </section>
 
@@ -172,21 +158,66 @@ export default function Home() {
           <section className="section">
             <h2>Try it</h2>
             <p className="muted">
-              Install Omnigent, then start an agent in your terminal. It also
-              launches a local web UI you can open in the browser or on your
-              phone.
+              Install, then start an agent in your terminal. A local web UI opens
+              too, for the browser or your phone.
             </p>
             <pre>
-              <code>{`pip install omnigent
-omnigent                       # pick a model and start chatting
-omnigent claude                # or launch a specific harness
-omnigent run path/to/agent.yaml  # or run your own agent`}</code>
+              <code>{`pip install omnigents
+omnigents                 # pick a model and start chatting
+omnigents claude          # or launch a specific harness
+omnigents run my-agent/   # or run your own agent`}</code>
             </pre>
             <p>
-              Read the <Link href="/docs/installing">installation guide</Link> to
-              get set up, then{" "}
-              <Link href="/docs/custom-agent">write your own agent</Link> in a few
-              lines of YAML.
+              Read the <Link href="/docs/installing">installation guide</Link>,
+              then <Link href="/docs/custom-agent">write your own agent</Link> in
+              a few lines of YAML.
+            </p>
+          </section>
+
+          <hr />
+
+          {/* FAQ */}
+          <section className="section">
+            <h2>FAQ</h2>
+
+            <h3>What is Omnigent?</h3>
+            <p className="muted">
+              A framework that runs AI agents behind one interface. It wraps
+              Claude Code, Codex, and Pi, plus custom agents you write in YAML,
+              and gives each one a server, a UI, sandboxing, and policies.
+            </p>
+
+            <h3>Which models can I use?</h3>
+            <p className="muted">
+              Bring your own: an API key, a Claude or ChatGPT plan, an OpenAI- or
+              Anthropic-compatible gateway (OpenRouter, LiteLLM, Ollama, Azure,
+              vLLM), or a Databricks workspace.
+            </p>
+
+            <h3>How do I run my own agent?</h3>
+            <p className="muted">
+              Write a short YAML file with a prompt and a harness, then run{" "}
+              <code>omnigents run</code> on it. See the{" "}
+              <Link href="/docs/custom-agent">custom agent guide</Link>.
+            </p>
+
+            <h3>Is it safe to let an agent run on my machine?</h3>
+            <p className="muted">
+              Every command runs in an OS-level sandbox (bwrap on Linux, seatbelt
+              on macOS), and policies can pause, block, or cap what an agent does.
+            </p>
+
+            <h3>Do I need Databricks?</h3>
+            <p className="muted">
+              No. Omnigent is open source and runs on your own machine and
+              models. A Databricks workspace is just one supported model
+              provider.
+            </p>
+
+            <h3>Is it ready for production?</h3>
+            <p className="muted">
+              No. It is alpha. Expect rough edges, and tell us where it breaks on
+              Discord.
             </p>
           </section>
 
@@ -196,9 +227,8 @@ omnigent run path/to/agent.yaml  # or run your own agent`}</code>
           <section className="section center">
             <h2>It&rsquo;s early, on purpose</h2>
             <p className="muted" style={{ maxWidth: "38rem", margin: "0 auto 1.8rem" }}>
-              Omnigent is alpha. We&rsquo;re developing it in the open and would
-              love for you to try it, file issues, and tell us where it breaks.
-              The Discord is the fastest way to reach the team.
+              Omnigent is alpha and built in the open. Try it and tell us where
+              it breaks. The Discord is the fastest way to reach us.
             </p>
             <div className="hero-cta">
               <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">

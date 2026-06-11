@@ -2,13 +2,20 @@
   "name": "omnigent-site",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "bun@1.3.14",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:links": "node scripts/check-links.mjs",
+    "strip-lock-proxy": "bun run scripts/strip-bun-lock-proxy.ts",
+    "strip-lock-proxy:check": "bun run scripts/strip-bun-lock-proxy.ts --check",
+    "setup-hooks": "git config core.hooksPath .githooks",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "next": "^14.2.35",
     "react": "18.3.1",
     "react-dom": "18.3.1"

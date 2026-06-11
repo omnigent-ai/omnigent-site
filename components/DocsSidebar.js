@@ -8,6 +8,7 @@ const PAGES = [
   { href: "/quickstart/coding-agent", label: "Tutorial: Coding Agent" },
   { href: "/quickstart/multi-ai", label: "Tutorial: Multi-AI Agents" },
   { href: "/quickstart/collaborate", label: "Tutorial: Collaborate from Anywhere" },
+  { href: "/quickstart/policies", label: "Tutorial: Contextual Policies" },
 ];
 
 export default function DocsSidebar() {

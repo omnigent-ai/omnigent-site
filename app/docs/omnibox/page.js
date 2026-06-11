@@ -23,9 +23,9 @@ export default function Page() {
       <p>Omnibox combines three protections:</p>
 
       <ul>
-        <li><strong>Filesystem isolation</strong></li>
-        <li><strong>Network isolation</strong></li>
-        <li><strong>Credential injection</strong></li>
+        <li>Filesystem isolation</li>
+        <li>Network isolation</li>
+        <li>Credential injection</li>
       </ul>
 
       <h2>Filesystem isolation</h2>

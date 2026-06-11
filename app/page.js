@@ -168,7 +168,7 @@ export default function Home() {
               </p>
               <pre className="section-code try-code">
                 <code>{`pip install omnigent
-omni polly               # Polly, the default multi-agent orchestrator`}</code>
+omni polly     # Polly, the default multi-agent orchestrator`}</code>
               </pre>
               <p>
                 Read the <Link href="/docs">Getting Started</Link> guide for more

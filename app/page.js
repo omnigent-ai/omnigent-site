@@ -103,6 +103,20 @@ export default function Home() {
                 </figure>
               </div>
             </div>
+            <ul className="features">
+              <li>
+                <strong>Polly &amp; Debby:</strong> built-in multi-AI agents (a
+                coding orchestrator and a model debate). Build your own in YAML.
+              </li>
+              <li>
+                <strong>Contextual Policies:</strong> stateful spend caps, model
+                routing, and risk-based escalation.
+              </li>
+              <li>
+                <strong>Flexible OS sandbox:</strong> restrict filesystem,
+                network, and env to run agents in YOLO mode safely.
+              </li>
+            </ul>
           </section>
 
           <hr />
@@ -137,7 +151,7 @@ export default function Home() {
             </p>
             <pre>
               <code>{`pip install omnigent
-omni                     # pick a model and start chatting
+omni                     # Polly, the default multi-agent orchestrator
 omni claude              # or launch a specific harness
 omni run my-agent/       # or run your own agent`}</code>
             </pre>

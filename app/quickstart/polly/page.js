@@ -24,8 +24,21 @@ export default function Page() {
 
       <p>
         This starts Polly and opens a web UI at{" "}
-        <code>http://localhost:6767</code>.
+        <code>http://localhost:6767</code> (<code>omni</code> will start Polly
+        too).
       </p>
+
+      <figure>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/docs/polly-default-launch.gif"
+          alt="Running omni from the terminal launches Polly"
+          style={{ width: "100%", borderRadius: "8px" }}
+        />
+        <figcaption>
+          Start Polly with <code>omni polly</code>, or just <code>omni</code>.
+        </figcaption>
+      </figure>
 
       <h2>2. Give it a task</h2>
 
@@ -54,6 +67,19 @@ export default function Page() {
         <li>Switch to the <strong>Terminals</strong> tab to see all running shells side by side.</li>
         <li>Intervene at any point: send a message to a sub-agent, or switch back to Polly to see the orchestrator{"'"}s view.</li>
       </ul>
+
+      <figure>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/docs/polly-agent-switch.gif"
+          alt="Switching from Polly to sub-agents in the Agents panel"
+          style={{ width: "100%", borderRadius: "8px" }}
+        />
+        <figcaption>
+          The Agents panel shows Polly and its sub-agents, so you can inspect or
+          steer each delegated worker directly.
+        </figcaption>
+      </figure>
 
       <p>
         This is where multi-AI orchestration becomes tangible: you can watch

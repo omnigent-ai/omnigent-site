@@ -33,7 +33,6 @@ const SECTIONS = [
           { href: "/docs/build/models", label: "Models & Credentials" },
           { href: "/docs/build/prompts", label: "Prompts & Skills" },
           { href: "/docs/build/tools", label: "MCP & Tools" },
-          { href: "/docs/build/policies", label: "Policies" },
         ],
       },
     ],

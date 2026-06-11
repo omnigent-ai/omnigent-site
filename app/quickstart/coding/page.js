@@ -55,7 +55,7 @@ omnigent host           # (separate terminal) register this machine as a host`}<
       <pre><code>omnigent run examples/nessie/</code></pre>
 
       <div className="doc-next">
-        Next: <Link href="/docs/custom-agent">Writing a custom agent →</Link>
+        Next: <Link href="/quickstart/custom-agent">Writing a custom agent →</Link>
       </div>
     </>
   );

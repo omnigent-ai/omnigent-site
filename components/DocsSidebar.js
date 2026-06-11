@@ -4,19 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const PAGES = [
-  { href: "/docs/installing", label: "Installing" },
-  { href: "/docs/coding", label: "Running a coding agent" },
-  { href: "/docs/custom-agent", label: "Writing a custom agent" },
-  { href: "/docs/policies", label: "Policies" },
-  { href: "/docs/sandboxes", label: "Sandboxes" },
-  { href: "/docs/deploying", label: "Deploying the server" },
+  { href: "/quickstart/installing", label: "Installing" },
+  { href: "/quickstart/coding", label: "Running a coding agent" },
+  { href: "/quickstart/custom-agent", label: "Writing a custom agent" },
+  { href: "/quickstart/policies", label: "Policies" },
+  { href: "/quickstart/sandboxes", label: "Sandboxes" },
+  { href: "/quickstart/deploying", label: "Deploying the server" },
 ];
 
 export default function DocsSidebar() {
   const path = usePathname();
   return (
     <aside className="docs-side">
-      <h4>Documentation</h4>
+      <h4>Quickstart</h4>
       <ul>
         {PAGES.map((p) => (
           <li key={p.href}>

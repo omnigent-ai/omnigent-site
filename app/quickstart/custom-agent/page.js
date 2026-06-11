@@ -63,7 +63,7 @@ tools:
       </div>
 
       <div className="doc-next">
-        Next: <Link href="/docs/policies">Policies →</Link>
+        Next: <Link href="/quickstart/policies">Policies →</Link>
       </div>
     </>
   );

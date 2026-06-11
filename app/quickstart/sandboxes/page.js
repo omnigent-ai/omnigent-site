@@ -27,7 +27,7 @@ export default function Page() {
       <p>
         The runner places each agent in an isolated environment with controlled
         access to the filesystem, the network, and the host. Combined with{" "}
-        <Link href="/docs/policies">policies</Link>, this is what lets you grant
+        <Link href="/quickstart/policies">policies</Link>, this is what lets you grant
         autonomy on purpose: the sandbox sets the hard boundary, and policies
         decide, action by action, what happens inside it.
       </p>
@@ -45,11 +45,11 @@ export default function Page() {
         Cloud sandboxes — Daytona, Modal, exe.dev, and more — are coming, so a
         session can run in the cloud as easily as on your laptop. Omnigent is
         alpha and this area is moving quickly; the{" "}
-        <Link href="/docs/installing">repo</Link> has the current state.
+        <Link href="/quickstart/installing">repo</Link> has the current state.
       </p>
 
       <div className="doc-next">
-        Next: <Link href="/docs/deploying">Deploying the server →</Link>
+        Next: <Link href="/quickstart/deploying">Deploying the server →</Link>
       </div>
     </>
   );

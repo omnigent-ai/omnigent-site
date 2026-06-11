@@ -148,13 +148,13 @@ export default function Home() {
               adds policies and a shared history, and exposes every session over
               the terminal, the web, and a REST API.
             </p>
-            <figure className="framed section-graphic">
+            <figure className="section-graphic">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/architecture.png"
-                alt="Omnigent architecture: CLI agents and custom agents run through a runner that sandboxes them, then a server that adds policies and history, reachable from a terminal, the web, and a REST API."
-                width={930}
-                height={430}
+                src="/images/architecture.svg"
+                alt="Omnigent architecture: CLI agents and custom agents run through a runner (on your machine, Modal, or Daytona), then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API."
+                width={1200}
+                height={540}
               />
             </figure>
 

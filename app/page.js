@@ -16,15 +16,14 @@ export default function Home() {
           <span className="tag">Open source · Alpha</span>
           <h1>A meta-harness for AI agents</h1>
           <p className="lede">
-            Omnigent wraps the agents you already use — Claude Code, Codex, the
-            Claude and OpenAI SDKs — behind one interface, then adds what it
-            takes to run them for real: a session API, policies, sandboxing, and
-            a UI on every device.
+            Build agents and use existing harnesses like Claude Code, Codex, and
+            Pi behind one interface, then add what it takes to run them for real:
+            a session API, policies, sandboxing, and a UI on every device.
           </p>
           <InstallTabs />
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-              <GitHubIcon /> Star on GitHub
+              <GitHubIcon /> View on GitHub
             </a>
             <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
               <DiscordIcon /> Join the Discord
@@ -39,27 +38,6 @@ export default function Home() {
         </section>
 
         <div className="wrap">
-          {/* Architecture */}
-          <section className="section">
-            <h2>How it fits together</h2>
-            <p className="arch-outro">
-              A runner wraps any agent in a sandboxed, uniform session. A server
-              adds policies and a shared history, and exposes every session over
-              the terminal, the web, and a REST API.
-            </p>
-            <figure className="framed">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/architecture.png"
-                alt="Omnigent architecture: CLI agents and custom agents run through a runner that sandboxes them, then a server that adds policies and history, reachable from a terminal, the web, and a REST API."
-                width={930}
-                height={430}
-              />
-            </figure>
-          </section>
-
-          <hr />
-
           {/* Three pillars */}
           <section className="section">
             <h2>What Omnigent gives you</h2>
@@ -81,7 +59,6 @@ export default function Home() {
                     alt="Omnigent mascots stacked in layers to illustrate composability."
                     width={80}
                     height={81}
-                    style={{ width: "min(100%, 14rem)", height: "auto" }}
                   />
                 </figure>
               </div>
@@ -103,7 +80,6 @@ export default function Home() {
                     alt="Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent."
                     width={420}
                     height={230}
-                    style={{ maxWidth: "min(100%, 26rem)" }}
                   />
                 </figure>
               </div>
@@ -123,11 +99,31 @@ export default function Home() {
                     alt="Two Omnigent mascots high-fiving to celebrate collaboration."
                     width={231}
                     height={102}
-                    style={{ maxWidth: "min(100%, 18rem)" }}
                   />
                 </figure>
               </div>
             </div>
+          </section>
+
+          <hr />
+
+          {/* Architecture */}
+          <section className="section">
+            <h2>How it fits together</h2>
+            <p className="arch-outro">
+              A runner wraps any agent in a sandboxed, uniform session. A server
+              adds policies and a shared history, and exposes every session over
+              the terminal, the web, and a REST API.
+            </p>
+            <figure className="framed">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/architecture.png"
+                alt="Omnigent architecture: CLI agents and custom agents run through a runner that sandboxes them, then a server that adds policies and history, reachable from a terminal, the web, and a REST API."
+                width={930}
+                height={430}
+              />
+            </figure>
           </section>
 
           <hr />
@@ -141,9 +137,9 @@ export default function Home() {
             </p>
             <pre>
               <code>{`pip install omnigent
-omnigent                 # pick a model and start chatting
-omnigent claude          # or launch a specific harness
-omnigent run my-agent/   # or run your own agent`}</code>
+omni                     # pick a model and start chatting
+omni claude              # or launch a specific harness
+omni run my-agent/       # or run your own agent`}</code>
             </pre>
             <p>
               Read the <Link href="/quickstart/install">installation guide</Link>,
@@ -163,7 +159,7 @@ omnigent run my-agent/   # or run your own agent`}</code>
             </p>
             <div className="hero-cta">
               <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-                <GitHubIcon /> Star on GitHub
+                <GitHubIcon /> View on GitHub
               </a>
               <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
                 <DiscordIcon /> Join the Discord

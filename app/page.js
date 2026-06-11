@@ -37,10 +37,10 @@ export default function Home() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="hero-demo-img"
-              src="/images/hero-demo.png"
+              src="/images/hero-demo.webp"
               alt="Omnigent web UI running two sub-agents in parallel on a shared session"
-              width={1664}
-              height={949}
+              width={2484}
+              height={1416}
             />
           </div>
         </section>

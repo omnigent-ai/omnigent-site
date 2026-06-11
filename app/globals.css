@@ -251,7 +251,6 @@ hr {
 .hero-demo-img {
   display: block;
   width: 100%;
-  max-width: 52rem;
   height: auto;
   margin: 0 auto;
   border: 1px solid var(--border);

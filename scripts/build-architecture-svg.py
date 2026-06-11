@@ -175,9 +175,9 @@ sb_y, sb_h = ry + 56, 106
 parts.append(rrect(inner_x, sb_y, inner_w, sb_h, 12, GREY_PINK))
 parts.append(text(cxin, sb_y + 22, 14.5, 600, FG, "middle").format("Sandboxing"))
 logo_cy = sb_y + 54
-parts.append(img(cxin - 49, logo_cy, 32, 32, data_uri("public/logos/runners/modal.png")))
-parts.append(img(cxin + 21, logo_cy, 88, 28, data_uri("public/logos/runners/daytona.png")))
-parts.append(text(cxin, sb_y + 88, 17, 700, FG_SOFT, "middle").format("(…)"))
+parts.append(img(cxin - 50, logo_cy, 34, 30, data_uri("public/logos/runners/modal.svg")))
+parts.append(img(cxin + 22, logo_cy, 86, 28, data_uri("public/logos/runners/daytona.png")))
+parts.append(text(cxin, sb_y + 88, 17, 700, FG_SOFT, "middle").format("…"))
 
 # Reliability box
 rb_y, rb_h = sb_y + sb_h + 12, 32

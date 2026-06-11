@@ -24,7 +24,7 @@ export default function Home() {
           <Command>pip install omnigent</Command>
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-              <GitHubIcon /> View on GitHub
+              <GitHubIcon /> Star on GitHub
             </a>
             <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
               <DiscordIcon /> Join the Discord
@@ -45,14 +45,24 @@ export default function Home() {
           {/* Architecture */}
           <section className="section">
             <h2>How it fits together</h2>
-            <p className="lede-block">
-              A <strong>runner</strong> wraps any CLI agent or custom agent in a
-              uniform session interface. A <strong>server</strong> adds
-              sandboxing, reliability, a history catalog, policies, MCPs,
-              artifacts, and skills. Because everything sits behind one
-              interface, every session is reachable from a terminal, the web, a
-              native app, your phone, and a REST API — for a coding agent and a
-              custom agent alike.
+            <div className="arch-parts">
+              <div className="arch-part">
+                <p>
+                  <strong>Runner</strong> wraps any CLI agent or custom agent in a
+                  uniform session interface.
+                </p>
+              </div>
+              <div className="arch-part">
+                <p>
+                  <strong>Server</strong> adds sandboxing, reliability, a history
+                  catalog, policies, MCPs, artifacts, and skills.
+                </p>
+              </div>
+            </div>
+            <p className="arch-outro">
+              Because everything sits behind one interface, every session is
+              reachable from a terminal, the web, a native app, your phone, and a
+              REST API — for a coding agent and a custom agent alike.
             </p>
             <figure className="framed">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -87,6 +97,16 @@ export default function Home() {
                   agent writes code or runs a research question past two model
                   vendors and has them argue it out.
                 </p>
+                <figure style={{ margin: "1.6rem 0 0" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/composability-icon.svg"
+                    alt="Omnigent mascots stacked in layers to illustrate composability."
+                    width={80}
+                    height={81}
+                    style={{ width: "min(100%, 14rem)", height: "auto" }}
+                  />
+                </figure>
               </div>
 
               <div className="pillar">
@@ -129,6 +149,19 @@ export default function Home() {
                   live only on one laptop — and you can pick it back up from your
                   phone.
                 </p>
+                <figure style={{ margin: "1.6rem 0 0" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/high-five.svg"
+                    alt="Two Omnigent mascots high-fiving to celebrate collaboration."
+                    width={231}
+                    height={102}
+                    style={{ maxWidth: "min(100%, 18rem)" }}
+                  />
+                  <figcaption>
+                    Share a session, co-drive, and celebrate when it clicks.
+                  </figcaption>
+                </figure>
               </div>
             </div>
           </section>

@@ -111,7 +111,12 @@ export default function DocsSidebarFull() {
   });
 
   return (
-    <aside className="docs-side" style={{ maxHeight: "calc(100vh - 4.5rem)", overflowY: "auto", overflowX: "hidden" }}>
+    <aside className="docs-side" style={{ maxHeight: "calc(100vh - 4.5rem)", overflowY: "auto" }}>
+      <div>
+        <Link href="/docs" className={`nav-overview${path === "/docs" ? " active" : ""}`}>
+          Overview
+        </Link>
+      </div>
       {SECTIONS.map((section, si) => {
         const isOpen = sectionOpen[si];
 
@@ -149,7 +154,7 @@ export default function DocsSidebarFull() {
                           <Link
                             href={sub.href}
                             className={subIsActive ? "active" : ""}
-                            style={{ flex: 1, display: "block", padding: "0.25rem 0.6rem", borderRadius: "7px", fontSize: "0.9rem" }}
+                            style={{ flex: 1, display: "block", padding: "0.25rem 0.6rem 0.25rem 1.2rem", borderRadius: "7px", fontSize: "0.9rem" }}
                           >
                             {sub.title}
                           </Link>
@@ -181,7 +186,7 @@ export default function DocsSidebarFull() {
                         <ul style={{ paddingLeft: "0.6rem", marginBottom: "0.3rem" }}>
                           {sub.pages.map((p) => (
                             <li key={p.href}>
-                              <Link href={p.href} className={path === p.href ? "active" : ""}>
+                              <Link href={p.href} className={path === p.href ? "active" : ""} style={{ paddingLeft: "0.9rem" }}>
                                 {p.label}
                               </Link>
                             </li>

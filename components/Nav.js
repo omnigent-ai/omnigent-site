@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GitHubIcon, DiscordIcon } from "./icons";
 import { GITHUB_URL, DISCORD_URL } from "./links";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Nav() {
   return (
@@ -19,6 +20,7 @@ export default function Nav() {
           <a href={DISCORD_URL} className="nav-icon" target="_blank" rel="noreferrer" aria-label="Discord">
             <DiscordIcon size={20} />
           </a>
+          <ThemeToggle />
         </nav>
       </div>
     </header>

@@ -1,19 +1,74 @@
 :root {
+  color-scheme: light;
+  /* ---- light palette (default) ---- */
   --bg: #ffffff;
   --bg-soft: #faf7f9;
   --bg-grey-pink: #f6f3f7;
   --fg: #15131a;
   --fg-soft: #5c5765;
   --border: #ece8ee;
+  --border-strong: #d9d3dd;
   --accent: #ed1c9c;
   --accent-soft: #fce6f4;
+  --accent-strong: #d3148b; /* darker pink for hovers/active */
+  --accent-text: #ad0c72; /* pink text legible on --accent-soft */
   --code-bg: #1a1620;
   --code-fg: #f4eef2;
+  --code-inline-fg: #ad0c72; /* inline <code> text */
+  --btn-bg: #ffffff;
+  --nav-bg: rgba(255, 255, 255, 0.82);
   --max: 56rem;
   --nav-h: 70px; /* matches the rendered height of .nav */
   --radius: 12px;
   --font-sans: system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+/* ---- dark palette ----
+   Applied for an explicit dark choice, and (further below) for the system
+   preference when no explicit light/dark choice has been made. The pink
+   --accent brand identity is preserved but brightened for contrast on dark. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #15131a;
+  --bg-soft: #1f1b27;
+  --bg-grey-pink: #221d2b;
+  --fg: #f4eef2;
+  --fg-soft: #a59faf;
+  --border: #322c3b;
+  --border-strong: #443c4f;
+  --accent: #ff4fb3;
+  --accent-soft: #3a1f30;
+  --accent-strong: #ff6dc0;
+  --accent-text: #ff8acb;
+  --code-bg: #100c16;
+  --code-fg: #f4eef2;
+  --code-inline-fg: #ff8acb;
+  --btn-bg: #1f1b27;
+  --nav-bg: rgba(21, 19, 26, 0.82);
+}
+
+/* AUTO: follow the OS preference unless an explicit light/dark choice wins. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    color-scheme: dark;
+    --bg: #15131a;
+    --bg-soft: #1f1b27;
+    --bg-grey-pink: #221d2b;
+    --fg: #f4eef2;
+    --fg-soft: #a59faf;
+    --border: #322c3b;
+    --border-strong: #443c4f;
+    --accent: #ff4fb3;
+    --accent-soft: #3a1f30;
+    --accent-strong: #ff6dc0;
+    --accent-text: #ff8acb;
+    --code-bg: #100c16;
+    --code-fg: #f4eef2;
+    --code-inline-fg: #ff8acb;
+    --btn-bg: #1f1b27;
+    --nav-bg: rgba(21, 19, 26, 0.82);
+  }
 }
 
 * {
@@ -87,7 +142,7 @@ hr {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--nav-bg);
   backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--border);
 }
@@ -157,14 +212,14 @@ hr {
   padding: 0.5rem 0.95rem;
   border-radius: 9px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--btn-bg);
   color: var(--fg);
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
 }
 .btn:hover {
   text-decoration: none;
-  border-color: #d9d3dd;
+  border-color: var(--border-strong);
   background: var(--bg-soft);
 }
 .btn-primary {
@@ -173,8 +228,8 @@ hr {
   color: #fff;
 }
 .btn-primary:hover {
-  background: #d3148b;
-  border-color: #d3148b;
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
 }
 .btn svg {
   display: block;
@@ -287,7 +342,7 @@ code {
   font-weight: 400;
   font-size: 0.85em;
   background: var(--bg-soft);
-  color: #ad0c72;
+  color: var(--code-inline-fg);
   padding: 0.15em 0.4em;
   border-radius: 5px;
   border: 1px solid var(--border);
@@ -646,7 +701,7 @@ figcaption {
   font-size: 0.9rem;
 }
 .docs-side a:hover { background: var(--bg-soft); color: var(--fg); text-decoration: none; }
-.docs-side a.active { background: var(--accent-soft); color: #ad0c72; font-weight: 550; }
+.docs-side a.active { background: var(--accent-soft); color: var(--accent-text); font-weight: 550; }
 .docs-main { min-width: 0; }
 .docs-main h1 { font-size: 2.1rem; }
 .docs-main ul, .docs-main ol { padding-left: 1.3rem; }
@@ -686,7 +741,7 @@ figcaption {
   border-radius: var(--radius);
   overflow: hidden;
   margin: 0 0 1rem;
-  background: #f6f3f7;
+  background: var(--bg-grey-pink);
 }
 .tab-bar {
   display: flex;

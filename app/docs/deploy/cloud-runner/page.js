@@ -1,14 +1,14 @@
 import Link from "next/link";
 
-export const metadata = { title: "Cloud Sandbox" };
+export const metadata = { title: "Cloud Runner" };
 
 export default function Page() {
   return (
     <>
-      <h1>Cloud Sandbox</h1>
+      <h1>Cloud Runner</h1>
 
       <p>
-        A cloud sandbox moves the Omnigent runner from your laptop to a remote container. Your agent
+        A cloud runner moves the Omnigent runner from your laptop to a remote container. Your agent
         keeps working after you close your laptop, in an isolated environment with cloud compute.
       </p>
 
@@ -24,7 +24,7 @@ export default function Page() {
           <tr>
             <th></th>
             <th>Local runner</th>
-            <th>Cloud sandbox</th>
+            <th>Cloud runner</th>
           </tr>
         </thead>
         <tbody>
@@ -54,8 +54,8 @@ export default function Page() {
       <p>
         Omnigent currently supports{" "}
         <a href="https://modal.com" target="_blank" rel="noreferrer">Modal</a> and{" "}
-        <a href="https://www.daytona.io" target="_blank" rel="noreferrer">Daytona</a> as cloud
-        sandbox providers, with more on the way.
+        <a href="https://www.daytona.io" target="_blank" rel="noreferrer">Daytona</a> as hosting
+        platforms for cloud runners, with more on the way.
       </p>
 
       <table>
@@ -72,7 +72,7 @@ export default function Page() {
         </thead>
         <tbody>
           <tr>
-            <td><strong>Sandbox lifetime</strong></td>
+            <td><strong>Runner lifetime</strong></td>
             <td>24 hours (platform cap)</td>
             <td>No cap (runs until deleted)</td>
           </tr>
@@ -92,7 +92,7 @@ export default function Page() {
       <h2>Server-managed (recommended)</h2>
 
       <p>
-        Configure your server once and anyone on the team can launch a cloud sandbox from the web UI.
+        Configure your server once and anyone on the team can launch a cloud runner from the web UI.
       </p>
 
       <h3>1. Install</h3>
@@ -114,7 +114,7 @@ export default function Page() {
 
       <pre><code>{"export DAYTONA_API_KEY=dtn_…"}</code></pre>
 
-      <h3>3. Add sandbox config</h3>
+      <h3>3. Configure the cloud runner</h3>
 
       <p>
         Add a <code>sandbox</code> section to your server config YAML (
@@ -137,7 +137,7 @@ export default function Page() {
         <a href="https://modal.com/docs/guide/secrets" target="_blank" rel="noreferrer">
           Modal secrets
         </a>{" "}
-        (API keys, gateway URLs) into the sandbox. Values stay in Modal{"'"}s secret store.
+        (API keys, gateway URLs) into the cloud runner. Values stay in Modal{"'"}s secret store.
       </p>
 
       <p><strong>Daytona:</strong></p>
@@ -146,7 +146,7 @@ export default function Page() {
 
       <p>
         <code>env</code> lists env var names to copy from the server{"'"}s environment into each
-        sandbox. Values never live in the config file. A listed variable that isn{"'"}t set fails the
+        cloud runner. Values never live in the config file. A listed variable that isn{"'"}t set fails the
         launch loudly.
       </p>
 
@@ -168,15 +168,15 @@ export default function Page() {
 
       <p>
         Start a new session and select <strong>New Sandbox</strong> in the host picker. The server
-        provisions the sandbox, starts the runner, and connects it back automatically. This works the
-        same for both providers.
+        provisions the cloud host, starts the runner, and connects it back automatically. This works
+        the same on both hosting platforms.
       </p>
 
       <h2>CLI</h2>
 
       <p>
-        Create and manage sandboxes from the command line. The commands are the same across
-        providers, just switch the <code>--provider</code> flag.
+        Create and manage cloud runners from the command line. The commands are the same across
+        hosting platforms, just switch the <code>--provider</code> flag.
       </p>
 
       <pre><code>{"omni sandbox create --provider modal          # or --provider daytona\nomni sandbox connect --provider modal \\\n  --sandbox-id <id> --server <url>"}</code></pre>

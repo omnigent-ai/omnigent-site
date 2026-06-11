@@ -1,6 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  async redirects() {
+    return [
+      {
+        source: "/docs/deploy/cloud-sandbox",
+        destination: "/docs/deploy/cloud-runner",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

@@ -67,7 +67,7 @@ p { margin: 0 0 1rem; }
 hr {
   border: none;
   border-top: 1px solid var(--border);
-  margin: 4rem 0;
+  margin: 2.5rem 0;
 }
 
 /* ---- layout ---- */
@@ -228,8 +228,8 @@ hr {
   flex-shrink: 0;
 }
 .hero-demo {
-  margin-top: -5rem;
-  padding: 0 0 2.5rem;
+  margin-top: 1rem;
+  padding: 0 0 1.75rem;
 }
 .hero-demo-video {
   display: block;
@@ -520,11 +520,11 @@ figcaption {
 .pillar p { color: var(--fg-soft); margin: 0; flex: 1; }
 
 /* ---- section helpers ---- */
-.section { padding: 2.5rem 0; }
+.section { padding: 1.75rem 0; }
 .section-no-top { padding-top: 0; }
 .section h2 { text-align: center; }
-.section-pillars { padding-top: 5rem; }
-.section-pillars .pillars { margin-top: 4rem; }
+.section-pillars { padding-top: 1.75rem; }
+.section-pillars .pillars { margin-top: 1.5rem; }
 .center { text-align: center; }
 .muted { color: var(--fg-soft); }
 .lede-block {

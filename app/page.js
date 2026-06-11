@@ -20,7 +20,7 @@ export default function Home() {
               src="/images/omnigent-home-page-OG.png"
               alt="Omnigent, a meta-harness for AI agents"
               width={1200}
-              height={630}
+              height={300}
             />
           </h1>
           <p className="lede">

@@ -39,6 +39,19 @@ export default function Page() {
         they agree and where they diverge.
       </p>
 
+      <figure>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/docs/debby-results-scroll-short.gif"
+          alt="Debby sends one prompt to Claude and GPT, then scrolls through both independent answers"
+          style={{ width: "100%", borderRadius: "8px" }}
+        />
+        <figcaption>
+          Debby fans one prompt out to Claude and GPT, waits for both partners,
+          and then brings their independent takes back into the same session.
+        </figcaption>
+      </figure>
+
       <h2>3. Start a debate</h2>
 
       <p>Now type:</p>
@@ -56,6 +69,19 @@ export default function Page() {
         produce alone. This is the point of multi-AI orchestration: genuinely
         independent perspectives, not just two copies of the same opinion.
       </p>
+
+      <figure>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/docs/debby-debate-synthesis-tight.png"
+          alt="Debby summarizes how Claude and GPT challenged each other during debate"
+          style={{ width: "100%", borderRadius: "8px" }}
+        />
+        <figcaption>
+          After <code>/debate</code>, Debby summarizes how the models challenged
+          each other and where the final synthesis changed.
+        </figcaption>
+      </figure>
 
       <h2>4. Try Polly for coding tasks</h2>
 

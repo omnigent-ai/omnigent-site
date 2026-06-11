@@ -46,23 +46,25 @@ export default function Page() {
         accounts is the default mode.
       </p>
 
-      <p>For non-Docker deploys, enable it manually:</p>
+      <ol>
+        <li>
+          <p>For non-Docker deploys, enable it manually:</p>
 
-      <pre><code>{"OMNIGENT_AUTH_ENABLED=1 omni server start"}</code></pre>
-
-      <p>
-        <strong>Create the first admin.</strong> The server never auto-generates a password. While
-        no admin exists it reports <code>needs_setup</code>: open the web UI and create the admin
-        account there, or run <code>omni server</code> on a terminal and answer the username and
-        password prompt. For headless deploys, preset the password with{" "}
-        <code>--admin-password</code> or <code>OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD</code>.
-      </p>
-
-      <p>
-        <strong>Invite teammates.</strong> Go to <strong>Admin {">"} Members {">"} Invite</strong> to
-        create a single-use invite link. No email server needed; just send the link directly. Signup
-        is invite-only.
-      </p>
+          <pre><code>{"OMNIGENT_AUTH_ENABLED=1 omni server start"}</code></pre>
+        </li>
+        <li>
+          <strong>Create the first admin.</strong> The server never auto-generates a password. While
+          no admin exists it reports <code>needs_setup</code>: open the web UI and create the admin
+          account there, or run <code>omni server</code> on a terminal and answer the username and
+          password prompt. For headless deploys, preset the password with{" "}
+          <code>--admin-password</code> or <code>OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD</code>.
+        </li>
+        <li>
+          <strong>Invite teammates.</strong> Go to <strong>Admin {">"} Members {">"} Invite</strong>{" "}
+          to create a single-use invite link. No email server needed; just send the link directly.
+          Signup is invite-only.
+        </li>
+      </ol>
 
       <h2 id="single-sign-on-oidc">Single sign-on (OIDC)</h2>
 

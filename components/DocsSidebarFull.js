@@ -111,7 +111,7 @@ export default function DocsSidebarFull() {
   });
 
   return (
-    <aside className="docs-side" style={{ maxHeight: "calc(100vh - 4.5rem)", overflowY: "auto" }}>
+    <aside className="docs-side">
       <div>
         <Link href="/docs" className={`nav-overview${path === "/docs" ? " active" : ""}`}>
           Overview

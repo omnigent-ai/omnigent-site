@@ -210,7 +210,7 @@ hr {
 .hero-logo img {
   display: block;
   width: 100%;
-  max-width: 45rem;
+  max-width: 38rem; /* match the lede width below it */
   height: auto;
   margin: 0 auto;
 }

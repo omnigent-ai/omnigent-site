@@ -32,7 +32,7 @@ export default function Page() {
             <p className="muted">
               Write a short YAML file with a prompt and a harness, then run{" "}
               <code>omnigent run</code> on it. See the{" "}
-              <Link href="/quickstart/custom-agent">custom agent guide</Link>.
+              <Link href="/quickstart/custom-omnigent">custom agent guide</Link>.
             </p>
 
             <h3>Is it safe to let an agent run on my machine?</h3>

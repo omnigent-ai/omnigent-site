@@ -11,8 +11,8 @@ export default function Page() {
         delegates each one to a different AI model, with cross-vendor code review built in.
       </p>
 
-      <pre><code>{"omni"}</code></pre>
-      <p><em>The bare <code>omni</code> command launches Polly by default.</em></p>
+      <pre><code>{`omni polly
+omni          # also launches Polly (it's the default)`}</code></pre>
 
       <h2>How it works</h2>
       <p>

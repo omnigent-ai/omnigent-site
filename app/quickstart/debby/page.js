@@ -22,7 +22,7 @@ export default function Page() {
       <pre><code>{"omni debby"}</code></pre>
 
       <p>
-        This starts a session and opens a web UI at{" "}
+        This starts a session in your terminal and opens a web UI at{" "}
         <code>http://localhost:6767</code>. Both Claude and GPT are ready to go.
       </p>
 

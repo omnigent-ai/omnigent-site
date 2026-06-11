@@ -20,11 +20,11 @@ export default function Page() {
         Use the sidebar to navigate. The docs are organized by what you want to do:
       </p>
       <ul>
-        <li><strong>Use Omnigent</strong> — run coding agents, try built-in multi-AI agents (Polly, Debby), or build your own custom agent.</li>
-        <li><strong>Interact</strong> — work from terminal, web UI, mobile, or desktop app, all synced to the same session in real time.</li>
-        <li><strong>Contextual Policies</strong> — enforce cost budgets, approval gates, and access controls that track state across the session, not just static rules.</li>
-        <li><strong>Deploy</strong> — go from your laptop to a persistent server so your team can access agents from anywhere, with cloud sandboxes for unattended execution.</li>
-        <li><strong>Collaborate</strong> — share a live session with a link, co-drive an agent with teammates, or fork a conversation to explore a different direction.</li>
+        <li><strong>Use Omnigent:</strong> run coding agents, try built-in multi-AI agents (Polly, Debby), or build your own custom agent.</li>
+        <li><strong>Interact:</strong> work from terminal, web UI, mobile, or desktop app, all synced to the same session in real time.</li>
+        <li><strong>Contextual Policies:</strong> enforce cost budgets, approval gates, and access controls that track state across the session, not just static rules.</li>
+        <li><strong>Deploy:</strong> go from your laptop to a persistent server so your team can access agents from anywhere, with cloud sandboxes for unattended execution.</li>
+        <li><strong>Collaborate:</strong> share a live session with a link, co-drive an agent with teammates, or fork a conversation to explore a different direction.</li>
       </ul>
     </>
   );

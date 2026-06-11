@@ -158,6 +158,17 @@ hr {
   max-width: 38rem;
   margin: 0 auto 2rem;
 }
+.hero-points {
+  text-align: left;
+  max-width: 34rem;
+  margin: 0 auto 2rem;
+  padding-left: 1.2rem;
+  color: var(--fg-soft);
+}
+.hero-points li {
+  margin: 0.45rem 0;
+  line-height: 1.5;
+}
 .hero-cta {
   display: flex;
   gap: 0.7rem;

@@ -188,7 +188,7 @@ export default function Page() {
       <pre>
         <code>
           {`claude auth login    # for Claude Pro/Max
-codex auth login     # for ChatGPT`}
+codex login          # for ChatGPT`}
         </code>
       </pre>
 

@@ -192,22 +192,31 @@ terminals:
         full environment including its sandbox.
       </p>
 
-      <p>In a multi-harness setup, each sub-agent can have its own OS sandbox:</p>
+      <p>
+        In a multi-harness setup, each sub-agent defines its own sandbox in its own{" "}
+        <code>config.yaml</code> file in the <code>agents/</code> subdirectory. Agent entries
+        in <code>tools.agents</code> are just names (strings), not inline config blocks.
+      </p>
 
       <pre>
         <code>
-          {`tools:
+          {`# Parent config.yaml
+tools:
   agents:
-    - name: researcher
-      os_env:
-        sandbox:
-          write_paths: [./research]
-          allow_network: true
-    - name: coder
-      os_env:
-        sandbox:
-          write_paths: [./src]
-          allow_network: false`}
+    - researcher
+    - coder
+
+# agents/researcher/config.yaml
+os_env:
+  sandbox:
+    write_paths: [./research]
+    allow_network: true
+
+# agents/coder/config.yaml
+os_env:
+  sandbox:
+    write_paths: [./src]
+    allow_network: false`}
         </code>
       </pre>
 

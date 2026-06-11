@@ -8,75 +8,39 @@ export default function Page() {
       <h1>Tutorial: Multi-AI Agents</h1>
 
       <p>
-        What happens when you ask two different AI models the same question and
-        let them debate? This tutorial shows you Omnigent{"'"}s multi-AI
-        orchestration by running Debby, a built-in agent that pits Claude against
-        GPT in a structured debate.
+        Omnigent can orchestrate multiple AI models working together on the same
+        task. This tutorial walks you through two built-in multi-AI agents: Polly
+        for coding and Debby for brainstorming debates.
       </p>
 
       <p>
-        <strong>Time:</strong> 5 minutes. <strong>Everything runs locally.</strong>
+        <strong>Time:</strong> 10 minutes. <strong>Everything runs locally.</strong>
       </p>
 
-      <h2>1. Run Debby</h2>
-
-      <pre><code>{"omni run examples/debby/"}</code></pre>
+      <h2>1. Run Polly</h2>
 
       <p>
-        This starts a session where every question you ask gets sent to both
-        Claude and GPT simultaneously. Open <code>http://localhost:6767</code>{" "}
-        to see both responses side by side.
-      </p>
-
-      <h2>2. Ask a question</h2>
-
-      <p>Try something with room for genuine disagreement:</p>
-
-      <pre><code>{"Should we use a monorepo or polyrepo for a team of 20 engineers building 5 microservices?"}</code></pre>
-
-      <p>
-        Both models respond independently. Read both perspectives. Notice where
-        they agree and where they diverge.
-      </p>
-
-      <h2>3. Start a debate</h2>
-
-      <p>Now type:</p>
-
-      <pre><code>{"/debate"}</code></pre>
-
-      <p>
-        This triggers multi-round critique. Each model reviews the other{"'"}s
-        answer, challenges weak points, and refines its own response. Watch them
-        go back and forth, each round getting sharper.
-      </p>
-
-      <p>
-        The debate converges toward a stronger synthesis than either model would
-        produce alone. This is the point of multi-AI orchestration: genuinely
-        independent perspectives, not just two copies of the same opinion.
-      </p>
-
-      <h2>4. Try Polly for coding tasks</h2>
-
-      <p>
-        Debby is for brainstorming. For coding, try Polly. Bare{" "}
-        <code>omni</code> launches Polly by default:
+        Polly is a multi-agent coding orchestrator. Bare <code>omni</code>{" "}
+        launches it by default:
       </p>
 
       <pre><code>{"omni"}</code></pre>
 
+      <p>Give it a task. For example:</p>
+
+      <pre><code>{"Refactor the authentication module into separate files for OAuth, JWT, and session handling. Add tests for each."}</code></pre>
+
       <p>
-        Polly is a supervisor that breaks your task into sub-tasks and delegates
-        each one to a different AI model. Claude Code implements, Codex
-        implements in parallel, and a different model reviews each PR.
+        Polly breaks this into sub-tasks and delegates each one to a different
+        AI model. Claude Code implements one piece, Codex implements another in
+        parallel, and a different model reviews each PR.
       </p>
 
-      <h3>Watch it in the web UI</h3>
+      <h2>2. Watch it in the web UI</h2>
 
       <p>
-        Open <code>http://localhost:6767</code>. The right panel has four tabs:
-        <strong> Files</strong>, <strong>Agents</strong>,{" "}
+        Open <code>http://localhost:6767</code>. The right panel has four tabs:{" "}
+        <strong>Files</strong>, <strong>Agents</strong>,{" "}
         <strong>Terminals</strong>, and <strong>Todos</strong>. Click the{" "}
         <strong>Agents</strong> tab to see every sub-agent Polly dispatches,
         with live status (working, idle, finished).
@@ -92,6 +56,35 @@ export default function Page() {
         This is where multi-AI orchestration becomes tangible: you can watch
         Claude Code and Codex working on different parts of the same task
         simultaneously, each in its own git worktree.
+      </p>
+
+      <h2>3. Try Debby for multi-model debate</h2>
+
+      <p>
+        Polly is for coding. Debby is for brainstorming: it sends every question
+        to both Claude and GPT, then lets them debate each other.
+      </p>
+
+      <pre><code>{`git clone https://github.com/omnigent-ai/omnigent.git
+cd omnigent
+omni examples/debby/`}</code></pre>
+
+      <h2>4. Ask a question and start a debate</h2>
+
+      <p>Try something with room for genuine disagreement:</p>
+
+      <pre><code>{"Should we use a monorepo or polyrepo for a team of 20 engineers building 5 microservices?"}</code></pre>
+
+      <p>
+        Both models respond independently. Read both perspectives. Then type:
+      </p>
+
+      <pre><code>{"/debate"}</code></pre>
+
+      <p>
+        Each model reviews the other{"'"}s answer, challenges weak points, and
+        refines its own. The debate converges toward a stronger synthesis than
+        either model would produce alone.
       </p>
 
       <p>

@@ -140,9 +140,9 @@ export default function Home() {
             </p>
             <pre>
               <code>{`pip install omnigent
-omnigent                 # pick a model and start chatting
-omnigent claude          # or launch a specific harness
-omnigent run my-agent/   # or run your own agent`}</code>
+omni                     # pick a model and start chatting
+omni claude              # or launch a specific harness
+omni run my-agent/       # or run your own agent`}</code>
             </pre>
             <p>
               Read the <Link href="/quickstart/install">installation guide</Link>,

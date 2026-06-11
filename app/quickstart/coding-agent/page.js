@@ -86,10 +86,11 @@ export default function Page() {
         alongside your text. Try pasting a screenshot of a UI bug or a design spec.
       </p>
 
-      <h3>Switch to a different agent</h3>
+      <h3>Fork a session</h3>
       <p>
-        Mid-conversation, switch to a different coding agent (e.g. Codex) without
-        losing history. The new agent picks up where the old one left off.
+        Fork your current session to try a different approach without affecting
+        the original. The fork copies the full conversation history up to that
+        point, so you can experiment freely.
       </p>
 
       <h2>4. Add a policy in plain language</h2>

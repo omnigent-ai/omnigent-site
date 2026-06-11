@@ -248,16 +248,14 @@ hr {
   margin-top: 1rem;
   padding: 0 0 1.75rem;
 }
-.hero-demo-video {
+.hero-demo-img {
   display: block;
   width: 100%;
   max-width: 52rem;
-  max-height: min(50vh, 28rem);
+  height: auto;
   margin: 0 auto;
-  object-fit: contain;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--bg-soft);
 }
 .features {
   max-width: 34rem;

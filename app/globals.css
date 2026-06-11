@@ -475,12 +475,6 @@ figure img {
   max-width: 100%;
   height: auto;
 }
-figure.framed img {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-soft);
-  padding: 1.5rem;
-}
 figcaption {
   margin-top: 0.9rem;
   font-size: 0.9rem;
@@ -637,9 +631,12 @@ figcaption {
   letter-spacing: 0.05em;
   color: var(--fg-soft);
   margin: 0.8rem 0 0.3rem;
+  padding: 0 0.6rem;
 }
 .docs-side > div:first-child > h4 { margin-top: 0; }
+.docs-side a.nav-overview { font-size: 0.73rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0 0 0.3rem; }
 .docs-side ul { list-style: none; margin: 0 0 0.5rem; padding: 0; }
+.docs-side ul a { padding-left: 1.2rem; }
 .docs-side li { margin: 0; }
 .docs-side a {
   display: block;

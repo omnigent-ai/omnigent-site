@@ -25,8 +25,8 @@ export default function Home() {
           <p className="lede">
             A common layer over Claude Code, Codex, Pi, and the agents you
             write yourself: swap or combine harnesses without rewriting, keep
-            them in check with policies and sandboxing, and pick the same live
-            session back up anywhere, on your phone or with a teammate.
+            them in check with policies and sandboxing, and collaborate in
+            real time on the same live session, from any device.
           </p>
           <InstallTabs />
           <CtaButtons />
@@ -62,8 +62,9 @@ export default function Home() {
                 routing, and risk-based escalation.
               </li>
               <li>
-                <strong><Link href="/docs/policies/os-sandbox">Flexible OS sandbox</Link>:</strong> restrict filesystem,
-                network, and env to run agents in YOLO mode safely.
+                <strong><Link href="/docs/policies/os-sandbox">Secure OS sandbox</Link>:</strong> restrict filesystem
+                and network access. Hide credentials from the agent, and broker access to them.
+                Run YOLO mode safely.
               </li>
             </ul>
           </div>
@@ -144,9 +145,10 @@ export default function Home() {
 
             <h2>Architecture</h2>
             <p className="arch-outro">
-              A runner wraps any agent in a sandboxed, uniform session. A server
-              adds policies and a shared history, and exposes every session over
-              the terminal, the web, and a REST API.
+              A runner wraps any agent in a sandboxed, uniform session — on your
+              laptop, or hosted in the cloud on Modal or Daytona. A server adds
+              policies and a shared history, and exposes every session over the
+              terminal, the web, and a REST API.
             </p>
             <figure className="section-graphic">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -162,13 +164,10 @@ export default function Home() {
 
             <div className="try-it">
               <h2>Try it</h2>
-              <p className="muted">
-                Install, then start an agent in your terminal. A local web UI opens
-                too, for the browser or your phone.
-              </p>
               <pre className="section-code try-code">
                 <code>{`pip install omnigent
-omni polly     # Polly, the default multi-agent orchestrator`}</code>
+omni debby     # run a built-in multi-agent debate
+omni claude    # run your agent with a web UI and collaboration`}</code>
               </pre>
               <p>
                 Read the <Link href="/docs">Getting Started</Link> guide for more

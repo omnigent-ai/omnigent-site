@@ -2,6 +2,32 @@ import Link from "next/link";
 
 export const metadata = { title: "Models & Credentials" };
 
+const providerLogoStyle = {
+  display: "inline",
+  verticalAlign: "middle",
+  borderRadius: "4px",
+  marginRight: "8px",
+};
+
+const gateways = [
+  { logo: "databricks", name: "Databricks Unity AI Gateway" },
+  { logo: "mlflow", name: "MLflow AI Gateway" },
+  { logo: "openrouter", name: "OpenRouter" },
+  { logo: "litellm", name: "LiteLLM" },
+  { logo: "portkey", name: "Portkey" },
+  { logo: "helicone", name: "Helicone" },
+  { logo: "cloudflare", name: "Cloudflare AI Gateway" },
+  { logo: "kong", name: "Kong AI Gateway" },
+  { logo: "vercel", name: "Vercel AI Gateway" },
+  { logo: "azure", name: "Azure OpenAI" },
+  { logo: "ollama", name: "Ollama" },
+  { logo: "lmstudio", name: "LM Studio" },
+  { logo: "vllm", name: "vLLM" },
+  { logo: "localai", name: "LocalAI" },
+  { logo: "huggingface", name: "TGI (Hugging Face)" },
+  { logo: "gpt4all", name: "GPT4All" },
+];
+
 export default function Page() {
   return (
     <>
@@ -103,7 +129,17 @@ export default function Page() {
         </thead>
         <tbody>
           <tr>
-            <td><strong>Anthropic</strong></td>
+            <td>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logos/providers/anthropic.png"
+                alt=""
+                width="20"
+                height="20"
+                style={providerLogoStyle}
+              />
+              <strong>Anthropic</strong>
+            </td>
             <td>
               <a href="https://console.anthropic.com" target="_blank" rel="noreferrer">
                 console.anthropic.com
@@ -111,7 +147,17 @@ export default function Page() {
             </td>
           </tr>
           <tr>
-            <td><strong>OpenAI</strong></td>
+            <td>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logos/providers/openai.png"
+                alt=""
+                width="20"
+                height="20"
+                style={providerLogoStyle}
+              />
+              <strong>OpenAI</strong>
+            </td>
             <td>
               <a href="https://platform.openai.com" target="_blank" rel="noreferrer">
                 platform.openai.com
@@ -119,7 +165,17 @@ export default function Page() {
             </td>
           </tr>
           <tr>
-            <td><strong>OpenRouter</strong></td>
+            <td>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logos/providers/openrouter.png"
+                alt=""
+                width="20"
+                height="20"
+                style={providerLogoStyle}
+              />
+              <strong>OpenRouter</strong>
+            </td>
             <td>
               <a href="https://openrouter.ai" target="_blank" rel="noreferrer">
                 openrouter.ai
@@ -127,7 +183,17 @@ export default function Page() {
             </td>
           </tr>
           <tr>
-            <td><strong>Groq</strong></td>
+            <td>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logos/providers/groq.png"
+                alt=""
+                width="20"
+                height="20"
+                style={providerLogoStyle}
+              />
+              <strong>Groq</strong>
+            </td>
             <td>
               <a href="https://console.groq.com" target="_blank" rel="noreferrer">
                 console.groq.com
@@ -135,7 +201,17 @@ export default function Page() {
             </td>
           </tr>
           <tr>
-            <td><strong>DeepSeek</strong></td>
+            <td>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logos/providers/deepseek.png"
+                alt=""
+                width="20"
+                height="20"
+                style={providerLogoStyle}
+              />
+              <strong>DeepSeek</strong>
+            </td>
             <td>
               <a href="https://platform.deepseek.com" target="_blank" rel="noreferrer">
                 platform.deepseek.com
@@ -143,7 +219,17 @@ export default function Page() {
             </td>
           </tr>
           <tr>
-            <td><strong>xAI</strong></td>
+            <td>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logos/providers/xai.png"
+                alt=""
+                width="20"
+                height="20"
+                style={providerLogoStyle}
+              />
+              <strong>xAI</strong>
+            </td>
             <td>
               <a href="https://console.x.ai" target="_blank" rel="noreferrer">
                 console.x.ai
@@ -151,7 +237,17 @@ export default function Page() {
             </td>
           </tr>
           <tr>
-            <td><strong>Mistral</strong></td>
+            <td>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logos/providers/mistral.png"
+                alt=""
+                width="20"
+                height="20"
+                style={providerLogoStyle}
+              />
+              <strong>Mistral</strong>
+            </td>
             <td>
               <a href="https://console.mistral.ai" target="_blank" rel="noreferrer">
                 console.mistral.ai
@@ -159,7 +255,17 @@ export default function Page() {
             </td>
           </tr>
           <tr>
-            <td><strong>Together AI</strong></td>
+            <td>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logos/providers/together.png"
+                alt=""
+                width="20"
+                height="20"
+                style={providerLogoStyle}
+              />
+              <strong>Together AI</strong>
+            </td>
             <td>
               <a href="https://api.together.xyz" target="_blank" rel="noreferrer">
                 api.together.xyz
@@ -167,7 +273,17 @@ export default function Page() {
             </td>
           </tr>
           <tr>
-            <td><strong>Fireworks AI</strong></td>
+            <td>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logos/providers/fireworks.png"
+                alt=""
+                width="20"
+                height="20"
+                style={providerLogoStyle}
+              />
+              <strong>Fireworks AI</strong>
+            </td>
             <td>
               <a href="https://fireworks.ai" target="_blank" rel="noreferrer">
                 fireworks.ai
@@ -203,12 +319,32 @@ codex login          # for ChatGPT`}
         <strong>Anthropic-compatible</strong> gateway:
       </p>
 
-      {/* TODO: gateway provider logos/icons */}
-      <p>
-        Supported gateways include Databricks Unity AI Gateway, MLflow AI Gateway, OpenRouter,
-        LiteLLM, Portkey, Helicone, Cloudflare AI Gateway, Kong AI Gateway, Vercel AI Gateway,
-        Azure OpenAI, Ollama, LM Studio, vLLM, LocalAI, TGI (Hugging Face), and GPT4All.
-      </p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", margin: "16px 0" }}>
+        {gateways.map((gateway) => (
+          <div
+            key={gateway.logo}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "6px",
+              width: "90px",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`/logos/gateways/${gateway.logo}.png`}
+              alt={gateway.name}
+              width="40"
+              height="40"
+              style={{ borderRadius: "4px" }}
+            />
+            <span style={{ fontSize: "11px", textAlign: "center", lineHeight: "1.2" }}>
+              {gateway.name}
+            </span>
+          </div>
+        ))}
+      </div>
 
       <p>
         <code>omni setup</code> asks for a <strong>base URL</strong> and a <strong>key</strong>. The
@@ -249,8 +385,8 @@ codex login          # for ChatGPT`}
       <div className="note">
         <p>
           <strong>Note:</strong> For Claude Code, point at OpenRouter&apos;s Anthropic-compatible
-          endpoint (<code>...\/api</code>, <strong>not</strong> <code>...\/api/v1</code>); for Codex
-          and the OpenAI-agents harness, use the OpenAI-compatible <code>...\/api/v1</code>.
+          endpoint (<code>.../api</code>, <strong>not</strong> <code>.../api/v1</code>); for Codex
+          and the OpenAI-agents harness, use the OpenAI-compatible <code>.../api/v1</code>.
         </p>
       </div>
 

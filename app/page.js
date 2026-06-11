@@ -34,18 +34,14 @@ export default function Home() {
 
         <section className="hero-demo" aria-label="Product demo">
           <div className="wrap-wide">
-            <video
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               className="hero-demo-video"
-              src="/videos/demo.mov"
-              autoPlay
-              muted
-              loop
-              playsInline
-              controls
-              preload="metadata"
-            >
-              Your browser does not support the video tag.
-            </video>
+              src="/images/hero-demo.png"
+              alt="The Omnigent app running a multi-agent session: a coding task fanned out to sub-agents, with a live shared session and a Share button."
+              width={1920}
+              height={1094}
+            />
           </div>
         </section>
 

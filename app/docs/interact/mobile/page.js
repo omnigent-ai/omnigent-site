@@ -38,7 +38,7 @@ export default function Page() {
 
       <p>
         <strong>From anywhere.</strong> Deploy the Omnigent server beyond localhost. See{" "}
-        <Link href="/docs/deploy/overview">Deploy</Link> for options.
+        <Link href="/docs/deploy/overview">the deployment docs</Link> for options.
       </p>
 
       <p>No app to install. Just open the URL in your mobile browser.</p>

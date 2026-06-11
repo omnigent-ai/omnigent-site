@@ -101,7 +101,7 @@ def dotted(x1, y1, x2, y2):
             f'stroke-linecap="round" stroke-dasharray="0.1 7" fill="none"/>')
 
 
-W, H = 1200, 610
+W, H = 1200, 545
 parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
          f'font-family="{FONT}">', f'<defs>{OCTO}</defs>']
 
@@ -120,22 +120,28 @@ for ry in iface_rows:
 # server -> infra. Three functional clusters, grouped by proximity (no labels):
 #   persistence (Postgres) | deploy (Docker/Railway/Fly.io) | tracing (MLflow/OTel)
 # Stacked vertically within each cluster to use vertical space instead of one wide row.
-CLUSTER_TOP = 438          # clusters share a top edge so they read as lanes
-PITCH = 60                 # row-to-row spacing inside a cluster
-clusters = [
-    (470, [("PostgreSQL", data_uri("public/logos/observability/postgresql.svg"))]),
-    (700, [("Docker", data_uri("public/logos/observability/docker.svg")),
-           ("Railway", data_uri("public/logos/platforms/railway.png")),
-           ("Fly.io",  data_uri("public/logos/platforms/flyio.png"))]),
-    (912, [("MLflow", data_uri("public/logos/gateways/mlflow.png")),
-           ("OpenTelemetry", data_uri("public/logos/observability/opentelemetry.svg"))]),
+# Three proximity-grouped clusters of bare logos (no labels), packed loosely
+# like the agent clusters on the left. Gaps between clusters do the grouping.
+PG   = data_uri("public/logos/observability/postgresql.svg")
+DOCK = data_uri("public/logos/observability/docker.svg")
+RAIL = data_uri("public/logos/platforms/railway.png")
+FLY  = data_uri("public/logos/platforms/flyio.png")
+MLF  = data_uri("public/logos/gateways/mlflow.png")
+OTEL = data_uri("public/logos/observability/opentelemetry.svg")
+infra_logos = [  # (cx, cy, w, h, href)
+    # persistence
+    (470, 460, 56, 56, PG),
+    # deploy: Docker over Railway + Fly.io
+    (690, 436, 50, 50, DOCK),
+    (661, 492, 48, 48, RAIL),
+    (719, 492, 48, 48, FLY),
+    # tracing: MLflow + OpenTelemetry, side by side
+    (884, 462, 54, 54, MLF),
+    (938, 462, 44, 44, OTEL),
 ]
-infra_positions = []       # (cx, cy, label, href) filled below, drawn after the boxes
-for cx, items in clusters:
-    for i, (label, href) in enumerate(items):
-        infra_positions.append((cx, CLUSTER_TOP + i * PITCH, label, href))
-    # one connector from the server down to the top of each cluster
-    parts.append(dotted(718, 352, cx, CLUSTER_TOP - 26))
+# one connector from the server to each cluster
+for tx, ty in [(470, 432), (690, 408), (905, 436)]:
+    parts.append(dotted(718, 352, tx, ty))
 
 # ---------- left inputs (real agent logos) ----------
 AG = "public/logos/agents"
@@ -162,15 +168,19 @@ row_x, row_w, row_h = rx + 16, rw - 32, 34
 hy = ry + 60
 
 
-def host_row(y, draw_mark, label=None, full_logo=None, logo_w=22):
-    """A light pill holding a logo (+ optional label) for one runner host."""
+def host_row(y, draw_mark, label=None, full_logo=None):
+    """A light pill holding a centered logo (+ optional label) for one host."""
     out = [rrect(row_x, y, row_w, row_h, 9, GREY_PINK)]
-    cy = y + row_h / 2
+    cx, cy = row_x + row_w / 2, y + row_h / 2
     if full_logo:  # wide lockup that already contains its name (Daytona)
-        out.append(img(row_x + row_w / 2, cy, row_w - 22, row_h - 14, full_logo))
+        out.append(img(cx, cy, row_w - 22, row_h - 14, full_logo))
     else:
-        out.append(draw_mark(row_x + 17, cy))
-        out.append(text(row_x + 34, cy + 5, 14.5, 600, FG).format(label))
+        # centre the [mark + gap + label] group within the row
+        tw = len(label) * 14.5 * 0.56
+        group = 22 + 8 + tw
+        mx = cx - group / 2 + 11
+        out.append(draw_mark(mx, cy))
+        out.append(text(mx + 19, cy + 5, 14.5, 600, FG).format(label))
     return "".join(out)
 
 
@@ -219,9 +229,9 @@ for label, ry2 in zip(iface_labels, iface_rows):
     parts.append(text(x + 50, ry2 + 25, 15, 600, FG).format(label))
     parts.append(text(x + 50, ry2 + 42, 11.5, 400, FG_SOFT).format("screenshot"))
 
-# ---------- infra clusters ----------
-for cx, cy, label, href in infra_positions:
-    parts.append(logo_tile(cx, cy, label, href))
+# ---------- infra clusters (bare logos, no labels) ----------
+for cx, cy, w, h, href in infra_logos:
+    parts.append(img(cx, cy, w, h, href))
 
 parts.append("</svg>")
 OUT.write_text("\n".join(parts))

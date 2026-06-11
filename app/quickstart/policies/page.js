@@ -49,7 +49,7 @@ export default function Page() {
       </p>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/policy-cost-budget-config.png" alt="Configuring the Session Cost Budget policy" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+      <img src="/images/docs/policy-cost-budget-config.png" alt="Configuring the Session Cost Budget policy" style={{ display: "block", width: "100%", maxWidth: "380px", borderRadius: "8px", margin: "1rem 0" }} />
 
       <p>The cost policy gives you two kinds of guardrails:</p>
 

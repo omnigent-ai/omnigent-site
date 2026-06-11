@@ -16,7 +16,7 @@ export default function Home() {
           <span className="tag">Open source · Alpha</span>
           <h1>
             The framework above your agent harnesses that runs them together,
-            governed and shareable. Use with Claude Code, Codex, or Pi.
+            policy-driven and shareable. Use with Claude Code, Codex, or Pi.
           </h1>
           <Command>pip install omnigent</Command>
           <div className="hero-cta">

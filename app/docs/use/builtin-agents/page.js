@@ -7,7 +7,7 @@ export default function Page() {
     <>
       <h1>Built-in Multi-AI Agents</h1>
       <p>
-        Omnigent ships with multi-agent orchestrators that combine different AI models
+        Omnigent ships with multi-agent orchestrators that combine different AI agents
         in a single workflow. Both are ready to run out of the box, with more coming.
       </p>
 

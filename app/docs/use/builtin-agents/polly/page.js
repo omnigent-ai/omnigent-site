@@ -8,7 +8,7 @@ export default function Page() {
       <h1>Polly</h1>
       <p className="lede-block">
         Multi-agent coding orchestrator. Polly breaks your task into sub-tasks and
-        delegates each one to a different AI model, with cross-vendor code review built in.
+        delegates each one to a different AI agent, with cross-vendor code review built in.
       </p>
 
       <pre><code>{`omni polly
@@ -18,7 +18,7 @@ omni          # also launches Polly (it's the default)`}</code></pre>
       <p>
         Polly is a supervisor that never writes code itself. It decomposes your goal
         into sub-tasks and delegates each one to a sub-agent running on its own harness
-        and git worktree. One model implements, a different model reviews. Each
+        and git worktree. One agent implements, a different agent reviews. Each
         implementer opens its own PR. Polly never merges. The human decides.
       </p>
 
@@ -52,7 +52,7 @@ omni          # also launches Polly (it's the default)`}</code></pre>
       <h2>When to use</h2>
       <ul>
         <li>Large refactors that benefit from parallel work.</li>
-        <li>Cross-vendor code review where one model writes and another reviews.</li>
+        <li>Cross-vendor code review where one agent writes and another reviews.</li>
         <li>Specialized sub-tasks routed to the harness best suited for them.</li>
       </ul>
 

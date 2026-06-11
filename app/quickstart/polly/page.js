@@ -9,7 +9,7 @@ export default function Page() {
 
       <p>
         Polly is a multi-agent coding orchestrator. It breaks your task into
-        sub-tasks and delegates each one to a different AI model, with
+        sub-tasks and delegates each one to a different AI agent, with
         cross-vendor code review built in. This tutorial shows you how it
         looks in practice.
       </p>
@@ -33,8 +33,8 @@ export default function Page() {
 
       <p>
         Polly breaks this into sub-tasks and delegates each one to a different
-        AI model. Claude Code implements one piece, Codex implements another in
-        parallel, and a different model reviews each PR.
+        AI agent. Claude Code implements one piece, Codex implements another in
+        parallel, and a different agent reviews each PR.
       </p>
 
       <h2>3. Watch it in the web UI</h2>

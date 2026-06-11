@@ -2,6 +2,7 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import InstallTabs from "@/components/InstallTabs";
+import CopyCodeButtons from "@/components/CopyCodeButtons";
 import { GitHubIcon, DiscordIcon, AppleIcon } from "@/components/icons";
 import { GITHUB_URL, DISCORD_URL, MACOS_DOWNLOAD_URL } from "@/components/links";
 
@@ -145,8 +146,8 @@ export default function Home() {
 
             <hr />
 
-            <h2>Try it</h2>
-            <p className="muted">
+            <h2>Try it Locally</h2>
+            <p className="arch-outro">
               Install, then start an agent in your terminal. A local web UI opens
               too, for the browser or your phone.
             </p>
@@ -156,10 +157,26 @@ omni                     # Polly, the default multi-agent orchestrator
 omni claude              # or launch a specific harness
 omni run my-agent/       # or run your own agent`}</code>
             </pre>
-            <p>
+            <p className="arch-outro">
               Read the <Link href="/quickstart/install">installation guide</Link>,
               then <Link href="/docs/use/custom-agents">write your own agent</Link> in
               a few lines of YAML.
+            </p>
+
+            <hr />
+
+            <h2>Run from Anywhere</h2>
+            <p className="arch-outro">
+              A cloud sandbox moves the Omnigent runner from your laptop to a
+              remote container. Your agent keeps working after you close your
+              laptop, in an isolated environment with cloud compute.
+            </p>
+            <pre className="section-code">
+              <code>{`pip install 'omnigent[modal]'       # for Modal
+pip install 'omnigent[daytona]'     # for Daytona`}</code>
+            </pre>
+            <p className="arch-outro">
+              <Link href="/docs/deploy/cloud-sandbox">Get started</Link>.
             </p>
           </div>
         </section>
@@ -186,6 +203,7 @@ omni run my-agent/       # or run your own agent`}</code>
         </div>
       </main>
 
+      <CopyCodeButtons />
       <Footer />
     </>
   );

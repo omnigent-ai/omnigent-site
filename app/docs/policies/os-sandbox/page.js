@@ -1,11 +1,17 @@
 import Link from "next/link";
 
-export const metadata = { title: "OS Sandbox" };
+export const metadata = { title: "Omnibox (OS Sandbox)" };
 
 export default function Page() {
   return (
     <>
-      <h1>OS Sandbox</h1>
+      <h1>Omnibox: OS Sandbox</h1>
+
+      <p>
+        Omnibox is Omnigent{"'"}s flexible OS sandbox for any agent. It restricts filesystem
+        access, network traffic, and environment variables at the OS level, letting you safely
+        run agents with minimal permissions or lock them down for unattended YOLO-mode execution.
+      </p>
 
       <p>
         The OS sandbox restricts what commands and file operations your agent can perform. It

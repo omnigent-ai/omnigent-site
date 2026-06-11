@@ -6,66 +6,25 @@ export default function Page() {
   return (
     <>
       <h1>Documentation</h1>
-      <p>
-        Full reference for building, configuring, deploying, and collaborating with Omnigent.
-        New here? Start with the <Link href="/quickstart/intro">Quickstart</Link>.
+
+      <p style={{ background: "var(--bg-soft)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "0.8rem 1rem", margin: "0 0 1.5rem" }}>
+        <strong>New here?</strong> Start with the{" "}
+        <Link href="/quickstart/intro">Quickstart</Link> to get running in
+        under a minute.
       </p>
 
-      <h2>Build Your Omnigent</h2>
-      <p>
-        Define a custom agent in a YAML config. Choose a harness, model, tools, and policies.
-      </p>
-      <ul>
-        <li><Link href="/docs/build/overview">Overview</Link></li>
-        <li><Link href="/docs/build/harnesses">Harnesses</Link></li>
-        <li><Link href="/docs/build/models">Models &amp; Credentials</Link></li>
-        <li><Link href="/docs/build/prompts">Prompts &amp; Skills</Link></li>
-        <li><Link href="/docs/build/tools">MCP &amp; Tools</Link></li>
-        <li><Link href="/docs/build/policies">Policies Config</Link></li>
-      </ul>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/docs/homepage.png" alt="Omnigent" style={{ width: "100%", borderRadius: "12px", margin: "0 0 1.5rem" }} />
 
-      <h2>Set Omnigent Policies</h2>
       <p>
-        Control what your omnigent can and cannot do. Cost budgets, approval gates, access controls, and more.
+        Use the sidebar to navigate. The docs are organized by what you want to do:
       </p>
       <ul>
-        <li><Link href="/docs/policies/overview">Overview</Link></li>
-        <li><Link href="/docs/policies/builtin">Builtin Policies</Link></li>
-        <li><Link href="/docs/policies/custom">Custom Policies</Link></li>
-        <li><Link href="/docs/policies/os-sandbox">OS Sandbox</Link></li>
-      </ul>
-
-      <h2>Interact with Your Omnigent</h2>
-      <p>
-        Terminal, web UI, desktop app, and mobile. All synced to the same session.
-      </p>
-      <ul>
-        <li><Link href="/docs/interact/overview">Overview</Link></li>
-        <li><Link href="/docs/interact/terminal">Terminal</Link></li>
-        <li><Link href="/docs/interact/web-ui">Web UI</Link></li>
-        <li><Link href="/docs/interact/mobile">Mobile</Link></li>
-        <li><Link href="/docs/interact/desktop">Desktop App</Link></li>
-      </ul>
-
-      <h2>Deploy Your Omnigent</h2>
-      <p>
-        Move from your laptop to a persistent server your team can access.
-      </p>
-      <ul>
-        <li><Link href="/docs/deploy/overview">Overview</Link></li>
-        <li><Link href="/docs/deploy/database">Database</Link></li>
-        <li><Link href="/docs/deploy/docker">Docker</Link></li>
-        <li><Link href="/docs/deploy/cloud">Cloud Platforms</Link></li>
-        <li><Link href="/docs/deploy/cloud-sandbox">Cloud Sandbox</Link></li>
-      </ul>
-
-      <h2>Collaborate with Your Team</h2>
-      <p>
-        Share sessions, co-drive agents, and fork conversations.
-      </p>
-      <ul>
-        <li><Link href="/docs/collaborate/overview">Overview</Link></li>
-        <li><Link href="/docs/collaborate/auth">Auth &amp; SSO</Link></li>
+        <li><strong>Use Omnigent</strong> — run coding agents, try built-in multi-AI agents (Polly, Debby), or build your own custom agent.</li>
+        <li><strong>Interact</strong> — work from terminal, web UI, mobile, or desktop app, all synced to the same session in real time.</li>
+        <li><strong>Contextual Policies</strong> — enforce cost budgets, approval gates, and access controls that track state across the session, not just static rules.</li>
+        <li><strong>Deploy</strong> — go from your laptop to a persistent server so your team can access agents from anywhere, with cloud sandboxes for unattended execution.</li>
+        <li><strong>Collaborate</strong> — share a live session with a link, co-drive an agent with teammates, or fork a conversation to explore a different direction.</li>
       </ul>
     </>
   );

@@ -6,8 +6,10 @@ import { usePathname } from "next/navigation";
 const PAGES = [
   { href: "/quickstart/intro", label: "Introduction" },
   { href: "/quickstart/install", label: "Install Omnigent" },
-  { href: "/quickstart/coding-agent", label: "Coding Agent Quickstart" },
-  { href: "/quickstart/custom-omnigent", label: "Custom Omnigent Quickstart" },
+  { href: "/quickstart/coding-agent", label: "Coding Agent" },
+  { href: "/quickstart/multi-agent", label: "Multi-Agent" },
+  { href: "/quickstart/custom-omnigent", label: "Custom Omnigent" },
+  { href: "/quickstart/deploy", label: "Deploy & Collaborate" },
 ];
 
 export default function DocsSidebar() {

@@ -14,7 +14,7 @@ export default function Page() {
       <pre>
         <code>
           {`executor:
-  harness: claude-sdk`}
+  harness: claude`}
         </code>
       </pre>
 
@@ -23,25 +23,25 @@ export default function Page() {
       <table>
         <thead>
           <tr>
-            <th><code>harness</code> value</th>
+            <th>Harness</th>
             <th>Runtime</th>
             <th>Best for</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><code>claude-sdk</code></td>
-            <td>Claude Agent SDK</td>
+            <td><code>claude</code></td>
+            <td>Claude Code</td>
             <td>Claude Code out of the box. Add tools, policies, and prompts to customize.</td>
           </tr>
           <tr>
             <td><code>codex</code></td>
-            <td>Codex CLI</td>
+            <td>Codex</td>
             <td>Codex out of the box. Add tools, policies, and prompts to customize.</td>
           </tr>
           <tr>
             <td><code>pi</code></td>
-            <td>Pi harness</td>
+            <td>Pi</td>
             <td>
               Headless multi-model worker that runs on any gateway model. Ideal for review,
               exploration, and read-heavy tasks delegated by a supervisor agent.
@@ -49,12 +49,6 @@ export default function Page() {
           </tr>
         </tbody>
       </table>
-
-      <div className="note">
-        <p>
-          <code>claude</code> is accepted as a shorthand for <code>claude-sdk</code>.
-        </p>
-      </div>
 
       <p>More harness integrations are on the way.</p>
 

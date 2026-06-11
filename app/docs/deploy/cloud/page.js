@@ -24,7 +24,7 @@ export default function Page() {
             <td><strong>Render</strong></td>
             <td>Managed Postgres</td>
             <td>
-              <a href="https://render.com/deploy?repo=https://github.com/Omnigents/omnigents" target="_blank" rel="noreferrer">
+              <a href="https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent" target="_blank" rel="noreferrer">
                 One-click deploy
               </a>
             </td>
@@ -50,7 +50,7 @@ export default function Page() {
       <h2>Render</h2>
 
       <p>
-        <a href="https://render.com/deploy?repo=https://github.com/Omnigents/omnigents" target="_blank" rel="noreferrer">
+        <a href="https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent" target="_blank" rel="noreferrer">
           One-click deploy
         </a>
         . Render provisions the app and managed Postgres over HTTPS.

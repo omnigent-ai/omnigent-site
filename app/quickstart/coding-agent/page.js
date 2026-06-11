@@ -85,6 +85,18 @@ export default function Page() {
         <li>Persistent history. Every conversation is saved automatically.</li>
       </ul>
 
+      <p>
+        These are things you can do in Omnigent that you can{"'"}t do with Claude Code
+        or Codex alone:
+      </p>
+      <ul>
+        <li><strong>Comment on files</strong> and have the agent resolve your feedback inline.</li>
+        <li><strong>Access from your phone</strong> while the agent runs on your laptop or a server.</li>
+        <li><strong>Fork a session</strong> into a different coding agent to try a different approach.</li>
+        <li><strong>Invite teammates</strong> to your session for real-time pair programming.</li>
+        <li><strong>Switch agents mid-conversation</strong> without losing history.</li>
+      </ul>
+
       <h3>Desktop app</h3>
 
       <p>
@@ -195,18 +207,18 @@ export default function Page() {
 
       <hr />
 
-      <h2>Going further</h2>
+      <h2>What{"'"}s next</h2>
 
-      <p>
-        <code>omni claude</code> and <code>omni codex</code> require no
-        configuration, but coding agents are just a{" "}
-        <Link href="/docs/build/harnesses">harness</Link> under the hood. You
-        can create a YAML config that uses Claude Code or Codex as the harness,
-        then add custom model switches, policies, tools, or let multiple coding
-        agents collaborate together. See{" "}
-        <Link href="/docs/build/overview">Build Your Omnigent</Link> for how to
-        set this up.
-      </p>
+      <ul>
+        <li>
+          <Link href="/quickstart/multi-agent">Try multi-agent</Link> — run Debby
+          for a multi-model debate, or Polly for multi-agent coding orchestration.
+        </li>
+        <li>
+          <Link href="/quickstart/custom-omnigent">Build a custom agent</Link> — define
+          your own agent in a YAML file with custom tools, policies, and sub-agents.
+        </li>
+      </ul>
     </>
   );
 }

@@ -273,7 +273,7 @@ description: >-
       <p>
         The{" "}
         <a
-          href="https://github.com/Omnigents/omnigents/tree/main/examples/polly"
+          href="https://github.com/omnigent-ai/omnigent/tree/main/examples/polly"
           target="_blank"
           rel="noreferrer"
         >

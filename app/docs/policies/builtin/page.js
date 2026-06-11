@@ -8,7 +8,7 @@ export default function Page() {
       <h1>Builtin Policies</h1>
 
       <p>
-        Omnigent ships with policies for common guardrails, organized into four categories. Your
+        Omnigent ships with policies for common guardrails, organized into seven categories. Your
         omnigent can apply any of these by name when you{" "}
         <Link href="/docs/policies/overview#adding-a-policy">ask it to add a policy</Link>, or you
         can reference them in YAML by their full path in the <code>handler</code> field.
@@ -140,7 +140,11 @@ export default function Page() {
           <tr>
             <td><code>block_working_dir_changes</code></td>
             <td>Blocks shell commands that change the working directory.</td>
-            <td>None</td>
+            <td>
+              <code>block_cd</code> (bool), <code>block_worktree</code> (bool),{" "}
+              <code>allowed_dirs</code> (string[]), <code>action</code> (<code>&quot;deny&quot;</code>{" "}
+              or <code>&quot;ask&quot;</code>)
+            </td>
           </tr>
         </tbody>
       </table>
@@ -163,6 +167,82 @@ export default function Page() {
               models.
             </td>
             <td>None</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>CEL</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Policy</th>
+            <th>What it does</th>
+            <th>Parameters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>cel_policy</code></td>
+            <td>
+              Write custom policy logic using CEL (Common Expression Language), a safe,
+              non-Turing-complete expression language.
+            </td>
+            <td>
+              <code>expression</code> (CEL expression string), <code>reason</code> (deny message)
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Prompt</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Policy</th>
+            <th>What it does</th>
+            <th>Parameters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>prompt_policy</code></td>
+            <td>
+              Evaluate policy decisions using an LLM. The policy sends the event context to a model
+              and interprets the response as ALLOW/ASK/DENY. Useful for nuanced decisions that
+              can{"'"}t be expressed as static rules.
+            </td>
+            <td>
+              <code>prompt</code> (system instructions for the evaluator model)
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Risk Score</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Policy</th>
+            <th>What it does</th>
+            <th>Parameters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>risk_score_policy</code></td>
+            <td>
+              Accumulate a risk score from tool calls and sensitive data labels. Escalates guarded
+              tools to ASK or DENY once the score exceeds a threshold.
+            </td>
+            <td>
+              <code>threshold</code> (int), <code>tool_points</code> (object mapping tool names to
+              points), <code>sensitive_labels</code> (object mapping labels to points),{" "}
+              <code>guarded_tools</code> (string[]), <code>escalate_action</code> (<code>&quot;ASK&quot;</code>{" "}
+              or <code>&quot;DENY&quot;</code>)
+            </td>
           </tr>
         </tbody>
       </table>

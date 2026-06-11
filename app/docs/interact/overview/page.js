@@ -7,6 +7,12 @@ export default function Page() {
     <>
       <h1>Interact with your Omnigent</h1>
 
+      <p>
+        Once an agent is running, Omnigent gives you multiple real-time surfaces: terminal, web UI,
+        mobile, and desktop. They all connect to the same persistent, shareable session, so you can
+        start work in one place and keep going anywhere.
+      </p>
+
       <h2>Starting a session</h2>
 
       <pre><code>{"omni claude                          # Claude Code\nomni codex                           # Codex\nomni run agent.yaml                  # custom omnigent\nomni run ./my-agent/                 # directory with config.yaml"}</code></pre>

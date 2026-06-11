@@ -130,17 +130,17 @@ MLF  = data_uri("public/logos/observability/mlflow.svg")
 OTEL = data_uri("public/logos/observability/opentelemetry.svg")
 infra_logos = [  # (cx, cy, w, h, href)
     # persistence
-    (470, 460, 56, 56, PG),
+    (560, 460, 56, 56, PG),
     # deploy: Docker over Railway + Fly.io
     (690, 436, 50, 50, DOCK),
     (661, 492, 48, 48, RAIL),
     (719, 492, 48, 48, FLY),
     # tracing: MLflow (wordmark) + OpenTelemetry, side by side
-    (872, 461, 72, 30, MLF),
-    (938, 461, 42, 42, OTEL),
+    (828, 461, 72, 30, MLF),
+    (888, 461, 42, 42, OTEL),
 ]
 # one connector from the server to each cluster
-for tx, ty in [(470, 432), (690, 408), (905, 436)]:
+for tx, ty in [(560, 432), (690, 408), (850, 436)]:
     parts.append(dotted(718, 352, tx, ty))
 
 # ---------- left inputs (real agent logos) ----------

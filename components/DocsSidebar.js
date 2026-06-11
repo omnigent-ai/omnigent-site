@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const PAGES = [
   { href: "/quickstart/install", label: "Install Omnigent" },
   { href: "/quickstart/coding-agent", label: "Tutorial: Coding Agent" },
-  { href: "/quickstart/multi-agent", label: "Tutorial: Multi-AI Agents" },
+  { href: "/quickstart/multi-ai", label: "Tutorial: Multi-AI Agents" },
   { href: "/quickstart/collaborate", label: "Tutorial: Collaborate from Anywhere" },
 ];
 

@@ -38,8 +38,19 @@ export default function Page() {
 
       <p>
         Watch it work in the terminal. Then open{" "}
-        <code>http://localhost:6767</code> in your browser.
+        <code>http://localhost:6767</code> in your browser to see the web UI.
       </p>
+
+      <p>
+        The web UI shows your conversation on the left and a right panel with
+        four tabs: <strong>Files</strong> (browse and edit files the agent
+        created), <strong>Agents</strong> (sub-agents if any),{" "}
+        <strong>Terminals</strong> (running shells), and{" "}
+        <strong>Todos</strong>. Everything syncs with the terminal in real time.
+      </p>
+
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/docs/single-harness-demo.gif" alt="Omnigent web UI running a coding agent session" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <h2>3. Try what native Claude Code can{"'"}t do</h2>
 
@@ -56,12 +67,18 @@ export default function Page() {
         No need to describe the location in chat.
       </p>
 
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/docs/leave-comment.png" alt="Leaving an inline comment on agent output" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+
       <h3>Edit files directly</h3>
       <p>
         Open any file the agent created in the built-in editor. Make changes
         yourself with syntax highlighting. The agent can see your edits and
         continue from there.
       </p>
+
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/docs/markdown-editor.gif" alt="Editing a file in the Omnigent web UI" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <h3>Paste an image</h3>
       <p>
@@ -94,7 +111,7 @@ export default function Page() {
 
       <ul>
         <li>
-          <Link href="/quickstart/multi-agent">Try multi-AI agents</Link> to
+          <Link href="/quickstart/multi-ai">Try multi-AI agents</Link> to
           see Claude and GPT debate each other.
         </li>
         <li>

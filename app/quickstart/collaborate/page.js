@@ -57,9 +57,10 @@ omni host https://your-server.up.railway.app`}</code></pre>
       <h2>3. Access from your phone</h2>
 
       <p>
-        Open your server URL on your phone{"'"}s browser. You see the same web UI
-        with the same sessions. Start a task on your laptop, check progress from
-        your phone over lunch, answer an approval prompt from the coffee line.
+        Open <code>https://your-server.up.railway.app</code> on your phone{"'"}s
+        browser (the same URL from step 1). You see the same web UI with the
+        same sessions. Start a task on your laptop, check progress from your
+        phone over lunch, answer an approval prompt from the coffee line.
       </p>
 
       <h2>4. Share a session with a teammate</h2>

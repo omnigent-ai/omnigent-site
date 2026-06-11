@@ -35,23 +35,21 @@ export default function Page() {
       <p>
         Click the info button <code>(i)</code> at the top of the page to open the
         session panel. You{"'"}ll see the current session cost and a{" "}
-        <strong>Policies</strong> section. Hit the <code>+</code> button to add a
-        new built-in policy.
+        <strong>Policies</strong> section. Hit the <code>+</code> button, then pick
+        a policy from the list. There are plenty to choose from — for this tutorial
+        we{"'"}ll use <strong>Session Cost Budget</strong>, which keeps an eye on how
+        much the session is spending on the model.
       </p>
-
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/policy-add-policy.gif" alt="Opening the session info panel, picking a policy, and adding the Session Cost Budget" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <p>
-        There are plenty of policies to choose from. For this tutorial we{"'"}ll
-        pick <strong>Session Cost Budget</strong>, which keeps an eye on how much
-        the session is spending on the model.
+        The clip below walks through the whole flow: opening the panel, choosing the
+        policy, and filling in its settings.
       </p>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/policy-cost-budget-config.png" alt="Configuring the Session Cost Budget policy" style={{ display: "block", width: "100%", maxWidth: "380px", borderRadius: "8px", margin: "1rem 0" }} />
+      <img src="/images/docs/policy-add-policy.gif" alt="Opening the session info panel, choosing Session Cost Budget, and configuring its limits" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
-      <p>The cost policy gives you two kinds of guardrails:</p>
+      <p>As you can see in the clip, the cost policy gives you two kinds of guardrails:</p>
 
       <ul>
         <li>
@@ -70,8 +68,9 @@ export default function Page() {
       </ul>
 
       <p>
-        Fill in the values and click <strong>Add</strong>. The policy is now live
-        on this session.
+        Once you fill in the values and click <strong>Add</strong>, the policy goes
+        live on the session right away — you{"'"}ll see it listed under{" "}
+        <strong>Policies</strong> in the panel.
       </p>
 
       <h2>3. Watch the policy in action</h2>

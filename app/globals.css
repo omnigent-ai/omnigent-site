@@ -187,6 +187,16 @@ hr {
   font-size: 3.1rem;
   margin: 0 0 1.2rem;
 }
+.hero-logo {
+  margin: 0 0 1.5rem;
+}
+.hero-logo img {
+  display: block;
+  width: 100%;
+  max-width: 30rem;
+  height: auto;
+  margin: 0 auto;
+}
 .hero .lede {
   font-size: 1.25rem;
   color: var(--fg-soft);

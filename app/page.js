@@ -59,15 +59,12 @@ export default function Home() {
               <div className="pillar">
                 <h3>Composition</h3>
                 <p>
-                  You describe an agent declaratively, in a small YAML file,
-                  above the level of any one harness. The same definition runs
-                  on the Claude Agent SDK, OpenAI Agents, Codex, or Pi, and
-                  switching the harness underneath is a one-line change. The
-                  patterns that move quality — advisor models, difficulty-based
-                  routing, multi-agent debate, supervisors delegating to
-                  sub-agents — become easy to express and reuse, whether your
-                  agent writes code or runs a research question past two model
-                  vendors and has them argue it out.
+                  The best results increasingly come from combining models and
+                  techniques: an advisor model here, a router there, two
+                  harnesses debating to raise quality. And the &ldquo;best&rdquo;
+                  harness keeps changing as models evolve. How do you compose
+                  those pieces, or switch harnesses, without rewriting
+                  everything?
                 </p>
                 <figure style={{ margin: "1.6rem 0 0" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -84,15 +81,12 @@ export default function Home() {
               <div className="pillar">
                 <h3>Control</h3>
                 <p>
-                  Policies check every action and either allow it, block it, or
-                  pause to ask you first. They are stateful: a policy can notice
-                  that a session already read a sensitive table and then refuse
-                  to let that same session reach an external endpoint.
-                  Cost-based policies warn on spend, cap what a sub-agent can
-                  burn, and route easy work to cheaper models. Underneath sits a
-                  strong OS-level sandbox that makes a real &ldquo;YOLO
-                  mode&rdquo; safe for any harness — so you can let an agent run
-                  at full speed without watching it every second.
+                  Agents are held back today because we don&rsquo;t fully trust
+                  them. Can you let an agent run at full speed and still
+                  guarantee it won&rsquo;t delete prod, leak sensitive data, or
+                  quietly burn $1,000 on a bad idea? Right now the answer is
+                  usually &ldquo;watch it closely,&rdquo; which defeats the
+                  purpose.
                 </p>
                 <figure style={{ margin: "1.6rem 0 0" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -113,13 +107,10 @@ export default function Home() {
               <div className="pillar">
                 <h3>Collaboration</h3>
                 <p>
-                  Share a live agent session the way you would share a doc.
-                  Teammates can watch your agent work in real time, leave
-                  comments for it to address, co-drive it on your machine, or
-                  fork the conversation to continue on their own. Every session
-                  is saved in a central history store, so the work doesn&rsquo;t
-                  live only on one laptop — and you can pick it back up from your
-                  phone.
+                  You just spent two hours getting something right with an agent,
+                  whether that&rsquo;s a refactor or a market analysis. Why
+                  can&rsquo;t you invite a colleague into that same session to
+                  review it, or hand it off, the way you&rsquo;d share a doc?
                 </p>
                 <figure style={{ margin: "1.6rem 0 0" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}

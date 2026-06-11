@@ -13,6 +13,9 @@ export default function Page() {
         with your agent.
       </p>
 
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/docs/terminal.png" alt="Omnigent terminal session" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+
       <h2>Start a terminal session</h2>
 
       <p>

@@ -1,0 +1,36 @@
+name: External link check
+
+# Advisory, NON-BLOCKING sweep of external (http/https) links across the site.
+# External checks are inherently flaky — rate limits, transient remote outages,
+# and CI-IP blocking cause failures unrelated to any code change — so they never
+# gate PRs. The deterministic internal/anchor/relative checks (run with
+# `bun run lint:links`) are the gate. This workflow runs weekly and on demand; a
+# failed external check is surfaced in the logs, not enforced (continue-on-error).
+on:
+  schedule:
+    - cron: "0 9 * * 1" # Mondays 09:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: link-check-external-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  external-links:
+    name: External links (advisory)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # The link checker has no dependencies (plain Node/Bun stdlib + global
+      # fetch), so no install step is needed — `bun run lint:links` just executes
+      # scripts/check-links.mjs.
+      - name: Check external links (non-blocking)
+        run: bun run lint:links -- --external
+        continue-on-error: true

@@ -36,7 +36,7 @@ export default function Page() {
 
       <p>
         Use the <code>/model</code> command inside any running session to switch models on the fly.
-        The agent keeps its conversation history and tool state; only the underlying model changes.
+        The agent keeps its conversation history and tool state – only the underlying model changes.
       </p>
 
       <h2>Credentials</h2>

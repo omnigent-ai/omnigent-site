@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const SECTIONS = [
   {
-    title: "Use Omnigent",
+    title: "Use Cases",
     pages: [],
     subsections: [
       {
@@ -38,7 +38,7 @@ const SECTIONS = [
     ],
   },
   {
-    title: "Interact",
+    title: "Interfaces",
     pages: [
       { href: "/docs/interact/overview", label: "Overview" },
       { href: "/docs/interact/terminal", label: "Terminal" },
@@ -48,29 +48,30 @@ const SECTIONS = [
     ],
   },
   {
+    title: "Collaborative Server",
+    pages: [
+      { href: "/docs/deploy/overview", label: "Deployment Overview" },
+      { href: "/docs/deploy/database", label: "Database" },
+      { href: "/docs/deploy/docker", label: "Docker" },
+      { href: "/docs/deploy/cloud", label: "Cloud Platforms" },
+      { href: "/docs/deploy/cloud-runner", label: "Cloud Runner" },
+      { href: "/docs/collaborate/overview", label: "Collaboration" },
+      { href: "/docs/collaborate/auth", label: "Auth & SSO" },
+    ],
+  },
+  {
     title: "Contextual Policies",
     pages: [
       { href: "/docs/policies/overview", label: "Overview" },
       { href: "/docs/policies/builtin", label: "Builtin Policies" },
       { href: "/docs/policies/custom", label: "Custom Policies" },
-      { href: "/docs/policies/os-sandbox", label: "Omnibox" },
     ],
   },
   {
-    title: "Deploy",
+    title: "Omnibox",
     pages: [
-      { href: "/docs/deploy/overview", label: "Overview" },
-      { href: "/docs/deploy/database", label: "Database" },
-      { href: "/docs/deploy/docker", label: "Docker" },
-      { href: "/docs/deploy/cloud", label: "Cloud Platforms" },
-      { href: "/docs/deploy/cloud-runner", label: "Cloud Runner" },
-    ],
-  },
-  {
-    title: "Collaborate",
-    pages: [
-      { href: "/docs/collaborate/overview", label: "Overview" },
-      { href: "/docs/collaborate/auth", label: "Auth & SSO" },
+      { href: "/docs/omnibox", label: "Overview" },
+      { href: "/docs/policies/os-sandbox", label: "OS Sandbox Config" },
     ],
   },
 ];

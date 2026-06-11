@@ -62,7 +62,7 @@ export default function Home() {
                 routing, and risk-based escalation.
               </li>
               <li>
-                <strong><Link href="/docs/policies/os-sandbox">Secure OS sandbox</Link>:</strong> restrict filesystem
+                <strong><Link href="/docs/omnibox">Secure OS sandbox</Link>:</strong> restrict filesystem
                 and network access. Hide credentials from the agent, and broker access to them.
                 Run YOLO mode safely.
               </li>

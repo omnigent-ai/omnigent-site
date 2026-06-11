@@ -120,7 +120,7 @@ export default function Page() {
         <Link href="/docs/deploy/docker">Docker</Link> for ways to host it.
       </p>
 
-      <h2>Run the runner in a cloud sandbox</h2>
+      <h2>Deploy the runner in a cloud sandbox</h2>
 
       <p>
         Moving the runner to a cloud{" "}

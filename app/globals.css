@@ -170,6 +170,23 @@ hr {
   flex-wrap: wrap;
   margin-bottom: 2rem;
 }
+.hero-desktop {
+  font-size: 0.9rem;
+  color: var(--fg-soft);
+  margin: -1rem 0 2rem;
+}
+.hero-desktop a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 550;
+  color: var(--fg);
+  vertical-align: bottom;
+}
+.hero-desktop a svg {
+  display: block;
+  flex-shrink: 0;
+}
 .features {
   padding-left: 1.2rem;
 }

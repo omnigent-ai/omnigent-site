@@ -2,8 +2,8 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import InstallTabs from "@/components/InstallTabs";
-import { GitHubIcon, DiscordIcon } from "@/components/icons";
-import { GITHUB_URL, DISCORD_URL } from "@/components/links";
+import { GitHubIcon, DiscordIcon, AppleIcon } from "@/components/icons";
+import { GITHUB_URL, DISCORD_URL, MACOS_DOWNLOAD_URL } from "@/components/links";
 
 export default function Home() {
   return (
@@ -30,6 +30,12 @@ export default function Home() {
               <DiscordIcon /> Join the Discord
             </a>
           </div>
+          <p className="hero-desktop">
+            Desktop app:{" "}
+            <a href={MACOS_DOWNLOAD_URL}>
+              <AppleIcon size={14} /> Download for macOS
+            </a>
+          </p>
         </section>
 
         <div className="wrap">

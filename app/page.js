@@ -2,8 +2,7 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import InstallTabs from "@/components/InstallTabs";
-import { GitHubIcon, DiscordIcon, AppleIcon } from "@/components/icons";
-import { GITHUB_URL, DISCORD_URL, MACOS_DOWNLOAD_URL } from "@/components/links";
+import CtaButtons from "@/components/CtaButtons";
 
 export default function Home() {
   return (
@@ -29,20 +28,7 @@ export default function Home() {
             a session API, policies, sandboxing, and a UI on every device.
           </p>
           <InstallTabs />
-          <div className="hero-cta">
-            <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-              <GitHubIcon /> View on GitHub
-            </a>
-            <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
-              <DiscordIcon /> Join the Discord
-            </a>
-          </div>
-          <p className="hero-desktop">
-            Desktop app:{" "}
-            <a href={MACOS_DOWNLOAD_URL}>
-              <AppleIcon size={14} /> Download for macOS
-            </a>
-          </p>
+          <CtaButtons />
         </section>
 
         <section className="hero-demo" aria-label="Product demo">
@@ -197,19 +183,11 @@ omni run my-agent/       # or run your own agent`}</code>
 
           {/* Build with us */}
           <section className="section center">
-            <h2>Early days</h2>
             <p className="muted" style={{ maxWidth: "38rem", margin: "0 auto 1.8rem" }}>
-              Omnigent is alpha and built in the open. Try it, break it, and
-              tell us on Discord.
+              Omnigent is alpha and built in the open. Try it and give us
+              feedback on GitHub and Discord.
             </p>
-            <div className="hero-cta">
-              <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-                <GitHubIcon /> View on GitHub
-              </a>
-              <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
-                <DiscordIcon /> Join the Discord
-              </a>
-            </div>
+            <CtaButtons />
           </section>
         </div>
       </main>

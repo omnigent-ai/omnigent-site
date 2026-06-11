@@ -79,13 +79,11 @@ export default function Page() {
 
       <pre><code>{"docker compose up -d    # restart to apply"}</code></pre>
 
-      <div className="note">
-        <p>
-          The only outside step is creating an app with your provider (e.g. Google Cloud Console, or
-          GitHub {">"} Settings {">"} Developer settings) to get the client ID and secret. Set its
-          callback URL to <code>{"https://<your-domain>/auth/callback"}</code>.
-        </p>
-      </div>
+      <p>
+        The only outside step is creating an app with your provider (e.g. Google Cloud Console, or
+        GitHub {">"} Settings {">"} Developer settings) to get the client ID and secret. Set its
+        callback URL to <code>{"https://<your-domain>/auth/callback"}</code>.
+      </p>
 
       <h2 id="header-based-auth">Header-based auth</h2>
 

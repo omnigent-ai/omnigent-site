@@ -84,7 +84,8 @@ instructions: prompts/system.md`}
 
       <p>
         Skills in the agent&apos;s <code>skills/</code> directory are always available. The agent
-        can use them via <code>/code-review</code> or by calling <code>load_skill</code>.
+        can invoke each skill by its slash command, such as <code>/code-review</code>, or load it
+        with <code>load_skill</code>.
       </p>
 
       <p>

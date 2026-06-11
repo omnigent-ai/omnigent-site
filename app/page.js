@@ -147,10 +147,10 @@ omnigent run my-agent/   # or run your own agent`}</code>
 
           {/* Build with us */}
           <section className="section center">
-            <h2>It&rsquo;s early, on purpose</h2>
+            <h2>Early days</h2>
             <p className="muted" style={{ maxWidth: "38rem", margin: "0 auto 1.8rem" }}>
-              Omnigent is alpha and built in the open. Try it and tell us where
-              it breaks. The Discord is the fastest way to reach us.
+              Omnigent is alpha and built in the open. Try it, break it, and
+              tell us on Discord.
             </p>
             <div className="hero-cta">
               <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">

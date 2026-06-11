@@ -15,6 +15,13 @@ export default function Page() {
         showing how many sessions are waiting, and multiple independent windows.
       </p>
 
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/docs/desktop-app.png"
+        alt="Omnigent native desktop app showing the session chat and file workspace"
+        style={{ width: "100%", borderRadius: "8px" }}
+      />
+
       <h2>Why use it over the browser?</h2>
 
       <ul>

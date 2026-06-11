@@ -2,6 +2,7 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import Command from "@/components/Command";
+import RotatingWord from "@/components/RotatingWord";
 import { GitHubIcon, DiscordIcon } from "@/components/icons";
 import { GITHUB_URL, DISCORD_URL } from "@/components/links";
 
@@ -14,11 +15,14 @@ export default function Home() {
         {/* Hero */}
         <section className="hero wrap">
           <span className="tag">Open source · Alpha</span>
-          <h1>A meta-harness for AI agents</h1>
+          <h1>
+            Run{" "}
+            <RotatingWord items={["Claude Code", "Codex", "Pi", "your own agent"]} />{" "}
+            anywhere
+          </h1>
           <p className="lede">
-            Run Claude Code, Codex, Pi, or a custom agent from one local server.
-            Reach any session from your terminal, browser, or phone, and share
-            it live.
+            One command starts a local server. Reach any session from your
+            terminal, browser, or phone.
           </p>
           <ul className="hero-points">
             <li>

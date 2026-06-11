@@ -136,7 +136,7 @@ omni claude    # run your agent with a web UI and collaboration`}</code>
               feedback on Discord.
             </p>
             <div className="hero-cta">
-              <a href={DISCORD_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
+              <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
                 <DiscordIcon /> Join the Discord
               </a>
             </div>

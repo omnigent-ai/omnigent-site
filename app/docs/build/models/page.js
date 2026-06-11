@@ -249,8 +249,8 @@ codex login          # for ChatGPT`}
       <div className="note">
         <p>
           <strong>Note:</strong> For Claude Code, point at OpenRouter&apos;s Anthropic-compatible
-          endpoint (<code>...\/api</code>, <strong>not</strong> <code>...\/api/v1</code>); for Codex
-          and the OpenAI-agents harness, use the OpenAI-compatible <code>...\/api/v1</code>.
+          endpoint (<code>.../api</code>, <strong>not</strong> <code>.../api/v1</code>); for Codex
+          and the OpenAI-agents harness, use the OpenAI-compatible <code>.../api/v1</code>.
         </p>
       </div>
 

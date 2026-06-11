@@ -39,8 +39,8 @@ export default function Page() {
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/images/docs/debby-results-scroll-short.gif"
-        alt="Debby showing Claude and GPT responses side by side"
+        src="/images/docs/debby-quickstart-chicken-egg.gif"
+        alt="Debby showing Claude and GPT responses to the chicken-or-egg question"
         style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
       />
 
@@ -59,8 +59,8 @@ export default function Page() {
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/images/docs/debby-debate-synthesis-tight.png"
-        alt="Debby debate synthesis"
+        src="/images/docs/debby-quickstart-chicken-egg-debate.png"
+        alt="Debby debate synthesis for the chicken-or-egg question"
         style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
       />
 
@@ -75,6 +75,13 @@ export default function Page() {
         independent models stress-testing each other{"'"}s reasoning, not just
         two copies of the same opinion.
       </p>
+
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/docs/debby-debate-synthesis-tight.png"
+        alt="Debby debate synthesis for the monorepo-or-polyrepo question"
+        style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+      />
 
       <p>
         See <Link href="/docs/use/builtin-agents/debby">Debby reference</Link> for

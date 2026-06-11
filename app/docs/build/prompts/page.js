@@ -84,7 +84,8 @@ instructions: prompts/system.md`}
 
       <p>
         Skills in the agent&apos;s <code>skills/</code> directory are always available. The agent
-        can use them via <code>/code-review</code> or by calling <code>load_skill</code>.
+        can invoke each skill by its slash command, such as <code>/code-review</code>, or load it
+        with <code>load_skill</code>.
       </p>
 
       <p>
@@ -150,12 +151,12 @@ instructions: prompts/system.md`}
             <td>Parsed</td>
           </tr>
           <tr>
-            <td><code>model-invocation</code></td>
+            <td><code>disable-model-invocation</code></td>
             <td>Ignored</td>
             <td>Honored</td>
           </tr>
           <tr>
-            <td><code>toolsets</code></td>
+            <td><code>allowed-tools</code></td>
             <td>Ignored</td>
             <td>Honored</td>
           </tr>
@@ -163,8 +164,9 @@ instructions: prompts/system.md`}
       </table>
 
       <p>
-        If you need <code>model-invocation</code> or <code>toolsets</code> behavior, use the{" "}
-        <code>claude-native</code> harness and place those skills in <code>.claude/skills/</code>.
+        If you need <code>disable-model-invocation</code> or <code>allowed-tools</code> behavior,
+        use the <code>claude-native</code> harness and place those skills in{" "}
+        <code>.claude/skills/</code>.
       </p>
 
       <h3>SKILL.md format</h3>

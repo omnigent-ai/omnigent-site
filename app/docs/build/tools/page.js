@@ -69,7 +69,7 @@ export default function Page() {
       <p>
         To restrict which tools from a bundled server your agent can access, use the{" "}
         <code>tools</code> filter or configure{" "}
-        <Link href="/docs/build/policies">policies</Link>.
+        <Link href="/docs/policies/overview">policies</Link>.
       </p>
 
       <h3>Custom servers</h3>
@@ -133,7 +133,7 @@ export default function Page() {
           <code>{"Authorization: \"Bearer ${API_TOKEN}\""}</code>)
         </li>
         <li>
-          <strong><code>databricks_profile</code></strong>: resolves an OAuth token from your{" "}
+          <strong><code>profile</code></strong> (under <code>auth:</code>): resolves an OAuth token from your{" "}
           <code>~/.databrickscfg</code>:
         </li>
       </ul>
@@ -144,7 +144,8 @@ export default function Page() {
   internal-api:
     type: mcp
     url: https://my-workspace.databricks.com/mcp
-    databricks_profile: my-profile`}
+    auth:
+      profile: my-profile`}
         </code>
       </pre>
 
@@ -233,7 +234,7 @@ export default function Page() {
       <p>
         A sub-agent tool can have its own{" "}
         <Link href="/docs/build/harnesses">harness</Link>, model, tools, and{" "}
-        <Link href="/docs/build/policies">policies</Link>. The <code>pass_history</code> flag
+        <Link href="/docs/policies/overview">policies</Link>. The <code>pass_history</code> flag
         controls whether the parent&apos;s conversation history is forwarded, and{" "}
         <code>max_sessions</code> limits concurrent invocations.
       </p>

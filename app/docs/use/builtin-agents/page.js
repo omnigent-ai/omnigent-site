@@ -7,7 +7,7 @@ export default function Page() {
     <>
       <h1>Built-in Multi-AI Agents</h1>
       <p>
-        Omnigent ships with multi-agent orchestrators that combine different AI models
+        Omnigent ships with multi-agent orchestrators that combine different AI agents
         in a single workflow. Both are ready to run out of the box, with more coming.
       </p>
 
@@ -21,7 +21,8 @@ export default function Page() {
       <h2><Link href="/docs/use/builtin-agents/debby">Debby</Link></h2>
       <p>
         Multi-model brainstorming partner. Sends every question to both Claude and GPT,
-        with a <code>/debate</code> skill for multi-round critique. Run <code>omni run examples/debby/</code>.
+        with a <code>/debate</code> skill for multi-round critique. Run{" "}
+        <code>omni examples/debby/</code> from a git checkout.
       </p>
 
       <hr />

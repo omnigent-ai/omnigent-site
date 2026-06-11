@@ -14,17 +14,25 @@ export default function Home() {
         {/* Hero */}
         <section className="hero wrap">
           <span className="tag">Open source · Alpha</span>
-          <h1>A meta-harness for AI agents</h1>
+          <h1 className="hero-logo">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/omnigent-home-page-OG.png"
+              alt="Omnigent, a meta-harness for AI agents"
+              width={1200}
+              height={300}
+            />
+          </h1>
           <p className="lede">
             A common layer over Claude Code, Codex, Pi, and the agents you
             write yourself: swap or combine harnesses without rewriting, keep
             them in check with policies and sandboxing, and pick the same live
-            session back up anywhere — on your phone, or with a teammate.
+            session back up anywhere, on your phone or with a teammate.
           </p>
           <InstallTabs />
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-              <GitHubIcon /> Star on GitHub
+              <GitHubIcon /> View on GitHub
             </a>
             <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
               <DiscordIcon /> Join the Discord
@@ -38,33 +46,58 @@ export default function Home() {
           </p>
         </section>
 
-        <div className="wrap">
-          {/* Architecture */}
-          <section className="section">
-            <h2>How it fits together</h2>
-            <p className="arch-outro">
-              A runner wraps any agent in a sandboxed, uniform session. A server
-              adds policies and a shared history, and exposes every session over
-              the terminal, the web, and a REST API.
-            </p>
-            <figure className="framed">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/architecture.png"
-                alt="Omnigent architecture: CLI agents and custom agents run through a runner that sandboxes them, then a server that adds policies and history, reachable from a terminal, the web, and a REST API."
-                width={930}
-                height={430}
-              />
-            </figure>
-          </section>
+        <section className="hero-demo" aria-label="Product demo">
+          <div className="wrap-wide">
+            <video
+              className="hero-demo-video"
+              src="/videos/demo.mov"
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls
+              preload="metadata"
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </section>
 
-          <hr />
+        <section className="section">
+          <div className="wrap">
+            <h2>Features</h2>
+            <ul className="features">
+              <li>
+                <strong><Link href="/docs/use/builtin-agents">Polly &amp; Debby</Link>:</strong> built-in multi-AI agents (a
+                coding orchestrator and a model debate). Build your own in YAML.
+              </li>
+              <li>
+                <strong><Link href="/docs/policies/overview">Contextual Policies</Link>:</strong> stateful spend caps, model
+                routing, and risk-based escalation.
+              </li>
+              <li>
+                <strong><Link href="/docs/policies/os-sandbox">Flexible OS sandbox</Link>:</strong> restrict filesystem,
+                network, and env to run agents in YOLO mode safely.
+              </li>
+            </ul>
+          </div>
+        </section>
 
-          {/* Three pillars */}
-          <section className="section">
+        {/* Three pillars — wider layout than the rest of the page */}
+        <section className="section section-pillars">
+          <div className="wrap-wide">
             <h2>What Omnigent gives you</h2>
             <div className="pillars">
               <div className="pillar">
+                <figure className="pillar-icon pillar-icon-sm">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/composability-icon.svg"
+                    alt="Omnigent mascots stacked in layers to illustrate composability."
+                    width={80}
+                    height={81}
+                  />
+                </figure>
                 <h3>Composition</h3>
                 <p>
                   The best results increasingly come from combining models and
@@ -74,19 +107,18 @@ export default function Home() {
                   those pieces, or switch harnesses, without rewriting
                   everything?
                 </p>
-                <figure style={{ margin: "1.6rem 0 0" }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/images/composability-icon.svg"
-                    alt="Omnigent mascots stacked in layers to illustrate composability."
-                    width={80}
-                    height={81}
-                    style={{ width: "min(100%, 14rem)", height: "auto" }}
-                  />
-                </figure>
               </div>
 
               <div className="pillar">
+                <figure>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/sandbox.png"
+                    alt="Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent."
+                    width={420}
+                    height={230}
+                  />
+                </figure>
                 <h3>Control</h3>
                 <p>
                   Agents are held back today because we don&rsquo;t fully trust
@@ -96,19 +128,18 @@ export default function Home() {
                   usually &ldquo;watch it closely,&rdquo; which defeats the
                   purpose.
                 </p>
-                <figure style={{ margin: "1.6rem 0 0" }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/images/sandbox.png"
-                    alt="Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent."
-                    width={420}
-                    height={230}
-                    style={{ maxWidth: "min(100%, 26rem)" }}
-                  />
-                </figure>
               </div>
 
               <div className="pillar">
+                <figure>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/high-five.svg"
+                    alt="Two Omnigent mascots high-fiving to celebrate collaboration."
+                    width={231}
+                    height={102}
+                  />
+                </figure>
                 <h3>Collaboration</h3>
                 <p>
                   You just spent two hours getting something right with an agent,
@@ -116,42 +147,53 @@ export default function Home() {
                   can&rsquo;t you invite a colleague into that same session to
                   review it, or hand it off, the way you&rsquo;d share a doc?
                 </p>
-                <figure style={{ margin: "1.6rem 0 0" }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/images/high-five.svg"
-                    alt="Two Omnigent mascots high-fiving to celebrate collaboration."
-                    width={231}
-                    height={102}
-                    style={{ maxWidth: "min(100%, 18rem)" }}
-                  />
-                </figure>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <hr />
+        <section className="section section-no-top">
+          <div className="wrap-wide">
+            <hr />
 
-          {/* Quick start */}
-          <section className="section">
+            <h2>How it fits together</h2>
+            <p className="arch-outro">
+              A runner wraps any agent in a sandboxed, uniform session. A server
+              adds policies and a shared history, and exposes every session over
+              the terminal, the web, and a REST API.
+            </p>
+            <figure className="framed section-graphic">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/architecture.png"
+                alt="Omnigent architecture: CLI agents and custom agents run through a runner that sandboxes them, then a server that adds policies and history, reachable from a terminal, the web, and a REST API."
+                width={930}
+                height={430}
+              />
+            </figure>
+
+            <hr />
+
             <h2>Try it</h2>
             <p className="muted">
               Install, then start an agent in your terminal. A local web UI opens
               too, for the browser or your phone.
             </p>
-            <pre>
+            <pre className="section-code">
               <code>{`pip install omnigent
-omnigent                 # pick a model and start chatting
-omnigent claude          # or launch a specific harness
-omnigent run my-agent/   # or run your own agent`}</code>
+omni                     # Polly, the default multi-agent orchestrator
+omni claude              # or launch a specific harness
+omni run my-agent/       # or run your own agent`}</code>
             </pre>
             <p>
               Read the <Link href="/quickstart/install">installation guide</Link>,
               then <Link href="/docs/use/custom-agents">write your own agent</Link> in
               a few lines of YAML.
             </p>
-          </section>
+          </div>
+        </section>
 
+        <div className="wrap">
           <hr />
 
           {/* Build with us */}
@@ -163,7 +205,7 @@ omnigent run my-agent/   # or run your own agent`}</code>
             </p>
             <div className="hero-cta">
               <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-                <GitHubIcon /> Star on GitHub
+                <GitHubIcon /> View on GitHub
               </a>
               <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
                 <DiscordIcon /> Join the Discord

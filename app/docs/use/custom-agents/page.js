@@ -36,8 +36,7 @@ Agent: Created "docs-reviewer" agent. Opening a new session with it now.
         Every custom agent lives in its own directory with a <code>config.yaml</code> at
         the root. You can place the directory anywhere on disk. Run it with:
       </p>
-      <pre><code>{`omni run ./my-agent/              # directory containing config.yaml
-omni run ./my-agent/config.yaml   # or point to the file directly`}</code></pre>
+      <pre><code>{`omni run ./my-agent/              # directory containing config.yaml`}</code></pre>
 
       <h2>What you can configure</h2>
       <p>The config file supports these sections:</p>
@@ -48,12 +47,16 @@ omni run ./my-agent/config.yaml   # or point to the file directly`}</code></pre>
         to switch runtimes.
       </p>
       <pre><code>{`executor:
-  harness: claude`}</code></pre>
+  type: omnigent
+  config:
+    harness: claude`}</code></pre>
 
       <h3><Link href="/docs/build/models">Models &amp; Credentials</Link></h3>
       <p>Pick the LLM that powers your harness.</p>
       <pre><code>{`executor:
-  harness: claude
+  type: omnigent
+  config:
+    harness: claude
   model: claude-sonnet-4-6`}</code></pre>
 
       <h3><Link href="/docs/build/prompts">Prompts &amp; Skills</Link></h3>
@@ -74,7 +77,7 @@ instructions: AGENTS.md`}</code></pre>
     type: function
     callable: my_package.tools.summarize_file`}</code></pre>
 
-      <h3><Link href="/docs/build/policies">Policies</Link></h3>
+      <h3><Link href="/docs/policies/overview">Policies</Link></h3>
       <p>Declarative guardrails in YAML.</p>
       <pre><code>{`policies:
   rate_limit:
@@ -91,7 +94,9 @@ prompt: |
   and summarize changes with validation results.
 
 executor:
-  harness: claude
+  type: omnigent
+  config:
+    harness: claude
   model: claude-sonnet-4-6
 
 os_env:

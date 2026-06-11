@@ -51,8 +51,11 @@ export default function Page() {
       <pre><code>{"OMNIGENT_AUTH_ENABLED=1 omni server start"}</code></pre>
 
       <p>
-        <strong>Sign in.</strong> Open the web UI and sign in as <code>admin</code>. The first run
-        prints the password to the server logs.
+        <strong>Create the first admin.</strong> The server never auto-generates a password. While
+        no admin exists it reports <code>needs_setup</code>: open the web UI and create the admin
+        account there, or run <code>omni server</code> on a terminal and answer the username and
+        password prompt. For headless deploys, preset the password with{" "}
+        <code>--admin-password</code> or <code>OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD</code>.
       </p>
 
       <p>
@@ -76,13 +79,11 @@ export default function Page() {
 
       <pre><code>{"docker compose up -d    # restart to apply"}</code></pre>
 
-      <div className="note">
-        <p>
-          The only outside step is creating an app with your provider (e.g. Google Cloud Console, or
-          GitHub {">"} Settings {">"} Developer settings) to get the client ID and secret. Set its
-          callback URL to <code>{"https://<your-domain>/auth/callback"}</code>.
-        </p>
-      </div>
+      <p>
+        The only outside step is creating an app with your provider (e.g. Google Cloud Console, or
+        GitHub {">"} Settings {">"} Developer settings) to get the client ID and secret. Set its
+        callback URL to <code>{"https://<your-domain>/auth/callback"}</code>.
+      </p>
 
       <h2 id="header-based-auth">Header-based auth</h2>
 
@@ -120,7 +121,12 @@ export default function Page() {
         everyone across so they keep their sessions and admin rights:
       </p>
 
-      <pre><code>{"omni debug migrate-accounts-to-oidc <database-url> --domain yourcompany.com"}</code></pre>
+      <pre><code>{"omni debug migrate-accounts-to-oidc <database-url> --domain yourcompany.com --commit"}</code></pre>
+
+      <p>
+        Without <code>--commit</code> the command is a dry run that reports what would change
+        without modifying anything.
+      </p>
     </>
   );
 }

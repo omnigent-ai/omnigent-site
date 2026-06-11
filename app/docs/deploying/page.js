@@ -44,7 +44,7 @@ omnigent host  https://your-host`}</code></pre>
         When you&rsquo;re ready for teammates, turn on multi-user accounts with
         one environment variable (the Docker deploy sets this for you):
       </p>
-      <pre><code>OMNIGENTS_AUTH_ENABLED=1 omnigent server start</code></pre>
+      <pre><code>OMNIGENT_AUTH_ENABLED=1 omnigent server start</code></pre>
       <p>
         With auth on, open <strong>Admin → Members → Invite</strong> to create a
         single-use invite link — no email server needed. Want people to sign in

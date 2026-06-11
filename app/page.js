@@ -16,9 +16,9 @@ export default function Home() {
           <span className="tag">Open source · Alpha</span>
           <h1>
             The framework above your agent harnesses that runs them together,
-            governed and shareable. Use with Claude Code, Codex, or Pi.
+            policy-driven and shareable. Use with Claude Code, Codex, or Pi.
           </h1>
-          <Command>pip install omnigents</Command>
+          <Command>pip install omnigent</Command>
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
               <GitHubIcon /> View on GitHub
@@ -30,12 +30,33 @@ export default function Home() {
         </section>
 
         <div className="wrap">
+          {/* Features */}
+          <section className="section">
+            <h2>Features</h2>
+            <ul className="features">
+              <li>
+                <strong>Composition:</strong> describe an agent in YAML, swap the
+                harness under it in one line.
+              </li>
+              <li>
+                <strong>Control:</strong> stateful policies allow, block, or
+                pause each action; an OS-level sandbox under every agent.
+              </li>
+              <li>
+                <strong>Collaboration:</strong> share a live session, co-drive,
+                fork, or resume it from your phone.
+              </li>
+            </ul>
+          </section>
+
+          <hr />
+
           {/* Architecture */}
           <section className="section">
             <h2>How it fits together</h2>
             <p className="lede-block">
-              A <strong>runner</strong> wraps any agent in a uniform session. A{" "}
-              <strong>server</strong> adds sandboxing, policies, and a shared
+              A <strong>runner</strong> wraps any agent in a sandboxed, uniform
+              session. A <strong>server</strong> adds policies and a shared
               history, and exposes every session over the terminal, the web, and
               a REST API.
             </p>
@@ -43,7 +64,7 @@ export default function Home() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/architecture.png"
-                alt="Omnigent architecture: CLI agents and custom agents run through a runner, then a server that adds sandboxing, policies, and history, reachable from a terminal, the web, and a REST API."
+                alt="Omnigent architecture: CLI agents and custom agents run through a runner that sandboxes them, then a server that adds policies and history, reachable from a terminal, the web, and a REST API."
                 width={930}
                 height={430}
               />
@@ -61,10 +82,10 @@ export default function Home() {
               too, for the browser or your phone.
             </p>
             <pre>
-              <code>{`pip install omnigents
-omnigents                 # pick a model and start chatting
-omnigents claude          # or launch a specific harness
-omnigents run my-agent/   # or run your own agent`}</code>
+              <code>{`pip install omnigent
+omnigent                 # pick a model and start chatting
+omnigent claude          # or launch a specific harness
+omnigent run my-agent/   # or run your own agent`}</code>
             </pre>
             <p>
               Read the <Link href="/docs/installing">installation guide</Link>,
@@ -96,7 +117,7 @@ omnigents run my-agent/   # or run your own agent`}</code>
             <h3>How do I run my own agent?</h3>
             <p className="muted">
               Write a short YAML file with a prompt and a harness, then run{" "}
-              <code>omnigents run</code> on it. See the{" "}
+              <code>omnigent run</code> on it. See the{" "}
               <Link href="/docs/custom-agent">custom agent guide</Link>.
             </p>
 

@@ -51,16 +51,16 @@ export default function Page() {
       </p>
 
       <p>
-        Private IPs and cloud metadata endpoints are blocked by default, keeping the agent away
-        from your internal services.
+        Private IPs and cloud metadata endpoints are blocked by default, so the agent can{"'"}t
+        reach your internal services.
       </p>
 
       <h2>Credential injection</h2>
 
       <p>
         The agent holds a fake placeholder token instead of the real secret. When a request
-        matching your allow-list leaves the sandbox, the proxy swaps in the real credential — so
-        the agent can use a credential but never read it.
+        matching your allow-list leaves the sandbox, the proxy swaps in the real credential. The
+        agent can use a credential but never read it.
       </p>
 
       <p>
@@ -72,16 +72,16 @@ export default function Page() {
 
       <ul>
         <li>
-          <Link href="/docs/policies/os-sandbox">OS sandbox configuration</Link> — the full
-          reference: filesystem grants, egress rules, environment passthrough, and the{" "}
+          <Link href="/docs/policies/os-sandbox">OS sandbox configuration</Link>: the full
+          reference, covering filesystem grants, egress rules, environment passthrough, and the{" "}
           <code>bubblewrap</code>/Seatbelt backends.
         </li>
         <li>
-          <Link href="/docs/deploy/cloud-sandbox">Cloud sandbox</Link> — controls <em>where</em>{" "}
+          <Link href="/docs/deploy/cloud-sandbox">Cloud sandbox</Link>: controls <em>where</em>{" "}
           the runner executes. Omnibox controls <em>what it can access</em>. They compose.
         </li>
         <li>
-          <Link href="/docs/policies/overview">Contextual policies</Link> — govern behavior at the
+          <Link href="/docs/policies/overview">Contextual policies</Link>: govern behavior at the
           tool-call level. Omnibox is the hard boundary underneath.
         </li>
       </ul>

@@ -126,7 +126,7 @@ PG   = data_uri("public/logos/observability/postgresql.svg")
 DOCK = data_uri("public/logos/observability/docker.svg")
 RAIL = data_uri("public/logos/platforms/railway.png")
 FLY  = data_uri("public/logos/platforms/flyio.png")
-MLF  = data_uri("public/logos/gateways/mlflow.png")
+MLF  = data_uri("public/logos/observability/mlflow.svg")
 OTEL = data_uri("public/logos/observability/opentelemetry.svg")
 infra_logos = [  # (cx, cy, w, h, href)
     # persistence
@@ -135,9 +135,9 @@ infra_logos = [  # (cx, cy, w, h, href)
     (690, 436, 50, 50, DOCK),
     (661, 492, 48, 48, RAIL),
     (719, 492, 48, 48, FLY),
-    # tracing: MLflow + OpenTelemetry, side by side
-    (884, 462, 54, 54, MLF),
-    (938, 462, 44, 44, OTEL),
+    # tracing: MLflow (wordmark) + OpenTelemetry, side by side
+    (872, 461, 72, 30, MLF),
+    (938, 461, 42, 42, OTEL),
 ]
 # one connector from the server to each cluster
 for tx, ty in [(470, 432), (690, 408), (905, 436)]:
@@ -159,13 +159,13 @@ parts.append(img(90, 392, 44, 44, data_uri(f"{AG}/llama.png")))
 parts.append(img(156, 392, 92, 26, data_uri(f"{AG}/claude-sdk.png")))
 
 # ---------- Runner box ----------
-rx, ry, rw, rh = 320, 150, 178, 176
+rx, ry, rw, rh = 320, 146, 178, 196
 parts.append(rrect(rx, ry, rw, rh, 16, "#ffffff", ACCENT, 2.5))
 parts.append(octo(rx + 18, ry + 16, 30))
 parts.append(text(rx + 56, ry + 38, 21, 700, FG).format("Runner"))
 # host rows with logos (replaces the Sandboxing / Reliability pills)
-row_x, row_w, row_h = rx + 16, rw - 32, 34
-hy = ry + 60
+row_x, row_w, row_h = rx + 16, rw - 32, 32
+hy = ry + 58
 
 
 def host_row(y, draw_mark, label=None, full_logo=None):
@@ -195,8 +195,8 @@ def modal_mark(cx, cy):
 
 
 parts.append(host_row(hy, laptop, "Your machine"))
-parts.append(host_row(hy + 40, modal_mark, "Modal"))
-parts.append(host_row(hy + 80, None, full_logo=data_uri("public/logos/runners/daytona.png")))
+parts.append(host_row(hy + 46, modal_mark, "Modal"))
+parts.append(host_row(hy + 92, None, full_logo=data_uri("public/logos/runners/daytona.png")))
 
 # ---------- Server box ----------
 sx, sy, sw, sh = 588, 120, 262, 232

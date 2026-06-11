@@ -30,6 +30,9 @@ export default function Home() {
           </p>
           <InstallTabs />
           <CtaButtons />
+          <p className="hero-desktop">
+            One native app for all your agents — every session, in a single place.
+          </p>
         </section>
 
         <section className="hero-demo" aria-label="Product demo">
@@ -87,12 +90,9 @@ export default function Home() {
                 </figure>
                 <h3>Composition</h3>
                 <p>
-                  The best results increasingly come from combining models and
-                  techniques: an advisor model here, a router there, two
-                  harnesses debating to raise quality. And the &ldquo;best&rdquo;
-                  harness keeps changing as models evolve. How do you compose
-                  those pieces, or switch harnesses, without rewriting
-                  everything?
+                  Combine models, harnesses, and techniques for better results
+                  &mdash; and switch between them with one-line changes, no
+                  rewriting.
                 </p>
               </div>
 
@@ -108,12 +108,8 @@ export default function Home() {
                 </figure>
                 <h3>Control</h3>
                 <p>
-                  Agents are held back today because we don&rsquo;t fully trust
-                  them. Can you let an agent run at full speed and still
-                  guarantee it won&rsquo;t delete prod, leak sensitive data, or
-                  quietly burn $1,000 on a bad idea? Right now the answer is
-                  usually &ldquo;watch it closely,&rdquo; which defeats the
-                  purpose.
+                  Stateful policies that enforce cost and access guardrails at
+                  the harness layer, not in the prompt.
                 </p>
               </div>
 
@@ -129,10 +125,8 @@ export default function Home() {
                 </figure>
                 <h3>Collaboration</h3>
                 <p>
-                  You just spent two hours getting something right with an agent,
-                  whether that&rsquo;s a refactor or a market analysis. Why
-                  can&rsquo;t you invite a colleague into that same session to
-                  review it, or hand it off, the way you&rsquo;d share a doc?
+                  Share a live session by URL &mdash; review, comment, and steer
+                  together in real time, the way you&rsquo;d share a doc.
                 </p>
               </div>
             </div>
@@ -145,10 +139,11 @@ export default function Home() {
 
             <h2>Architecture</h2>
             <p className="arch-outro">
-              A runner wraps any agent in a sandboxed, uniform session — on your
+              A runner wraps any agent in a uniform, sandboxed session — on your
               laptop, or hosted in the cloud on Modal or Daytona. A server adds
-              policies and a shared history, and exposes every session over the
-              terminal, the web, and a REST API.
+              policies and shared history, and exposes every session across five
+              front-ends: a terminal, the web, a native app, mobile, and a REST
+              API.
             </p>
             <figure className="section-graphic">
               {/* eslint-disable-next-line @next/next/no-img-element */}

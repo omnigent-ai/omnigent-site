@@ -14,9 +14,12 @@ export default function Home() {
         {/* Hero */}
         <section className="hero wrap">
           <span className="tag">Open source · Alpha</span>
+          <h1>A meta-harness for AI agents</h1>
           <p className="lede">
-            The framework above your agent harnesses that runs them together,
-            policy-driven and shareable. Use with Claude Code, Codex, or Pi.
+            Omnigent wraps the agents you already use — Claude Code, Codex, the
+            Claude and OpenAI SDKs — behind one interface, then adds what it
+            takes to run them for real: a session API, policies, sandboxing, and
+            a UI on every device.
           </p>
           <Command>pip install omnigent</Command>
           <div className="hero-cta">

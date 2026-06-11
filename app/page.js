@@ -62,8 +62,9 @@ export default function Home() {
                 routing, and risk-based escalation.
               </li>
               <li>
-                <strong><Link href="/docs/policies/os-sandbox">Flexible OS sandbox</Link>:</strong> restrict filesystem,
-                network, and env to run agents in YOLO mode safely.
+                <strong><Link href="/docs/policies/os-sandbox">Secure OS sandbox</Link>:</strong> lock down
+                filesystem, network, and env access — credentials are injected only when explicitly
+                granted, and credential files stay masked — to run agents in YOLO mode safely.
               </li>
             </ul>
           </div>

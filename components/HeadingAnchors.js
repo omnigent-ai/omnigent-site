@@ -17,20 +17,29 @@ export default function HeadingAnchors() {
 
   useEffect(() => {
     const headings = document.querySelectorAll(
-      ".docs-main h1:not([data-anchor]), .docs-main h2:not([data-anchor]), .docs-main h3:not([data-anchor])"
+      ".docs-main h1, .docs-main h2, .docs-main h3"
     );
     headings.forEach((h) => {
-      h.setAttribute("data-anchor", "true");
-      const id = h.id || slugify(h.textContent);
+      const id = h.id || slugify(h.textContent.replace(/#$/, "").trim());
       if (!h.id) h.id = id;
 
-      const link = document.createElement("a");
-      link.href = `#${id}`;
-      link.className = "heading-anchor";
-      link.setAttribute("aria-label", "Link to this section");
-      link.textContent = "#";
-      h.appendChild(link);
+      if (!h.querySelector(".heading-anchor")) {
+        const link = document.createElement("a");
+        link.href = `#${id}`;
+        link.className = "heading-anchor";
+        link.setAttribute("aria-label", "Link to this section");
+        link.textContent = "#";
+        h.appendChild(link);
+      }
     });
+
+    // After IDs are set, scroll to hash if present
+    if (window.location.hash) {
+      const target = document.getElementById(window.location.hash.slice(1));
+      if (target) {
+        setTimeout(() => target.scrollIntoView({ behavior: "smooth" }), 100);
+      }
+    }
   }, [pathname]);
 
   return null;

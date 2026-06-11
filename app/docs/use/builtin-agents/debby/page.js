@@ -26,8 +26,8 @@ export default function Page() {
           <tr><th>Sub-agent</th><th>Role</th></tr>
         </thead>
         <tbody>
-          <tr><td><code>claude</code></td><td>Responds and debates with Anthropic{"'"}s Claude</td></tr>
-          <tr><td><code>gpt</code></td><td>Responds and debates with OpenAI{"'"}s GPT</td></tr>
+          <tr><td><code>claude</code></td><td>Responds and debates with an Anthropic Claude model</td></tr>
+          <tr><td><code>gpt</code></td><td>Responds and debates with an OpenAI GPT model</td></tr>
         </tbody>
       </table>
 

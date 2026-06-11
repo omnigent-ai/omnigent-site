@@ -243,6 +243,29 @@ pre .copy-btn {
 }
 pre:hover .copy-btn { opacity: 1; }
 pre .copy-btn:hover { color: var(--fg); background: var(--bg-soft); }
+
+/* ---- heading anchors ---- */
+.docs-main h1, .docs-main h2, .docs-main h3 {
+  position: relative;
+  scroll-margin-top: 5rem;
+}
+.heading-anchor {
+  margin-left: 0.4rem;
+  color: var(--border);
+  font-weight: 400;
+  text-decoration: none !important;
+  opacity: 0;
+  transition: opacity 0.15s;
+  font-size: 0.8em;
+}
+.docs-main h1:hover .heading-anchor,
+.docs-main h2:hover .heading-anchor,
+.docs-main h3:hover .heading-anchor {
+  opacity: 1;
+}
+.heading-anchor:hover {
+  color: var(--accent) !important;
+}
 pre code {
   background: none;
   color: inherit;

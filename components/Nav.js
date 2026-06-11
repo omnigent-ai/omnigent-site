@@ -11,7 +11,7 @@ export default function Nav() {
           <img src="/images/logo.svg" alt="Omnigent" height={28} width={145} />
         </Link>
         <nav className="nav-links">
-          <Link href="/quickstart/intro" className="nav-link hide-sm">Quickstart</Link>
+          <Link href="/quickstart/install" className="nav-link hide-sm">Quickstart</Link>
           <Link href="/docs" className="nav-link hide-sm">Docs</Link>
           <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
             <DiscordIcon /> Discord

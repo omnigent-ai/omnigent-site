@@ -14,43 +14,16 @@ export default function Page() {
 
   return (
     <>
-      <h1>Install Omnigent</h1>
+      <h1>Install</h1>
 
       <h2>Requirements</h2>
+      <ul>
+        <li><strong>Python 3.12+</strong></li>
+        <li><strong>Node.js 22 LTS</strong> and npm</li>
+        <li><strong>tmux</strong></li>
+      </ul>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Dependency</th>
-            <th>Version</th>
-            <th>Why</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Python</td>
-            <td>3.12+</td>
-            <td>Omnigent runtime</td>
-          </tr>
-          <tr>
-            <td>Node.js</td>
-            <td>22 LTS</td>
-            <td>Claude Code, Codex, and Pi harnesses</td>
-          </tr>
-          <tr>
-            <td>npm</td>
-            <td>(comes with Node.js)</td>
-            <td>Package management for harnesses</td>
-          </tr>
-          <tr>
-            <td>tmux</td>
-            <td>any</td>
-            <td>Launches native agent terminals</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2>Install</h2>
+      <h2>Install Omnigent</h2>
 
       <div className="tabbed-code">
         <div className="tab-bar">
@@ -78,63 +51,11 @@ export default function Page() {
       </pre>
 
       <p>
-        The setup wizard walks you through configuring model credentials. It
-        auto-detects credentials already in your environment (Anthropic API key,
-        OpenAI key, or an existing CLI login) and offers them as defaults.
-      </p>
-
-      <p>Four credential types are supported:</p>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Example</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <strong>API key</strong>
-            </td>
-            <td>Anthropic, OpenAI, or any provider dashboard</td>
-          </tr>
-          <tr>
-            <td>
-              <strong>Subscription</strong>
-            </td>
-            <td>Claude Pro/Max or ChatGPT Plus/Pro via their CLIs</td>
-          </tr>
-          <tr>
-            <td>
-              <strong>Gateway</strong>
-            </td>
-            <td>
-              OpenAI or Anthropic-compatible endpoints (OpenRouter, Ollama,
-              Azure, LiteLLM, etc.)
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>Databricks</strong>
-            </td>
-            <td>Workspace profile for Databricks-hosted models</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p>
-        Defaults are per agent, so a Claude default and a Codex default can
-        coexist. You can switch models during a session with the{" "}
-        <code>/model</code> command.
-      </p>
-
-      <p>
-        See{" "}
-        <Link href="/docs/build/models">Models &amp; Credentials</Link> for the
+        The wizard auto-detects credentials in your environment and walks you
+        through adding any that are missing. See{" "}
+        <Link href="/docs/build/models#credentials">Models &amp; Credentials</Link> for the
         full reference.
       </p>
-
     </>
   );
 }

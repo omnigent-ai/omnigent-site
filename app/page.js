@@ -147,7 +147,7 @@ omnigent run my-agent/   # or run your own agent`}</code>
             </pre>
             <p>
               Read the <Link href="/quickstart/install">installation guide</Link>,
-              then <Link href="/quickstart/custom-omnigent">write your own agent</Link> in
+              then <Link href="/docs/use/custom-agents">write your own agent</Link> in
               a few lines of YAML.
             </p>
           </section>

@@ -9,7 +9,7 @@ export default function Page() {
 
       <p style={{ background: "var(--bg-soft)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "0.8rem 1rem", margin: "0 0 1.5rem" }}>
         <strong>New here?</strong> Start with the{" "}
-        <Link href="/quickstart/intro">Quickstart</Link> to get running in
+        <Link href="/quickstart/install">Quickstart</Link> to get running in
         under a minute.
       </p>
 

@@ -1,81 +1,97 @@
 import Link from "next/link";
 
-export const metadata = { title: "Multi-Agent Tutorial" };
+export const metadata = { title: "Tutorial: Multi-AI Agents" };
 
 export default function Page() {
   return (
     <>
-      <h1>Multi-Agent Tutorial</h1>
+      <h1>Tutorial: Multi-AI Agents</h1>
+
       <p>
-        Omnigent can orchestrate multiple AI models working together. This tutorial
-        walks you through two built-in multi-agent examples.
+        What happens when you ask two different AI models the same question and
+        let them debate? This tutorial shows you Omnigent{"'"}s multi-AI
+        orchestration by running Debby, a built-in agent that pits Claude against
+        GPT in a structured debate.
       </p>
 
-      <h2>Try Debby: multi-model debate</h2>
       <p>
-        Debby is a brainstorming partner with two heads. Every question you ask gets
-        sent to both Claude and GPT simultaneously. You see both perspectives side by
-        side, then use the <code>/debate</code> skill to have them critique each
-        other across multiple rounds.
+        <strong>Time:</strong> 5 minutes. <strong>Everything runs locally.</strong>
       </p>
+
+      <h2>1. Run Debby</h2>
+
       <pre><code>{"omni run examples/debby/"}</code></pre>
+
       <p>
-        Ask a question and watch both models respond. Then type <code>/debate</code> to
-        start a multi-round critique where each model reviews the other{"'"}s answer and
-        refines its own.
-      </p>
-      <p>
-        This is useful for getting genuinely independent perspectives on architectural
-        decisions, comparing approaches, or stress-testing an idea before committing.
+        This starts a session where every question you ask gets sent to both
+        Claude and GPT simultaneously. Open <code>http://localhost:6767</code>{" "}
+        to see both responses side by side.
       </p>
 
-      <h2>Try Polly: multi-agent coding orchestrator</h2>
+      <h2>2. Ask a question</h2>
+
+      <p>Try something with room for genuine disagreement:</p>
+
+      <pre><code>{"Should we use a monorepo or polyrepo for a team of 20 engineers building 5 microservices?"}</code></pre>
+
       <p>
-        Polly is a supervisor that breaks coding tasks into sub-tasks and delegates them
-        to Claude Code, Codex, and Pi sub-agents, each working in its own git worktree.
-        One model implements, a different model reviews. Each implementer opens its own PR.
+        Both models respond independently. Read both perspectives. Notice where
+        they agree and where they diverge.
       </p>
+
+      <h2>3. Start a debate</h2>
+
+      <p>Now type:</p>
+
+      <pre><code>{"/debate"}</code></pre>
+
+      <p>
+        This triggers multi-round critique. Each model reviews the other{"'"}s
+        answer, challenges weak points, and refines its own response. Watch them
+        go back and forth, each round getting sharper.
+      </p>
+
+      <p>
+        The debate converges toward a stronger synthesis than either model would
+        produce alone. This is the point of multi-AI orchestration: genuinely
+        independent perspectives, not just two copies of the same opinion.
+      </p>
+
+      <h2>4. Try Polly for coding tasks</h2>
+
+      <p>
+        Debby is for brainstorming. For coding, try Polly. Bare{" "}
+        <code>omni</code> launches Polly by default:
+      </p>
+
       <pre><code>{"omni"}</code></pre>
-      <p><em>The bare <code>omni</code> command launches Polly by default.</em></p>
+
       <p>
-        Give Polly a task and open the web UI to watch the orchestration. The Agents tab
-        in the right panel shows every sub-agent Polly dispatches. Click any sub-agent to
-        see its terminal output, files, and PRs.
-      </p>
-      <p>Key skills:</p>
-      <ul>
-        <li><code>/fanout</code> runs independent tasks in parallel, each in its own worktree.</li>
-        <li><code>/cross-review</code> sends each PR to a different-vendor model for review.</li>
-        <li><code>/investigate</code> delegates read-only exploration to sub-agents.</li>
-      </ul>
-      <p>
-        See the{" "}
-        <a href="https://github.com/omnigent-ai/omnigent/tree/main/examples/polly" target="_blank" rel="noreferrer">
-          Polly config on GitHub
-        </a>{" "}
-        and the{" "}
-        <a href="https://github.com/omnigent-ai/omnigent/tree/main/examples/debby" target="_blank" rel="noreferrer">
-          Debby config on GitHub
-        </a>{" "}
-        to see how multi-agent orchestration is configured in YAML.
+        Polly is a supervisor that breaks your task into sub-tasks and delegates
+        each one to a different AI model. Claude Code implements, Codex
+        implements in parallel, and a different model reviews each PR. Open the
+        web UI and click the <strong>Agents</strong> tab in the right panel to
+        watch sub-agents working simultaneously, each in its own git worktree.
       </p>
 
-      <h2>What makes multi-agent different</h2>
       <p>
-        A single coding agent does everything itself. Multi-agent setups let you:
+        See <Link href="/docs/use/builtin-agents/polly">Polly</Link> and{" "}
+        <Link href="/docs/use/builtin-agents/debby">Debby</Link> for the full
+        reference.
       </p>
+
+      <h2>What{"'"}s next</h2>
+
       <ul>
-        <li>Get genuinely independent second opinions from different AI vendors.</li>
-        <li>Parallelize work across multiple worktrees.</li>
-        <li>Have one model implement and a different model review.</li>
-        <li>Route different types of tasks to the model best suited for them.</li>
+        <li>
+          <Link href="/quickstart/collaborate">Collaborate from anywhere</Link> to
+          deploy a server and share sessions with teammates.
+        </li>
+        <li>
+          <Link href="/docs/use/custom-agents">Build a custom agent</Link> with
+          your own multi-agent orchestration in YAML.
+        </li>
       </ul>
-      <p>
-        Everything from the{" "}
-        <Link href="/quickstart/coding-agent">coding agent quickstart</Link>{" "}
-        applies: web UI, deploy, mobile, collaboration, and sandboxing all work
-        the same with multi-agent setups.
-      </p>
     </>
   );
 }

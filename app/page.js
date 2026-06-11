@@ -14,25 +14,10 @@ export default function Home() {
         {/* Hero */}
         <section className="hero wrap">
           <span className="tag">Open source · Alpha</span>
-          <h1>The framework above your agent harnesses</h1>
-          <p className="lede">
-            Runs them together, governed and shareable. Use with Claude Code,
-            Codex, or Pi.
-          </p>
-          <ul className="hero-points">
-            <li>
-              <strong>Composition:</strong> describe an agent in YAML, swap the
-              harness under it in one line.
-            </li>
-            <li>
-              <strong>Control:</strong> stateful policies allow, block, or pause
-              each action; an OS-level sandbox under every agent.
-            </li>
-            <li>
-              <strong>Collaboration:</strong> share a live session, co-drive,
-              fork, or resume it from your phone.
-            </li>
-          </ul>
+          <h1>
+            The framework above your agent harnesses that runs them together,
+            governed and shareable. Use with Claude Code, Codex, or Pi.
+          </h1>
           <Command>pip install omnigents</Command>
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">

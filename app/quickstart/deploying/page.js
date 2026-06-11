@@ -54,7 +54,7 @@ omnigent host  https://your-host`}</code></pre>
 
       <div className="doc-next muted">
         See the full deployment guides — Render, AWS, OIDC, and custom domains —
-        in the <Link href="/docs/installing">project repository</Link>.
+        in the <Link href="/quickstart/installing">project repository</Link>.
       </div>
     </>
   );

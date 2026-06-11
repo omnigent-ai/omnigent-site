@@ -12,7 +12,7 @@ export default function Nav() {
           omnigent
         </Link>
         <nav className="nav-links">
-          <Link href="/docs/installing" className="nav-link hide-sm">Docs</Link>
+          <Link href="/quickstart/installing" className="nav-link hide-sm">Quickstart</Link>
           <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
             <DiscordIcon /> Discord
           </a>

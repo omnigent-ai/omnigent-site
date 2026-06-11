@@ -62,7 +62,7 @@ export default function Page() {
       </p>
 
       <div className="doc-next">
-        Next: <Link href="/docs/sandboxes">Sandboxes →</Link>
+        Next: <Link href="/quickstart/sandboxes">Sandboxes →</Link>
       </div>
     </>
   );

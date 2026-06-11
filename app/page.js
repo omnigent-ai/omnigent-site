@@ -88,8 +88,8 @@ omnigent claude          # or launch a specific harness
 omnigent run my-agent/   # or run your own agent`}</code>
             </pre>
             <p>
-              Read the <Link href="/docs/installing">installation guide</Link>,
-              then <Link href="/docs/custom-agent">write your own agent</Link> in
+              Read the <Link href="/quickstart/installing">installation guide</Link>,
+              then <Link href="/quickstart/custom-agent">write your own agent</Link> in
               a few lines of YAML.
             </p>
           </section>
@@ -118,7 +118,7 @@ omnigent run my-agent/   # or run your own agent`}</code>
             <p className="muted">
               Write a short YAML file with a prompt and a harness, then run{" "}
               <code>omnigent run</code> on it. See the{" "}
-              <Link href="/docs/custom-agent">custom agent guide</Link>.
+              <Link href="/quickstart/custom-agent">custom agent guide</Link>.
             </p>
 
             <h3>Is it safe to let an agent run on my machine?</h3>

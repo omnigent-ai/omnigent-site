@@ -19,12 +19,20 @@ bun run build
 bun run start
 ```
 
+## Before Pushing to Github
+> Note: This will help maintain good developer hygiene
+```bash
+bun run lint
+bun run strip-lock-proxy && bun run strip-lock-proxy:check
+bun run lint:links
+```
+
 ## Structure
 
 - `app/page.js` — homepage (hero, architecture, the three pillars, quick start).
-- `app/docs/*` — six docs pages: installing, coding, custom-agent, policies,
+- `app/quickstart/*` — six quickstart pages: installing, coding, custom-agent, policies,
   sandboxes, deploying.
-- `components/` — nav, footer, copyable command, docs sidebar, icons, links.
+- `components/` — nav, footer, copyable command, quickstart sidebar, icons, links.
 - `public/images/` — `architecture.png`, `sandbox.png`, `logo.png`, `hero.png`.
 
 Edit the GitHub / Discord / package links in `components/links.js`.

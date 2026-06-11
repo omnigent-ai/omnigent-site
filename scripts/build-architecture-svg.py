@@ -108,13 +108,13 @@ parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
 # ---------- connectors (draw first, sit behind boxes) ----------
 MIDY = 238
 # inputs -> runner
-parts.append(dotted(186, 140, 318, MIDY - 16))   # CLI agents
-parts.append(dotted(186, 360, 318, MIDY + 36))   # custom agents
+parts.append(dotted(190, 132, 318, MIDY - 24))   # CLI agents
+parts.append(dotted(190, 346, 318, MIDY + 24))   # custom agents
 # runner -> server
 parts.append(dotted(497, MIDY, 588, MIDY))
 # server -> interfaces (fan out)
 IFACE_X = 968
-iface_rows = [70, 138, 206, 274, 342]
+iface_rows = [84, 148, 212, 276, 340]   # icon centres (cy=row+26) symmetric on MIDY
 for ry in iface_rows:
     parts.append(dotted(848, MIDY, IFACE_X, ry + 26))
 # server -> infra. Three functional clusters, grouped by proximity (no labels):
@@ -128,20 +128,22 @@ RAIL = data_uri("public/logos/platforms/railway.svg")
 FLY  = data_uri("public/logos/platforms/flyio.svg")
 MLF  = data_uri("public/logos/observability/mlflow.svg")
 OTEL = data_uri("public/logos/observability/opentelemetry.svg")
+# Clusters centred on a vertical from the server (718): deploy straight below,
+# persistence + tracing symmetric either side (±128).
 infra_logos = [  # (cx, cy, w, h, href)
     # persistence
-    (560, 460, 56, 56, PG),
-    # deploy: Docker over Railway + Fly.io
-    (690, 436, 50, 50, DOCK),
-    (661, 492, 48, 48, RAIL),
-    (719, 492, 48, 48, FLY),
+    (590, 444, 56, 56, PG),
+    # deploy: Docker over Railway + Fly.io (centred on 718)
+    (718, 444, 50, 50, DOCK),
+    (689, 500, 48, 48, RAIL),
+    (747, 500, 48, 48, FLY),
     # tracing: MLflow (wordmark) + OpenTelemetry, side by side
-    (828, 461, 72, 30, MLF),
-    (888, 461, 42, 42, OTEL),
+    (820, 444, 70, 30, MLF),
+    (876, 444, 42, 42, OTEL),
 ]
-# one connector from the server to each cluster
-for tx, ty in [(560, 432), (690, 408), (850, 436)]:
-    parts.append(dotted(718, 352, tx, ty))
+# connectors: centre drops straight down (90°), sides mirror it to the same y
+for tx in (590, 718, 846):
+    parts.append(dotted(718, 354, tx, 418))
 
 # ---------- left inputs (real agent logos) ----------
 AG = "public/logos/agents"
@@ -159,7 +161,7 @@ parts.append(img(90, 392, 44, 44, data_uri(f"{AG}/llama.png")))
 parts.append(img(156, 392, 92, 26, data_uri(f"{AG}/claude-sdk.png")))
 
 # ---------- Runner box ----------
-rx, ry, rw, rh = 320, 146, 178, 196
+rx, ry, rw, rh = 320, 140, 178, 196
 parts.append(rrect(rx, ry, rw, rh, 16, "#ffffff", ACCENT, 2.5))
 parts.append(octo(rx + 18, ry + 16, 30))
 parts.append(text(rx + 56, ry + 38, 21, 700, FG).format("Runner"))
@@ -199,7 +201,7 @@ parts.append(host_row(hy + 46, modal_mark, "Modal"))
 parts.append(host_row(hy + 92, None, full_logo=data_uri("public/logos/runners/daytona.png")))
 
 # ---------- Server box ----------
-sx, sy, sw, sh = 588, 120, 262, 232
+sx, sy, sw, sh = 588, 122, 262, 232
 parts.append(rrect(sx, sy, sw, sh, 16, ACCENT_SOFT, ACCENT, 2.5))
 parts.append(octo(sx + 22, sy + 16, 30))
 parts.append(text(sx + 60, sy + 38, 21, 700, FG).format("Server"))

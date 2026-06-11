@@ -5,6 +5,7 @@ import { useState } from "react";
 const OPTIONS = [
   { id: "pip", label: "pip", cmd: "pip install omnigent" },
   { id: "uv", label: "uv", cmd: "uv tool install omnigent" },
+  { id: "homebrew", label: "homebrew", cmd: "brew install omnigent-ai/tap/omnigent" },
 ];
 
 export default function InstallTabs() {

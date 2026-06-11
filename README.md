@@ -5,16 +5,18 @@ built with Next.js (App Router).
 
 ## Develop
 
+This project uses [Bun](https://bun.sh) as its package manager and runner.
+
 ```bash
-npm install
-npm run dev      # http://localhost:3000
+bun install
+bun run dev      # http://localhost:3000
 ```
 
 ## Build
 
 ```bash
-npm run build
-npm run start
+bun run build
+bun run start
 ```
 
 ## Structure

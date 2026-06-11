@@ -61,7 +61,10 @@ export default function Page() {
 
       <div className="note">
         <p>
-          First boot prompts you to create an admin account.
+          No admin password is auto-generated. On first boot the server reports{" "}
+          <code>needs_setup</code>: open the web UI and create the admin account there, or set{" "}
+          <code>OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD</code> in <code>.env</code> to preset it for
+          headless deploys.
         </p>
       </div>
     </>

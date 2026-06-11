@@ -51,7 +51,11 @@ export default function Page() {
       <pre><code>{"OMNIGENT_AUTH_ENABLED=1 omni server start"}</code></pre>
 
       <p>
-        <strong>Sign in.</strong> Open the web UI. First boot prompts you to create an admin account.
+        <strong>Create the first admin.</strong> The server never auto-generates a password. While
+        no admin exists it reports <code>needs_setup</code>: open the web UI and create the admin
+        account there, or run <code>omni server</code> on a terminal and answer the username and
+        password prompt. For headless deploys, preset the password with{" "}
+        <code>--admin-password</code> or <code>OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD</code>.
       </p>
 
       <p>
@@ -119,7 +123,7 @@ export default function Page() {
         everyone across so they keep their sessions and admin rights:
       </p>
 
-      <pre><code>{"omni debug migrate-accounts-to-oidc <database-url> --domain yourcompany.com --commit"}</code></pre>
+      <pre><code>{"omni debug migrate-accounts-to-oidc <database-url> --domain yourcompany.com"}</code></pre>
     </>
   );
 }

@@ -158,26 +158,6 @@ hr {
   max-width: 38rem;
   margin: 0 auto 2rem;
 }
-.rotator {
-  display: inline-block;
-  color: var(--accent);
-  animation: rotator-in 0.45s ease;
-}
-@keyframes rotator-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.25em);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .rotator {
-    animation: none;
-  }
-}
 .hero-points {
   text-align: left;
   max-width: 34rem;

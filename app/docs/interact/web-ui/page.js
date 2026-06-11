@@ -81,7 +81,7 @@ export default function Page() {
       </ul>
 
             {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/leave-comment.png" alt="Inline comments" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+      <img src="/images/docs/address-comment.png" alt="Addressing an inline comment" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <h2>Multi-modal input</h2>
 

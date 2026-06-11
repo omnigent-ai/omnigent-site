@@ -68,7 +68,7 @@ export default function Page() {
       </p>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/leave-comment.png" alt="Leaving an inline comment on agent output" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+      <img src="/images/docs/address-comment.png" alt="Addressing an inline comment on agent output" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
       <h3>Edit files directly</h3>
       <p>

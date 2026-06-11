@@ -16,15 +16,14 @@ export default function Home() {
           <span className="tag">Open source · Alpha</span>
           <h1>A meta-harness for AI agents</h1>
           <p className="lede">
-            Omnigent wraps the agents you already use — Claude Code, Codex, the
-            Claude and OpenAI SDKs — behind one interface, then adds what it
-            takes to run them for real: a session API, policies, sandboxing, and
-            a UI on every device.
+            Build agents and use existing harnesses like Claude Code, Codex, and
+            Pi behind one interface, then add what it takes to run them for real:
+            a session API, policies, sandboxing, and a UI on every device.
           </p>
           <InstallTabs />
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-              <GitHubIcon /> Star on GitHub
+              <GitHubIcon /> View on GitHub
             </a>
             <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
               <DiscordIcon /> Join the Discord
@@ -141,9 +140,9 @@ export default function Home() {
             </p>
             <pre>
               <code>{`pip install omnigent
-omnigent                 # pick a model and start chatting
-omnigent claude          # or launch a specific harness
-omnigent run my-agent/   # or run your own agent`}</code>
+omni                     # pick a model and start chatting
+omni claude              # or launch a specific harness
+omni run my-agent/       # or run your own agent`}</code>
             </pre>
             <p>
               Read the <Link href="/quickstart/install">installation guide</Link>,
@@ -163,7 +162,7 @@ omnigent run my-agent/   # or run your own agent`}</code>
             </p>
             <div className="hero-cta">
               <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-                <GitHubIcon /> Star on GitHub
+                <GitHubIcon /> View on GitHub
               </a>
               <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
                 <DiscordIcon /> Join the Discord

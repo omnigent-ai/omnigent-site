@@ -144,11 +144,6 @@ policy_modules:
             <td>Omnigent is about to send a message to the LLM</td>
             <td><code>messages</code>, <code>model</code></td>
           </tr>
-          <tr>
-            <td><code>session_start</code></td>
-            <td>A new session is starting</td>
-            <td><code>agent_id</code>, <code>user_id</code></td>
-          </tr>
         </tbody>
       </table>
 

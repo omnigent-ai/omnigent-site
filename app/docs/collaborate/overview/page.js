@@ -15,6 +15,8 @@ export default function Page() {
         <Link href="/docs/interact/mobile">mobile</Link> simultaneously.
       </p>
 
+      <h2>Requirements</h2>
+
       <p>To collaborate, you need a server that teammates can reach and auth enabled:</p>
 
       <ol>
@@ -25,9 +27,6 @@ export default function Page() {
         <li>
           <strong><Link href="/docs/collaborate/auth">Set up auth</Link></strong> to enable accounts
           or SSO and invite teammates.
-        </li>
-        <li>
-          <strong>Start collaborating</strong> by sharing sessions, co-driving, and forking.
         </li>
       </ol>
 

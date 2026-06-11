@@ -42,27 +42,45 @@ export default function Page() {
 
       <p>
         If you deployed with <Link href="/docs/deploy/docker">Docker</Link> or a{" "}
-        <Link href="/docs/deploy/cloud">cloud platform</Link>, auth is already enabled. Built-in
-        accounts is the default mode.
+        <Link href="/docs/deploy/cloud">cloud platform</Link>, auth is already enabled by default with
+        built-in accounts.
       </p>
 
-      <p>For non-Docker deploys, enable it manually:</p>
+      <h3>Non-Docker deploys</h3>
+
+      <p>For non-Docker deploys, enable built-in accounts manually:</p>
 
       <pre><code>{"OMNIGENT_AUTH_ENABLED=1 omni server start"}</code></pre>
 
-      <p>
-        <strong>Create the first admin.</strong> The server never auto-generates a password. While
-        no admin exists it reports <code>needs_setup</code>: open the web UI and create the admin
-        account there, or run <code>omni server</code> on a terminal and answer the username and
-        password prompt. For headless deploys, preset the password with{" "}
-        <code>--admin-password</code> or <code>OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD</code>.
-      </p>
-
-      <p>
-        <strong>Invite teammates.</strong> Go to <strong>Admin {">"} Members {">"} Invite</strong> to
-        create a single-use invite link. No email server needed; just send the link directly. Signup
-        is invite-only.
-      </p>
+      <ol>
+        <li>
+          Create the first admin.
+          <ul>
+            <li>
+              The server never auto-generates a password. While no admin exists it reports{" "}
+              <code>needs_setup</code>.
+            </li>
+            <li>
+              Open the web UI and create the admin account there, or run <code>omni server</code> on
+              a terminal and answer the username and password prompt.
+            </li>
+            <li>
+              For headless deploys, preset the password with <code>--admin-password</code> or{" "}
+              <code>OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD</code>.
+            </li>
+          </ul>
+        </li>
+        <li>
+          Invite teammates.
+          <ul>
+            <li>
+              Go to <strong>Admin {">"} Members {">"} Invite</strong> to create a single-use invite
+              link.
+            </li>
+            <li>No email server needed; just send the link directly. Signup is invite-only.</li>
+          </ul>
+        </li>
+      </ol>
 
       <h2 id="single-sign-on-oidc">Single sign-on (OIDC)</h2>
 
@@ -96,6 +114,8 @@ export default function Page() {
 
       <h2>Access control</h2>
 
+      <p>Once auth is enabled, control who can sign in and what they can access.</p>
+
       <h3>Domain allowlist</h3>
 
       <p>
@@ -113,6 +133,11 @@ export default function Page() {
       </p>
 
       <h2>Migration</h2>
+
+      <p>
+        Already using one auth mode and want to switch? These commands move your existing users
+        across without losing sessions or admin rights.
+      </p>
 
       <h3>From built-in accounts to SSO</h3>
 

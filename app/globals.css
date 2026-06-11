@@ -537,60 +537,152 @@ figcaption {
   color: var(--fg-soft);
 }
 
-/* ---- pillars ---- */
-.pillars {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-  margin: 2rem 0;
-  border-radius: var(--radius);
-  overflow: hidden;
+/* ---- pillars (tabbed) ---- */
+.pillars-tabs {
+  margin: 1.5rem 0 0;
 }
-.pillar {
+.pillar-tablist {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.25rem 2.5rem;
+  padding: 0 1rem;
+}
+.pillar-tab-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    left 0.55s cubic-bezier(0.34, 1.08, 0.64, 1),
+    width 0.55s cubic-bezier(0.34, 1.08, 0.64, 1),
+    opacity 0.2s ease;
+}
+.pillar-tab-indicator.is-ready {
+  opacity: 1;
+}
+.pillar-tab {
+  padding: 0.85rem 0 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 550;
+  border: none;
+  background: none;
+  color: var(--fg-soft);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+.pillar-tab:hover { color: var(--fg); }
+.pillar-tab.is-active {
+  color: var(--fg);
+  font-weight: 650;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pillar-tab-indicator {
+    transition: none;
+  }
+}
+.pillar-panel-stage {
+  display: grid;
+  padding: 2rem 0;
+}
+.pillar-panel {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 2rem;
+  align-items: stretch;
+  visibility: hidden;
+  pointer-events: none;
+}
+.pillar-panel.is-active {
+  visibility: visible;
+  pointer-events: auto;
+  animation: pillar-panel-enter 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes pillar-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pillar-panel.is-active {
+    animation: none;
+  }
+}
+.pillar-copy {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 1rem;
-  border: none;
+  padding: 2.25rem 1.5rem;
   border-radius: var(--radius);
   background: var(--bg-grey-pink);
-  transition: background 0.15s;
 }
-.pillar:hover {
-  background: var(--accent-soft);
-}
-.pillar figure {
-  margin: 0 0 1rem;
+.pillar-copy .pillar-icon {
+  margin: 0 0 1.25rem;
   text-align: left;
 }
-.pillar figure img {
+.pillar-copy .pillar-icon img {
   display: block;
-  width: 6rem;
-  height: 6rem;
+  width: 9rem;
+  height: 9rem;
   object-fit: contain;
   object-position: left center;
 }
-.pillar-icon-sm img {
-  width: 4rem;
-  height: 4rem;
+.pillar-copy h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.35rem;
 }
-.pillar h3 {
-  margin: 0 0 0.4rem;
-  font-size: 1.25rem;
+.pillar-copy p {
+  margin: 0;
+  color: var(--fg-soft);
+  line-height: 1.6;
 }
-.pillar h3 .num {
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
-  margin-right: 0.5rem;
+.pillar-visual {
+  height: 100%;
+  min-height: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
 }
-.pillar p { color: var(--fg-soft); margin: 0; flex: 1; }
+.pillar-visual-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+.pillar-visual-image-contain {
+  object-fit: contain;
+  object-position: center;
+}
+.pillar-visual-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  color: var(--fg-soft);
+  font-size: 0.9rem;
+  border-style: dashed;
+}
 
 /* ---- section helpers ---- */
 .section { padding: 1.75rem 0; }
 .section-no-top { padding-top: 0; }
 .section h2 { text-align: center; }
 .section-pillars { padding-top: 1.75rem; }
-.section-pillars .pillars { margin-top: 1.5rem; }
+.section-pillars .pillars-tabs { margin-top: 1.5rem; }
 .center { text-align: center; }
 .muted { color: var(--fg-soft); }
 .lede-block {
@@ -863,7 +955,8 @@ figcaption {
   .hero h1 { font-size: 2.3rem; }
   .hero .lede { max-width: 100%; }
   .arch-parts { grid-template-columns: 1fr; }
-  .pillars { grid-template-columns: 1fr; }
+  .pillar-panel { grid-template-columns: 1fr; gap: 1.25rem; }
+  .pillar-tablist { gap: 0.25rem 1.5rem; }
   .docs { grid-template-columns: 1fr; gap: 1.5rem; }
   .docs-side { position: static; }
   .docs-side ul { display: flex; flex-wrap: wrap; gap: 0.3rem; }

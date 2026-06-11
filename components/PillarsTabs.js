@@ -9,7 +9,7 @@ const PILLARS = [
     label: "Composition",
     title: "Composition",
     body:
-      "The best results increasingly come from combining models and techniques: an advisor model here, a router there, two harnesses debating to raise quality. And the \"best\" harness keeps changing as models evolve. How do you compose those pieces, or switch harnesses, without rewriting everything?",
+      "Combine multiple models, harnesses, and techniques without rewriting code. Switch between Claude Code, Codex, Pi, and your own agents with one-line changes.",
     icon: {
       src: "/images/composability-icon.svg",
       alt: "Omnigent mascots stacked in layers to illustrate composability.",
@@ -29,7 +29,7 @@ const PILLARS = [
     label: "Control",
     title: "Control",
     body:
-      "Agents are held back today because we don't fully trust them. Can you let an agent run at full speed and still guarantee it won't delete prod, leak sensitive data, or quietly burn $1,000 on a bad idea? Right now the answer is usually \"watch it closely,\" which defeats the purpose.",
+      "Stateful, data-centric policies that track agent actions and enforce guardrails like cost budgets and access controls at the meta-harness layer, not via prompts.",
     icon: {
       src: "/images/sandbox.png",
       alt: "Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent.",
@@ -48,7 +48,7 @@ const PILLARS = [
     label: "Collaboration",
     title: "Collaboration",
     body:
-      "You just spent two hours getting something right with an agent, whether that's a refactor or a market analysis. Why can't you invite a colleague into that same session to review it, or hand it off, the way you'd share a doc?",
+      "Share live agent sessions via URL with full history, so teammates can review, comment, and steer together in real time.",
     icon: {
       src: "/images/high-five.svg",
       alt: "Two Omnigent mascots high-fiving to celebrate collaboration.",

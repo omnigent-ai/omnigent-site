@@ -6,6 +6,17 @@ import { useState } from "react";
 
 const SECTIONS = [
   {
+    title: "Get Started",
+    pages: [
+      { href: "/quickstart/install", label: "Install Omnigent" },
+      { href: "/quickstart/debby", label: "Tutorial: Try Debby" },
+      { href: "/quickstart/coding-agent", label: "Tutorial: Coding Agent" },
+      { href: "/quickstart/polly", label: "Tutorial: Try Polly" },
+      { href: "/quickstart/collaborate", label: "Tutorial: Collaborate" },
+      { href: "/quickstart/policies", label: "Tutorial: Contextual Policies" },
+    ],
+  },
+  {
     title: "Use Cases",
     pages: [],
     subsections: [

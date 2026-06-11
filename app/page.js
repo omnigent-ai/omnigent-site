@@ -33,14 +33,14 @@ export default function Home() {
         </section>
 
         <section className="hero-demo" aria-label="Product demo">
-          <div className="wrap-wide">
+          <div className="wrap-wide hero-demo-wrap">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="hero-demo-img"
               src="/images/hero-demo.webp"
               alt="Omnigent web UI running two sub-agents in parallel on a shared session"
-              width={2484}
-              height={1416}
+              width={1242}
+              height={708}
             />
           </div>
         </section>

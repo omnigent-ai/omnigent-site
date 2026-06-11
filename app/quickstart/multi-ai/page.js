@@ -26,9 +26,13 @@ export default function Page() {
 
       <pre><code>{"omni"}</code></pre>
 
+      <p>Give it a task. For example:</p>
+
+      <pre><code>{"Refactor the authentication module into separate files for OAuth, JWT, and session handling. Add tests for each."}</code></pre>
+
       <p>
-        Give it a coding task. Polly breaks it into sub-tasks and delegates each
-        one to a different AI model. Claude Code implements, Codex implements in
+        Polly breaks this into sub-tasks and delegates each one to a different
+        AI model. Claude Code implements one piece, Codex implements another in
         parallel, and a different model reviews each PR.
       </p>
 

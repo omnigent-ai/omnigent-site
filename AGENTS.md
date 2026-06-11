@@ -16,3 +16,13 @@ All rules in `.agents/rules/` are part of the working agreement and must be foll
 - [`.agents/rules/bun-clean-lock-rule.mdc`](.agents/rules/bun-clean-lock-rule.mdc) — **bun.lock proxy stripping.** Before opening any PR, clear private npm registry proxy URLs from the resolution field of `bun.lock` (reset to `""`). Run `bun run strip-lock-proxy` to clean and `bun run strip-lock-proxy:check` to verify. A committed pre-commit hook at `.githooks/pre-commit` (activate via `bun run setup-hooks`) automates this whenever `bun.lock` is staged.
 
 When new rules are added to `.agents/rules/`, treat them as always-on guidance and add a reference here.
+
+## Skills
+
+Reusable, task-specific playbooks live in `.agents/skills/`. Load the relevant skill when a task matches its description.
+
+| Skill | Use when |
+|-------|----------|
+| [`site-link-analyzer`](.agents/skills/site-link-analyzer/SKILL.md) | Auditing and fixing links across the site — broken internal routes, missing public assets, relative/external targets. Runs the deterministic checker (`bun run lint:links`, backed by `scripts/check-links.mjs`), then applies the confident fixes and reports the rest. |
+
+When you add or change a skill in `.agents/skills/`, update this table.

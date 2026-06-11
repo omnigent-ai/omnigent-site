@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:links": "node scripts/check-links.mjs",
     "strip-lock-proxy": "bun run scripts/strip-bun-lock-proxy.ts",
     "strip-lock-proxy:check": "bun run scripts/strip-bun-lock-proxy.ts --check",
     "setup-hooks": "git config core.hooksPath .githooks",

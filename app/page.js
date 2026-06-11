@@ -16,10 +16,10 @@ export default function Home() {
           <h1 className="hero-logo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/omnigent-home-page-OG.png"
+              src="/images/hero-logo.svg"
               alt="Omnigent, a meta-harness for AI agents"
-              width={1200}
-              height={300}
+              width={366}
+              height={101}
             />
           </h1>
           <p className="lede">
@@ -153,10 +153,10 @@ export default function Home() {
             <figure className="section-graphic">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/architecture.png"
-                alt="Omnigent architecture: CLI agents and custom agents run through a runner that sandboxes them, then a server that adds policies and history, reachable from a terminal, the web, and a REST API."
-                width={930}
-                height={430}
+                src="/images/architecture.svg"
+                alt="Omnigent architecture: CLI agents and custom agents run through a runner (on your machine, Modal, or Daytona), then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API."
+                width={1200}
+                height={545}
               />
             </figure>
 

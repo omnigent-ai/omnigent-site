@@ -475,12 +475,6 @@ figure img {
   max-width: 100%;
   height: auto;
 }
-figure.framed img {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-soft);
-  padding: 1.5rem;
-}
 figcaption {
   margin-top: 0.9rem;
   font-size: 0.9rem;

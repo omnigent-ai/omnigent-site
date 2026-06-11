@@ -150,7 +150,7 @@ export default function Home() {
               policies and a shared history, and exposes every session over the
               terminal, the web, and a REST API.
             </p>
-            <figure className="framed section-graphic">
+            <figure className="section-graphic">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/architecture.png"

@@ -123,7 +123,12 @@ export default function Page() {
         everyone across so they keep their sessions and admin rights:
       </p>
 
-      <pre><code>{"omni debug migrate-accounts-to-oidc <database-url> --domain yourcompany.com"}</code></pre>
+      <pre><code>{"omni debug migrate-accounts-to-oidc <database-url> --domain yourcompany.com --commit"}</code></pre>
+
+      <p>
+        Without <code>--commit</code> the command is a dry run that reports what would change
+        without modifying anything.
+      </p>
     </>
   );
 }

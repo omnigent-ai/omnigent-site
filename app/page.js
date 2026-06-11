@@ -77,6 +77,7 @@ export default function Home() {
         {/* Three pillars — wider layout than the rest of the page */}
         <section className="section section-pillars">
           <div className="wrap-wide">
+            <h2>What Omnigent gives you</h2>
             <div className="pillars">
               <div className="pillar">
                 <figure className="pillar-icon pillar-icon-sm">
@@ -146,6 +147,7 @@ export default function Home() {
           <div className="wrap-wide">
             <hr />
 
+            <h2>How it fits together</h2>
             <p className="arch-outro">
               A runner wraps any agent in a sandboxed, uniform session. A server
               adds policies and a shared history, and exposes every session over

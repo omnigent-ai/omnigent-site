@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import Command from "@/components/Command";
+import InstallTabs from "@/components/InstallTabs";
 import { GitHubIcon, DiscordIcon } from "@/components/icons";
 import { GITHUB_URL, DISCORD_URL } from "@/components/links";
 
@@ -21,7 +21,7 @@ export default function Home() {
             takes to run them for real: a session API, policies, sandboxing, and
             a UI on every device.
           </p>
-          <Command>pip install omnigent</Command>
+          <InstallTabs />
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
               <GitHubIcon /> Star on GitHub

@@ -245,6 +245,90 @@ pre code {
   cursor: pointer;
 }
 .cmd .copy:hover { color: #fff; background: rgba(255,255,255,0.16); }
+/* install terminal */
+.term {
+  max-width: 32rem;
+  margin: 0 auto 2rem;
+  text-align: left;
+  background: var(--code-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.35);
+}
+.term-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.5rem 0.7rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.term-dots {
+  display: inline-flex;
+  gap: 0.4rem;
+}
+.term-dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ff5f56;
+}
+.term-dots i:nth-child(2) { background: #febc2e; }
+.term-dots i:nth-child(3) { background: #28c840; }
+.term-tabs {
+  display: flex;
+  gap: 0.15rem;
+}
+.term-tab {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  padding: 0.15rem 0.7rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+}
+.term-tab:hover { color: rgba(255, 255, 255, 0.8); }
+.term-tab.is-active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+.term-body {
+  position: relative;
+  padding: 0.85rem 3.5rem 0.85rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--code-fg);
+}
+.term-body code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+  border-radius: 0;
+}
+.term-prompt {
+  color: #28c840;
+  user-select: none;
+  margin-right: 0.35rem;
+}
+.term-copy {
+  position: absolute;
+  top: 50%;
+  right: 0.6rem;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cfc8d2;
+  font-size: 0.72rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.term-copy:hover { color: #fff; background: rgba(255, 255, 255, 0.16); }
 
 /* ---- figure ---- */
 figure {

@@ -9,7 +9,7 @@ const PILLARS = [
     label: "Composition",
     title: "Composition",
     body:
-      "The best results increasingly come from combining models and techniques: an advisor model here, a router there, two harnesses debating to raise quality. And the \"best\" harness keeps changing as models evolve. How do you compose those pieces, or switch harnesses, without rewriting everything?",
+      "Combine models, harnesses, and techniques for better results — and switch between them with one-line changes, no rewriting.",
     icon: {
       src: "/images/composability-icon.svg",
       alt: "Omnigent mascots stacked in layers to illustrate composability.",
@@ -29,7 +29,7 @@ const PILLARS = [
     label: "Control",
     title: "Control",
     body:
-      "Agents are held back today because we don't fully trust them. Can you let an agent run at full speed and still guarantee it won't delete prod, leak sensitive data, or quietly burn $1,000 on a bad idea? Right now the answer is usually \"watch it closely,\" which defeats the purpose.",
+      "Apply stateful, contextual policies that enforce cost and access guardrails at the harness layer — not in the prompt.",
     icon: {
       src: "/images/sandbox.png",
       alt: "Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent.",
@@ -48,7 +48,7 @@ const PILLARS = [
     label: "Collaboration",
     title: "Collaboration",
     body:
-      "You just spent two hours getting something right with an agent, whether that's a refactor or a market analysis. Why can't you invite a colleague into that same session to review it, or hand it off, the way you'd share a doc?",
+      "Share a live session by URL: review, comment, and steer together in real time, the way you'd share a doc.",
     icon: {
       src: "/images/high-five.svg",
       alt: "Two Omnigent mascots high-fiving to celebrate collaboration.",

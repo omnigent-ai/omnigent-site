@@ -20,6 +20,20 @@ export default function Home() {
             and SDKs for custom agents. Sandboxing, stateful policies, shared
             sessions, and a UI on the terminal, web, and phone.
           </p>
+          <ul className="hero-points">
+            <li>
+              <strong>Composition:</strong> describe an agent in YAML, swap the
+              harness under it in one line.
+            </li>
+            <li>
+              <strong>Control:</strong> stateful policies allow, block, or pause
+              each action; an OS-level sandbox under every agent.
+            </li>
+            <li>
+              <strong>Collaboration:</strong> share a live session, co-drive,
+              fork, or resume it from your phone.
+            </li>
+          </ul>
           <Command>pip install omnigents</Command>
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
@@ -51,59 +65,6 @@ export default function Home() {
               />
               <figcaption>One runner and one server behind every agent.</figcaption>
             </figure>
-          </section>
-
-          <hr />
-
-          {/* Three pillars */}
-          <section className="section">
-            <h2>What Omnigent gives you</h2>
-            <div className="pillars">
-              <div className="pillar">
-                <h3>Composition</h3>
-                <p>
-                  Describe an agent in a few lines of YAML, and swap the harness
-                  under it (Claude Code, Codex, or Pi) in one line.
-                </p>
-                <p>
-                  <Link href="/docs/custom-agent">Write an agent →</Link>
-                </p>
-              </div>
-
-              <div className="pillar">
-                <h3>Control</h3>
-                <p>
-                  Policies allow, block, or pause any action and cap spend.
-                  Every command runs in an OS-level sandbox.
-                </p>
-                <p>
-                  <Link href="/docs/policies">Policies →</Link>{" "}
-                  <Link href="/docs/sandboxes">Sandboxes →</Link>
-                </p>
-                <figure style={{ margin: "1.6rem 0 0" }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/images/sandbox.png"
-                    alt="Omnigent's mascot supervising smaller agents inside a sandbox."
-                    width={420}
-                    height={230}
-                    style={{ maxWidth: "min(100%, 26rem)" }}
-                  />
-                  <figcaption>Every agent runs in an isolated sandbox.</figcaption>
-                </figure>
-              </div>
-
-              <div className="pillar">
-                <h3>Collaboration</h3>
-                <p>
-                  Share a live session. Teammates watch, comment, co-drive, or
-                  fork it, and pick it up from their phone.
-                </p>
-                <p>
-                  <Link href="/docs/deploying">Deploy a server →</Link>
-                </p>
-              </div>
-            </div>
           </section>
 
           <hr />

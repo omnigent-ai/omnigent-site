@@ -99,13 +99,16 @@ hr {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.25rem;
 }
 .nav-link {
   color: var(--fg-soft);
   font-size: 0.95rem;
-  padding: 0.4rem 0.7rem;
+  padding: 0.4rem 0.6rem;
   border-radius: 8px;
+}
+.nav-link + .btn {
+  margin-left: 0.5rem;
 }
 .nav-link:hover {
   color: var(--fg);
@@ -442,9 +445,9 @@ figcaption {
 /* ---- docs ---- */
 .docs {
   display: grid;
-  grid-template-columns: 15rem 1fr;
-  gap: 2.5rem;
-  max-width: 64rem;
+  grid-template-columns: 17rem 1fr;
+  gap: 2rem;
+  max-width: 66rem;
   margin: 0 auto;
   padding: 2.5rem 1.5rem 4rem;
 }
@@ -455,20 +458,21 @@ figcaption {
   height: max-content;
 }
 .docs-side h4 {
-  font-size: 0.78rem;
+  font-size: 0.73rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--fg-soft);
-  margin: 0 0 0.6rem;
+  margin: 0.8rem 0 0.3rem;
 }
-.docs-side ul { list-style: none; margin: 0 0 1.5rem; padding: 0; }
+.docs-side > div:first-child > h4 { margin-top: 0; }
+.docs-side ul { list-style: none; margin: 0 0 0.5rem; padding: 0; }
 .docs-side li { margin: 0; }
 .docs-side a {
   display: block;
-  padding: 0.35rem 0.6rem;
+  padding: 0.25rem 0.6rem;
   border-radius: 7px;
   color: var(--fg-soft);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 .docs-side a:hover { background: var(--bg-soft); color: var(--fg); text-decoration: none; }
 .docs-side a.active { background: var(--accent-soft); color: #ad0c72; font-weight: 550; }

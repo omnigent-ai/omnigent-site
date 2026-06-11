@@ -1,0 +1,147 @@
+import Link from "next/link";
+
+export const metadata = { title: "Deploy Overview" };
+
+export default function Page() {
+  return (
+    <>
+      <h1>Deploy Your Omnigent</h1>
+
+      <p>
+        Everything in the previous sections runs on your laptop. That{"'"}s the fastest way to get
+        started, but when you want your omnigent accessible from your phone, shareable with
+        teammates, or running while your laptop sleeps, you need to deploy.
+      </p>
+
+      <p>
+        This section covers Omnigent{"'"}s architecture and the deployment options for each
+        component.
+      </p>
+
+      <h2>Architecture</h2>
+
+      <p>Omnigent has three components:</p>
+
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/docs/omnigent-architecture.png" alt="Omnigent architecture" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+
+      <h3>Server</h3>
+
+      <p>The <strong>server</strong> is the central coordinator. It manages:</p>
+
+      <ul>
+        <li>
+          <strong>Session history.</strong> Every conversation, message, and tool call is persisted in
+          a <Link href="/docs/deploy/database">database</Link> (Postgres or SQLite).
+        </li>
+        <li>
+          <strong>Artifacts.</strong> Files, omnigent bundles, and uploads.
+        </li>
+        <li>
+          <strong>Catalog.</strong> Registered omnigent specs and built-in omnigent.
+        </li>
+        <li>
+          <strong>MCP proxy &amp; policies.</strong> Proxies MCP tool calls with server-side policy
+          enforcement.
+        </li>
+        <li>
+          <strong>Skills.</strong> Skill definitions that omnigent can load.
+        </li>
+        <li>
+          <strong>Auth &amp; accounts.</strong> User authentication (built-in accounts or OIDC/SSO).
+        </li>
+      </ul>
+
+      <h3>Runner</h3>
+
+      <p>
+        The <strong>runner</strong> executes omnigent loops. It manages the harness (Claude Code,
+        Codex, Claude SDK, etc.), runs tools, and streams events back to the server over WebSocket.
+      </p>
+
+      <p>By default, the runner is a process on your laptop:</p>
+
+      <pre><code>{"omni host <server-url>"}</code></pre>
+
+      <p>
+        This is why your local Claude Code or Codex installation {'"'}just works.{'"'} The runner
+        has direct access to your machine{"'"}s tools, files, and credentials.
+      </p>
+
+      <p>
+        The runner can also be launched in a remote{" "}
+        <Link href="/docs/deploy/cloud-sandbox">cloud sandbox</Link> like{" "}
+        <a href="https://modal.com" target="_blank" rel="noreferrer">Modal</a>, so your omnigent
+        executes in a cloud container instead of on your local machine.
+      </p>
+
+      <h3>UI</h3>
+
+      <p>
+        The <Link href="/docs/interact/web-ui">web UI</Link>,{" "}
+        <Link href="/docs/interact/terminal">terminal UI</Link>, and{" "}
+        <Link href="/docs/interact/mobile">mobile UI</Link> all talk to the server. They never talk
+        to the runner directly. This means:
+      </p>
+
+      <ul>
+        <li>If the server is on your laptop, UI access is local only</li>
+        <li>
+          If the server is deployed to the cloud, any device can reach it, including your phone
+        </li>
+      </ul>
+
+      <h2>Deploy the server to the cloud</h2>
+
+      <p>
+        The server and runner deploy independently. Moving the server to a cloud host gives you:
+      </p>
+
+      <ul>
+        <li>
+          <strong>Mobile &amp; remote access.</strong> The web UI is reachable from any device,
+          anywhere.
+        </li>
+        <li>
+          <strong>Shared history.</strong> Teammates can see and continue each other{"'"}s sessions
+          (see <Link href="/docs/collaborate/overview">Team collaboration</Link>).
+        </li>
+        <li>
+          <strong>Always-on availability.</strong> The server stays up even when your laptop is
+          closed.
+        </li>
+        <li>
+          <strong>Multi-user auth.</strong> Built-in accounts or SSO for your team.
+        </li>
+      </ul>
+
+      <p>
+        See <Link href="/docs/deploy/cloud">Cloud platforms</Link> and{" "}
+        <Link href="/docs/deploy/docker">Docker</Link> for ways to host it.
+      </p>
+
+      <h2>Run the runner in a cloud sandbox</h2>
+
+      <p>
+        Moving the runner to a cloud{" "}
+        <Link href="/docs/deploy/cloud-sandbox">sandbox</Link> gives you:
+      </p>
+
+      <ul>
+        <li>
+          <strong>No laptop dependency.</strong> Your omnigent runs even when your machine is off.
+        </li>
+        <li>
+          <strong>Cloud-native tooling.</strong> Your omnigent can access cloud resources directly.
+        </li>
+        <li>
+          <strong>Isolation.</strong> Each omnigent runs in its own container, separate from your
+          local environment.
+        </li>
+        <li>
+          <strong>Scalability.</strong> Run many omnigent in parallel without taxing your machine.
+        </li>
+      </ul>
+    </>
+  );
+}

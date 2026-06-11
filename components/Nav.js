@@ -12,6 +12,7 @@ export default function Nav() {
         </Link>
         <nav className="nav-links">
           <Link href="/quickstart/installing" className="nav-link hide-sm">Quickstart</Link>
+          <Link href="/docs" className="nav-link hide-sm">Docs</Link>
           <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
             <DiscordIcon /> Discord
           </a>

@@ -163,9 +163,6 @@ export default function Home() {
 
             <div className="try-it">
               <h2>Try it</h2>
-              <p className="muted">
-                Install, then run an agent in your terminal.
-              </p>
               <pre className="section-code try-code">
                 <code>{`pip install omnigent
 omni debby     # run a built-in multi-agent debate

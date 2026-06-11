@@ -245,6 +245,27 @@ pre code {
   cursor: pointer;
 }
 .cmd .copy:hover { color: #fff; background: rgba(255,255,255,0.16); }
+.install-tabs {
+  display: flex;
+  gap: 0.3rem;
+  margin-bottom: 0.45rem;
+}
+.install-tab {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  padding: 0.18rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--fg-soft);
+  cursor: pointer;
+}
+.install-tab:hover { color: var(--fg); }
+.install-tab.is-active {
+  color: var(--fg);
+  border-color: #d9d3dd;
+  background: var(--bg-soft);
+}
 
 /* ---- figure ---- */
 figure {

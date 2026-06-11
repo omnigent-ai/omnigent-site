@@ -65,7 +65,7 @@ export default function Page() {
         </li>
       </ul>
 
-      <h2>What happens when you run</h2>
+      <h2>What happens when you start a session</h2>
 
       <p>
         Omnigent spins up a local server (localhost:6767 by default) and gives you four ways to

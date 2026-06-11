@@ -722,6 +722,31 @@ figcaption {
 .section-graphic img {
   width: 100%;
 }
+
+/* ---- dark-mode asset handling ----
+   <img>-embedded SVGs can't read the page's data-theme, so we swap a dark
+   hero-logo variant and rest the (light-baked) architecture diagram on a light
+   card in dark mode. Mirrors the theme system: explicit choice wins; auto
+   follows the OS via prefers-color-scheme. */
+.hero-logo .theme-dark-only { display: none; }
+[data-theme="dark"] .hero-logo .theme-light-only { display: none; }
+[data-theme="dark"] .hero-logo .theme-dark-only { display: block; }
+
+[data-theme="dark"] .section-graphic {
+  background: #faf7f9;
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .hero-logo .theme-light-only { display: none; }
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .hero-logo .theme-dark-only { display: block; }
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .section-graphic {
+    background: #faf7f9;
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+}
 .section-code {
   width: 100%;
   max-width: none;

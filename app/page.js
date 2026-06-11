@@ -17,7 +17,16 @@ export default function Home() {
           <h1 className="hero-logo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              className="theme-light-only"
               src="/images/hero-logo.svg"
+              alt="Omnigent, a meta-harness for AI agents"
+              width={366}
+              height={101}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="theme-dark-only"
+              src="/images/hero-logo-dark.svg"
               alt="Omnigent, a meta-harness for AI agents"
               width={366}
               height={101}

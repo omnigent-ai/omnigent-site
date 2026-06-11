@@ -1,6 +1,7 @@
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import DocsSidebarFull from "@/components/DocsSidebarFull";
+import CopyCodeButtons from "@/components/CopyCodeButtons";
 
 export default function DocsLayout({ children }) {
   return (
@@ -8,7 +9,10 @@ export default function DocsLayout({ children }) {
       <Nav />
       <div className="docs">
         <DocsSidebarFull />
-        <article className="docs-main">{children}</article>
+        <article className="docs-main">
+          {children}
+          <CopyCodeButtons />
+        </article>
       </div>
       <Footer />
     </>

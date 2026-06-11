@@ -6,15 +6,6 @@ import { useState } from "react";
 
 const SECTIONS = [
   {
-    title: "Start Here",
-    pages: [
-      { href: "/docs", label: "Introduction" },
-      { href: "/docs/installing", label: "Install Omnigent" },
-      { href: "/docs/coding-agent", label: "Coding Agent Quickstart" },
-      { href: "/docs/custom-omnigent", label: "Custom Omnigent Quickstart" },
-    ],
-  },
-  {
     title: "Build Your Omnigent",
     pages: [
       { href: "/docs/build/overview", label: "Overview" },
@@ -131,21 +122,21 @@ export default function DocsSidebarFull() {
 
                 {section.subsections && section.subsections.map((sub, ci) => {
                   const subKey = `${si}-${ci}`;
-                  const subIsOpen = subOpen[subKey] || sub.pages.some((p) => p.href === path);
+                  const subIsOpen = subOpen[subKey];
 
                   return (
                     <li key={sub.title} style={{ listStyle: "none" }}>
-                      <a
-                        onClick={(e) => { e.preventDefault(); setSubOpen((o) => ({ ...o, [subKey]: !o[subKey] })); }}
-                        href="#"
-                        style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
-                        className={sub.pages.some((p) => p.href === path) ? "active" : ""}
+                      <span
+                        onClick={() => setSubOpen((o) => ({ ...o, [subKey]: !o[subKey] }))}
+                        role="button"
+                        tabIndex={0}
+                        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", padding: "0.25rem 0.6rem", borderRadius: "7px", fontSize: "0.9rem", color: "var(--fg-soft)" }}
                       >
                         {sub.title}
                         <span style={{ fontSize: "0.5rem", opacity: 0.4, transition: "transform 0.15s", transform: subIsOpen ? "rotate(90deg)" : "rotate(0deg)" }}>
                           ▶
                         </span>
-                      </a>
+                      </span>
                       {subIsOpen && (
                         <ul style={{ paddingLeft: "0.6rem", marginBottom: "0.3rem" }}>
                           {sub.pages.map((p) => (

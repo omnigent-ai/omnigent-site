@@ -14,7 +14,7 @@ export default function Page() {
       <p>
         <code>omni claude</code> and <code>omni codex</code> launch an existing coding agent with
         Omnigent{"'"}s UI. No YAML needed. See the{" "}
-        <Link href="/docs/coding-agent">Coding Agent Quickstart</Link>.
+        <Link href="/quickstart/coding-agent">Coding Agent Quickstart</Link>.
       </p>
 
       <p>

@@ -1,137 +1,71 @@
 import Link from "next/link";
 
-export const metadata = { title: "Introduction" };
+export const metadata = { title: "Documentation" };
 
 export default function Page() {
   return (
     <>
-      <h1>Introduction</h1>
-
+      <h1>Documentation</h1>
       <p>
-        Omnigent is a <strong>meta-harness</strong>: use and build agents with
-        any existing harness. It handles the challenges where a single harness
-        stops:
+        Full reference for building, configuring, deploying, and collaborating with Omnigent.
+        New here? Start with the <Link href="/quickstart/intro">Quickstart</Link>.
       </p>
 
+      <h2>Build Your Omnigent</h2>
+      <p>
+        Define a custom agent in a YAML config. Choose a harness, model, tools, and policies.
+      </p>
       <ul>
-        <li>
-          <strong>Composition.</strong> Orchestrate multiple harnesses in one
-          config. Claude Code, Codex, and Pi work side by side, each on its own
-          runtime.
-        </li>
-        <li>
-          <strong>Control.</strong> Enforce cost limits, approval gates, file
-          access restrictions, and model routing through declarative policies.
-        </li>
-        <li>
-          <strong>Collaboration.</strong> Share live sessions with teammates,
-          co-drive agents together, and fork conversations.
-        </li>
+        <li><Link href="/docs/build/overview">Overview</Link></li>
+        <li><Link href="/docs/build/harnesses">Harnesses</Link></li>
+        <li><Link href="/docs/build/models">Models &amp; Credentials</Link></li>
+        <li><Link href="/docs/build/prompts">Prompts &amp; Skills</Link></li>
+        <li><Link href="/docs/build/tools">MCP &amp; Tools</Link></li>
+        <li><Link href="/docs/build/policies">Policies Config</Link></li>
       </ul>
 
+      <h2>Set Omnigent Policies</h2>
       <p>
-        Omnigent is useful for both managing existing coding agents and building
-        custom agents from scratch. Work from a web UI, desktop app, terminal,
-        or your phone, all synced to the same session.
+        Control what your omnigent can and cannot do. Cost budgets, approval gates, access controls, and more.
       </p>
-
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/homepage.png" alt="Omnigent homepage" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
-
-      <h2>Workflow</h2>
-
-      <h3>Manage existing coding agents</h3>
-
-      <p>
-        Already using Claude Code or Codex? Run them through Omnigent to get a
-        web UI, persistent sessions, policies, and team collaboration on top.
-      </p>
-
-      <ol>
-        <li>
-          <strong>
-            <Link href="/docs/installing">Install</Link>.
-          </strong>{" "}
-          <code>pip install omnigent</code> and run <code>omni setup</code> for
-          credentials.
-        </li>
-        <li>
-          <strong>
-            <Link href="/docs/coding-agent#1-run-it">Run it</Link>.
-          </strong>{" "}
-          <code>omni claude</code> or <code>omni codex</code>. That{"'"}s it.
-        </li>
-        <li>
-          <strong>
-            <Link href="/docs/coding-agent#2-interact">Interact</Link>.
-          </strong>{" "}
-          Native terminal, web UI, and desktop app launch automatically, all
-          synced.
-        </li>
-        <li>
-          <strong>
-            <Link href="/docs/coding-agent#3-set-policies">Set policies</Link>.
-          </strong>{" "}
-          Ask your omnigent to add cost routing, approval gates, or access
-          controls in plain language.
-        </li>
-        <li>
-          <strong>
-            <Link href="/docs/coding-agent#4-deploy">Deploy</Link>.
-          </strong>{" "}
-          Move to a persistent server for mobile access and team sharing.
-        </li>
-        <li>
-          <strong>
-            <Link href="/docs/coding-agent#6-team-collaboration">
-              Collaborate
-            </Link>
-            .
-          </strong>{" "}
-          Share sessions, co-drive, and fork conversations.
-        </li>
-        <li>
-          <strong>
-            <Link href="/docs/deploy/cloud-sandbox">Cloud sandbox</Link>.
-          </strong>{" "}
-          Run agents in remote containers so they keep working after you close
-          your laptop.
-        </li>
-      </ol>
-
-      <h3>Build custom agents</h3>
-
-      <p>
-        Want to create something new?{" "}
-        <Link href="/docs/build/overview">Write a YAML config</Link> with your
-        own prompt, harness, tools, sub-agents, and{" "}
-        <Link href="/docs/policies/overview">policies</Link>. Once your agent is
-        running, the rest of the workflow (interact, deploy, collaborate,
-        sandbox) is the same as above.
-      </p>
-
-      <h2>Get started</h2>
-
-      <p>Pick the path that fits your use case:</p>
-
       <ul>
-        <li>
-          <strong>
-            <Link href="/docs/coding-agent">Coding agent quickstart</Link>.
-          </strong>{" "}
-          Already using Claude Code or Codex? Add Omnigent{"'"}s web UI,
-          sessions, and policies on top with one command.
-        </li>
-        <li>
-          <strong>
-            <Link href="/docs/custom-omnigent">
-              Custom omnigent quickstart
-            </Link>
-            .
-          </strong>{" "}
-          Build your own agent from scratch in a short YAML file, or try Polly
-          to see multi-harness orchestration in action.
-        </li>
+        <li><Link href="/docs/policies/overview">Overview</Link></li>
+        <li><Link href="/docs/policies/builtin">Builtin Policies</Link></li>
+        <li><Link href="/docs/policies/custom">Custom Policies</Link></li>
+        <li><Link href="/docs/policies/os-sandbox">OS Sandbox</Link></li>
+      </ul>
+
+      <h2>Interact with Your Omnigent</h2>
+      <p>
+        Terminal, web UI, desktop app, and mobile. All synced to the same session.
+      </p>
+      <ul>
+        <li><Link href="/docs/interact/overview">Overview</Link></li>
+        <li><Link href="/docs/interact/terminal">Terminal</Link></li>
+        <li><Link href="/docs/interact/web-ui">Web UI</Link></li>
+        <li><Link href="/docs/interact/mobile">Mobile</Link></li>
+        <li><Link href="/docs/interact/desktop">Desktop App</Link></li>
+      </ul>
+
+      <h2>Deploy Your Omnigent</h2>
+      <p>
+        Move from your laptop to a persistent server your team can access.
+      </p>
+      <ul>
+        <li><Link href="/docs/deploy/overview">Overview</Link></li>
+        <li><Link href="/docs/deploy/database">Database</Link></li>
+        <li><Link href="/docs/deploy/docker">Docker</Link></li>
+        <li><Link href="/docs/deploy/cloud">Cloud Platforms</Link></li>
+        <li><Link href="/docs/deploy/cloud-sandbox">Cloud Sandbox</Link></li>
+      </ul>
+
+      <h2>Collaborate with Your Team</h2>
+      <p>
+        Share sessions, co-drive agents, and fork conversations.
+      </p>
+      <ul>
+        <li><Link href="/docs/collaborate/overview">Overview</Link></li>
+        <li><Link href="/docs/collaborate/auth">Auth &amp; SSO</Link></li>
       </ul>
     </>
   );

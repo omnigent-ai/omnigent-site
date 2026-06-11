@@ -52,21 +52,13 @@ export default function Page() {
 
       <h2>Install</h2>
 
-      <div className="tabs">
-        <div className="tab-buttons" style={{ display: "flex", gap: "0" }}>
+      <div className="tabbed-code">
+        <div className="tab-bar">
           {installTabs.map((tab, i) => (
             <button
               key={tab.label}
               onClick={() => setActiveTab(i)}
-              style={{
-                padding: "8px 16px",
-                border: "1px solid #ccc",
-                borderBottom: activeTab === i ? "none" : "1px solid #ccc",
-                background: activeTab === i ? "#1e1e1e" : "#f5f5f5",
-                color: activeTab === i ? "#fff" : "#333",
-                cursor: "pointer",
-                fontWeight: activeTab === i ? "bold" : "normal",
-              }}
+              className={activeTab === i ? "active" : ""}
             >
               {tab.label}
             </button>
@@ -143,17 +135,6 @@ export default function Page() {
         full reference.
       </p>
 
-      <h2>Verify the installation</h2>
-
-      <pre>
-        <code>{"omni claude"}</code>
-      </pre>
-
-      <p>
-        If everything is set up correctly, this launches Claude Code with
-        Omnigent{"'"}s web UI and terminal. You{"'"}re ready for the{" "}
-        <Link href="/docs/coding-agent">Coding Agent Quickstart</Link>.
-      </p>
     </>
   );
 }

@@ -98,6 +98,8 @@ export default function Page() {
 
       <h2>Access control</h2>
 
+      <p>Once auth is enabled, control who can sign in and what they can access.</p>
+
       <h3>Domain allowlist</h3>
 
       <p>
@@ -115,6 +117,11 @@ export default function Page() {
       </p>
 
       <h2>Migration</h2>
+
+      <p>
+        Already using one auth mode and want to switch? These commands move your existing users
+        across without losing sessions or admin rights.
+      </p>
 
       <h3>From built-in accounts to SSO</h3>
 

@@ -150,12 +150,12 @@ instructions: prompts/system.md`}
             <td>Parsed</td>
           </tr>
           <tr>
-            <td><code>model-invocation</code></td>
+            <td><code>disable-model-invocation</code></td>
             <td>Ignored</td>
             <td>Honored</td>
           </tr>
           <tr>
-            <td><code>toolsets</code></td>
+            <td><code>allowed-tools</code></td>
             <td>Ignored</td>
             <td>Honored</td>
           </tr>
@@ -163,8 +163,9 @@ instructions: prompts/system.md`}
       </table>
 
       <p>
-        If you need <code>model-invocation</code> or <code>toolsets</code> behavior, use the{" "}
-        <code>claude-native</code> harness and place those skills in <code>.claude/skills/</code>.
+        If you need <code>disable-model-invocation</code> or <code>allowed-tools</code> behavior,
+        use the <code>claude-native</code> harness and place those skills in{" "}
+        <code>.claude/skills/</code>.
       </p>
 
       <h3>SKILL.md format</h3>

@@ -13,6 +13,7 @@ export default function Footer() {
         </span>
         <span className="spacer" />
         <Link href="/quickstart/install">Quickstart</Link>
+        <Link href="/docs">Docs</Link>
         <a href={DISCORD_URL} target="_blank" rel="noreferrer">
           <span style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
             <DiscordIcon size={15} /> Discord

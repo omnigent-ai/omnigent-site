@@ -9,7 +9,9 @@ export default function Nav() {
       <div className="nav-inner">
         <Link href="/" className="brand">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/logo.svg" alt="Omnigent" height={28} width={145} />
+          <img className="theme-light-only" src="/images/logo.svg" alt="Omnigent" height={28} width={145} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="theme-dark-only" src="/images/logo-dark.svg" alt="Omnigent" height={28} width={145} />
         </Link>
         <nav className="nav-links">
           <Link href="/quickstart/install" className="nav-link hide-sm">Get Started</Link>

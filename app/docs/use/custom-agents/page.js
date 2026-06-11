@@ -114,7 +114,7 @@ policies:
       limit: 50`}</code></pre>
 
       <p>
-        <strong><Link href="/docs/use/custom-agents">Follow the Custom Omnigent Quickstart</Link></strong>{" "}
+        <strong><Link href="/docs/use/custom-agents">Learn how to build a custom agent</Link></strong>{" "}
         to build your first agent in under 5 minutes.
       </p>
     </>

@@ -52,7 +52,7 @@ export default function Page() {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/images/docs/single-harness-demo.gif" alt="Omnigent web UI running a coding agent session" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
-      <h2>3. Try what native Claude Code can{"'"}t do</h2>
+      <h2>3. Try native Omnigent features</h2>
 
       <p>
         Now that your agent has produced some output, try these features in

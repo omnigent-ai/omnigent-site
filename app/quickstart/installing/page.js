@@ -62,7 +62,7 @@ export default function Page() {
       </p>
 
       <div className="doc-next">
-        Next: <Link href="/docs/coding">Running a coding agent →</Link>
+        Next: <Link href="/quickstart/coding">Running a coding agent →</Link>
       </div>
     </>
   );

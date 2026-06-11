@@ -16,9 +16,9 @@ export default function Home() {
           <span className="tag">Open source · Alpha</span>
           <h1>
             The framework above your agent harnesses that runs them together,
-            governed and shareable. Use with Claude Code, Codex, or Pi.
+            policy-driven and shareable. Use with Claude Code, Codex, or Pi.
           </h1>
-          <Command>pip install omnigents</Command>
+          <Command>pip install omnigent</Command>
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
               <GitHubIcon /> Star on GitHub
@@ -56,7 +56,7 @@ export default function Home() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/architecture.png"
-                alt="Omnigent architecture: CLI agents and custom agents run through a runner, then a server that adds sandboxing, policies, and history, reachable from a terminal, the web, and a REST API."
+                alt="Omnigent architecture: CLI agents and custom agents run through a runner that sandboxes them, then a server that adds policies and history, reachable from a terminal, the web, and a REST API."
                 width={930}
                 height={430}
               />
@@ -162,14 +162,14 @@ export default function Home() {
               too, for the browser or your phone.
             </p>
             <pre>
-              <code>{`pip install omnigents
-omnigents                 # pick a model and start chatting
-omnigents claude          # or launch a specific harness
-omnigents run my-agent/   # or run your own agent`}</code>
+              <code>{`pip install omnigent
+omnigent                 # pick a model and start chatting
+omnigent claude          # or launch a specific harness
+omnigent run my-agent/   # or run your own agent`}</code>
             </pre>
             <p>
-              Read the <Link href="/docs/installing">installation guide</Link>,
-              then <Link href="/docs/custom-agent">write your own agent</Link> in
+              Read the <Link href="/quickstart/installing">installation guide</Link>,
+              then <Link href="/quickstart/custom-agent">write your own agent</Link> in
               a few lines of YAML.
             </p>
           </section>
@@ -197,8 +197,8 @@ omnigents run my-agent/   # or run your own agent`}</code>
             <h3>How do I run my own agent?</h3>
             <p className="muted">
               Write a short YAML file with a prompt and a harness, then run{" "}
-              <code>omnigents run</code> on it. See the{" "}
-              <Link href="/docs/custom-agent">custom agent guide</Link>.
+              <code>omnigent run</code> on it. See the{" "}
+              <Link href="/quickstart/custom-agent">custom agent guide</Link>.
             </p>
 
             <h3>Is it safe to let an agent run on my machine?</h3>

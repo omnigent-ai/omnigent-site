@@ -4,6 +4,8 @@ import Footer from "@/components/Footer";
 import InstallTabs from "@/components/InstallTabs";
 import CtaButtons from "@/components/CtaButtons";
 import PillarsTabs from "@/components/PillarsTabs";
+import { DiscordIcon } from "@/components/icons";
+import { DISCORD_URL } from "@/components/links";
 
 export default function Home() {
   return (
@@ -131,9 +133,13 @@ omni claude    # run your agent with a web UI and collaboration`}</code>
           <section className="section center">
             <p className="muted" style={{ maxWidth: "38rem", margin: "0 auto 1.8rem" }}>
               Omnigent is alpha and built in the open. Try it and give us
-              feedback on GitHub and Discord.
+              feedback on Discord.
             </p>
-            <CtaButtons />
+            <div className="hero-cta">
+              <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
+                <DiscordIcon /> Join the Discord
+              </a>
+            </div>
           </section>
         </div>
       </main>

@@ -20,33 +20,39 @@ export default function InstallTabs() {
   };
 
   return (
-    <div className="cmd">
-      <div className="install-tabs" role="tablist" aria-label="Install method">
-        {OPTIONS.map((o) => (
-          <button
-            key={o.id}
-            type="button"
-            role="tab"
-            aria-selected={active === o.id}
-            className={active === o.id ? "install-tab is-active" : "install-tab"}
-            onClick={() => {
-              setActive(o.id);
-              setCopied(false);
-            }}
-          >
-            {o.label}
-          </button>
-        ))}
+    <div className="term">
+      <div className="term-bar">
+        <span className="term-dots" aria-hidden>
+          <i />
+          <i />
+          <i />
+        </span>
+        <div className="term-tabs" role="tablist" aria-label="Install method">
+          {OPTIONS.map((o) => (
+            <button
+              key={o.id}
+              type="button"
+              role="tab"
+              aria-selected={active === o.id}
+              className={active === o.id ? "term-tab is-active" : "term-tab"}
+              onClick={() => {
+                setActive(o.id);
+                setCopied(false);
+              }}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
       </div>
-      <pre>
+      <div className="term-body">
         <code>
-          <span style={{ color: "#7c7587", userSelect: "none" }}>$ </span>
-          {current.cmd}
+          <span className="term-prompt">$</span> {current.cmd}
         </code>
-      </pre>
-      <button className="copy" type="button" onClick={copy} aria-label="Copy command">
-        {copied ? "copied" : "copy"}
-      </button>
+        <button className="term-copy" type="button" onClick={copy} aria-label="Copy command">
+          {copied ? "copied" : "copy"}
+        </button>
+      </div>
     </div>
   );
 }

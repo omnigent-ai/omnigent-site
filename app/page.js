@@ -141,10 +141,11 @@ export default function Home() {
 
             <h2>Architecture</h2>
             <p className="arch-outro">
-              A runner wraps any agent in a sandboxed, uniform session — on your
+              A runner wraps any agent in a uniform, sandboxed session — on your
               laptop, or hosted in the cloud on Modal or Daytona. A server adds
-              policies and a shared history, and exposes every session over the
-              terminal, the web, and a REST API.
+              policies and shared history, and exposes every session across five
+              front-ends: a terminal, the web, a native app, mobile, and a REST
+              API.
             </p>
             <figure className="section-graphic">
               {/* eslint-disable-next-line @next/next/no-img-element */}

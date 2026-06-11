@@ -52,13 +52,6 @@ export default function Home() {
                   those pieces, or switch harnesses, without rewriting
                   everything?
                 </p>
-                <p>
-                  Omnigent ships this as ready-to-run agents:{" "}
-                  <strong>Polly</strong>, a multi-agent coding orchestrator that
-                  delegates to Claude Code and Codex and cross-reviews with a
-                  different model, and <strong>Debby</strong>, who runs a
-                  Claude-vs-GPT debate. Build your own in a short YAML file.
-                </p>
                 <figure style={{ margin: "1.6rem 0 0" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -79,13 +72,6 @@ export default function Home() {
                   quietly burn $1,000 on a bad idea? Right now the answer is
                   usually &ldquo;watch it closely,&rdquo; which defeats the
                   purpose.
-                </p>
-                <p>
-                  <strong>Contextual Policies</strong> are stateful: they cap
-                  spend, route trivial work to cheaper models, and escalate risky
-                  actions for approval, which static allow/deny lists can&rsquo;t
-                  do. Underneath, a <strong>flexible OS sandbox</strong> lets you
-                  lock things down and run in YOLO mode safely.
                 </p>
                 <figure style={{ margin: "1.6rem 0 0" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -117,6 +103,20 @@ export default function Home() {
                 </figure>
               </div>
             </div>
+            <ul className="features">
+              <li>
+                <strong>Polly &amp; Debby:</strong> built-in multi-AI agents (a
+                coding orchestrator and a model debate). Build your own in YAML.
+              </li>
+              <li>
+                <strong>Contextual Policies:</strong> stateful spend caps, model
+                routing, and risk-based escalation.
+              </li>
+              <li>
+                <strong>Flexible OS sandbox:</strong> restrict filesystem,
+                network, and env to run agents in YOLO mode safely.
+              </li>
+            </ul>
           </section>
 
           <hr />
@@ -156,11 +156,9 @@ omni claude              # or launch a specific harness
 omni run my-agent/       # or run your own agent`}</code>
             </pre>
             <p>
-              The default agent is <strong>Polly</strong>, a multi-agent coding
-              orchestrator; <strong>Debby</strong> runs a Claude-vs-GPT debate.
-              See the <Link href="/docs/use/builtin-agents">built-in agents</Link>,
-              the <Link href="/quickstart/install">installation guide</Link>, or{" "}
-              <Link href="/docs/use/custom-agents">write your own agent</Link>.
+              Read the <Link href="/quickstart/install">installation guide</Link>,
+              then <Link href="/docs/use/custom-agents">write your own agent</Link> in
+              a few lines of YAML.
             </p>
           </section>
 

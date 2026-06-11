@@ -46,12 +46,13 @@ export default function Page() {
         accounts — the default mode.
       </p>
 
-      <ol>
-        <li>
-          <p>For non-Docker deploys, enable it manually:</p>
+      <h3>Non-Docker deploys</h3>
 
-          <pre><code>{"OMNIGENT_AUTH_ENABLED=1 omni server start"}</code></pre>
-        </li>
+      <p>For non-Docker deploys, enable built-in accounts manually:</p>
+
+      <pre><code>{"OMNIGENT_AUTH_ENABLED=1 omni server start"}</code></pre>
+
+      <ol>
         <li>
           <strong>Create the first admin.</strong> The server never auto-generates a password. While
           no admin exists it reports <code>needs_setup</code>: open the web UI and create the admin

@@ -23,11 +23,11 @@ export default function Page() {
 
       <table>
         <thead>
-          <tr><th>Sub-agent</th><th>Harness</th><th>Role</th></tr>
+          <tr><th>Sub-agent</th><th>Role</th></tr>
         </thead>
         <tbody>
-          <tr><td><code>claude</code></td><td><code>claude-sdk</code></td><td>Claude responder</td></tr>
-          <tr><td><code>gpt</code></td><td><code>openai-agents</code></td><td>GPT responder</td></tr>
+          <tr><td><code>claude</code></td><td>Claude responder</td></tr>
+          <tr><td><code>gpt</code></td><td>GPT responder</td></tr>
         </tbody>
       </table>
 

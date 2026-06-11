@@ -24,7 +24,7 @@ export default function Home() {
           <InstallTabs />
           <div className="hero-cta">
             <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-              <GitHubIcon /> Star on GitHub
+              <GitHubIcon /> View on GitHub
             </a>
             <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
               <DiscordIcon /> Join the Discord
@@ -163,7 +163,7 @@ omnigent run my-agent/   # or run your own agent`}</code>
             </p>
             <div className="hero-cta">
               <a href={GITHUB_URL} className="btn btn-primary" target="_blank" rel="noreferrer">
-                <GitHubIcon /> Star on GitHub
+                <GitHubIcon /> View on GitHub
               </a>
               <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
                 <DiscordIcon /> Join the Discord

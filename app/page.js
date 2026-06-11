@@ -16,10 +16,10 @@ export default function Home() {
           <h1 className="hero-logo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/omnigent-home-page-OG.png"
+              src="/images/hero-logo.svg"
               alt="Omnigent, a meta-harness for AI agents"
-              width={1200}
-              height={300}
+              width={366}
+              height={101}
             />
           </h1>
           <p className="lede">

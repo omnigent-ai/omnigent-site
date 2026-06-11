@@ -1,6 +1,6 @@
 # Omnigent website
 
-A minimal marketing + docs site for [Omnigent](https://github.com/Omnigent/Omnigent),
+A minimal marketing + docs site for [Omnigent](https://github.com/omnigent-ai/omnigent),
 built with Next.js (App Router).
 
 ## Develop

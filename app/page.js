@@ -25,8 +25,8 @@ export default function Home() {
           <p className="lede">
             A common layer over Claude Code, Codex, Pi, and the agents you
             write yourself: swap or combine harnesses without rewriting, keep
-            them in check with policies and sandboxing, and pick the same live
-            session back up anywhere, on your phone or with a teammate.
+            them in check with policies and sandboxing, and collaborate in
+            real time on the same live session, from any device.
           </p>
           <InstallTabs />
           <CtaButtons />

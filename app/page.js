@@ -54,10 +54,29 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="section">
+          <div className="wrap">
+            <h2>Features</h2>
+            <ul className="features">
+              <li>
+                <strong>Polly &amp; Debby:</strong> built-in multi-AI agents (a
+                coding orchestrator and a model debate). Build your own in YAML.
+              </li>
+              <li>
+                <strong>Contextual Policies:</strong> stateful spend caps, model
+                routing, and risk-based escalation.
+              </li>
+              <li>
+                <strong>Flexible OS sandbox:</strong> restrict filesystem,
+                network, and env to run agents in YOLO mode safely.
+              </li>
+            </ul>
+          </div>
+        </section>
+
         {/* Three pillars — wider layout than the rest of the page */}
         <section className="section section-pillars">
           <div className="wrap-wide">
-            <h2>What Omnigent gives you</h2>
             <div className="pillars">
               <div className="pillar">
                 <figure className="pillar-icon pillar-icon-sm">
@@ -127,7 +146,6 @@ export default function Home() {
           <div className="wrap-wide">
             <hr />
 
-            <h2>How it fits together</h2>
             <p className="arch-outro">
               A runner wraps any agent in a sandboxed, uniform session. A server
               adds policies and a shared history, and exposes every session over

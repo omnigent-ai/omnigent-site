@@ -15,7 +15,7 @@ export default function Home() {
         <section className="hero wrap">
           <span className="tag">Open source · Alpha</span>
           <h1>
-            The framework above your agent harnesses. Runs them together,
+            The framework above your agent harnesses that runs them together,
             governed and shareable. Use with Claude Code, Codex, or Pi.
           </h1>
           <Command>pip install omnigents</Command>

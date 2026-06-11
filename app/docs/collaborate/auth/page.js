@@ -42,8 +42,8 @@ export default function Page() {
 
       <p>
         If you deployed with <Link href="/docs/deploy/docker">Docker</Link> or a{" "}
-        <Link href="/docs/deploy/cloud">cloud platform</Link>, auth is already enabled. Built-in
-        accounts is the default mode.
+        <Link href="/docs/deploy/cloud">cloud platform</Link>, auth is already enabled with built-in
+        accounts — the default mode.
       </p>
 
       <ol>

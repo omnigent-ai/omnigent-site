@@ -77,8 +77,7 @@ export default function Page() {
               Go to <strong>Admin {">"} Members {">"} Invite</strong> to create a single-use invite
               link.
             </li>
-            <li>No email server needed; just send the link directly.</li>
-            <li>Signup is invite-only.</li>
+            <li>No email server needed; just send the link directly. Signup is invite-only.</li>
           </ul>
         </li>
       </ol>

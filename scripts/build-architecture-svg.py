@@ -108,10 +108,10 @@ parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
 # ---------- connectors (draw first, sit behind boxes) ----------
 MIDY = 238
 # inputs -> runner
-parts.append(dotted(190, 132, 318, MIDY - 24))   # CLI agents
-parts.append(dotted(190, 346, 318, MIDY + 24))   # custom agents
+parts.append(dotted(190, 132, 314, MIDY - 24))   # CLI agents
+parts.append(dotted(190, 346, 314, MIDY + 24))   # custom agents
 # runner -> server
-parts.append(dotted(497, MIDY, 588, MIDY))
+parts.append(dotted(532, MIDY, 588, MIDY))
 # server -> interfaces (fan out)
 IFACE_X = 968
 iface_rows = [84, 148, 212, 276, 340]   # icon centres (cy=row+26) symmetric on MIDY
@@ -160,45 +160,29 @@ parts.append(img(118, 344, 132, 34, data_uri(f"{AG}/openai-agents.png")))
 parts.append(img(90, 392, 44, 44, data_uri(f"{AG}/llama.png")))
 parts.append(img(156, 392, 92, 26, data_uri(f"{AG}/claude-sdk.png")))
 
-# ---------- Runner box ----------
-rx, ry, rw, rh = 320, 140, 178, 196
+# ---------- Runner box (Sandboxing + Reliability, per Matei's slide) ----------
+rx, ry, rw, rh = 316, 132, 216, 214
 parts.append(rrect(rx, ry, rw, rh, 16, "#ffffff", ACCENT, 2.5))
-parts.append(octo(rx + 18, ry + 16, 30))
-parts.append(text(rx + 56, ry + 38, 21, 700, FG).format("Runner"))
-# host rows with logos (replaces the Sandboxing / Reliability pills)
-row_x, row_w, row_h = rx + 16, rw - 32, 32
-hy = ry + 58
+parts.append(octo(rx + 16, ry + 14, 30))
+parts.append(text(rx + 54, ry + 36, 21, 700, FG).format("Runner"))
 
+inner_x = rx + 14
+inner_w = rw - 28
+cxin = inner_x + inner_w / 2
 
-def host_row(y, draw_mark, label=None, full_logo=None):
-    """A light pill holding a centered logo (+ optional label) for one host."""
-    out = [rrect(row_x, y, row_w, row_h, 9, GREY_PINK)]
-    cx, cy = row_x + row_w / 2, y + row_h / 2
-    if full_logo:  # wide lockup that already contains its name (Daytona)
-        out.append(img(cx, cy, row_w - 22, row_h - 14, full_logo))
-    else:
-        # centre the [mark + gap + label] group within the row
-        tw = len(label) * 14.5 * 0.56
-        group = 22 + 8 + tw
-        mx = cx - group / 2 + 11
-        out.append(draw_mark(mx, cy))
-        out.append(text(mx + 19, cy + 5, 14.5, 600, FG).format(label))
-    return "".join(out)
+# Sandboxing box: the cloud sandbox providers + a "more coming" hint
+sb_y, sb_h = ry + 56, 94
+parts.append(rrect(inner_x, sb_y, inner_w, sb_h, 12, GREY_PINK))
+parts.append(text(cxin, sb_y + 22, 14.5, 600, FG, "middle").format("Sandboxing"))
+logo_cy = sb_y + 60
+parts.append(img(cxin - 56, logo_cy, 28, 28, data_uri("public/logos/runners/modal.png")))
+parts.append(img(cxin + 12, logo_cy, 80, 26, data_uri("public/logos/runners/daytona.png")))
+parts.append(text(cxin + 76, logo_cy + 6, 17, 700, FG_SOFT, "middle").format("(…)"))
 
-
-def laptop(cx, cy):
-    return (f'<g stroke="{FG}" stroke-width="1.7" fill="none" stroke-linejoin="round">'
-            f'<rect x="{cx-10}" y="{cy-8}" width="20" height="13" rx="1.5"/>'
-            f'<path d="M{cx-13} {cy+8} L{cx+13} {cy+8}" stroke-linecap="round"/></g>')
-
-
-def modal_mark(cx, cy):
-    return img(cx, cy, 22, 22, data_uri("public/logos/runners/modal.png"))
-
-
-parts.append(host_row(hy, laptop, "Your machine"))
-parts.append(host_row(hy + 46, modal_mark, "Modal"))
-parts.append(host_row(hy + 92, None, full_logo=data_uri("public/logos/runners/daytona.png")))
+# Reliability box
+rb_y, rb_h = sb_y + sb_h + 12, 32
+parts.append(rrect(inner_x, rb_y, inner_w, rb_h, 9, GREY_PINK))
+parts.append(text(cxin, rb_y + rb_h / 2 + 5, 14.5, 600, FG, "middle").format("Reliability"))
 
 # ---------- Server box ----------
 sx, sy, sw, sh = 588, 122, 262, 232

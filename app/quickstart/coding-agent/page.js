@@ -20,10 +20,12 @@ export default function Page() {
 
       <h2>1. Start your coding agent</h2>
 
-      <pre><code>{"omni claude"}</code></pre>
+      <pre><code>{`omni claude    # Claude Code
+omni codex     # Codex`}</code></pre>
 
       <p>
-        This launches Claude Code in your terminal and opens a web UI at{" "}
+        Pick whichever you already use. Either command launches the coding agent
+        in your terminal and opens a web UI at{" "}
         <code>http://localhost:6767</code>. Both are connected to the same session
         and stream output in real time.
       </p>
@@ -86,11 +88,22 @@ export default function Page() {
         alongside your text. Try pasting a screenshot of a UI bug or a design spec.
       </p>
 
-      <h3>Fork a session</h3>
+      <h3>Fork a session and switch agents</h3>
       <p>
         Fork your current session to try a different approach without affecting
         the original. The fork copies the full conversation history up to that
         point, so you can experiment freely.
+      </p>
+      <p>
+        Sessions in Omnigent belong to you, not to a specific agent — so a fork
+        doesn{"'"}t have to continue with the agent it started with.{" "}
+        <strong>
+          Started in Claude Code? Fork the session and continue the fork with
+          Codex (or vice versa).
+        </strong>{" "}
+        The new agent picks up the full conversation history and keeps
+        going, so you can compare how each one tackles the same problem from the
+        same starting point.
       </p>
 
       <h2>4. Add a policy in plain language</h2>
@@ -99,13 +112,16 @@ export default function Page() {
         Type this into the chat:
       </p>
 
-      <pre><code>{"Ask me before running any shell commands."}</code></pre>
+      <pre><code>{"Don't send any PII like emails or credit card numbers to the model. Ask me first if a message contains some."}</code></pre>
 
       <p>
-        The agent adds a policy to the session. From now on, it pauses and asks
-        for your approval before executing anything in the shell. You can add
-        cost limits, access controls, and more the same way. See{" "}
-        <Link href="/docs/policies/overview">Contextual Policies</Link>.
+        The agent attaches Omnigent{"'"}s built-in PII policy to the session. From
+        now on, every outgoing model request is scanned, and anything containing
+        PII is held for your approval before it leaves your machine. Try it: paste
+        a log file with a fake email address and watch the policy step in. This
+        is enforcement at the platform layer — something no coding agent can do
+        on its own. Cost budgets, access controls, and more work the same way.
+        See <Link href="/docs/policies/overview">Contextual Policies</Link>.
       </p>
 
       <h2>What{"'"}s next</h2>

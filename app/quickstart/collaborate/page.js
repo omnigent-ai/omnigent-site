@@ -81,9 +81,9 @@ omni host https://your-server.up.railway.app`}</code></pre>
 
       <div className="note">
         <p>
-          <strong>Sharing with EDIT grants code execution on your host.</strong> A teammate with
-          EDIT can drive the agent, which runs code on whatever machine hosts the session. Share
-          read-only when you can. See{" "}
+          <strong>Only share EDIT with people you trust to run arbitrary code on your machine.</strong>{" "}
+          A teammate with EDIT can drive the agent, which runs code on whatever machine hosts the
+          session. Share read-only when you can. See{" "}
           <Link href="/docs/collaborate#code-execution-risk">
             Co-driving grants code execution on the host
           </Link>{" "}

@@ -97,7 +97,7 @@ export default function Page() {
 
           <p>
             Omnigent needs a server to store sessions and run agents. Enter your
-            server URL — local or remote — and the app connects automatically.
+            local or remote server URL and the app connects automatically.
           </p>
           <pre><code>{"https://your-server.example.com"}</code></pre>
           <p>

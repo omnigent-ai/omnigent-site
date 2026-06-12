@@ -9,7 +9,7 @@ export default function Page() {
 
       <p>
         Omnigent ships with policies for common guardrails, organized into two categories:{" "}
-        <strong>Safety</strong> and <strong>Cost Control</strong>. Your omnigent can apply any of
+        <strong>Safety</strong> and <strong>Cost Control</strong>. Your Omnigent can apply any of
         these by name when you{" "}
         <Link href="/docs/policies/overview#adding-a-policy">ask it to add a policy</Link>, or you
         can reference them in YAML by their full path in the <code>handler</code> field.

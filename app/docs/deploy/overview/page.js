@@ -9,7 +9,7 @@ export default function Page() {
 
       <p>
         Everything in the previous sections runs on your laptop. That{"'"}s the fastest way to get
-        started, but when you want your omnigent accessible from your phone, shareable with
+        started, but when you want your Omnigent accessible from your phone, shareable with
         teammates, or running while your laptop sleeps, you need to deploy.
       </p>
 
@@ -35,17 +35,17 @@ export default function Page() {
           a <Link href="/docs/deploy/database">database</Link> (Postgres or SQLite).
         </li>
         <li>
-          <strong>Artifacts.</strong> Files, omnigent bundles, and uploads.
+          <strong>Artifacts.</strong> Files, Omnigent bundles, and uploads.
         </li>
         <li>
-          <strong>Catalog.</strong> Registered omnigent specs and built-in omnigent.
+          <strong>Catalog.</strong> Registered Omnigent specs and built-in Omnigent.
         </li>
         <li>
           <strong>MCP proxy &amp; policies.</strong> Proxies MCP tool calls with server-side policy
           enforcement.
         </li>
         <li>
-          <strong>Skills.</strong> Skill definitions that omnigent can load.
+          <strong>Skills.</strong> Skill definitions that Omnigent can load.
         </li>
         <li>
           <strong>Auth &amp; accounts.</strong> User authentication (built-in accounts or OIDC/SSO).
@@ -55,7 +55,7 @@ export default function Page() {
       <h3>Runner</h3>
 
       <p>
-        The <strong>runner</strong> executes omnigent loops. It manages the harness (Claude Code,
+        The <strong>runner</strong> executes Omnigent loops. It manages the harness (Claude Code,
         Codex, Claude SDK, etc.), runs tools, and streams events back to the server over WebSocket.
       </p>
 
@@ -70,7 +70,7 @@ export default function Page() {
 
       <p>
         The runner can also be hosted in the cloud as a{" "}
-        <Link href="/docs/deploy/cloud-runner">cloud runner</Link>, so your omnigent executes in a
+        <Link href="/docs/deploy/cloud-runner">cloud runner</Link>, so your Omnigent executes in a
         cloud container instead of on your local machine. Supported hosting platforms:
       </p>
 
@@ -141,17 +141,17 @@ export default function Page() {
 
       <ul>
         <li>
-          <strong>No laptop dependency.</strong> Your omnigent runs even when your machine is off.
+          <strong>No laptop dependency.</strong> Your Omnigent runs even when your machine is off.
         </li>
         <li>
-          <strong>Cloud-native tooling.</strong> Your omnigent can access cloud resources directly.
+          <strong>Cloud-native tooling.</strong> Your Omnigent can access cloud resources directly.
         </li>
         <li>
-          <strong>Isolation.</strong> Each omnigent runs in its own container, separate from your
+          <strong>Isolation.</strong> Each Omnigent runs in its own container, separate from your
           local environment.
         </li>
         <li>
-          <strong>Scalability.</strong> Run many omnigent in parallel without taxing your machine.
+          <strong>Scalability.</strong> Run many Omnigents in parallel without taxing your machine.
         </li>
       </ul>
     </>

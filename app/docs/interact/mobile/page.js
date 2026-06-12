@@ -19,7 +19,7 @@ export default function Page() {
 
       <p>
         Long-running agents don{"'"}t need you at your desk. Start a coding task, head to lunch,
-        check progress from your phone. Your omnigent hits a question. Answer it from the coffee
+        check progress from your phone. Your Omnigent hits a question. Answer it from the coffee
         line. Want to review what it produced? Browse the files right there.
       </p>
 

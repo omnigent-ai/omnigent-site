@@ -9,7 +9,7 @@ export default function Page() {
 
       <p>
         When the <Link href="/docs/policies/builtin">builtin policies</Link> don&apos;t cover your
-        use case, you can write your own in Python, register them on the server, and your omnigent
+        use case, you can write your own in Python, register them on the server, and your Omnigent
         can use them just like builtins.
       </p>
 
@@ -59,7 +59,7 @@ def my_policy(event: PolicyEvent) -> PolicyResponse | None:
       <h2>2. Register on the server</h2>
 
       <p>
-        To make your policy discoverable by your omnigent and visible in the UI, do two things:
+        To make your policy discoverable by your Omnigent and visible in the UI, do two things:
       </p>
 
       <p>
@@ -105,7 +105,7 @@ policy_modules:
       </pre>
 
       <p>
-        Once registered, your custom policies appear alongside the builtins. Your omnigent can
+        Once registered, your custom policies appear alongside the builtins. Your Omnigent can
         select them when you ask it to add a policy in chat, and they show up in the UI settings
         panel.
       </p>
@@ -115,7 +115,7 @@ policy_modules:
       <p>
         Once registered, your custom policy works the same as any builtin. See{" "}
         <Link href="/docs/policies/overview#adding-a-policy">Adding a policy</Link> for all the
-        ways to apply it (chat, omnigent YAML, or server config).
+        ways to apply it (chat, Omnigent YAML, or server config).
       </p>
 
       <h2>Reference: PolicyEvent</h2>

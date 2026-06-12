@@ -63,7 +63,7 @@ export default function Page() {
         </tbody>
       </table>
 
-      <h2>Cost</h2>
+      <h2>Cost Control</h2>
 
       <table>
         <thead>

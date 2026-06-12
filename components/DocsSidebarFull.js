@@ -74,8 +74,23 @@ const SECTIONS = [
     title: "Contextual Policies",
     pages: [
       { href: "/docs/policies/overview", label: "Overview" },
-      { href: "/docs/policies/builtin", label: "Builtin Policies" },
-      { href: "/docs/policies/custom", label: "Custom Policies" },
+    ],
+    subsections: [
+      {
+        title: "Builtin Policies",
+        collapsed: false,
+        href: "/docs/policies/builtin",
+        pages: [
+          { href: "/docs/policies/builtin#safety", label: "Safety" },
+          { href: "/docs/policies/builtin#cost-control", label: "Cost Control" },
+        ],
+      },
+      {
+        title: "Custom Policies",
+        collapsed: false,
+        href: "/docs/policies/custom",
+        pages: [],
+      },
     ],
   },
   {

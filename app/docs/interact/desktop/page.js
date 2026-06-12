@@ -49,7 +49,7 @@ export default function Page() {
       <ul>
         <li>
           <strong>A running server.</strong> The <Link href="/docs/deploy/overview">server</Link>{" "}
-          stores your sessions and serves the UI the desktop app connects to — run it locally with{" "}
+          stores your sessions and serves the UI the desktop app connects to; run it locally with{" "}
           <code>omni server start</code> or point the app at a deployed URL.
         </li>
         <li>

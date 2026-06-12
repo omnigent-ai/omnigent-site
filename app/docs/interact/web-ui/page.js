@@ -35,7 +35,7 @@ export default function Page() {
 
       <p>
         After that, open <strong>http://localhost:6767</strong> and drive the agent entirely from
-        the browser — no further terminal interaction needed.
+        the browser; no further terminal interaction needed.
       </p>
 
       <h2>File editor</h2>

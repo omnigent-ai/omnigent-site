@@ -187,13 +187,11 @@ export default function Page() {
 
       <h2>Windows</h2>
       <p>
-        Omnigent isn{"'"}t supported natively on Windows yet. In the meantime, install and run it
-        inside{" "}
+        Native Windows support is not available yet. For now, run Omnigent inside{" "}
         <a href="https://learn.microsoft.com/windows/wsl/install" target="_blank" rel="noopener noreferrer">
           WSL2
         </a>{" "}
-        (Windows Subsystem for Linux) and follow the Linux instructions from inside your WSL2
-        distribution.
+        (Windows Subsystem for Linux) and follow the Linux instructions from your WSL2 distribution.
       </p>
     </>
   );

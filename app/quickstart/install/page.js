@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MACOS_DOWNLOAD_URL } from "@/components/links";
 
 
-const CLI_TABS = [
-  { label: "pip", code: "pip install omnigent" },
+// /install.sh rewrites to the GitHub install script (see next.config.mjs)
+const cliTabs = (origin) => [
+  { label: "installer", code: `curl -fsSL ${origin}/install.sh | sh` },
   { label: "uv", code: "uv tool install omnigent" },
+  { label: "pip", code: "pip install omnigent" },
   { label: "Homebrew", code: "brew install omnigent-ai/tap/omnigent" },
 ];
 
@@ -30,6 +32,11 @@ function AppleLogo() {
 export default function Page() {
   const [setup, setSetup] = useState("cli");
   const [cliTab, setCliTab] = useState(0);
+  const [origin, setOrigin] = useState("https://omnigent.ai");
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
+  const CLI_TABS = cliTabs(origin);
 
   return (
     <>

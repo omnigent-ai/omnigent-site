@@ -87,7 +87,7 @@ omni host https://your-server.up.railway.app`}</code></pre>
           <Link href="/docs/collaborate#code-execution-risk">
             Co-driving grants code execution on the host
           </Link>{" "}
-          for details and safer alternatives.
+          for details.
         </p>
       </div>
 

@@ -45,11 +45,11 @@ export default function Page() {
       <h3 id="code-execution-risk">Co-driving grants code execution on the host</h3>
 
       <p>
-        By design, a session runs commands in a non-sandboxed process on whatever machine hosts it
-        &mdash; if you started the client on your laptop, the session executes code on your laptop. A
-        teammate you share with at the <strong>EDIT</strong> permission level can drive the agent, so
-        they effectively get arbitrary code execution on your machine too, with access to its
-        filesystem, credentials, and network.
+        A session runs commands in a non-sandboxed process on whatever machine hosts it. If you
+        started the client on your laptop, the session executes code on your laptop. A teammate you
+        share with at the <strong>EDIT</strong> permission level can drive the agent, so they get
+        arbitrary code execution on your machine too, with access to its filesystem, credentials, and
+        network.
       </p>
       <p>
         Only share with EDIT to people you trust with that level of access. To collaborate more

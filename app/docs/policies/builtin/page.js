@@ -31,11 +31,6 @@ export default function Page() {
         </thead>
         <tbody>
           <tr>
-            <td><code>max_tool_calls_per_session</code></td>
-            <td>DENYs after a total tool-call limit is reached.</td>
-            <td><code>limit</code> (int, default <code>100</code>)</td>
-          </tr>
-          <tr>
             <td><code>ask_on_os_tools</code></td>
             <td>ASKs before any file or shell operation.</td>
             <td>None</td>
@@ -44,51 +39,6 @@ export default function Page() {
             <td><code>block_skills</code></td>
             <td>Prevents specific skills from loading.</td>
             <td><code>blocked</code> (string[], required)</td>
-          </tr>
-          <tr>
-            <td><code>enforce_sandbox</code></td>
-            <td>Forces a sandbox configuration on agent start.</td>
-            <td>
-              <code>sandbox_type</code>, <code>allow_network</code>, <code>write_paths</code>,{" "}
-              <code>read_paths</code>
-            </td>
-          </tr>
-          <tr>
-            <td><code>deny_pii_in_llm_request</code></td>
-            <td>Scans outgoing messages for PII and blocks or flags them.</td>
-            <td>
-              <code>pii_types</code> (string[]), <code>action</code> (<code>&quot;DENY&quot;</code>{" "}
-              or <code>&quot;ASK&quot;</code>)
-            </td>
-          </tr>
-          <tr>
-            <td><code>github_policy</code></td>
-            <td>Controls GitHub read/write access across MCP tools and shell commands.</td>
-            <td>
-              <code>read_all</code>, <code>write_repos</code>, <code>write_branches</code>
-            </td>
-          </tr>
-          <tr>
-            <td><code>gdrive_policy</code></td>
-            <td>
-              Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to
-              agent-created files by default.
-            </td>
-            <td>
-              <code>read_all</code>, <code>allow_create</code>, <code>write_files</code>
-            </td>
-          </tr>
-          <tr>
-            <td><code>gmail_policy</code></td>
-            <td>Controls Gmail. Defaults to read + draft, no send.</td>
-            <td>
-              <code>allow_read</code>, <code>allow_send</code>, <code>allow_drafts</code>
-            </td>
-          </tr>
-          <tr>
-            <td><code>gcalendar_policy</code></td>
-            <td>Controls Google Calendar. Defaults to read-only.</td>
-            <td>None</td>
           </tr>
           <tr>
             <td><code>block_working_dir_changes</code></td>
@@ -108,6 +58,56 @@ export default function Page() {
             <td>
               <code>expression</code> (CEL expression string), <code>reason</code> (deny message)
             </td>
+          </tr>
+          <tr>
+            <td><code>deny_pii_in_llm_request</code></td>
+            <td>Scans outgoing messages for PII and blocks or flags them.</td>
+            <td>
+              <code>pii_types</code> (string[]), <code>action</code> (<code>&quot;DENY&quot;</code>{" "}
+              or <code>&quot;ASK&quot;</code>)
+            </td>
+          </tr>
+          <tr>
+            <td><code>enforce_sandbox</code></td>
+            <td>Forces a sandbox configuration on agent start.</td>
+            <td>
+              <code>sandbox_type</code>, <code>allow_network</code>, <code>write_paths</code>,{" "}
+              <code>read_paths</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>gcalendar_policy</code></td>
+            <td>Controls Google Calendar. Defaults to read-only.</td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td><code>gdrive_policy</code></td>
+            <td>
+              Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to
+              agent-created files by default.
+            </td>
+            <td>
+              <code>read_all</code>, <code>allow_create</code>, <code>write_files</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>github_policy</code></td>
+            <td>Controls GitHub read/write access across MCP tools and shell commands.</td>
+            <td>
+              <code>read_all</code>, <code>write_repos</code>, <code>write_branches</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>gmail_policy</code></td>
+            <td>Controls Gmail. Defaults to read + draft, no send.</td>
+            <td>
+              <code>allow_read</code>, <code>allow_send</code>, <code>allow_drafts</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>max_tool_calls_per_session</code></td>
+            <td>DENYs after a total tool-call limit is reached.</td>
+            <td><code>limit</code> (int, default <code>100</code>)</td>
           </tr>
           <tr>
             <td><code>prompt_policy</code></td>
@@ -159,6 +159,14 @@ export default function Page() {
             </td>
           </tr>
           <tr>
+            <td><code>deny_trivial_to_expensive_model</code></td>
+            <td>
+              Classifies messages as trivial or complex. Routes trivial tasks away from expensive
+              models.
+            </td>
+            <td>None</td>
+          </tr>
+          <tr>
             <td><code>user_daily_cost_budget</code></td>
             <td>
               Same as <code>cost_budget</code>, but enforced per-user daily across all sessions.
@@ -166,14 +174,6 @@ export default function Page() {
             <td>
               <code>max_cost_usd</code> (required), <code>ask_thresholds_usd</code>
             </td>
-          </tr>
-          <tr>
-            <td><code>deny_trivial_to_expensive_model</code></td>
-            <td>
-              Classifies messages as trivial or complex. Routes trivial tasks away from expensive
-              models.
-            </td>
-            <td>None</td>
           </tr>
         </tbody>
       </table>

@@ -813,11 +813,17 @@ figcaption {
    card in dark mode. Mirrors the theme system: explicit choice wins; auto
    follows the OS via prefers-color-scheme. */
 .hero-logo .theme-dark-only,
-.brand .theme-dark-only { display: none; }
+.brand .theme-dark-only,
+.pillar-visual .theme-dark-only,
+.pillar-lightbox .theme-dark-only { display: none; }
 [data-theme="dark"] .hero-logo .theme-light-only,
-[data-theme="dark"] .brand .theme-light-only { display: none; }
+[data-theme="dark"] .brand .theme-light-only,
+[data-theme="dark"] .pillar-visual .theme-light-only,
+[data-theme="dark"] .pillar-lightbox .theme-light-only { display: none; }
 [data-theme="dark"] .hero-logo .theme-dark-only,
 [data-theme="dark"] .brand .theme-dark-only { display: block; }
+[data-theme="dark"] .pillar-visual .theme-dark-only,
+[data-theme="dark"] .pillar-lightbox .theme-dark-only { display: block; }
 
 [data-theme="dark"] .section-graphic {
   background: #faf7f9;
@@ -827,9 +833,13 @@ figcaption {
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]):not([data-theme="dark"]) .hero-logo .theme-light-only,
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .brand .theme-light-only { display: none; }
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .brand .theme-light-only,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .pillar-visual .theme-light-only,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .pillar-lightbox .theme-light-only { display: none; }
   :root:not([data-theme="light"]):not([data-theme="dark"]) .hero-logo .theme-dark-only,
   :root:not([data-theme="light"]):not([data-theme="dark"]) .brand .theme-dark-only { display: block; }
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .pillar-visual .theme-dark-only,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .pillar-lightbox .theme-dark-only { display: block; }
   :root:not([data-theme="light"]):not([data-theme="dark"]) .section-graphic {
     background: #faf7f9;
     border-radius: var(--radius);

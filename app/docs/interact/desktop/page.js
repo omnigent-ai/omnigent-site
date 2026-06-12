@@ -92,6 +92,13 @@ export default function Page() {
 
       <h2>Get started</h2>
 
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/docs/desktop-start.png"
+        alt="Omnigent desktop app first-launch setup screen"
+        style={{ width: "100%", borderRadius: "8px" }}
+      />
+
       <ol>
         <li>
           <strong>Launch the app.</strong> On first launch, you{"'"}ll see a setup screen.
@@ -106,6 +113,13 @@ export default function Page() {
           browser.
         </li>
       </ol>
+
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/docs/desktop-conversation.png"
+        alt="Omnigent desktop app showing an agent conversation alongside the session workspace"
+        style={{ width: "100%", borderRadius: "8px" }}
+      />
 
       <p>
         The app remembers your server URL for future launches. To change it later, go to{" "}
@@ -124,6 +138,13 @@ export default function Page() {
       </ol>
 
       <p>Notifications and badge counts are combined across all connected servers.</p>
+
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/docs/desktop-connect.png"
+        alt="Omnigent desktop app setup screen prompting for the server URL to connect to"
+        style={{ width: "100%", borderRadius: "8px" }}
+      />
     </>
   );
 }

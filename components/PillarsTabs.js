@@ -41,6 +41,7 @@ const PILLARS = [
       alt: "Omnigent approval prompt for a Bash tool call blocked by a session cost budget policy.",
       width: 1648,
       height: 1222,
+      fit: "contain",
     },
   },
   {
@@ -68,8 +69,10 @@ const PILLARS = [
 export default function PillarsTabs() {
   const [active, setActive] = useState("composition");
   const [indicator, setIndicator] = useState({ left: 0, width: 0, ready: false });
+  const [expandedVisual, setExpandedVisual] = useState(null);
   const tablistRef = useRef(null);
   const tabRefs = useRef({});
+  const closeButtonRef = useRef(null);
 
   const updateIndicator = useCallback(() => {
     const tab = tabRefs.current[active];
@@ -94,6 +97,25 @@ export default function PillarsTabs() {
     window.addEventListener("resize", updateIndicator);
     return () => window.removeEventListener("resize", updateIndicator);
   }, [updateIndicator]);
+
+  useEffect(() => {
+    if (!expandedVisual) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") setExpandedVisual(null);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    closeButtonRef.current?.focus();
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [expandedVisual]);
 
   const selectTab = (id) => {
     if (id !== active) setActive(id);
@@ -170,18 +192,25 @@ export default function PillarsTabs() {
               aria-hidden={pillar.visual ? undefined : true}
             >
               {pillar.visual ? (
-                <Image
-                  className={
-                    pillar.visual.fit === "contain"
-                      ? "pillar-visual-image pillar-visual-image-contain"
-                      : "pillar-visual-image"
-                  }
-                  src={pillar.visual.src}
-                  alt={pillar.visual.alt}
-                  width={pillar.visual.width}
-                  height={pillar.visual.height}
-                  sizes="(max-width: 820px) 100vw, 640px"
-                />
+                <button
+                  type="button"
+                  className="pillar-visual-zoom"
+                  onClick={() => setExpandedVisual(pillar.visual)}
+                  aria-label={`View larger ${pillar.title} screenshot`}
+                >
+                  <Image
+                    className={
+                      pillar.visual.fit === "contain"
+                        ? "pillar-visual-image pillar-visual-image-contain"
+                        : "pillar-visual-image"
+                    }
+                    src={pillar.visual.src}
+                    alt={pillar.visual.alt}
+                    width={pillar.visual.width}
+                    height={pillar.visual.height}
+                    sizes="(max-width: 820px) 100vw, 640px"
+                  />
+                </button>
               ) : (
                 "Image placeholder"
               )}
@@ -189,6 +218,40 @@ export default function PillarsTabs() {
           </div>
         ))}
       </div>
+
+      {expandedVisual ? (
+        <div
+          className="pillar-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={expandedVisual.alt}
+          onClick={() => setExpandedVisual(null)}
+        >
+          <div className="pillar-lightbox-backdrop" aria-hidden="true" />
+          <button
+            ref={closeButtonRef}
+            type="button"
+            className="pillar-lightbox-close"
+            aria-label="Close screenshot"
+            onClick={() => setExpandedVisual(null)}
+          >
+            ×
+          </button>
+          <div
+            className="pillar-lightbox-content"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Image
+              className="pillar-lightbox-image"
+              src={expandedVisual.src}
+              alt={expandedVisual.alt}
+              fill
+              sizes="92vw"
+              priority
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

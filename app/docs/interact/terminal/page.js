@@ -14,7 +14,7 @@ export default function Page() {
       </p>
 
       <p>
-        Every interface — terminal, web UI, mobile, and desktop — connects to the same persistent,
+        Every interface (terminal, web UI, mobile, and desktop) connects to the same persistent,
         shareable session, so you can start work in one place and keep going anywhere.
       </p>
 

@@ -184,6 +184,14 @@ export default function Page() {
         the <Link href="/docs/use/builtin-agents/debby">Debby reference</Link>{" "}
         for more.
       </p>
+
+      <p style={{ color: "var(--fg-soft)", fontSize: "0.9rem" }}>
+        Native Windows support is not available yet. For now, run Omnigent inside{" "}
+        <a href="https://learn.microsoft.com/windows/wsl/install" target="_blank" rel="noopener noreferrer">
+          WSL2
+        </a>{" "}
+        (Windows Subsystem for Linux) and follow the Linux instructions from your WSL2 distribution.
+      </p>
     </>
   );
 }

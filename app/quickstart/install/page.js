@@ -29,7 +29,6 @@ function AppleLogo() {
 
 export default function Page() {
   const [setup, setSetup] = useState("cli");
-  const [server, setServer] = useState("managed");
   const [cliTab, setCliTab] = useState(0);
 
   return (
@@ -97,70 +96,51 @@ export default function Page() {
           <h2>Connect to a server</h2>
 
           <p>
-            Omnigent needs a server to store sessions and run agents. Choose how
-            you want to connect:
+            Omnigent needs a server to store sessions and run agents. Enter your
+            local or remote server URL and the app connects automatically.
+          </p>
+          <pre><code>{"https://your-server.example.com"}</code></pre>
+          <p>
+            Don{"'"}t have a server yet? See{" "}
+            <Link href="/docs/deploy/overview">Deploy</Link> to set one up, or run
+            one locally with the steps below.
           </p>
 
-          <div className="setup-tabs">
-            <button className={`setup-tab${server === "managed" ? " active" : ""}`} onClick={() => setServer("managed")}>
-              Managed
-            </button>
-            <button className={`setup-tab${server === "local" ? " active" : ""}`} onClick={() => setServer("local")}>
-              Local
-            </button>
+          <h3>Run a local server</h3>
+
+          <p>
+            To point the app at a server on your own machine, install the Omnigent
+            CLI and start a server.
+          </p>
+
+          <h4>1. Install Omnigent</h4>
+
+          <div className="tabbed-code">
+            <div className="tab-bar">
+              {CLI_TABS.map((t, i) => (
+                <button key={t.label} onClick={() => setCliTab(i)} className={cliTab === i ? "active" : ""}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <pre><code>{CLI_TABS[cliTab].code}</code></pre>
           </div>
 
-          {server === "managed" && (
-            <>
-              <p>
-                Enter your managed server URL. The app connects automatically.
-                No local setup needed.
-              </p>
-              <pre><code>{"https://your-server.example.com"}</code></pre>
-              <p>
-                Don{"'"}t have a managed server yet? See{" "}
-                <Link href="/docs/deploy/overview">Deploy</Link> to set one up.
-              </p>
-            </>
-          )}
+          <h4>2. Set up credentials</h4>
+          <pre><code>{"omni setup"}</code></pre>
+          <p>
+            The wizard detects credentials in your environment and prompts
+            for any that are missing. See{" "}
+            <Link href="/docs/build/models#credentials">Models &amp; Credentials</Link>{" "}
+            for the full reference.
+          </p>
 
-          {server === "local" && (
-            <>
-              <p>
-                A local server runs on your machine. You{"'"}ll need to install the
-                Omnigent CLI first.
-              </p>
-
-              <h3>1. Install Omnigent</h3>
-
-              <div className="tabbed-code">
-                <div className="tab-bar">
-                  {CLI_TABS.map((t, i) => (
-                    <button key={t.label} onClick={() => setCliTab(i)} className={cliTab === i ? "active" : ""}>
-                      {t.label}
-                    </button>
-                  ))}
-                </div>
-                <pre><code>{CLI_TABS[cliTab].code}</code></pre>
-              </div>
-
-              <h3>2. Set up credentials</h3>
-              <pre><code>{"omni setup"}</code></pre>
-              <p>
-                The wizard detects credentials in your environment and prompts
-                for any that are missing. See{" "}
-                <Link href="/docs/build/models#credentials">Models &amp; Credentials</Link>{" "}
-                for the full reference.
-              </p>
-
-              <h3>3. Start the server</h3>
-              <pre><code>{"omni server"}</code></pre>
-              <p>
-                Keep this running. Open the desktop app and connect to{" "}
-                <code>http://localhost:6768</code>.
-              </p>
-            </>
-          )}
+          <h4>3. Start the server</h4>
+          <pre><code>{"omni server"}</code></pre>
+          <p>
+            Keep this running. Open the desktop app and connect to{" "}
+            <code>http://localhost:6768</code>.
+          </p>
         </>
       )}
 

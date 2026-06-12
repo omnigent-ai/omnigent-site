@@ -18,7 +18,7 @@
   --btn-bg: #ffffff;
   --nav-bg: rgba(255, 255, 255, 0.82);
   --max: 56rem;
-  --nav-h: 62px; /* matches the rendered height of .nav */
+  --nav-h: 57px; /* matches the rendered height of .nav */
   --radius: 12px;
   --font-sans: system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;

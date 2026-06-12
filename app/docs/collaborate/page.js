@@ -39,14 +39,13 @@ export default function Page() {
         <li>
           From the terminal, run:
           <pre><code>{"omni attach <session_id>"}</code></pre>
-          <ul>
-            <li>
-              Teammates see everything in real time: messages, tool calls, and file changes stream
-              to every connected viewer.
-            </li>
-          </ul>
         </li>
       </ul>
+
+      <p>
+        Teammates see everything in real time: messages, tool calls, and file changes stream to every
+        connected viewer.
+      </p>
 
       <h3 id="code-execution-risk">Co-driving grants code execution on the host</h3>
 

@@ -30,7 +30,7 @@ const ALL_PAGES = [
   { href: "/docs/deploy/overview", label: "Overview", section: "Deploy" },
   { href: "/docs/collaborate/auth", label: "Auth & SSO", section: "Collaborate" },
   { href: "/docs/deploy/database", label: "Database", section: "Deploy" },
-  { href: "/docs/deploy/cloud-runner", label: "Cloud Runner", section: "Deploy" },
+  { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host", section: "Deploy" },
 ];
 
 export default function PrevNextNav() {

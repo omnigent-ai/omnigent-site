@@ -55,7 +55,7 @@ export default function Page() {
         <li>
           <strong>At least one runner.</strong> A{" "}
           <Link href="/docs/deploy/overview">runner</Link> is the process that actually executes your
-          agent. If you have <Link href="/docs/deploy/cloud-runner">cloud runners</Link> set up, you{"'"}ll be able to launch them from the app. Otherwise, register your machine by running <code>omni host</code> from your CLI.
+          agent. If you have <Link href="/docs/deploy/cloud-sandbox-host">cloud sandbox hosts</Link> set up, you{"'"}ll be able to launch them from the app. Otherwise, register your machine by running <code>omni host</code> from your CLI.
         </li>
       </ul>
 

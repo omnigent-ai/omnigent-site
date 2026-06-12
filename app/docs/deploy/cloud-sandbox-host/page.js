@@ -1,14 +1,14 @@
 import Link from "next/link";
 
-export const metadata = { title: "Cloud Runner" };
+export const metadata = { title: "Cloud Sandbox Host" };
 
 export default function Page() {
   return (
     <>
-      <h1>Cloud Runner</h1>
+      <h1>Cloud Sandbox Host</h1>
 
       <p>
-        A cloud runner moves the Omnigent runner from your laptop to a remote container. Your agent
+        A cloud sandbox host moves the Omnigent runner from your laptop to a remote container. Your agent
         keeps working after you close your laptop, in an isolated environment with cloud compute.
       </p>
 
@@ -24,7 +24,7 @@ export default function Page() {
           <tr>
             <th></th>
             <th>Local runner</th>
-            <th>Cloud runner</th>
+            <th>Cloud sandbox host</th>
           </tr>
         </thead>
         <tbody>
@@ -55,7 +55,7 @@ export default function Page() {
         Omnigent currently supports{" "}
         <a href="https://modal.com" target="_blank" rel="noreferrer">Modal</a> and{" "}
         <a href="https://www.daytona.io" target="_blank" rel="noreferrer">Daytona</a> as hosting
-        platforms for cloud runners, with more on the way.
+        platforms for cloud sandbox hosts, with more on the way.
       </p>
 
       <table>
@@ -92,7 +92,8 @@ export default function Page() {
       <h2>Server-managed (recommended)</h2>
 
       <p>
-        Configure your server once and anyone on the team can launch a cloud runner from the web UI.
+        Configure your server once and anyone on the team can launch a cloud sandbox host from the
+        web UI.
       </p>
 
       <h3>1. Install</h3>
@@ -114,7 +115,7 @@ export default function Page() {
 
       <pre><code>{"export DAYTONA_API_KEY=dtn_…"}</code></pre>
 
-      <h3>3. Configure the cloud runner</h3>
+      <h3>3. Configure the cloud sandbox host</h3>
 
       <p>
         Add a <code>sandbox</code> section to your server config YAML (
@@ -137,7 +138,8 @@ export default function Page() {
         <a href="https://modal.com/docs/guide/secrets" target="_blank" rel="noreferrer">
           Modal secrets
         </a>{" "}
-        (API keys, gateway URLs) into the cloud runner. Values stay in Modal{"'"}s secret store.
+        (API keys, gateway URLs) into the cloud sandbox host. Values stay in Modal{"'"}s secret
+        store.
       </p>
 
       <p><strong>Daytona:</strong></p>
@@ -146,7 +148,7 @@ export default function Page() {
 
       <p>
         <code>env</code> lists env var names to copy from the server{"'"}s environment into each
-        cloud runner. Values never live in the config file. A listed variable that isn{"'"}t set fails the
+        cloud sandbox host. Values never live in the config file. A listed variable that isn{"'"}t set fails the
         launch loudly.
       </p>
 
@@ -175,7 +177,7 @@ export default function Page() {
       <h2>CLI</h2>
 
       <p>
-        Create and manage cloud runners from the command line. The commands are the same across
+        Create and manage cloud sandbox hosts from the command line. The commands are the same across
         hosting platforms, just switch the <code>--provider</code> flag.
       </p>
 

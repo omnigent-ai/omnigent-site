@@ -18,7 +18,7 @@ export default function Page() {
         options for hosting the runner.
       </p>
 
-      <p>Omnigent has three components:</p>
+      <p>Omnigent has three components: the server, the runner, and the UI.</p>
 
       <figure className="section-graphic" style={{ margin: "1rem 0" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -194,11 +194,25 @@ export default function Page() {
         </p>
       </div>
 
-      <h2>Host the runner in the cloud</h2>
+      <h2>Runner</h2>
 
       <p>
-        Moving the runner to a{" "}
-        <Link href="/docs/deploy/cloud-runner">cloud runner</Link> gives you:
+        The <strong>runner</strong> executes Omnigent loops. It manages the harness (Claude Code,
+        Codex, Claude SDK, etc.), runs tools, and streams events back to the server over WebSocket.
+      </p>
+
+      <p>By default, the runner is a process on your laptop:</p>
+
+      <pre><code>{"omni login <server-url>  // if auth is enabled\nomni host <server-url>"}</code></pre>
+
+      <p>
+        This is why your local Claude Code or Codex installation {'"'}just works.{'"'} The runner
+        has direct access to your machine{"'"}s tools, files, and credentials.
+      </p>
+
+      <p>
+        However, moving the runner to a{" "}
+        <Link href="/docs/deploy/cloud-sandbox-host">cloud sandbox host</Link> gives you:
       </p>
 
       <ul>
@@ -218,46 +232,10 @@ export default function Page() {
       </ul>
 
       <p>
-        See <Link href="/docs/deploy/cloud-runner">Cloud Runner</Link> for setup on Modal and
-        Daytona.
+        We currently support the <a href="https://modal.com" target="_blank" rel="noreferrer">Modal</a> and <a href="https://www.daytona.io" target="_blank" rel="noreferrer">Daytona</a> platforms, with more integrations on the way. Check out the <Link href="/docs/deploy/cloud-sandbox-host">Cloud Sandbox Host</Link> page for more detailed setup instructions.
       </p>
 
-      <h3>Runner</h3>
-
-      <p>
-        The <strong>runner</strong> executes Omnigent loops. It manages the harness (Claude Code,
-        Codex, Claude SDK, etc.), runs tools, and streams events back to the server over WebSocket.
-      </p>
-
-      <p>By default, the runner is a process on your laptop:</p>
-
-      <pre><code>{"omni login <server-url>  // if auth is enabled\nomni host <server-url>"}</code></pre>
-
-      <p>
-        This is why your local Claude Code or Codex installation {'"'}just works.{'"'} The runner
-        has direct access to your machine{"'"}s tools, files, and credentials.
-      </p>
-
-      <p>
-        The runner can also be hosted in the cloud as a{" "}
-        <Link href="/docs/deploy/cloud-runner">cloud runner</Link>, so your Omnigent executes in a
-        cloud container instead of on your local machine. Supported hosting platforms:
-      </p>
-
-      <ul>
-        <li>
-          <a href="https://modal.com" target="_blank" rel="noreferrer">Modal</a>
-        </li>
-        <li>
-          <a href="https://www.daytona.io" target="_blank" rel="noreferrer">Daytona</a>
-        </li>
-      </ul>
-
-      <p>
-        More platforms are on the way.
-      </p>
-
-      <h3>UI</h3>
+      <h2>UI</h2>
 
       <p>
         The <Link href="/docs/interact/web-ui">web UI</Link>,{" "}
@@ -269,11 +247,11 @@ export default function Page() {
       <ul>
         <li>If the server is on your laptop, UI access is local only</li>
         <li>
-          If the server is deployed to the cloud, any device can reach it, including your phone
+          If the server is deployed to the cloud, any device can reach it, including your phone. Notably, cloud-hosted servers also allow you to collaborate with other users on the same server.
         </li>
       </ul>
 
-      <h2>Collaboration</h2>
+      <h3>Collaboration</h3>
 
       <p>
         Omnigent is multi-user. Share a live session with a link, let a teammate co-drive your
@@ -283,7 +261,7 @@ export default function Page() {
         <Link href="/docs/interact/mobile">mobile</Link> simultaneously.
       </p>
 
-      <h3>Co-drive</h3>
+      <h4>Co-drive</h4>
 
       <p>
         A teammate attaches to your running session. Their messages execute on{" "}
@@ -306,7 +284,7 @@ export default function Page() {
         processes them in order.
       </p>
 
-      <h3>Fork</h3>
+      <h4>Fork</h4>
 
       <p>
         Clone a conversation and continue independently from the fork point. The original session is

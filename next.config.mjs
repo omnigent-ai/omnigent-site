@@ -5,7 +5,12 @@ const nextConfig = {
     return [
       {
         source: "/docs/deploy/cloud-sandbox",
-        destination: "/docs/deploy/cloud-runner",
+        destination: "/docs/deploy/cloud-sandbox-host",
+        permanent: true,
+      },
+      {
+        source: "/docs/deploy/cloud-runner",
+        destination: "/docs/deploy/cloud-sandbox-host",
         permanent: true,
       },
       {

@@ -21,7 +21,7 @@ export default function Page() {
       </p>
 
       <p>
-        This is different from the <Link href="/docs/deploy/cloud-runner">cloud runner</Link>,
+        This is different from the <Link href="/docs/deploy/cloud-sandbox-host">cloud sandbox host</Link>,
         which controls <em>where</em> the runner executes. The OS sandbox controls{" "}
         <em>what the agent can access</em>, regardless of where it runs.
       </p>

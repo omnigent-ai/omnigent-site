@@ -45,6 +45,20 @@ export default function Page() {
         same as the web UI.
       </p>
 
+      <h2>Prerequisites</h2>
+      <ul>
+        <li>
+          <strong>A running server.</strong> The <Link href="/docs/deploy/overview">server</Link>{" "}
+          stores your sessions and serves the UI the desktop app connects to — run it locally with{" "}
+          <code>omni server start</code> or point the app at a deployed URL.
+        </li>
+        <li>
+          <strong>At least one runner.</strong> A{" "}
+          <Link href="/docs/deploy/overview">runner</Link> is the process that actually executes your
+          agent. If you have <Link href="/docs/deploy/cloud-runner">cloud runners</Link> set up, you{"'"}ll be able to launch them from the app. Otherwise, register your machine by running <code>omni host</code> from your CLI.
+        </li>
+      </ul>
+
       <h2>Install</h2>
 
       <table>

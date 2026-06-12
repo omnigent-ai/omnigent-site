@@ -11,10 +11,10 @@ const PILLARS = [
     body:
       "Combine multiple models, harnesses, and techniques without rewriting code. Switch between Claude Code, Codex, Pi, and your own agents with one-line changes.",
     icon: {
-      src: "/images/composability-icon.svg",
-      alt: "Omnigent mascots stacked in layers to illustrate composability.",
-      width: 244,
-      height: 290,
+      src: "/images/composability-icon.png",
+      alt: "Omnigent starfish mascots stacked in layers to illustrate composability.",
+      width: 450,
+      height: 600,
     },
     visual: {
       src: "/images/composition.png",
@@ -34,8 +34,8 @@ const PILLARS = [
     icon: {
       src: "/images/sandbox.png",
       alt: "Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent.",
-      width: 420,
-      height: 230,
+      width: 600,
+      height: 473,
     },
     visual: {
       src: "/images/control.png",
@@ -53,10 +53,10 @@ const PILLARS = [
     body:
       "Share live agent sessions via URL with full history, so teammates can review, comment, and steer together in real time.",
     icon: {
-      src: "/images/high-five.svg",
+      src: "/images/high-five.png",
       alt: "Two Omnigent mascots high-fiving to celebrate collaboration.",
-      width: 231,
-      height: 102,
+      width: 600,
+      height: 600,
     },
     visual: {
       src: "/images/collaboration.png",

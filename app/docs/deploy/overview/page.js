@@ -43,7 +43,7 @@ export default function Page() {
           <strong>Artifacts.</strong> Files, Omnigent bundles, and uploads.
         </li>
         <li>
-          <strong>Catalog.</strong> Registered Omnigent specs and built-in Omnigent.
+          <strong>Catalog.</strong> Registered and built-in Omnigent specs.
         </li>
         <li>
           <strong>MCP proxy &amp; policies.</strong> Proxies MCP tool calls with server-side policy

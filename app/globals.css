@@ -18,7 +18,7 @@
   --btn-bg: #ffffff;
   --nav-bg: rgba(255, 255, 255, 0.82);
   --max: 56rem;
-  --nav-h: 70px; /* matches the rendered height of .nav */
+  --nav-h: 57px; /* matches the rendered height of .nav */
   --radius: 12px;
   --font-sans: system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
@@ -150,7 +150,7 @@ hr {
 .nav-inner {
   max-width: 72rem;
   margin: 0 auto;
-  padding: 0.7rem 1.5rem;
+  padding: 0.35rem 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -194,7 +194,7 @@ hr {
   align-items: center;
   justify-content: center;
   color: var(--fg-soft);
-  padding: 0.4rem;
+  padding: 0.55rem;
   border-radius: 8px;
 }
 .nav-icon:hover {

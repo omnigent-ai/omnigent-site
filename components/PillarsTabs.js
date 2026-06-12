@@ -13,8 +13,8 @@ const PILLARS = [
     icon: {
       src: "/images/composability-icon.svg",
       alt: "Omnigent mascots stacked in layers to illustrate composability.",
-      width: 80,
-      height: 81,
+      width: 244,
+      height: 290,
     },
     visual: {
       src: "/images/composition.png",

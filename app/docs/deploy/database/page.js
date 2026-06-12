@@ -85,7 +85,7 @@ export default function Page() {
           needs a persistent disk or volume. On platforms with ephemeral disk, such as Hugging Face
           Spaces (persistent storage there is a paid add-on), the database is wiped on every
           restart; use Postgres there. See the{" "}
-          <Link href="/docs/deploy/cloud">cloud platforms</Link> page for platform specifics.
+          <Link href="/docs/deploy/overview">deployment overview</Link> page for platform specifics.
         </p>
       </div>
 

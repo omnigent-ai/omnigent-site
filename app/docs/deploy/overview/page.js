@@ -289,6 +289,25 @@ export default function Page() {
         processes them in order.
       </p>
 
+      <div className="note">
+        <p>
+          <strong>Warning: co-driving grants code execution on the host.</strong> By design, a
+          session runs commands in a non-sandboxed process on whatever machine hosts it &mdash; if
+          you started the client on your laptop, the session executes code on your laptop. A
+          teammate you share with at the <strong>EDIT</strong> permission level can drive the agent,
+          so they effectively get arbitrary code execution on your machine too, with access to its
+          filesystem, credentials, and network.
+        </p>
+        <p>
+          Only share with EDIT to people you trust with that level of access. To collaborate more
+          safely, share read-only instead, or host the session on a{" "}
+          <Link href="/docs/deploy/cloud-sandbox-host">cloud sandbox host</Link> so the agent runs
+          in an isolated remote container rather than on your personal machine. To constrain what
+          the agent can touch even on a trusted host, apply an{" "}
+          <Link href="/docs/policies/os-sandbox">OS sandbox</Link> policy.
+        </p>
+      </div>
+
       <h4>Fork</h4>
 
       <p>

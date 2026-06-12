@@ -185,8 +185,7 @@ export default function Page() {
         for more.
       </p>
 
-      <h2>Windows</h2>
-      <p>
+      <p style={{ color: "var(--fg-soft)", fontSize: "0.9rem" }}>
         Native Windows support is not available yet. For now, run Omnigent inside{" "}
         <a href="https://learn.microsoft.com/windows/wsl/install" target="_blank" rel="noopener noreferrer">
           WSL2

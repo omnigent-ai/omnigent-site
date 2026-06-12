@@ -31,7 +31,7 @@ export default function Page() {
             <h3>How do I run my own agent?</h3>
             <p className="muted">
               Write a short YAML file with a prompt and a harness, then run{" "}
-              <code>omnigent run</code> on it. See the{" "}
+              <code>omni run</code> on it. See the{" "}
               <Link href="/docs/use/custom-agents">custom agent guide</Link>.
             </p>
 

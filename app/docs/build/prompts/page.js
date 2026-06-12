@@ -270,7 +270,7 @@ description: >-
         </code>
       </pre>
 
-      <h3>Example: polly&apos;s skills</h3>
+      <h3>Example: Polly&apos;s skills</h3>
 
       <p>
         The{" "}
@@ -279,7 +279,7 @@ description: >-
           target="_blank"
           rel="noreferrer"
         >
-          polly orchestrator
+          Polly orchestrator
         </a>{" "}
         bundles three skills that define its workflows:
       </p>
@@ -300,7 +300,7 @@ description: >-
 
       <p>
         Each skill defines a step-by-step procedure the orchestrator follows. For example, the{" "}
-        <code>investigate</code> skill instructs polly to decompose a question into bounded tasks,
+        <code>investigate</code> skill instructs Polly to decompose a question into bounded tasks,
         dispatch sub-agents, and synthesize their reports.
       </p>
 

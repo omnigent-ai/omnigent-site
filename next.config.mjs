@@ -8,6 +8,11 @@ const nextConfig = {
         destination: "/docs/deploy/cloud-runner",
         permanent: true,
       },
+      {
+        source: "/docs/collaborate/overview",
+        destination: "/docs/deploy/overview#collaboration",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

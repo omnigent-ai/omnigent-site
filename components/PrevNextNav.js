@@ -28,10 +28,9 @@ const ALL_PAGES = [
   { href: "/docs/policies/custom", label: "Custom Policies", section: "Contextual Policies" },
   { href: "/docs/policies/os-sandbox", label: "Omnibox", section: "Contextual Policies" },
   { href: "/docs/deploy/overview", label: "Overview", section: "Deploy" },
+  { href: "/docs/collaborate/auth", label: "Auth & SSO", section: "Collaborate" },
   { href: "/docs/deploy/database", label: "Database", section: "Deploy" },
   { href: "/docs/deploy/cloud-runner", label: "Cloud Runner", section: "Deploy" },
-  { href: "/docs/collaborate/overview", label: "Overview", section: "Collaborate" },
-  { href: "/docs/collaborate/auth", label: "Auth & SSO", section: "Collaborate" },
 ];
 
 export default function PrevNextNav() {

@@ -14,8 +14,7 @@ export default function Nav() {
           <img className="theme-dark-only" src="/images/logo-dark.svg" alt="Omnigent" height={28} width={145} />
         </Link>
         <nav className="nav-links">
-          <Link href="/quickstart/install" className="nav-link hide-sm">Get Started</Link>
-          <Link href="/docs" className="nav-link hide-sm">Docs</Link>
+          <Link href="/quickstart/install" className="nav-link hide-sm">Docs</Link>
           <a href={GITHUB_URL} className="nav-icon" target="_blank" rel="noreferrer" aria-label="GitHub">
             <GitHubIcon size={20} />
           </a>

@@ -113,7 +113,7 @@ export default function Page() {
       </p>
 
       <p>
-        See <Link href="/docs/deploy/overview#collaboration">Collaboration</Link> for details on sharing,
+        See <Link href="/docs/collaborate">Pair Programming</Link> for details on sharing,
         permissions, and multi-user workflows.
       </p>
     </>

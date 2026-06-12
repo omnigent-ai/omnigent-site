@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Server deployment overview" };
+export const metadata = { title: "Shared Server" };
 
 export default function Page() {
   return (
     <>
-      <h1>Server deployment overview</h1>
+      <h1>Shared Server</h1>
 
       <p>
         Everything in the previous sections runs on your laptop. That{"'"}s the fastest way to get
@@ -262,7 +262,7 @@ export default function Page() {
         Once the server is cloud-hosted, Omnigent is multi-user: share a live session with a link,
         let a teammate co-drive your Omnigent, or fork a conversation so someone can continue
         independently. This has moved to its own page &mdash; see{" "}
-        <Link href="/docs/collaborate">Collaboration</Link> for co-drive, sharing with VIEW/EDIT
+        <Link href="/docs/collaborate">Pair Programming</Link> for co-drive, sharing with VIEW/EDIT
         permissions, and forking.
       </p>
     </>

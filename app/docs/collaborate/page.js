@@ -1,15 +1,15 @@
 import Link from "next/link";
 
-export const metadata = { title: "Collaboration" };
+export const metadata = { title: "Pair Programming" };
 
 export default function Page() {
   return (
     <>
-      <h1>Collaboration</h1>
+      <h1>Pair Programming</h1>
 
       <p>
         Omnigent is multi-user. Once your server is reachable by your team (see{" "}
-        <Link href="/docs/deploy/overview">Server deployment overview</Link>), you can share a live
+        <Link href="/docs/deploy/overview">Shared Server</Link>), you can share a live
         session with a link, let a teammate co-drive your Omnigent, or fork a conversation so someone
         can continue independently. The same session works across{" "}
         <Link href="/docs/interact/terminal">terminal</Link>,{" "}

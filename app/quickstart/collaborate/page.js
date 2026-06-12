@@ -79,6 +79,25 @@ omni host https://your-server.up.railway.app`}</code></pre>
         <li>Fork the session to try a different direction without affecting the original.</li>
       </ul>
 
+      <div className="note">
+        <p>
+          <strong>Warning: sharing with EDIT grants code execution on the host.</strong> By
+          design, an agent session runs commands in a non-sandboxed process on whatever machine
+          hosts it. If you started the client on your laptop, the session executes code on your
+          laptop. Anyone you share that session with at the <strong>EDIT</strong> permission level
+          can drive the agent, so they effectively get arbitrary code execution on the host
+          machine too &mdash; with access to its filesystem, credentials, and network.
+        </p>
+        <p>
+          Only share with EDIT to people you trust with that level of access. To collaborate more
+          safely, share read-only instead, or host the session on a{" "}
+          <Link href="/docs/deploy/cloud-sandbox-host">cloud sandbox host</Link> so the agent runs
+          in an isolated remote container rather than on your personal machine. To constrain what
+          the agent can touch even on a trusted host, apply an{" "}
+          <Link href="/docs/policies/os-sandbox">OS sandbox</Link> policy.
+        </p>
+      </div>
+
       <h2>5. Run a cloud sandbox host</h2>
 
       <p>

@@ -189,7 +189,8 @@ export default function Page() {
 
       <div className="note">
         <p>
-          <strong>Warning:</strong> On Hugging Face free Spaces, disk is ephemeral. Data resets on
+          <strong>Warning:</strong> On Hugging Face Spaces, disk is ephemeral by default and
+          persistent storage is a paid add-on. Data resets on
           every restart. Use this for demos only.
         </p>
       </div>

@@ -22,8 +22,15 @@ export default function Page() {
 
       <p>Omnigent has three components:</p>
 
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/omnigent-architecture.png" alt="Omnigent architecture" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+      <figure className="section-graphic" style={{ margin: "1rem 0" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/architecture.svg"
+          alt="Omnigent architecture: CLI agents and custom agents run through a runner (on your machine, Modal, or Daytona), then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API."
+          width={1541}
+          height={700}
+        />
+      </figure>
 
       <h3>Server</h3>
 

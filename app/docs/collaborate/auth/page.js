@@ -116,6 +116,13 @@ export default function Page() {
 
       <p>Once auth is enabled, control who can sign in and what they can access.</p>
 
+      <p>
+        Scope depends on the auth mode. <code>allowed_domains</code> applies to OIDC sign-ins
+        only; leaving it empty means no domain restriction. Built-in accounts are invite-only, so
+        domain allowlists do not apply there, and header-based auth delegates identity entirely to
+        your proxy. The <code>admins</code> list works in both built-in accounts and OIDC modes.
+      </p>
+
       <h3>Domain allowlist</h3>
 
       <p>

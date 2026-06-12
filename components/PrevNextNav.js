@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation";
 const ALL_PAGES = [
   { href: "/docs", label: "Overview", section: "" },
   { href: "/quickstart/install", label: "Install Omnigent", section: "Get Started" },
-  { href: "/quickstart/debby", label: "Tutorial: Try Debby", section: "Get Started" },
+  { href: "/quickstart/debby", label: "Tutorial: Debby", section: "Get Started" },
   { href: "/quickstart/coding-agent", label: "Tutorial: Coding Agent", section: "Get Started" },
-  { href: "/quickstart/polly", label: "Tutorial: Try Polly", section: "Get Started" },
+  { href: "/quickstart/polly", label: "Tutorial: Polly (Multi-AI Coding)", section: "Get Started" },
   { href: "/quickstart/collaborate", label: "Tutorial: Collaborate", section: "Get Started" },
   { href: "/quickstart/policies", label: "Tutorial: Contextual Policies", section: "Get Started" },
   { href: "/docs/use/coding-agents", label: "Coding Agents", section: "Use Omnigent" },

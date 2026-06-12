@@ -9,9 +9,9 @@ const SECTIONS = [
     title: "Get Started",
     pages: [
       { href: "/quickstart/install", label: "Install Omnigent" },
-      { href: "/quickstart/debby", label: "Tutorial: Try Debby" },
+      { href: "/quickstart/debby", label: "Tutorial: Debby" },
       { href: "/quickstart/coding-agent", label: "Tutorial: Coding Agent" },
-      { href: "/quickstart/polly", label: "Tutorial: Try Polly" },
+      { href: "/quickstart/polly", label: "Tutorial: Polly (Multi-AI Coding)" },
       { href: "/quickstart/collaborate", label: "Tutorial: Collaborate" },
       { href: "/quickstart/policies", label: "Tutorial: Contextual Policies" },
     ],
@@ -124,11 +124,6 @@ export default function DocsSidebarFull() {
 
   return (
     <aside className="docs-side">
-      <div>
-        <Link href="/docs" className={`nav-overview${path === "/docs" ? " active" : ""}`}>
-          Overview
-        </Link>
-      </div>
       {SECTIONS.map((section, si) => {
         const isOpen = sectionOpen[si];
 

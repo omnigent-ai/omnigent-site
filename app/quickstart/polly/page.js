@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Tutorial: Try Polly" };
+export const metadata = { title: "Tutorial: Polly (Multi-AI Coding)" };
 
 export default function Page() {
   return (
     <>
-      <h1>Tutorial: Try Polly</h1>
+      <h1>Tutorial: Polly (Multi-AI Coding)</h1>
 
       <p>
         Polly is a multi-agent coding orchestrator. It breaks your task into

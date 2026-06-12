@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Tutorial: Try Debby" };
+export const metadata = { title: "Tutorial: Debby" };
 
 export default function Page() {
   return (
     <>
-      <h1>Tutorial: Try Debby</h1>
+      <h1>Tutorial: Debby</h1>
 
       <p>
         Your first taste of what Omnigent can do. Debby sends every question to

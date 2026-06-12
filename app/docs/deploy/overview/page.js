@@ -18,8 +18,6 @@ export default function Page() {
         options for hosting the runner.
       </p>
 
-      <h2>Architecture</h2>
-
       <p>Omnigent has three components:</p>
 
       <figure className="section-graphic" style={{ margin: "1rem 0" }}>
@@ -32,7 +30,7 @@ export default function Page() {
         />
       </figure>
 
-      <h3>Server</h3>
+      <h2>Server</h2>
 
       <p>The <strong>server</strong> is the central coordinator. It manages:</p>
 
@@ -59,85 +57,7 @@ export default function Page() {
         </li>
       </ul>
 
-      <h3>Runner</h3>
-
-      <p>
-        The <strong>runner</strong> executes Omnigent loops. It manages the harness (Claude Code,
-        Codex, Claude SDK, etc.), runs tools, and streams events back to the server over WebSocket.
-      </p>
-
-      <p>By default, the runner is a process on your laptop:</p>
-
-      <pre><code>{"omni host <server-url>"}</code></pre>
-
-      <p>
-        This is why your local Claude Code or Codex installation {'"'}just works.{'"'} The runner
-        has direct access to your machine{"'"}s tools, files, and credentials.
-      </p>
-
-      <p>
-        The runner can also be hosted in the cloud as a{" "}
-        <Link href="/docs/deploy/cloud-runner">cloud runner</Link>, so your Omnigent executes in a
-        cloud container instead of on your local machine. Supported hosting platforms:
-      </p>
-
-      <ul>
-        <li>
-          <a href="https://modal.com" target="_blank" rel="noreferrer">Modal</a>
-        </li>
-        <li>
-          <a href="https://www.daytona.io" target="_blank" rel="noreferrer">Daytona</a>
-        </li>
-      </ul>
-
-      <p>
-        More platforms are on the way.
-      </p>
-
-      <h3>UI</h3>
-
-      <p>
-        The <Link href="/docs/interact/web-ui">web UI</Link>,{" "}
-        <Link href="/docs/interact/terminal">terminal UI</Link>, and{" "}
-        <Link href="/docs/interact/mobile">mobile UI</Link> all talk to the server. They never talk
-        to the runner directly. This means:
-      </p>
-
-      <ul>
-        <li>If the server is on your laptop, UI access is local only</li>
-        <li>
-          If the server is deployed to the cloud, any device can reach it, including your phone
-        </li>
-      </ul>
-
-      <h2>Deploy the server</h2>
-
-      <p>
-        The server and runner deploy independently. Moving the server to a cloud host gives you:
-      </p>
-
-      <ul>
-        <li>
-          <strong>Mobile &amp; remote access.</strong> The web UI is reachable from any device,
-          anywhere.
-        </li>
-        <li>
-          <strong>Shared history.</strong> Teammates can see and continue each other{"'"}s sessions
-          (see <Link href="/docs/collaborate/overview">Team collaboration</Link>).
-        </li>
-        <li>
-          <strong>Always-on availability.</strong> The server stays up even when your laptop is
-          closed.
-        </li>
-        <li>
-          <strong>Multi-user auth.</strong> Built-in accounts or SSO for your team.
-        </li>
-      </ul>
-
-      <p>
-        There are two ways to host it: Docker Compose on a machine you manage, or a cloud platform
-        with managed infrastructure.
-      </p>
+      <p>There are a few options for hosting the server on the cloud:</p>
 
       <h3>Docker Compose</h3>
 
@@ -148,12 +68,9 @@ export default function Page() {
 
       <pre><code>{"cd deploy/docker\n./bootstrap.sh          # generates DB password + cookie secret into .env\ndocker compose up -d    # Omnigent server + Postgres"}</code></pre>
 
-      <p>Then connect your laptop:</p>
-
-      <pre><code>{"omni login https://your-host\nomni host https://your-host"}</code></pre>
-
       <p>
-        Key variables in <code>.env</code>:
+        Key variables in <code>.env</code> (See{" "}
+          <Link href="/docs/collaborate/auth">Auth &amp; SSO</Link> for details on multi-user auth):
       </p>
 
       <table>
@@ -247,11 +164,7 @@ export default function Page() {
           one-click deploy
         </a>
         ; on Railway, import the repo and it handles the rest. Both default to built-in{" "}
-        <code>accounts</code> auth, so multi-user works out of the box. No admin password is
-        auto-generated: on first boot, open the web UI and create the admin account there, or preset{" "}
-        <code>OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD</code> in the service environment. To switch to
-        OIDC, set the <code>OMNIGENT_OIDC_*</code> environment variables. See{" "}
-        <Link href="/docs/collaborate/auth">Auth &amp; SSO</Link> for details.
+        <code>accounts</code> auth, so multi-user works out of the box.
       </p>
 
       <p>
@@ -308,6 +221,57 @@ export default function Page() {
         See <Link href="/docs/deploy/cloud-runner">Cloud Runner</Link> for setup on Modal and
         Daytona.
       </p>
+
+      <h3>Runner</h3>
+
+      <p>
+        The <strong>runner</strong> executes Omnigent loops. It manages the harness (Claude Code,
+        Codex, Claude SDK, etc.), runs tools, and streams events back to the server over WebSocket.
+      </p>
+
+      <p>By default, the runner is a process on your laptop:</p>
+
+      <pre><code>{"omni login <server-url>  // if auth is enabled\nomni host <server-url>"}</code></pre>
+
+      <p>
+        This is why your local Claude Code or Codex installation {'"'}just works.{'"'} The runner
+        has direct access to your machine{"'"}s tools, files, and credentials.
+      </p>
+
+      <p>
+        The runner can also be hosted in the cloud as a{" "}
+        <Link href="/docs/deploy/cloud-runner">cloud runner</Link>, so your Omnigent executes in a
+        cloud container instead of on your local machine. Supported hosting platforms:
+      </p>
+
+      <ul>
+        <li>
+          <a href="https://modal.com" target="_blank" rel="noreferrer">Modal</a>
+        </li>
+        <li>
+          <a href="https://www.daytona.io" target="_blank" rel="noreferrer">Daytona</a>
+        </li>
+      </ul>
+
+      <p>
+        More platforms are on the way.
+      </p>
+
+      <h3>UI</h3>
+
+      <p>
+        The <Link href="/docs/interact/web-ui">web UI</Link>,{" "}
+        <Link href="/docs/interact/terminal">terminal UI</Link>, and{" "}
+        <Link href="/docs/interact/mobile">mobile UI</Link> all talk to the server. They never talk
+        to the runner directly. This means:
+      </p>
+
+      <ul>
+        <li>If the server is on your laptop, UI access is local only</li>
+        <li>
+          If the server is deployed to the cloud, any device can reach it, including your phone
+        </li>
+      </ul>
     </>
   );
 }

@@ -12,9 +12,9 @@ const PILLARS = [
       "Combine multiple models, harnesses, and techniques without rewriting code. Switch between Claude Code, Codex, Pi, and your own agents with one-line changes.",
     icon: {
       src: "/images/composability-icon.svg",
-      alt: "Omnigent mascots stacked in layers to illustrate composability.",
-      width: 244,
-      height: 290,
+      alt: "Omnigent starfish mascots side by side to illustrate composability.",
+      width: 1024,
+      height: 1024,
     },
     visual: {
       src: "/images/composition.png",

@@ -23,7 +23,7 @@ export default function Home() {
               src="/images/hero-logo.svg"
               alt="Omnigent, a meta-harness for AI agents"
               width={366}
-              height={101}
+              height={118}
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -31,7 +31,7 @@ export default function Home() {
               src="/images/hero-logo-dark.svg"
               alt="Omnigent, a meta-harness for AI agents"
               width={366}
-              height={101}
+              height={118}
             />
           </h1>
           <p className="lede">

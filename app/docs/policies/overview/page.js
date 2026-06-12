@@ -220,6 +220,12 @@ You: Block access to all GitHub repos except myorg/frontend.`}
       </pre>
 
       <p>
+        Here <code>rate_limit</code> caps the total number of tool calls a single session can make
+        (50 in this example), a guard against runaway agent loops and surprise cost. Once the cap
+        is reached, further tool calls are denied for the rest of the session.
+      </p>
+
+      <p>
         Policies without parameters use just <code>handler</code>. Configurable policies add{" "}
         <code>factory_params</code>. Multiple policies are evaluated in the order declared.
       </p>

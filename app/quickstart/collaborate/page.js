@@ -79,6 +79,18 @@ omni host https://your-server.up.railway.app`}</code></pre>
         <li>Fork the session to try a different direction without affecting the original.</li>
       </ul>
 
+      <div className="note">
+        <p>
+          <strong>Only share EDIT with people you trust to run arbitrary code on your machine.</strong>{" "}
+          A teammate with EDIT can drive the agent, which runs code on whatever machine hosts the
+          session. Share read-only when you can. See{" "}
+          <Link href="/docs/collaborate#code-execution-risk">
+            Co-driving grants code execution on the host
+          </Link>{" "}
+          for details.
+        </p>
+      </div>
+
       <h2>5. Run a cloud sandbox host</h2>
 
       <p>

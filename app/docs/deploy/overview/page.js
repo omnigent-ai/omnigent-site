@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Deploy Overview" };
+export const metadata = { title: "Shared Server" };
 
 export default function Page() {
   return (
     <>
-      <h1>Deploy Your Omnigent</h1>
+      <h1>Shared Server</h1>
 
       <p>
         Everything in the previous sections runs on your laptop. That{"'"}s the fastest way to get
@@ -256,58 +256,14 @@ export default function Page() {
         </li>
       </ul>
 
-      <h3>Collaboration</h3>
+      <h2 id="collaboration">Collaboration</h2>
 
       <p>
-        Omnigent is multi-user. Share a live session with a link, let a teammate co-drive your
-        Omnigent, or fork a conversation so someone can continue independently. The same session
-        works across <Link href="/docs/interact/terminal">terminal</Link>,{" "}
-        <Link href="/docs/interact/web-ui">web UI</Link>, and{" "}
-        <Link href="/docs/interact/mobile">mobile</Link> simultaneously.
-      </p>
-
-      <h4>Co-drive</h4>
-
-      <p>
-        A teammate attaches to your running session. Their messages execute on{" "}
-        <strong>your</strong> machine. Great for pairing or handing the keyboard to a domain expert
-        mid-investigation.
-      </p>
-
-      <p>
-        In the <Link href="/docs/interact/web-ui">web UI</Link>, hit <strong>Share</strong> and send
-        the link to your teammate. Teammates see everything in real time: messages, tool calls, and
-        file changes stream to every connected viewer.
-      </p>
-
-      <p>From the terminal:</p>
-
-      <pre><code>{"omni attach <session_id>"}</code></pre>
-
-      <p>
-        Both participants see the same streaming output. Either can send messages. The Omnigent
-        processes them in order.
-      </p>
-
-      <h4>Fork</h4>
-
-      <p>
-        Clone a conversation and continue independently from the fork point. The original session is
-        unaffected.
-      </p>
-
-      <p>
-        In the <Link href="/docs/interact/web-ui">web UI</Link>, click{" "}
-        <strong>Clone Session</strong>.
-      </p>
-
-      <p>From the terminal:</p>
-
-      <pre><code>{"omni run --fork <session_id>"}</code></pre>
-
-      <p>
-        Forking copies the full conversation history up to the fork point. From there, each session
-        diverges independently.
+        Once the server is cloud-hosted, Omnigent is multi-user: share a live session with a link,
+        let a teammate co-drive your Omnigent, or fork a conversation so someone can continue
+        independently. This has moved to its own page &mdash; see{" "}
+        <Link href="/docs/collaborate">Pair Programming</Link> for co-drive, sharing with VIEW/EDIT
+        permissions, and forking.
       </p>
     </>
   );

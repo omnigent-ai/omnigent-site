@@ -23,14 +23,15 @@ const ALL_PAGES = [
   { href: "/docs/interact/web-ui", label: "Web UI", section: "Interact" },
   { href: "/docs/interact/mobile", label: "Mobile", section: "Interact" },
   { href: "/docs/interact/desktop", label: "Desktop App", section: "Interact" },
+  { href: "/docs/collaborate", label: "Pair Programming", section: "Collaboration" },
+  { href: "/docs/deploy/overview", label: "Shared Server", section: "Collaboration" },
+  { href: "/docs/collaborate/auth", label: "Auth & SSO", section: "Collaboration" },
+  { href: "/docs/deploy/database", label: "Database", section: "Collaboration" },
+  { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host", section: "Collaboration" },
   { href: "/docs/policies/overview", label: "Overview", section: "Contextual Policies" },
   { href: "/docs/policies/builtin", label: "Builtin Policies", section: "Contextual Policies" },
   { href: "/docs/policies/custom", label: "Custom Policies", section: "Contextual Policies" },
   { href: "/docs/policies/os-sandbox", label: "Omnibox", section: "Contextual Policies" },
-  { href: "/docs/deploy/overview", label: "Overview", section: "Deploy" },
-  { href: "/docs/collaborate/auth", label: "Auth & SSO", section: "Collaborate" },
-  { href: "/docs/deploy/database", label: "Database", section: "Deploy" },
-  { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host", section: "Deploy" },
 ];
 
 export default function PrevNextNav() {

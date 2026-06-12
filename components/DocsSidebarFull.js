@@ -8,6 +8,7 @@ const SECTIONS = [
   {
     title: "Get Started",
     pages: [
+      { href: "/docs", label: "Docs Overview" },
       { href: "/quickstart/install", label: "Install Omnigent" },
       { href: "/quickstart/coding-agent", label: "Tutorial: Coding Agent" },
       { href: "/quickstart/polly", label: "Tutorial: Polly" },

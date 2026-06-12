@@ -18,9 +18,10 @@ const PILLARS = [
     },
     visual: {
       src: "/images/composition.png",
+      darkSrc: "/images/composition-dark.png",
       alt: "Omnigent web UI showing Debby coordinating parallel agents to compare Montreal and New York bagels.",
-      width: 2902,
-      height: 2036,
+      width: 2314,
+      height: 1668,
       fit: "contain",
     },
   },
@@ -38,9 +39,10 @@ const PILLARS = [
     },
     visual: {
       src: "/images/control.png",
+      darkSrc: "/images/control-dark.png",
       alt: "Omnigent approval prompt for a Bash tool call blocked by a session cost budget policy.",
-      width: 1648,
-      height: 1222,
+      width: 1664,
+      height: 1286,
       fit: "contain",
     },
   },
@@ -58,9 +60,10 @@ const PILLARS = [
     },
     visual: {
       src: "/images/collaboration.png",
+      darkSrc: "/images/collaboration-dark.png",
       alt: "Omnigent web UI showing a shared session with inline comments, an agent chat, and a code editor open side by side.",
-      width: 3244,
-      height: 2268,
+      width: 2314,
+      height: 1668,
       fit: "contain",
     },
   },
@@ -200,9 +203,10 @@ export default function PillarsTabs() {
                 >
                   <Image
                     className={
-                      pillar.visual.fit === "contain"
+                      (pillar.visual.fit === "contain"
                         ? "pillar-visual-image pillar-visual-image-contain"
-                        : "pillar-visual-image"
+                        : "pillar-visual-image") +
+                      (pillar.visual.darkSrc ? " theme-light-only" : "")
                     }
                     src={pillar.visual.src}
                     alt={pillar.visual.alt}
@@ -210,6 +214,20 @@ export default function PillarsTabs() {
                     height={pillar.visual.height}
                     sizes="(max-width: 820px) 100vw, 640px"
                   />
+                  {pillar.visual.darkSrc ? (
+                    <Image
+                      className={
+                        (pillar.visual.fit === "contain"
+                          ? "pillar-visual-image pillar-visual-image-contain"
+                          : "pillar-visual-image") + " theme-dark-only"
+                      }
+                      src={pillar.visual.darkSrc}
+                      alt={pillar.visual.alt}
+                      width={pillar.visual.width}
+                      height={pillar.visual.height}
+                      sizes="(max-width: 820px) 100vw, 640px"
+                    />
+                  ) : null}
                 </button>
               ) : (
                 "Image placeholder"
@@ -242,13 +260,27 @@ export default function PillarsTabs() {
             onClick={(event) => event.stopPropagation()}
           >
             <Image
-              className="pillar-lightbox-image"
+              className={
+                expandedVisual.darkSrc
+                  ? "pillar-lightbox-image theme-light-only"
+                  : "pillar-lightbox-image"
+              }
               src={expandedVisual.src}
               alt={expandedVisual.alt}
               fill
               sizes="92vw"
               priority
             />
+            {expandedVisual.darkSrc ? (
+              <Image
+                className="pillar-lightbox-image theme-dark-only"
+                src={expandedVisual.darkSrc}
+                alt={expandedVisual.alt}
+                fill
+                sizes="92vw"
+                priority
+              />
+            ) : null}
           </div>
         </div>
       ) : null}

@@ -81,8 +81,10 @@ export default function Page() {
 
       <div className="note">
         <p>
-          <strong>Warning:</strong> On Hugging Face free Spaces, disk is ephemeral. Data resets on
-          every restart.
+          <strong>Warning:</strong> SQLite stores its <code>.db</code> file on local disk, so it
+          needs a persistent disk or volume. On platforms with ephemeral disk, such as Hugging Face
+          free Spaces, the database is wiped on every restart; use Postgres there. See the{" "}
+          <Link href="/docs/deploy/cloud">cloud platforms</Link> page for platform specifics.
         </p>
       </div>
 

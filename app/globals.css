@@ -24,33 +24,9 @@
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
 
-/* ---- dark palette ----
-   Applied for an explicit dark choice, and (further below) for the system
-   preference when no explicit light/dark choice has been made. The pink
-   --accent brand identity is preserved but brightened for contrast on dark. */
-[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: #15131a;
-  --bg-soft: #1f1b27;
-  --bg-grey-pink: #221d2b;
-  --fg: #f4eef2;
-  --fg-soft: #a59faf;
-  --border: #322c3b;
-  --border-strong: #443c4f;
-  --accent: #ff4fb3;
-  --accent-soft: #3a1f30;
-  --accent-strong: #ff6dc0;
-  --accent-text: #ff8acb;
-  --code-bg: #100c16;
-  --code-fg: #f4eef2;
-  --code-inline-fg: #ff8acb;
-  --btn-bg: #1f1b27;
-  --nav-bg: rgba(21, 19, 26, 0.82);
-}
-
-/* AUTO: follow the OS preference unless an explicit light/dark choice wins. */
+/* ---- dark palette: follow the OS preference. ---- */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+  :root {
     color-scheme: dark;
     --bg: #15131a;
     --bg-soft: #1f1b27;
@@ -202,17 +178,6 @@ hr {
   background: var(--bg-soft);
   text-decoration: none;
 }
-.theme-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--fg-soft);
-}
-.theme-toggle:hover {
-  color: var(--fg);
-  background: var(--bg-soft);
-}
-
 /* ---- buttons ---- */
 .btn {
   display: inline-flex;
@@ -808,39 +773,23 @@ figcaption {
 }
 
 /* ---- dark-mode asset handling ----
-   <img>-embedded SVGs can't read the page's data-theme, so we swap a dark
-   hero-logo variant and rest the (light-baked) architecture diagram on a light
-   card in dark mode. Mirrors the theme system: explicit choice wins; auto
-   follows the OS via prefers-color-scheme. */
+   <img>-embedded SVGs can't read the page theme, so we swap a dark hero-logo
+   variant and rest the light-baked architecture diagram on a light card. */
 .hero-logo .theme-dark-only,
 .brand .theme-dark-only,
 .pillar-visual .theme-dark-only,
 .pillar-lightbox .theme-dark-only { display: none; }
-[data-theme="dark"] .hero-logo .theme-light-only,
-[data-theme="dark"] .brand .theme-light-only,
-[data-theme="dark"] .pillar-visual .theme-light-only,
-[data-theme="dark"] .pillar-lightbox .theme-light-only { display: none; }
-[data-theme="dark"] .hero-logo .theme-dark-only,
-[data-theme="dark"] .brand .theme-dark-only { display: block; }
-[data-theme="dark"] .pillar-visual .theme-dark-only,
-[data-theme="dark"] .pillar-lightbox .theme-dark-only { display: block; }
-
-[data-theme="dark"] .section-graphic {
-  background: #faf7f9;
-  border-radius: var(--radius);
-  padding: 1.25rem;
-}
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .hero-logo .theme-light-only,
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .brand .theme-light-only,
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .pillar-visual .theme-light-only,
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .pillar-lightbox .theme-light-only { display: none; }
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .hero-logo .theme-dark-only,
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .brand .theme-dark-only { display: block; }
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .pillar-visual .theme-dark-only,
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .pillar-lightbox .theme-dark-only { display: block; }
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .section-graphic {
+  .hero-logo .theme-light-only,
+  .brand .theme-light-only,
+  .pillar-visual .theme-light-only,
+  .pillar-lightbox .theme-light-only { display: none; }
+  .hero-logo .theme-dark-only,
+  .brand .theme-dark-only { display: block; }
+  .pillar-visual .theme-dark-only,
+  .pillar-lightbox .theme-dark-only { display: block; }
+  .section-graphic {
     background: #faf7f9;
     border-radius: var(--radius);
     padding: 1.25rem;

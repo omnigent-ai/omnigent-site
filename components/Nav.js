@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { GitHubIcon, DiscordIcon } from "./icons";
 import { GITHUB_URL, DISCORD_URL } from "./links";
-import ThemeToggle from "./ThemeToggle";
 
 export default function Nav() {
   return (
@@ -14,14 +13,14 @@ export default function Nav() {
           <img className="theme-dark-only" src="/images/logo-dark.svg" alt="Omnigent" height={45} width={149} />
         </Link>
         <nav className="nav-links">
-          <Link href="/quickstart/install" className="nav-link hide-sm">Docs</Link>
+          <Link href="/quickstart/install" className="nav-link hide-sm">Get Started</Link>
+          <Link href="/docs/use/coding-agents" className="nav-link hide-sm">Docs</Link>
           <a href={GITHUB_URL} className="nav-icon" target="_blank" rel="noreferrer" aria-label="GitHub">
             <GitHubIcon size={20} />
           </a>
           <a href={DISCORD_URL} className="nav-icon" target="_blank" rel="noreferrer" aria-label="Discord">
             <DiscordIcon size={20} />
           </a>
-          <ThemeToggle />
         </nav>
       </div>
     </header>

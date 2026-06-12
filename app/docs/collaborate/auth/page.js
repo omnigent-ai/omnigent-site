@@ -57,12 +57,12 @@ export default function Page() {
           Create the first admin.
           <ul>
             <li>
-              The server never auto-generates a password. While no admin exists it reports{" "}
-              <code>needs_setup</code>.
+              For better security, the server never auto-generates a password. When no admin is
+              configured, the server will report <code>needs_setup</code>.
             </li>
             <li>
-              Open the web UI and create the admin account there, or run <code>omni server</code> on
-              a terminal and answer the username and password prompt.
+              To configure, open the web UI and create an admin account or run{" "}
+              <code>omni server</code> in a terminal and answer the username and password prompt.
             </li>
             <li>
               For headless deploys, preset the password with <code>--admin-password</code> or{" "}

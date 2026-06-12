@@ -163,6 +163,27 @@ export default function Page() {
           )}
         </>
       )}
+
+      <h2>Launch Debby</h2>
+      <p>
+        Try your install with Debby, a built-in agent that sends every
+        question to both Claude and GPT and lets them debate.
+      </p>
+      {setup === "cli" ? (
+        <pre><code>{"omni debby"}</code></pre>
+      ) : (
+        <p>
+          Start a new session and select <strong>Debby</strong> from the agent
+          picker next to the message box.
+        </p>
+      )}
+      <p>
+        Ask something like{" "}
+        <code>What came first, the chicken or the egg?</code> and then type{" "}
+        <code>/debate</code> to watch the models challenge each other. See
+        the <Link href="/docs/use/builtin-agents/debby">Debby reference</Link>{" "}
+        for more.
+      </p>
     </>
   );
 }

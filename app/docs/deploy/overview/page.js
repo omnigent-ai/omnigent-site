@@ -131,6 +131,11 @@ export default function Page() {
         </thead>
         <tbody>
           <tr>
+            <td><strong>Railway</strong></td>
+            <td>Managed Postgres</td>
+            <td>Import repo from GitHub</td>
+          </tr>
+          <tr>
             <td><strong>Render</strong></td>
             <td>Managed Postgres</td>
             <td>
@@ -138,11 +143,6 @@ export default function Page() {
                 One-click deploy
               </a>
             </td>
-          </tr>
-          <tr>
-            <td><strong>Railway</strong></td>
-            <td>Managed Postgres</td>
-            <td>Import repo from GitHub</td>
           </tr>
           <tr>
             <td><strong>Fly.io</strong></td>
@@ -158,12 +158,13 @@ export default function Page() {
       </table>
 
       <p>
-        <strong>Render &amp; Railway.</strong> Render provisions the app and managed Postgres over
+        <strong>Railway &amp; Render.</strong> On Railway, import the repo and it handles the
+        rest, including managed Postgres; Render provisions the app and managed Postgres over
         HTTPS via{" "}
         <a href="https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent" target="_blank" rel="noreferrer">
           one-click deploy
         </a>
-        ; on Railway, import the repo and it handles the rest. Both default to built-in{" "}
+        . Both default to built-in{" "}
         <code>accounts</code> auth, so multi-user works out of the box.
       </p>
 

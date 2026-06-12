@@ -142,11 +142,13 @@ export default function Page() {
             for the full reference.
           </p>
 
-          <h4>3. Start the server</h4>
-          <pre><code>{"omni server"}</code></pre>
+          <h4>3. Start Polly</h4>
+          <pre><code>{"omni"}</code></pre>
           <p>
-            Keep this running. Open the desktop app and connect to{" "}
-            <code>http://localhost:6767</code>.
+            This starts Polly and opens a web UI. Copy the URL from your
+            browser, remove the path so only the origin remains (e.g.{" "}
+            <code>http://localhost:6767</code>), then paste it into the
+            desktop app and start from there.
           </p>
         </>
       )}

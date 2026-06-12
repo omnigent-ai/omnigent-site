@@ -54,6 +54,16 @@ export default function Page() {
             <li><strong>tmux</strong></li>
           </ul>
 
+          <p>
+            <strong>Windows:</strong> Omnigent doesn{"'"}t run natively on Windows. Install and run it
+            inside{" "}
+            <a href="https://learn.microsoft.com/windows/wsl/install" target="_blank" rel="noopener noreferrer">
+              WSL2
+            </a>{" "}
+            (Windows Subsystem for Linux), then follow the Linux instructions from inside your WSL2
+            distribution.
+          </p>
+
           <h2>Install Omnigent</h2>
 
           <div className="tabbed-code">

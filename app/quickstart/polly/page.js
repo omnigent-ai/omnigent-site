@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ContentTabs from "@/components/ContentTabs";
 
 export const metadata = { title: "Tutorial: Polly (Multi-AI Coding)" };
 
@@ -50,12 +51,26 @@ export default function Page() {
         parallel, and a different agent reviews each PR.
       </p>
 
-      <h2>3. Watch it in the web UI</h2>
+      <h2>3. Watch it in the web UI or desktop app</h2>
+
+      <ContentTabs labels={["Web UI", "Desktop App"]}>
+        <p>
+          Open <code>http://localhost:6767</code> in your browser. It shows the
+          same session as your terminal, updating in real time.
+        </p>
+        <p>
+          Launch the <Link href="/docs/interact/desktop">desktop app</Link> and
+          connect it to <code>http://localhost:6767</code>. It shows the same
+          session as your terminal, and adds OS notifications and a dock badge
+          when Polly or a sub-agent needs your attention, which is useful
+          while sub-agents work in parallel.
+        </p>
+      </ContentTabs>
 
       <p>
-        Open <code>http://localhost:6767</code>. The right panel has four tabs:{" "}
-        <strong>Files</strong>, <strong>Agents</strong>,{" "}
-        <strong>Terminals</strong>, and <strong>Todos</strong>.
+        The right panel has four tabs: <strong>Files</strong>,{" "}
+        <strong>Agents</strong>, <strong>Shells</strong>, and{" "}
+        <strong>Todos</strong>.
       </p>
 
       <p>Click the <strong>Agents</strong> tab to see every sub-agent Polly
@@ -64,7 +79,7 @@ export default function Page() {
 
       <ul>
         <li>Click any sub-agent to switch to its view and see its conversation, files, and terminal output.</li>
-        <li>Switch to the <strong>Terminals</strong> tab to see all running shells side by side.</li>
+        <li>Switch to the <strong>Shells</strong> tab to see all running shells side by side.</li>
         <li>Intervene at any point: send a message to a sub-agent, or switch back to Polly to see the orchestrator{"'"}s view.</li>
       </ul>
 

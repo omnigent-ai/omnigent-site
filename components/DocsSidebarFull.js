@@ -27,7 +27,7 @@ const SECTIONS = [
       },
       {
         title: "Built-in Multi-AI Agents",
-        collapsed: false,
+        collapsed: true,
         href: "/docs/use/builtin-agents",
         pages: [
           { href: "/docs/use/builtin-agents/polly", label: "Polly" },
@@ -36,7 +36,7 @@ const SECTIONS = [
       },
       {
         title: "Custom Agents",
-        collapsed: false,
+        collapsed: true,
         href: "/docs/use/custom-agents",
         pages: [
           { href: "/docs/build/harnesses", label: "Harnesses" },

@@ -202,6 +202,16 @@ hr {
   background: var(--bg-soft);
   text-decoration: none;
 }
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--fg-soft);
+}
+.theme-toggle:hover {
+  color: var(--fg);
+  background: var(--bg-soft);
+}
 
 /* ---- buttons ---- */
 .btn {

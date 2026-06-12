@@ -51,7 +51,6 @@ const SECTIONS = [
   {
     title: "Interfaces",
     pages: [
-      { href: "/docs/interact/overview", label: "Overview" },
       { href: "/docs/interact/terminal", label: "Terminal" },
       { href: "/docs/interact/web-ui", label: "Web UI" },
       { href: "/docs/interact/mobile", label: "Mobile" },

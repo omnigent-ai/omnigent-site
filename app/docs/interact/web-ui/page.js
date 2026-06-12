@@ -24,6 +24,20 @@ export default function Page() {
 
       <p>Sessions persist across browser refreshes and server restarts.</p>
 
+      <h3>Browser-first mode</h3>
+
+      <p>
+        If you prefer to work entirely in the browser without a terminal, start the server and host
+        daemon separately:
+      </p>
+
+      <pre><code>{"omni server start   # start the local server + web UI in the background\nomni host           # (separate terminal) register this machine as a host"}</code></pre>
+
+      <p>
+        Now open <strong>http://localhost:6767</strong> in your browser and work from there. The
+        terminal is optional.
+      </p>
+
       <h2>File editor</h2>
 
       <p>

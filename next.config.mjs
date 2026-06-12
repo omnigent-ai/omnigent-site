@@ -8,6 +8,11 @@ const nextConfig = {
         destination: "/docs/deploy/cloud-runner",
         permanent: true,
       },
+      {
+        source: "/docs/interact/overview",
+        destination: "/docs/interact/terminal",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

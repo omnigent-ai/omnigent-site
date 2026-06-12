@@ -54,16 +54,6 @@ export default function Page() {
             <li><strong>tmux</strong></li>
           </ul>
 
-          <p>
-            <strong>Windows:</strong> Omnigent doesn{"'"}t run natively on Windows. Install and run it
-            inside{" "}
-            <a href="https://learn.microsoft.com/windows/wsl/install" target="_blank" rel="noopener noreferrer">
-              WSL2
-            </a>{" "}
-            (Windows Subsystem for Linux), then follow the Linux instructions from inside your WSL2
-            distribution.
-          </p>
-
           <h2>Install Omnigent</h2>
 
           <div className="tabbed-code">
@@ -193,6 +183,17 @@ export default function Page() {
         <code>/debate</code> to watch the models challenge each other. See
         the <Link href="/docs/use/builtin-agents/debby">Debby reference</Link>{" "}
         for more.
+      </p>
+
+      <h2>Windows</h2>
+      <p>
+        Omnigent isn{"'"}t supported natively on Windows yet. In the meantime, install and run it
+        inside{" "}
+        <a href="https://learn.microsoft.com/windows/wsl/install" target="_blank" rel="noopener noreferrer">
+          WSL2
+        </a>{" "}
+        (Windows Subsystem for Linux) and follow the Linux instructions from inside your WSL2
+        distribution.
       </p>
     </>
   );

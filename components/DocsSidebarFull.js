@@ -61,8 +61,6 @@ const SECTIONS = [
     pages: [
       { href: "/docs/deploy/overview", label: "Deployment Overview" },
       { href: "/docs/deploy/database", label: "Database" },
-      { href: "/docs/deploy/docker", label: "Docker" },
-      { href: "/docs/deploy/cloud", label: "Cloud Platforms" },
       { href: "/docs/deploy/cloud-runner", label: "Cloud Runner" },
       { href: "/docs/collaborate/overview", label: "Collaboration" },
       { href: "/docs/collaborate/auth", label: "Auth & SSO" },

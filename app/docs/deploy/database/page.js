@@ -20,7 +20,7 @@ export default function Page() {
 
       <ul>
         <li>
-          Auto-provisioned on <Link href="/docs/deploy/cloud">Render and Railway</Link>.
+          Auto-provisioned on <Link href="/docs/deploy/overview#cloud-platforms">Render and Railway</Link>.
         </li>
         <li>
           For other platforms, bring your own. The fastest option is{" "}

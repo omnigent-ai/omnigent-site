@@ -986,6 +986,18 @@ figcaption {
   .hero .lede { max-width: 100%; }
   .arch-parts { grid-template-columns: 1fr; }
   .pillar-panel { grid-template-columns: 1fr; gap: 1.25rem; }
+  .pillar-copy {
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem 1rem;
+  }
+  .pillar-copy .pillar-icon {
+    text-align: center;
+  }
+  .pillar-copy .pillar-icon img {
+    margin: 0 auto;
+    object-position: center center;
+  }
   .pillar-tablist { gap: 0.25rem 1.5rem; }
   .docs { grid-template-columns: 1fr; gap: 1.5rem; }
   .docs-side { position: static; }

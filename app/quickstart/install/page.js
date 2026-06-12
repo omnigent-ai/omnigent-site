@@ -159,8 +159,8 @@ export default function Page() {
       )}
       <p>
         Ask something like{" "}
-        <code>What came first, the chicken or the egg?</code> and then type{" "}
-        <code>/debate</code> to watch the models challenge each other. See
+        <code>What came first, the chicken or the egg?</code> and watch the
+        models challenge each other. See
         the <Link href="/docs/use/builtin-agents/debby">Debby reference</Link>{" "}
         for more.
       </p>

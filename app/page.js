@@ -109,20 +109,6 @@ export default function Home() {
               />
             </figure>
 
-            <hr />
-
-            <div className="try-it">
-              <h2>Try it</h2>
-              <pre className="section-code try-code">
-                <code>{`pip install omnigent
-omni debby     # run a built-in multi-agent debate
-omni claude    # run your agent with a web UI and collaboration`}</code>
-              </pre>
-              <p>
-                Read the <Link href="/quickstart/install">Getting Started</Link> guide for more
-                information.
-              </p>
-            </div>
           </div>
         </section>
 

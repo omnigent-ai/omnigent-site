@@ -1,13 +1,14 @@
-import { GitHubIcon, AppleIcon, DiscordIcon } from "@/components/icons";
-import { GITHUB_URL, DISCORD_URL, MACOS_DOWNLOAD_URL } from "@/components/links";
+import Link from "next/link";
+import { RocketIcon, AppleIcon, DiscordIcon } from "@/components/icons";
+import { DISCORD_URL, MACOS_DOWNLOAD_URL } from "@/components/links";
 
-// GitHub (white) · Download macOS App (purple) · Join Discord (white)
+// Get Started (white) · Download macOS App (purple) · Join Discord (white)
 export default function CtaButtons() {
   return (
     <div className="hero-cta">
-      <a href={GITHUB_URL} className="btn" target="_blank" rel="noreferrer">
-        <GitHubIcon /> GitHub
-      </a>
+      <Link href="/quickstart/install" className="btn">
+        <RocketIcon size={16} /> Get Started
+      </Link>
       <a href={MACOS_DOWNLOAD_URL} className="btn btn-primary">
         <AppleIcon size={16} /> Download macOS App
       </a>

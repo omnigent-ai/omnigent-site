@@ -8,8 +8,9 @@ export default function Page() {
       <h1>Builtin Policies</h1>
 
       <p>
-        Omnigent ships with policies for common guardrails, organized into seven categories. Your
-        omnigent can apply any of these by name when you{" "}
+        Omnigent ships with policies for common guardrails, organized into two categories:{" "}
+        <strong>Safety</strong> and <strong>Cost Control</strong>. Your omnigent can apply any of
+        these by name when you{" "}
         <Link href="/docs/policies/overview#adding-a-policy">ask it to add a policy</Link>, or you
         can reference them in YAML by their full path in the <code>handler</code> field.
       </p>
@@ -60,54 +61,6 @@ export default function Page() {
               or <code>&quot;ASK&quot;</code>)
             </td>
           </tr>
-        </tbody>
-      </table>
-
-      <h2>Cost Control</h2>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Policy</th>
-            <th>What it does</th>
-            <th>Parameters</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>cost_budget</code></td>
-            <td>
-              Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive
-              models at the hard limit.
-            </td>
-            <td>
-              <code>max_cost_usd</code> (required), <code>ask_thresholds_usd</code>,{" "}
-              <code>expensive_models</code>
-            </td>
-          </tr>
-          <tr>
-            <td><code>user_daily_cost_budget</code></td>
-            <td>
-              Same as <code>cost_budget</code>, but enforced per-user daily across all sessions.
-            </td>
-            <td>
-              <code>max_cost_usd</code> (required), <code>ask_thresholds_usd</code>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2>Access control</h2>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Policy</th>
-            <th>What it does</th>
-            <th>Parameters</th>
-          </tr>
-        </thead>
-        <tbody>
           <tr>
             <td><code>github_policy</code></td>
             <td>Controls GitHub read/write access across MCP tools and shell commands.</td>
@@ -146,42 +99,6 @@ export default function Page() {
               or <code>&quot;ask&quot;</code>)
             </td>
           </tr>
-        </tbody>
-      </table>
-
-      <h2>Routing</h2>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Policy</th>
-            <th>What it does</th>
-            <th>Parameters</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>deny_trivial_to_expensive_model</code></td>
-            <td>
-              Classifies messages as trivial or complex. Routes trivial tasks away from expensive
-              models.
-            </td>
-            <td>None</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2>CEL</h2>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Policy</th>
-            <th>What it does</th>
-            <th>Parameters</th>
-          </tr>
-        </thead>
-        <tbody>
           <tr>
             <td><code>cel_policy</code></td>
             <td>
@@ -192,20 +109,6 @@ export default function Page() {
               <code>expression</code> (CEL expression string), <code>reason</code> (deny message)
             </td>
           </tr>
-        </tbody>
-      </table>
-
-      <h2>Prompt</h2>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Policy</th>
-            <th>What it does</th>
-            <th>Parameters</th>
-          </tr>
-        </thead>
-        <tbody>
           <tr>
             <td><code>prompt_policy</code></td>
             <td>
@@ -217,20 +120,6 @@ export default function Page() {
               <code>prompt</code> (system instructions for the evaluator model)
             </td>
           </tr>
-        </tbody>
-      </table>
-
-      <h2>Risk Score</h2>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Policy</th>
-            <th>What it does</th>
-            <th>Parameters</th>
-          </tr>
-        </thead>
-        <tbody>
           <tr>
             <td><code>risk_score_policy</code></td>
             <td>
@@ -243,6 +132,48 @@ export default function Page() {
               <code>guarded_tools</code> (string[]), <code>escalate_action</code> (<code>&quot;ASK&quot;</code>{" "}
               or <code>&quot;DENY&quot;</code>)
             </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Cost Control</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Policy</th>
+            <th>What it does</th>
+            <th>Parameters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>cost_budget</code></td>
+            <td>
+              Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive
+              models at the hard limit.
+            </td>
+            <td>
+              <code>max_cost_usd</code> (required), <code>ask_thresholds_usd</code>,{" "}
+              <code>expensive_models</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>user_daily_cost_budget</code></td>
+            <td>
+              Same as <code>cost_budget</code>, but enforced per-user daily across all sessions.
+            </td>
+            <td>
+              <code>max_cost_usd</code> (required), <code>ask_thresholds_usd</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>deny_trivial_to_expensive_model</code></td>
+            <td>
+              Classifies messages as trivial or complex. Routes trivial tasks away from expensive
+              models.
+            </td>
+            <td>None</td>
           </tr>
         </tbody>
       </table>

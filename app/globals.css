@@ -595,7 +595,7 @@ figcaption {
 .pillar-panel {
   grid-area: 1 / 1;
   display: grid;
-  grid-template-columns: 2fr 3fr;
+  grid-template-columns: 3fr 7fr;
   gap: 2rem;
   align-items: stretch;
   visibility: hidden;
@@ -624,10 +624,9 @@ figcaption {
 .pillar-copy {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   height: 100%;
   padding: 2.25rem 1.5rem;
-  border-radius: var(--radius);
-  background: var(--bg-grey-pink);
 }
 .pillar-copy .pillar-icon {
   margin: 0 0 1.25rem;
@@ -987,6 +986,18 @@ figcaption {
   .hero .lede { max-width: 100%; }
   .arch-parts { grid-template-columns: 1fr; }
   .pillar-panel { grid-template-columns: 1fr; gap: 1.25rem; }
+  .pillar-copy {
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem 1rem;
+  }
+  .pillar-copy .pillar-icon {
+    text-align: center;
+  }
+  .pillar-copy .pillar-icon img {
+    margin: 0 auto;
+    object-position: center center;
+  }
   .pillar-tablist { gap: 0.25rem 1.5rem; }
   .docs { grid-template-columns: 1fr; gap: 1.5rem; }
   .docs-side { position: static; }

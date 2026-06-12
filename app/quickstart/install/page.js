@@ -139,7 +139,7 @@ export default function Page() {
           <pre><code>{"omni server"}</code></pre>
           <p>
             Keep this running. Open the desktop app and connect to{" "}
-            <code>http://localhost:6768</code>.
+            <code>http://localhost:6767</code>.
           </p>
         </>
       )}

@@ -23,6 +23,11 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: "/install.sh",
+        destination:
+          "https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/install_oss.sh",
+      },
+      {
         source: "/download/mac",
         destination:
           "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.1.0-arm64.dmg",

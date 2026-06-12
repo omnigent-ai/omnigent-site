@@ -15,7 +15,7 @@ const nextConfig = {
       },
       {
         source: "/docs/collaborate/overview",
-        destination: "/docs/deploy/overview#collaboration",
+        destination: "/docs/collaborate",
         permanent: true,
       },
     ];

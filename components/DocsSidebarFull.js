@@ -59,7 +59,8 @@ const SECTIONS = [
   {
     title: "Collaborative Server",
     pages: [
-      { href: "/docs/deploy/overview", label: "Deployment Overview" },
+      { href: "/docs/deploy/overview", label: "Server deployment overview" },
+      { href: "/docs/collaborate", label: "Collaboration" },
       { href: "/docs/collaborate/auth", label: "Auth & SSO" },
       { href: "/docs/deploy/database", label: "Database" },
       { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host" },

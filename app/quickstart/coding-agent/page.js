@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ContentTabs from "@/components/ContentTabs";
 
 export const metadata = { title: "Tutorial: Coding Agent" };
 
@@ -39,20 +40,39 @@ omni codex     # Codex`}</code></pre>
       <pre><code>{"Write a Python function that reads a CSV file and returns the top 5 rows sorted by the second column."}</code></pre>
 
       <p>
-        Watch it work in the terminal. Then open{" "}
-        <code>http://localhost:6767</code> in your browser to see the web UI.
+        Watch it work in the terminal. Then follow along in the web UI or the
+        desktop app. Terminal, browser, and desktop app are three views of the
+        same session: type in one, and the others update in real time.
       </p>
 
-      <p>
-        The web UI shows your conversation on the left and a right panel with
-        four tabs: <strong>Files</strong> (browse and edit files the agent
-        created), <strong>Agents</strong> (sub-agents if any),{" "}
-        <strong>Terminals</strong> (running shells), and{" "}
-        <strong>Todos</strong>. Everything syncs with the terminal in real time.
-      </p>
+      <ContentTabs labels={["Web UI", "Desktop App"]}>
+        <div>
+          <p>
+            Open <code>http://localhost:6767</code> in your browser. The web UI
+            shows your conversation on the left and a right panel with four
+            tabs: <strong>Files</strong> (browse and edit files the agent
+            created), <strong>Agents</strong> (sub-agents if any),{" "}
+            <strong>Shells</strong> (running terminals), and{" "}
+            <strong>Todos</strong>. Everything syncs with the terminal in real
+            time.
+          </p>
 
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/docs/single-harness-demo.gif" alt="Omnigent web UI running a coding agent session" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/docs/single-harness-demo.gif" alt="Omnigent web UI running a coding agent session" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+        </div>
+        <div>
+          <p>
+            Launch the <Link href="/docs/interact/desktop">desktop app</Link>{" "}
+            and connect it to <code>http://localhost:6767</code>. You get the
+            same session and the same panels as the web UI, plus OS
+            notifications and a dock badge when the agent finishes or needs
+            your input, which is handy when you switch away while it works.
+          </p>
+
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/docs/desktop-conversation.png" alt="Omnigent desktop app showing an agent conversation alongside the session workspace" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
+        </div>
+      </ContentTabs>
 
       <h2>3. Try native Omnigent features</h2>
 
@@ -95,7 +115,7 @@ omni codex     # Codex`}</code></pre>
         point, so you can experiment freely.
       </p>
       <p>
-        Sessions in Omnigent belong to you, not to a specific agent — so a fork
+        Sessions in Omnigent belong to you, not to a specific agent, so a fork
         doesn{"'"}t have to continue with the agent it started with.{" "}
         <strong>
           Started in Claude Code? Fork the session and continue the fork with
@@ -119,7 +139,7 @@ omni codex     # Codex`}</code></pre>
         now on, every outgoing model request is scanned, and anything containing
         PII is held for your approval before it leaves your machine. Try it: paste
         a log file with a fake email address and watch the policy step in. This
-        is enforcement at the platform layer — something no coding agent can do
+        is enforcement at the platform layer, something no coding agent can do
         on its own. Cost budgets, access controls, and more work the same way.
         See <Link href="/docs/policies/overview">Contextual Policies</Link>.
       </p>

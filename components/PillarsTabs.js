@@ -55,6 +55,13 @@ const PILLARS = [
       width: 231,
       height: 102,
     },
+    visual: {
+      src: "/images/collaboration.png",
+      alt: "Omnigent web UI showing a shared session with inline comments, an agent chat, and a code editor open side by side.",
+      width: 3244,
+      height: 2268,
+      fit: "contain",
+    },
   },
 ];
 

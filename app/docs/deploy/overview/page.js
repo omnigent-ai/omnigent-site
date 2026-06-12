@@ -197,17 +197,20 @@ export default function Page() {
       <h2>Runner</h2>
 
       <p>
-        The <strong>runner</strong> executes Omnigent loops. It manages the harness (Claude Code,
-        Codex, Claude SDK, etc.), runs tools, and streams events back to the server over WebSocket.
+        The <strong>runner</strong> is the per-session process that executes Omnigent loops. It
+        manages the harness (Claude Code, Codex, Claude SDK, etc.), runs tools, and streams events
+        back to the server over WebSocket. The server starts runners on a <strong>host</strong>: a
+        machine you register with the server.
       </p>
 
-      <p>By default, the runner is a process on your laptop:</p>
+      <p>By default, the host is your laptop. Register it with:</p>
 
       <pre><code>{"omni login <server-url>  // if auth is enabled\nomni host <server-url>"}</code></pre>
 
       <p>
-        This is why your local Claude Code or Codex installation {'"'}just works.{'"'} The runner
-        has direct access to your machine{"'"}s tools, files, and credentials.
+        This is why your local Claude Code or Codex installation {'"'}just works.{'"'} Runners
+        started on your laptop have direct access to your machine{"'"}s tools, files, and
+        credentials.
       </p>
 
       <p>

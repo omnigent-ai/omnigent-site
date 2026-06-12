@@ -111,7 +111,7 @@ export default function Page() {
       <ul>
         <li>
           <Link href="/docs/policies/overview">Contextual Policies overview</Link> —
-          all the ways to apply policies (chat, omnigent YAML, or server config).
+          all the ways to apply policies (chat, Omnigent YAML, or server config).
         </li>
         <li>
           <Link href="/docs/policies/builtin">Builtin Policies</Link> — the full

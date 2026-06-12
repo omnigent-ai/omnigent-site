@@ -8,7 +8,7 @@ export default function Page() {
       <h1>Contextual Policies</h1>
 
       <p>
-        Policies control what your omnigent can and cannot do. They intercept every
+        Policies control what your Omnigent can and cannot do. They intercept every
         action (tool calls, LLM requests, file operations) and decide in real time
         whether to <strong>allow</strong>, <strong>ask for approval</strong>, or{" "}
         <strong>deny</strong>.
@@ -140,14 +140,14 @@ policy_modules:
             <td><strong>Session</strong></td>
             <td>End user</td>
             <td>Current session only, not persistent</td>
-            <td>Ask your omnigent, or use the UI settings panel</td>
+            <td>Ask your Omnigent, or use the UI settings panel</td>
             <td>First</td>
           </tr>
           <tr>
             <td><strong>Omnigent config</strong></td>
             <td>Developer</td>
-            <td>Every session using this omnigent</td>
-            <td><code>policies</code> block in the omnigent YAML</td>
+            <td>Every session using this Omnigent</td>
+            <td><code>policies</code> block in the Omnigent YAML</td>
             <td>Second</td>
           </tr>
           <tr>
@@ -161,17 +161,17 @@ policy_modules:
       </table>
 
       <p>
-        An admin can set a company-wide cost cap, a developer can restrict which repos the omnigent
+        An admin can set a company-wide cost cap, a developer can restrict which repos the Omnigent
         writes to, and an end user can add extra approval gates. All three levels are enforced
         simultaneously.
       </p>
 
       <h2>Adding a policy</h2>
 
-      <h3>Session level: ask your omnigent (recommended)</h3>
+      <h3>Session level: ask your Omnigent (recommended)</h3>
 
       <p>
-        The easiest way to add a policy is to ask your omnigent directly. Describe what you want in
+        The easiest way to add a policy is to ask your Omnigent directly. Describe what you want in
         plain language:
       </p>
 
@@ -186,7 +186,7 @@ You: Block access to all GitHub repos except myorg/frontend.`}
       </pre>
 
       <p>
-        Your omnigent picks the right policy from the available registry (both{" "}
+        Your Omnigent picks the right policy from the available registry (both{" "}
         <Link href="/docs/policies/builtin">builtin</Link> and any{" "}
         <Link href="/docs/policies/custom">custom policies</Link> registered on the server),
         configures the parameters, and asks for your approval. Once you approve, the policy takes
@@ -202,7 +202,7 @@ You: Block access to all GitHub repos except myorg/frontend.`}
 
       <p>
         For policies that should always apply, declare them in the <code>policies</code> block of
-        your omnigent config. These take effect every time the omnigent starts.
+        your Omnigent config. These take effect every time the Omnigent starts.
       </p>
 
       <pre>

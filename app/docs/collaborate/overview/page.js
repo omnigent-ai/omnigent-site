@@ -9,7 +9,7 @@ export default function Page() {
 
       <p>
         Omnigent is multi-user. Share a live session with a link, let a teammate co-drive your
-        omnigent, or fork a conversation so someone can continue independently. The same session
+        Omnigent, or fork a conversation so someone can continue independently. The same session
         works across <Link href="/docs/interact/terminal">terminal</Link>,{" "}
         <Link href="/docs/interact/web-ui">web UI</Link>, and{" "}
         <Link href="/docs/interact/mobile">mobile</Link> simultaneously.
@@ -56,7 +56,7 @@ export default function Page() {
       <pre><code>{"omni attach <session_id>"}</code></pre>
 
       <p>
-        Both participants see the same streaming output. Either can send messages. The omnigent
+        Both participants see the same streaming output. Either can send messages. The Omnigent
         processes them in order.
       </p>
 

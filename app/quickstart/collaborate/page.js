@@ -10,8 +10,8 @@ export default function Page() {
       <p>
         So far everything runs on your laptop. This tutorial takes you beyond
         that: deploy a server so you can access your agents from your phone,
-        share live sessions with teammates, and run agents on cloud runners
-        that keep working after you close your laptop.
+        share live sessions with teammates, and run agents on cloud sandbox
+        hosts that keep working after you close your laptop.
       </p>
 
       <p>
@@ -79,18 +79,18 @@ omni host https://your-server.up.railway.app`}</code></pre>
         <li>Fork the session to try a different direction without affecting the original.</li>
       </ul>
 
-      <h2>5. Run a cloud runner</h2>
+      <h2>5. Run a cloud sandbox host</h2>
 
       <p>
         Want the agent to keep working after you close your laptop? Launch a
-        cloud runner from the web UI. The agent runs in a remote container
+        cloud sandbox host from the web UI. The agent runs in a remote container
         and you check results whenever you{"'"}re ready.
       </p>
 
       <p>
         Set it up by adding a <code>sandbox</code> section to your server config.
-        See <Link href="/docs/deploy/cloud-runner">Cloud Runner</Link> for the
-        full setup guide.
+        See <Link href="/docs/deploy/cloud-sandbox-host">Cloud Sandbox Host</Link>{" "}
+        for the full setup guide.
       </p>
 
       <h2>What{"'"}s next</h2>

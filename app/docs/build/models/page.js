@@ -108,7 +108,16 @@ export default function Page() {
           </tr>
           <tr>
             <td><strong>Databricks</strong></td>
-            <td>A Databricks workspace profile, routing through the Foundation Model API</td>
+            <td>
+              A Databricks workspace profile, routing through the{" "}
+              <a
+                href="https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Foundation Model API
+              </a>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -393,8 +402,15 @@ codex login          # for ChatGPT`}
       <h3>Databricks</h3>
 
       <p>
-        Route models through your Databricks workspace using the Foundation Model API. Omnigent
-        resolves credentials from your <code>~/.databrickscfg</code> profile.
+        Route models through your Databricks workspace using the{" "}
+        <a
+          href="https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Foundation Model API
+        </a>
+        . Omnigent resolves credentials from your <code>~/.databrickscfg</code> profile.
       </p>
 
       <pre>

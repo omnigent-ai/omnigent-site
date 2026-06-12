@@ -36,7 +36,7 @@ export default function Page() {
         Click the info button <code>(i)</code> at the top of the page to open the
         session panel. You{"'"}ll see the current session cost and a{" "}
         <strong>Policies</strong> section. Hit the <code>+</code> button, then pick
-        a policy from the list. There are plenty to choose from — for this tutorial
+        a policy from the list. There are plenty to choose from; for this tutorial
         we{"'"}ll use <strong>Session Cost Budget</strong>, which keeps an eye on how
         much the session is spending on the model.
       </p>
@@ -53,13 +53,13 @@ export default function Page() {
 
       <ul>
         <li>
-          <strong>Soft limits</strong> — a list of spend thresholds that act as
+          <strong>Soft limits</strong>: a list of spend thresholds that act as
           gentle warnings. When the session cost crosses one, you get a heads-up
           on the next tool call and can decide whether to keep going. For the demo
           we{"'"}ll set a soft limit of <code>0.01</code>.
         </li>
         <li>
-          <strong>Hard limit</strong> — a ceiling paired with a list of{" "}
+          <strong>Hard limit</strong>: a ceiling paired with a list of{" "}
           <strong>expensive models</strong>. Once spend passes the hard limit, the
           session blocks any of those pricey models until you downgrade to a
           cheaper one. We{"'"}ll set the hard limit to <code>0.2</code> and keep
@@ -69,7 +69,7 @@ export default function Page() {
 
       <p>
         Once you fill in the values and click <strong>Add</strong>, the policy goes
-        live on the session right away — you{"'"}ll see it listed under{" "}
+        live on the session right away: you{"'"}ll see it listed under{" "}
         <strong>Policies</strong> in the panel.
       </p>
 
@@ -94,7 +94,7 @@ export default function Page() {
       <p>
         When spend reaches the hard limit, the policy blocks every following tool
         call that would use an expensive model. The agent tells you what happened
-        and waits — switch to a cheaper model and you{"'"}re free to continue.
+        and waits. Switch to a cheaper model and you{"'"}re free to continue.
       </p>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -110,15 +110,15 @@ export default function Page() {
 
       <ul>
         <li>
-          <Link href="/docs/policies/overview">Contextual Policies overview</Link> —
+          <Link href="/docs/policies/overview">Contextual Policies overview</Link>:
           all the ways to apply policies (chat, Omnigent YAML, or server config).
         </li>
         <li>
-          <Link href="/docs/policies/builtin">Builtin Policies</Link> — the full
+          <Link href="/docs/policies/builtin">Builtin Policies</Link>: the full
           catalog of policies you can add out of the box.
         </li>
         <li>
-          <Link href="/docs/policies/custom">Custom Policies</Link> — write your own
+          <Link href="/docs/policies/custom">Custom Policies</Link>: write your own
           in Python when the builtins don{"'"}t cover your use case.
         </li>
       </ul>

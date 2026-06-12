@@ -24,6 +24,20 @@ export default function Page() {
 
       <p>Sessions persist across browser refreshes and server restarts.</p>
 
+      <h3>Browser-first mode</h3>
+
+      <p>
+        If you prefer to work in the browser rather than the terminal UI, start the server and host
+        daemon once from the command line:
+      </p>
+
+      <pre><code>{"omni server start   # start the local server + web UI in the background\nomni host           # (separate terminal) register this machine as a host"}</code></pre>
+
+      <p>
+        After that, open <strong>http://localhost:6767</strong> and drive the agent entirely from
+        the browser — no further terminal interaction needed.
+      </p>
+
       <h2>File editor</h2>
 
       <p>

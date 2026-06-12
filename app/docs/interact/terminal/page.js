@@ -13,10 +13,15 @@ export default function Page() {
         with your agent.
       </p>
 
+      <p>
+        Every interface — terminal, web UI, mobile, and desktop — connects to the same persistent,
+        shareable session, so you can start work in one place and keep going anywhere.
+      </p>
+
             {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/images/docs/terminal.png" alt="Omnigent terminal session" style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }} />
 
-      <h2>Start a terminal session</h2>
+      <h2>Start a session</h2>
 
       <p>
         The terminal interface requires <code>tmux</code>, so install it first if you don{"'"}t have
@@ -25,9 +30,32 @@ export default function Page() {
 
       <pre><code>{"# macOS\nbrew install tmux\n\n# Debian / Ubuntu\napt install tmux"}</code></pre>
 
-      <p>Then start a session by pointing Omnigent at an agent config:</p>
+      <p>Then launch an agent:</p>
 
-      <pre><code>{"omni run agent.yaml"}</code></pre>
+      <pre><code>{"omni claude                          # Claude Code\nomni codex                           # Codex\nomni run agent.yaml                  # custom omnigent\nomni run ./my-agent/                 # directory with config.yaml"}</code></pre>
+
+      <p>
+        <code>omni claude</code> and <code>omni codex</code> launch an existing coding agent with
+        Omnigent{"'"}s UI. No YAML needed. See the{" "}
+        <Link href="/quickstart/coding-agent">Coding Agent tutorial</Link>.
+      </p>
+
+      <p>
+        <code>omni run</code> starts a custom omnigent from a YAML config. See{" "}
+        <Link href="/docs/use/custom-agents">Custom Agents</Link> for how to write one.
+      </p>
+
+      <h3>CLI overrides</h3>
+
+      <p>Override executor values at runtime without editing the YAML:</p>
+
+      <pre><code>{"omni run agent.yaml --harness codex --model gpt-4.1-mini"}</code></pre>
+
+      <p>
+        The <code>--harness</code> and <code>--model</code> flags map
+        directly to the <code>executor</code> block. This lets you reuse the same config across
+        different LLM backends.
+      </p>
 
       <p>
         From here, the agent streams its output as it thinks and acts. Tool calls run in real time,
@@ -36,6 +64,31 @@ export default function Page() {
         agent in your terminal and glance at the browser whenever you want file diffs or inline
         comments.
       </p>
+
+      <h2>Sessions and conversations</h2>
+
+      <p>
+        A session is a conversation. Every message, tool call, and file change lives in one
+        continuous thread. Sessions are the core unit of work in Omnigent, and three properties make
+        them useful:
+      </p>
+
+      <ul>
+        <li>
+          <strong>Agent-independent.</strong> A session belongs to you, not to a specific agent.
+          Switch agents mid-conversation: start with a planner, switch to a coder, bring in a
+          reviewer. The full history carries forward.
+        </li>
+        <li>
+          <strong>Persistent.</strong> Every session has a conversation ID and lives beyond the
+          current terminal window. Close your laptop, come back tomorrow, resume where you left off:{" "}
+          <code>omni resume &lt;conversation_id&gt;</code>
+        </li>
+        <li>
+          <strong>Shared.</strong> Any omnigent can read the history of other sessions you have
+          access to. When you spin up a new task, the agent already has context from previous work.
+        </li>
+      </ul>
 
       <h2>When to use the terminal</h2>
 

@@ -934,6 +934,8 @@ figcaption {
 .docs-side a.active { background: var(--accent-soft); color: var(--accent-text); font-weight: 550; }
 .docs-main { min-width: 0; }
 .docs-main h1 { font-size: 2.1rem; }
+.docs-main h2 { font-size: 1.5rem; }
+.docs-main h3 { font-size: 1.05rem; }
 .docs-main ul, .docs-main ol { padding-left: 1.3rem; }
 .docs-main li { margin: 0.3rem 0; }
 .docs-main table {

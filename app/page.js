@@ -56,6 +56,7 @@ export default function Home() {
               alt="Omnigent web UI running two sub-agents in parallel on a shared session"
               width={3046}
               height={2198}
+              style={{ maxWidth: 725 }}
             />
           </div>
         </section>

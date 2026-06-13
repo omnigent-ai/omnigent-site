@@ -42,9 +42,6 @@ export default function Home() {
           </p>
           <InstallTabs />
           <CtaButtons />
-          <p className="hero-desktop">
-            One native app for all your agents — every session, in a single place.
-          </p>
         </section>
 
         <section className="hero-demo" aria-label="Product demo">

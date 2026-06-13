@@ -83,6 +83,20 @@ export default function Page() {
             <Link href="/docs/build/models#credentials">Models &amp; Credentials</Link> for the
             full reference.
           </p>
+
+          <h2>Launch Debby</h2>
+          <p>
+            Try your install with Debby, a built-in multi-AI agent that sends every
+            question to both Claude and GPT and lets them debate.
+          </p>
+          <pre><code>{"omni debby"}</code></pre>
+          <p>
+            Ask something like{" "}
+            <code>What came first, the chicken or the egg?</code> and watch the
+            models challenge each other. See
+            the <Link href="/docs/use/builtin-agents/debby">Debby reference</Link>{" "}
+            for more.
+          </p>
         </>
       )}
 
@@ -90,7 +104,7 @@ export default function Page() {
         <>
           <p>
             Download the native macOS app for a full UI, session history, and
-            the ability to connect to a managed or local server.
+            the ability to connect to a local or remote server.
           </p>
 
           <p>
@@ -100,27 +114,7 @@ export default function Page() {
             </a>
           </p>
 
-          <h2>Connect to a server</h2>
-
-          <p>
-            Omnigent needs a server to store sessions and run agents. Enter your
-            local or remote server URL and the app connects automatically.
-          </p>
-          <pre><code>{"https://your-server.example.com"}</code></pre>
-          <p>
-            Don{"'"}t have a server yet? See{" "}
-            <Link href="/docs/deploy/overview">Deploy</Link> to set one up, or run
-            one locally with the steps below.
-          </p>
-
-          <h3>Run a local server</h3>
-
-          <p>
-            To point the app at a server on your own machine, install the Omnigent
-            CLI and start a server.
-          </p>
-
-          <h4>1. Install Omnigent</h4>
+          <h2>Install Omnigent</h2>
 
           <div className="tabbed-code">
             <div className="tab-bar">
@@ -133,54 +127,52 @@ export default function Page() {
             <pre><code>{CLI_TABS[cliTab].code}</code></pre>
           </div>
 
-          <h4>2. Set up credentials</h4>
+          <p>Run the same command to upgrade an existing installation.</p>
+
+          <h2>Set up credentials</h2>
           <pre><code>{"omni setup"}</code></pre>
           <p>
-            The wizard detects credentials in your environment and prompts
-            for any that are missing. See{" "}
-            <Link href="/docs/build/models#credentials">Models &amp; Credentials</Link>{" "}
-            for the full reference.
+            The wizard detects credentials in your environment and prompts for
+            any that are missing. See{" "}
+            <Link href="/docs/build/models#credentials">Models &amp; Credentials</Link> for the
+            full reference.
           </p>
 
-          <h4>3. Start Polly</h4>
-          <pre><code>{"omni"}</code></pre>
+          <h2>Launch Debby</h2>
           <p>
-            This starts Polly and opens a web UI. Copy the URL from your
-            browser, remove the path so only the origin remains (e.g.{" "}
-            <code>http://localhost:6767</code>), then paste it into the
-            desktop app and start from there.
+            Try your install with Debby, a built-in multi-AI agent that sends every
+            question to both Claude and GPT and lets them debate.
+          </p>
+          <pre><code>{"omni debby"}</code></pre>
+
+          <h2>Connect the Desktop App</h2>
+          <p>
+            Open the downloaded app — it will ask for a server URL. The{" "}
+            <code>omni debby</code> command launches a web UI and prints the
+            server URL and port. By default this is{" "}
+            <code>http://localhost:6767</code>. If port 6767 is already taken,
+            the server will use the next available port — check the web UI
+            for the actual URL (e.g. <code>http://localhost:6768</code>).
+            Paste that into the desktop app to connect.
+          </p>
+          <p>
+            Now your desktop app is ready to use. Pick <strong>Debby</strong>{" "}
+            from the agent picker in the UI (along with other agents we have)
+            and ask something like{" "}
+            <code>What came first, the chicken or the egg?</code> and watch the
+            models challenge each other. See
+            the <Link href="/docs/use/builtin-agents/debby">Debby reference</Link>{" "}
+            for more.
+          </p>
+          <p>
+            This also works with a remote server. See{" "}
+            <Link href="/docs/deploy/overview">Shared Server</Link> to learn how to
+            deploy your own server.
           </p>
         </>
       )}
 
-      <h2>Launch Debby</h2>
-      <p>
-        Try your install with Debby, a built-in agent that sends every
-        question to both Claude and GPT and lets them debate.
-      </p>
-      {setup === "cli" ? (
-        <pre><code>{"omni debby"}</code></pre>
-      ) : (
-        <p>
-          Start a new session and select <strong>Debby</strong> from the agent
-          picker next to the message box.
-        </p>
-      )}
-      <p>
-        Ask something like{" "}
-        <code>What came first, the chicken or the egg?</code> and watch the
-        models challenge each other. See
-        the <Link href="/docs/use/builtin-agents/debby">Debby reference</Link>{" "}
-        for more.
-      </p>
 
-      <p style={{ color: "var(--fg-soft)", fontSize: "0.9rem" }}>
-        Native Windows support is not available yet. For now, run Omnigent inside{" "}
-        <a href="https://learn.microsoft.com/windows/wsl/install" target="_blank" rel="noopener noreferrer">
-          WSL2
-        </a>{" "}
-        (Windows Subsystem for Linux) and follow the Linux instructions from your WSL2 distribution.
-      </p>
     </>
   );
 }

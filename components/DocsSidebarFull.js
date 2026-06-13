@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
+import { useDocsSidebar } from "./DocsSidebarContext";
 
 const SECTIONS = [
   {
@@ -111,13 +112,11 @@ function allHrefs(section) {
 
 export default function DocsSidebarFull() {
   const path = usePathname();
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const { open: drawerOpen, close: closeDrawer } = useDocsSidebar();
 
   useEffect(() => {
-    setDrawerOpen(false);
-  }, [path]);
-
-  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+    closeDrawer();
+  }, [path, closeDrawer]);
 
   const [sectionOpen, setSectionOpen] = useState(() =>
     SECTIONS.reduce((acc, s, i) => {
@@ -142,17 +141,6 @@ export default function DocsSidebarFull() {
 
   return (
     <>
-      <button
-        className="docs-sidebar-toggle"
-        onClick={() => setDrawerOpen(true)}
-        aria-label="Open navigation"
-      >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <line x1="3" y1="5" x2="17" y2="5" />
-          <line x1="3" y1="10" x2="17" y2="10" />
-          <line x1="3" y1="15" x2="17" y2="15" />
-        </svg>
-      </button>
       {drawerOpen && <div className="docs-sidebar-backdrop" onClick={closeDrawer} />}
       <aside className={`docs-side ${drawerOpen ? "docs-side-open" : ""}`}>
       {SECTIONS.map((section, si) => {

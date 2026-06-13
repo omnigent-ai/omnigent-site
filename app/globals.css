@@ -890,6 +890,7 @@ figcaption {
 .docs-side a.active { background: var(--accent-soft); color: var(--accent-text); font-weight: 550; }
 .docs-sidebar-toggle { display: none; }
 .docs-sidebar-backdrop { display: none; }
+.nav-menu-toggle { display: none; }
 .docs-main { min-width: 0; }
 .docs-main h1 { font-size: 2.1rem; }
 .docs-main h2 { font-size: 1.5rem; }
@@ -1046,31 +1047,30 @@ figcaption {
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0;
     width: 16rem;
+    height: 100dvh;
     background: var(--bg);
     z-index: 100;
     overflow-y: auto;
-    padding: 1.5rem 1rem;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 1.5rem 1rem 5rem;
     transform: translateX(-100%);
     transition: transform 0.25s ease;
   }
   .docs-side.docs-side-open { transform: translateX(0); }
+  .nav-menu-toggle { display: flex; }
   .docs-sidebar-toggle {
     display: flex;
-    position: sticky;
-    top: 3.2rem;
-    z-index: 40;
-    margin: 0 0 1rem 0.5rem;
     padding: 0.4rem;
     border: 1px solid var(--border);
     border-radius: 6px;
     background: var(--bg);
     color: var(--fg);
     cursor: pointer;
-    width: fit-content;
   }
   .docs-sidebar-backdrop {
+    display: block;
     position: fixed;
     inset: 0;
     z-index: 99;

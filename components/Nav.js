@@ -2,10 +2,11 @@ import Link from "next/link";
 import { GitHubIcon, DiscordIcon } from "./icons";
 import { GITHUB_URL, DISCORD_URL } from "./links";
 
-export default function Nav() {
+export default function Nav({ menuToggle }) {
   return (
     <header className="nav">
       <div className="nav-inner">
+        {menuToggle && <div className="nav-menu-toggle">{menuToggle}</div>}
         <Link href="/" className="brand">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="theme-light-only" src="/images/logo.svg" alt="Omnigent" height={45} width={172} />

@@ -131,7 +131,7 @@ export default function Page() {
 
       <p><strong>Modal:</strong></p>
 
-      <pre><code>{"sandbox:\n  provider: modal\n  server_url: https://your-server.example.com\n  modal:\n    image: ghcr.io/omnigent/omnigent-host:latest  # optional, official image by default\n    secrets: [omnigent-llm]                        # Modal secrets with LLM API keys"}</code></pre>
+      <pre><code>{"sandbox:\n  provider: modal\n  server_url: https://your-server.example.com\n  modal:\n    image: ghcr.io/omnigent-ai/omnigent-host:latest  # optional, official image by default\n    secrets: [omnigent-llm]                        # Modal secrets with LLM API keys"}</code></pre>
 
       <p>
         <code>secrets</code> injects{" "}

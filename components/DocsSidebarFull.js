@@ -10,7 +10,7 @@ const SECTIONS = [
     pages: [
       { href: "/quickstart/install", label: "Install Omnigent" },
       { href: "/quickstart/coding-agent", label: "Tutorial: Coding Agent" },
-      { href: "/quickstart/polly", label: "Tutorial: Polly" },
+      { href: "/quickstart/polly", label: "Tutorial: Polly (Multi-AI Coding)" },
       { href: "/quickstart/collaborate", label: "Tutorial: Collaborate" },
       { href: "/quickstart/policies", label: "Tutorial: Contextual Policies" },
     ],

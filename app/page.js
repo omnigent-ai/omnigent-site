@@ -15,7 +15,6 @@ export default function Home() {
       <main>
         {/* Hero */}
         <section className="hero wrap">
-          <span className="tag">Open source · Alpha</span>
           <h1 className="hero-logo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

@@ -1042,6 +1042,10 @@ figcaption {
   .docs { grid-template-columns: 1fr; gap: 1.5rem; }
   .docs-side { position: static; }
   .docs-side ul { display: flex; flex-wrap: wrap; gap: 0.3rem; }
-  .nav-link.hide-sm { display: none; }
+  .nav-inner { padding: 0.35rem 1rem; gap: 0.5rem; }
+  .nav-links { gap: 0.1rem; }
+  .nav-link { padding: 0.4rem 0.45rem; font-size: 0.9rem; }
+  .nav-link + .nav-icon { margin-left: 0.25rem; }
+  .nav-icon { padding: 0.45rem; }
   .try-it .try-code { width: 100%; max-width: 100%; }
 }

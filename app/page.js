@@ -54,8 +54,8 @@ export default function Home() {
               className="hero-demo-img"
               src="/images/hero-demo.webp"
               alt="Omnigent web UI running two sub-agents in parallel on a shared session"
-              width={1651}
-              height={995}
+              width={3046}
+              height={2198}
             />
           </div>
         </section>

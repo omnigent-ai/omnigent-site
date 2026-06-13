@@ -281,9 +281,6 @@ hr {
 .hero-demo-img {
   display: block;
   width: 100%;
-  /* content width = exactly a quarter of the 3302px source, so 2x-retina
-     displays get a clean integer 2:1 downscale (no fractional resampling);
-     +2px absorbs the border under border-box */
   max-width: calc(825.5px + 2px);
   height: auto;
   margin: 0 auto;

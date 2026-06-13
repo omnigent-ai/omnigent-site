@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDocsSidebar } from "./DocsSidebarContext";
 
 const SECTIONS = [
   {
@@ -111,6 +112,11 @@ function allHrefs(section) {
 
 export default function DocsSidebarFull() {
   const path = usePathname();
+  const { open: drawerOpen, close: closeDrawer } = useDocsSidebar();
+
+  useEffect(() => {
+    closeDrawer();
+  }, [path, closeDrawer]);
 
   const [sectionOpen, setSectionOpen] = useState(() =>
     SECTIONS.reduce((acc, s, i) => {
@@ -134,7 +140,9 @@ export default function DocsSidebarFull() {
   });
 
   return (
-    <aside className="docs-side">
+    <>
+      {drawerOpen && <div className="docs-sidebar-backdrop" onClick={closeDrawer} />}
+      <aside className={`docs-side ${drawerOpen ? "docs-side-open" : ""}`}>
       {SECTIONS.map((section, si) => {
         const isOpen = sectionOpen[si];
 
@@ -220,5 +228,6 @@ export default function DocsSidebarFull() {
         );
       })}
     </aside>
+    </>
   );
 }

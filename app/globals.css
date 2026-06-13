@@ -888,6 +888,9 @@ figcaption {
 }
 .docs-side a:hover { background: var(--bg-soft); color: var(--fg); text-decoration: none; }
 .docs-side a.active { background: var(--accent-soft); color: var(--accent-text); font-weight: 550; }
+.docs-sidebar-toggle { display: none; }
+.docs-sidebar-backdrop { display: none; }
+.nav-menu-toggle { display: none; }
 .docs-main { min-width: 0; }
 .docs-main h1 { font-size: 2.1rem; }
 .docs-main h2 { font-size: 1.5rem; }
@@ -1039,9 +1042,40 @@ figcaption {
     object-position: center center;
   }
   .pillar-tablist { gap: 0.25rem 1.5rem; }
-  .docs { grid-template-columns: 1fr; gap: 1.5rem; }
-  .docs-side { position: static; }
-  .docs-side ul { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .docs { grid-template-columns: 1fr; gap: 0; padding-top: 1.5rem; }
+  .docs-side {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 16rem;
+    height: 100dvh;
+    background: var(--bg);
+    z-index: 100;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 1.5rem 1rem 5rem;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+  .docs-side.docs-side-open { transform: translateX(0); }
+  .nav-menu-toggle { display: flex; }
+  .docs-sidebar-toggle {
+    display: flex;
+    padding: 0.4rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+  }
+  .docs-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    background: rgba(0, 0, 0, 0.4);
+  }
   .nav-inner { padding: 0.35rem 1rem; gap: 0.5rem; }
   .nav-links { gap: 0.1rem; }
   .nav-link { padding: 0.4rem 0.45rem; font-size: 0.9rem; }

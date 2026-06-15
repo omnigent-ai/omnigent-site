@@ -904,13 +904,6 @@ figcaption {
   max-height: calc(100vh - 6rem);
   overflow-y: auto;
 }
-.docs-toc h4 {
-  font-size: 0.73rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--fg-soft);
-  margin: 0 0 0.4rem;
-}
 .docs-toc ul { list-style: none; margin: 0; padding: 0; }
 .docs-toc li { margin: 0; }
 .docs-toc a {

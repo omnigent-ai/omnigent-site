@@ -52,6 +52,16 @@ export default function TableOfContents() {
     if (items.length === 0) return;
 
     const onScroll = () => {
+      // A short final section can't scroll up to the threshold, so when we're
+      // at the bottom of the page force-select the last heading.
+      const atBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 2;
+      if (atBottom) {
+        setActiveId(items[items.length - 1].id);
+        return;
+      }
+
       let current = items[0].id;
       for (const { id } of items) {
         const el = document.getElementById(id);
@@ -70,7 +80,6 @@ export default function TableOfContents() {
 
   return (
     <nav className="docs-toc" aria-label="On this page">
-      <h4>On this page</h4>
       <ul>
         {items.map((item) => (
           <li key={item.id} className={item.level === 3 ? "toc-h3" : undefined}>

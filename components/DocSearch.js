@@ -26,6 +26,7 @@ export default function DocSearch({ variant = "header" }) {
   const [error, setError] = useState(false); // index unavailable (e.g. `next dev`)
   const pagefindRef = useRef(null);
   const inputRef = useRef(null);
+  const resultRefs = useRef([]);
   const mounted = useRef(false);
 
   useEffect(() => {
@@ -85,6 +86,12 @@ export default function DocSearch({ variant = "header" }) {
   useEffect(() => {
     runSearch(query);
   }, [query, runSearch]);
+
+  // Keep the keyboard-highlighted result scrolled into view. `block: "nearest"`
+  // is a no-op when the item is already visible, so mouse hover doesn't jump.
+  useEffect(() => {
+    resultRefs.current[active]?.scrollIntoView({ block: "nearest" });
+  }, [active, results]);
 
   const go = useCallback(
     (url) => {
@@ -173,6 +180,7 @@ export default function DocSearch({ variant = "header" }) {
                 {results.map((r, i) => (
                   <a
                     key={r.url}
+                    ref={(el) => (resultRefs.current[i] = el)}
                     href={r.url}
                     className={`docsearch-result ${i === active ? "is-active" : ""}`}
                     onMouseEnter={() => setActive(i)}

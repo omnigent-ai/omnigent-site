@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = pageMeta("Harnesses", "The harness is the runtime that executes your agent loop. Swap one line of YAML to switch between Claude, Codex, and other runtimes.", {
   eyebrow: "Build",
+  path: "/docs/build/harnesses",
 });
 
 export default function Page() {

@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = pageMeta("Custom Policies", "When built-in policies aren't enough, write your own in Python, register them on the server, and use them like builtins.", {
   eyebrow: "Policies",
+  path: "/docs/policies/custom",
 });
 
 export default function Page() {

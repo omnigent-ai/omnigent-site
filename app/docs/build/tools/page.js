@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = pageMeta("MCP & Tools", "Give your agent capabilities beyond conversation. Declare tools and MCP servers in your agent YAML, each with a name you choose.", {
   eyebrow: "Build",
+  path: "/docs/build/tools",
 });
 
 export default function Page() {

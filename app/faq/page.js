@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 
 export const metadata = pageMeta("FAQ", "Answers to common questions about Omnigent: what it is, how it works, and how to get started.", {
   eyebrow: "Help",
+  path: "/faq",
 });
 
 export default function Page() {

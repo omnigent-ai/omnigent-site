@@ -4,6 +4,7 @@ import ContentTabs from "@/components/ContentTabs";
 
 export const metadata = pageMeta("Tutorial: Polly (Multi-AI Coding)", "Tutorial: see Polly in practice, a multi-agent coding orchestrator that delegates sub-tasks across AI agents with built-in cross-vendor review.", {
   eyebrow: "Quickstart",
+  path: "/quickstart/polly",
 });
 
 export default function Page() {

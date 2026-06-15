@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = pageMeta("Mobile", "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.", {
   eyebrow: "Interact",
+  path: "/docs/interact/mobile",
 });
 
 export default function Page() {

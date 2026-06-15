@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = pageMeta("Shared Server", "Deploy the Omnigent server so your agents are reachable from your phone, shareable with teammates, and running while your laptop sleeps.", {
   eyebrow: "Deploy",
+  path: "/docs/deploy/overview",
 });
 
 export default function Page() {

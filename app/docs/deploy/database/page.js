@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = pageMeta("Database", "The Omnigent server persists session history, accounts, and artifacts. Choose between Postgres and SQLite, with the same schema and migrations.", {
   eyebrow: "Deploy",
+  path: "/docs/deploy/database",
 });
 
 export default function Page() {

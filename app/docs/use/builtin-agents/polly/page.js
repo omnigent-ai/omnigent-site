@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = pageMeta("Polly", "Polly is a supervisor that delegates sub-tasks to sub-agents on separate harnesses and worktrees, with cross-agent review and human-decided merges.", {
   eyebrow: "Use Cases",
+  path: "/docs/use/builtin-agents/polly",
 });
 
 export default function Page() {

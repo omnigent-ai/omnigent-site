@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = pageMeta("Web UI", "The Omnigent web UI starts automatically with every session; open the printed URL in any browser to work with your agent.", {
   eyebrow: "Interact",
+  path: "/docs/interact/web-ui",
 });
 
 export default function Page() {

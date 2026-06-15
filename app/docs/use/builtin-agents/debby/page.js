@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = pageMeta("Debby", "Debby asks two models the same question and runs a multi-round debate where each critiques and refines the other's answer.", {
   eyebrow: "Use Cases",
+  path: "/docs/use/builtin-agents/debby",
 });
 
 export default function Page() {

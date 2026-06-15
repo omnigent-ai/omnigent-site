@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = pageMeta("Omnibox (OS Sandbox)", "Omnibox is Omnigent's secure OS sandbox: restrict filesystem and network access and hide credentials for unattended, locked-down agents.", {
   eyebrow: "Policies",
+  path: "/docs/policies/os-sandbox",
 });
 
 export default function Page() {

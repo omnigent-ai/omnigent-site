@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = pageMeta("Builtin Policies", "Built-in Omnigent policies for common safety and cost-control guardrails. Apply them by name or reference them in YAML.", {
   eyebrow: "Policies",
+  path: "/docs/policies/builtin",
 });
 
 export default function Page() {

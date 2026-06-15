@@ -6,6 +6,7 @@ import HeadingAnchors from "@/components/HeadingAnchors";
 import PrevNextNav from "@/components/PrevNextNav";
 import { DocsSidebarProvider } from "@/components/DocsSidebarContext";
 import DocsSidebarToggle from "@/components/DocsSidebarToggle";
+import TableOfContents from "@/components/TableOfContents";
 
 export default function DocsLayout({ children }) {
   return (
@@ -19,6 +20,7 @@ export default function DocsLayout({ children }) {
           <CopyCodeButtons />
           <HeadingAnchors />
         </article>
+        <TableOfContents />
       </div>
       <Footer />
     </DocsSidebarProvider>

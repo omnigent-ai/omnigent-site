@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Models & Credentials" };
+export const metadata = {
+  title: "Models & Credentials",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Declare your model in agent YAML and let Omnigent manage the credentials that authenticate to each provider.",
+};
 
 const providerLogoStyle = {
   display: "inline",

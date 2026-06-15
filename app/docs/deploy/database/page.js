@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Database" };
+export const metadata = {
+  title: "Database",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "The Omnigent server persists session history, accounts, and artifacts. Choose between Postgres and SQLite, with the same schema and migrations.",
+};
 
 export default function Page() {
   return (

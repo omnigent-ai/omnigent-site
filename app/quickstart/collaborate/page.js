@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Tutorial: Collaborate from Anywhere" };
+export const metadata = {
+  title: "Tutorial: Collaborate from Anywhere",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Tutorial: deploy a server to access agents from your phone, share live sessions with teammates, and run agents on cloud sandbox hosts.",
+};
 
 export default function Page() {
   return (

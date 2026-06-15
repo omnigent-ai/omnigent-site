@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Coding Agents" };
+export const metadata = {
+  title: "Coding Agents",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Run Claude Code or Codex through Omnigent with one command and get a web UI, persistent sessions, collaboration, mobile, and policies.",
+};
 
 export default function Page() {
   return (

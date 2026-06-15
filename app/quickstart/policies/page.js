@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Tutorial: Contextual Policies" };
+export const metadata = {
+  title: "Tutorial: Contextual Policies",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Tutorial: attach context-aware policies to a live session to warn on spend, pause for approval, or block risky actions, with no code required.",
+};
 
 export default function Page() {
   return (

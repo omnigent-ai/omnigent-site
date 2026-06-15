@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Pair Programming" };
+export const metadata = {
+  title: "Pair Programming",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Omnigent is multi-user: share a live session by link, let a teammate co-drive, or fork a conversation across terminal, web, and mobile.",
+};
 
 export default function Page() {
   return (

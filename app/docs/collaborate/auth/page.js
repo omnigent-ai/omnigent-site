@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Auth & SSO" };
+export const metadata = {
+  title: "Auth & SSO",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Authenticate users in Omnigent three ways. Pick the approach that fits your setup, from simple tokens to full SSO.",
+};
 
 export default function Page() {
   return (

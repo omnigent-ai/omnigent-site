@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Custom Policies" };
+export const metadata = {
+  title: "Custom Policies",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "When built-in policies aren't enough, write your own in Python, register them on the server, and use them like builtins.",
+};
 
 export default function Page() {
   return (

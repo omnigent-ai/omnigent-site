@@ -1,8 +1,10 @@
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://omnigent.ai";
+
 export const metadata = {
-  metadataBase: new URL("https://omnigent.ai"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Omnigent — a meta-harness for building and running AI agents",
     template: "%s · Omnigent",
@@ -10,10 +12,23 @@ export const metadata = {
   description:
     "Omnigent is an open-source meta-harness: a common layer for composing, governing, and collaborating on AI agents — coding and otherwise — on top of the harnesses you already use.",
   openGraph: {
-    title: "Omnigent",
-    description:
-      "An open-source meta-harness for building and running AI agents. Compose harnesses, govern them with policies, and share live sessions.",
+    // title/description intentionally omitted so they fall back to each page's
+    // resolved (templated) title + description, making child-page cards specific.
+    url: siteUrl,
+    siteName: "Omnigent",
     type: "website",
+    images: [
+      {
+        url: `${siteUrl}/images/omnigent-social-card.png`,
+        width: 1200,
+        height: 630,
+        alt: "Omnigent — a meta-harness for AI agents",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [`${siteUrl}/images/omnigent-social-card.png`],
   },
   icons: {
     icon: "/images/favicon.svg",

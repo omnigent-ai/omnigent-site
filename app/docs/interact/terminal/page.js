@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Terminal" };
+export const metadata = {
+  title: "Terminal",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Omnigent's keyboard-first default interface, with streaming output and real-time tool execution for people who live in the terminal.",
+};
 
 export default function Page() {
   return (

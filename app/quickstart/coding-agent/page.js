@@ -1,7 +1,12 @@
 import Link from "next/link";
 import ContentTabs from "@/components/ContentTabs";
 
-export const metadata = { title: "Tutorial: Coding Agent" };
+export const metadata = {
+  title: "Tutorial: Coding Agent",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Tutorial: see what Omnigent adds on top of Claude Code or Codex, including a web UI, mobile access, session sharing, and mid-conversation agent switching.",
+};
 
 export default function Page() {
   return (

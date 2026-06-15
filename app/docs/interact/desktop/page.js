@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { MACOS_DOWNLOAD_URL } from "@/components/links";
 
-export const metadata = { title: "Desktop App" };
+export const metadata = {
+  title: "Desktop App",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "The Omnigent desktop app brings the full web UI to a native window, with notifications, a dock badge, and multiple windows.",
+};
 
 export default function Page() {
   return (

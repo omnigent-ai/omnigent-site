@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Prompts & Skills" };
+export const metadata = {
+  title: "Prompts & Skills",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Shape agent behavior with system prompts, and extend it with skills: reusable instruction sets the agent loads on demand.",
+};
 
 export default function Page() {
   return (

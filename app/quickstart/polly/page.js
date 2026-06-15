@@ -1,7 +1,12 @@
 import Link from "next/link";
 import ContentTabs from "@/components/ContentTabs";
 
-export const metadata = { title: "Tutorial: Polly (Multi-AI Coding)" };
+export const metadata = {
+  title: "Tutorial: Polly (Multi-AI Coding)",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Tutorial: see Polly in practice, a multi-agent coding orchestrator that delegates sub-tasks across AI agents with built-in cross-vendor review.",
+};
 
 export default function Page() {
   return (

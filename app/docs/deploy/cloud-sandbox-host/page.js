@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Cloud Sandbox Host" };
+export const metadata = {
+  title: "Cloud Sandbox Host",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Move the Omnigent runner from your laptop to a remote container so your agent keeps working in an isolated cloud environment.",
+};
 
 export default function Page() {
   return (

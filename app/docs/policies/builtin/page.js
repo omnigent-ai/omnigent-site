@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Builtin Policies" };
+export const metadata = {
+  title: "Builtin Policies",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Built-in Omnigent policies for common safety and cost-control guardrails. Apply them by name or reference them in YAML.",
+};
 
 export default function Page() {
   return (

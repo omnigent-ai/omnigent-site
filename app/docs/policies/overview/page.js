@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Contextual Policies" };
+export const metadata = {
+  title: "Contextual Policies",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Policies control what your Omnigent can do, intercepting every action to allow, ask for approval, or deny it in real time.",
+};
 
 export default function Page() {
   return (

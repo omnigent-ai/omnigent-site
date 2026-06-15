@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Built-in Multi-AI Agents" };
+export const metadata = {
+  title: "Built-in Multi-AI Agents",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Omnigent ships with multi-agent orchestrators that combine different AI agents into a single workflow, ready to run out of the box.",
+};
 
 export default function Page() {
   return (

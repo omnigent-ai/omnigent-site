@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Omnibox" };
+export const metadata = {
+  title: "Omnibox",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Omnibox is Omnigent's secure OS-level sandbox that wraps any agent to run it unattended without exposing your credentials, files, or network.",
+};
 
 export default function Page() {
   return (

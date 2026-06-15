@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "Debby" };
+export const metadata = {
+  title: "Debby",
+  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
+  description:
+    "Debby asks two models the same question and runs a multi-round debate where each critiques and refines the other's answer.",
+};
 
 export default function Page() {
   return (

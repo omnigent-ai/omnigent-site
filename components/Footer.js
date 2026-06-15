@@ -14,17 +14,17 @@ export default function Footer() {
         <span className="spacer" />
         <Link href="/quickstart/install">Get Started</Link>
         <Link href="/docs/use/coding-agents">Docs</Link>
-        <a href={DISCORD_URL} target="_blank" rel="noreferrer">
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
-            <DiscordIcon size={15} /> Discord
-          </span>
-        </a>
         <a href={GITHUB_URL} target="_blank" rel="noreferrer">
           <span style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
             <GitHubIcon size={15} /> GitHub
           </span>
         </a>
-        <span className="muted">Apache 2.0 · Alpha</span>
+        <a href={DISCORD_URL} target="_blank" rel="noreferrer">
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+            <DiscordIcon size={15} /> Discord
+          </span>
+        </a>
+        <span className="muted">Apache 2.0</span>
       </div>
     </footer>
   );

@@ -24,7 +24,7 @@ export default function Footer() {
             <GitHubIcon size={15} /> GitHub
           </span>
         </a>
-        <span className="muted">Apache 2.0 · Alpha</span>
+        <span className="muted">Apache 2.0</span>
       </div>
     </footer>
   );

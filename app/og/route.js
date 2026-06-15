@@ -129,6 +129,10 @@ export async function GET(request) {
         { name: "Inter", data: fontRegular, weight: 400, style: "normal" },
         { name: "Inter", data: fontBold, weight: 700, style: "normal" },
       ],
+      // ImageResponse defaults to `Cache-Control: public, immutable,
+      // max-age=31536000` in production, so Vercel's CDN renders each unique
+      // card (title/desc/eyebrow) once and serves every later scrape from the
+      // edge cache — no per-request regeneration.
     }
   );
 }

@@ -865,6 +865,10 @@ figcaption {
 }
 .docs-side {
   align-self: start;
+  position: sticky;
+  top: calc(var(--nav-h) + 1rem);
+  max-height: calc(100svh - var(--nav-h) - 1rem);
+  overflow-y: auto;
 }
 .docs-side h4 {
   font-size: 0.73rem;

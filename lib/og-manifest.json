@@ -1,0 +1,147 @@
+{
+  "/docs/build/harnesses": {
+    "title": "Harnesses",
+    "description": "The harness is the runtime that executes your agent loop. Swap one line of YAML to switch between Claude, Codex, and other runtimes.",
+    "eyebrow": "Build"
+  },
+  "/docs/build/models": {
+    "title": "Models & Credentials",
+    "description": "Declare your model in agent YAML and let Omnigent manage the credentials that authenticate to each provider.",
+    "eyebrow": "Build"
+  },
+  "/docs/build/prompts": {
+    "title": "Prompts & Skills",
+    "description": "Shape agent behavior with system prompts, and extend it with skills: reusable instruction sets the agent loads on demand.",
+    "eyebrow": "Build"
+  },
+  "/docs/build/tools": {
+    "title": "MCP & Tools",
+    "description": "Give your agent capabilities beyond conversation. Declare tools and MCP servers in your agent YAML, each with a name you choose.",
+    "eyebrow": "Build"
+  },
+  "/docs/collaborate/auth": {
+    "title": "Auth & SSO",
+    "description": "Authenticate users in Omnigent three ways. Pick the approach that fits your setup, from simple tokens to full SSO.",
+    "eyebrow": "Collaborate"
+  },
+  "/docs/collaborate": {
+    "title": "Pair Programming",
+    "description": "Omnigent is multi-user: share a live session by link, let a teammate co-drive, or fork a conversation across terminal, web, and mobile.",
+    "eyebrow": "Collaborate"
+  },
+  "/docs/deploy/cloud-sandbox-host": {
+    "title": "Cloud Sandbox Host",
+    "description": "Move the Omnigent runner from your laptop to a remote container so your agent keeps working in an isolated cloud environment.",
+    "eyebrow": "Deploy"
+  },
+  "/docs/deploy/database": {
+    "title": "Database",
+    "description": "The Omnigent server persists session history, accounts, and artifacts. Choose between Postgres and SQLite, with the same schema and migrations.",
+    "eyebrow": "Deploy"
+  },
+  "/docs/deploy/overview": {
+    "title": "Shared Server",
+    "description": "Deploy the Omnigent server so your agents are reachable from your phone, shareable with teammates, and running while your laptop sleeps.",
+    "eyebrow": "Deploy"
+  },
+  "/docs/interact/desktop": {
+    "title": "Desktop App",
+    "description": "The Omnigent desktop app brings the full web UI to a native window, with notifications, a dock badge, and multiple windows.",
+    "eyebrow": "Interact"
+  },
+  "/docs/interact/mobile": {
+    "title": "Mobile",
+    "description": "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.",
+    "eyebrow": "Interact"
+  },
+  "/docs/interact/terminal": {
+    "title": "Terminal",
+    "description": "Omnigent's keyboard-first default interface, with streaming output and real-time tool execution for people who live in the terminal.",
+    "eyebrow": "Interact"
+  },
+  "/docs/interact/web-ui": {
+    "title": "Web UI",
+    "description": "The Omnigent web UI starts automatically with every session; open the printed URL in any browser to work with your agent.",
+    "eyebrow": "Interact"
+  },
+  "/docs/omnibox": {
+    "title": "Omnibox",
+    "description": "Omnibox is Omnigent's secure OS-level sandbox that wraps any agent to run it unattended without exposing your credentials, files, or network.",
+    "eyebrow": "Security"
+  },
+  "/docs/policies/builtin": {
+    "title": "Builtin Policies",
+    "description": "Built-in Omnigent policies for common safety and cost-control guardrails. Apply them by name or reference them in YAML.",
+    "eyebrow": "Policies"
+  },
+  "/docs/policies/custom": {
+    "title": "Custom Policies",
+    "description": "When built-in policies aren't enough, write your own in Python, register them on the server, and use them like builtins.",
+    "eyebrow": "Policies"
+  },
+  "/docs/policies/os-sandbox": {
+    "title": "Omnibox (OS Sandbox)",
+    "description": "Omnibox is Omnigent's secure OS sandbox: restrict filesystem and network access and hide credentials for unattended, locked-down agents.",
+    "eyebrow": "Policies"
+  },
+  "/docs/policies/overview": {
+    "title": "Contextual Policies",
+    "description": "Policies control what your Omnigent can do, intercepting every action to allow, ask for approval, or deny it in real time.",
+    "eyebrow": "Policies"
+  },
+  "/docs/use/builtin-agents/debby": {
+    "title": "Debby",
+    "description": "Debby asks two models the same question and runs a multi-round debate where each critiques and refines the other's answer.",
+    "eyebrow": "Use Cases"
+  },
+  "/docs/use/builtin-agents": {
+    "title": "Built-in Multi-AI Agents",
+    "description": "Omnigent ships with multi-agent orchestrators that combine different AI agents into a single workflow, ready to run out of the box.",
+    "eyebrow": "Use Cases"
+  },
+  "/docs/use/builtin-agents/polly": {
+    "title": "Polly",
+    "description": "Polly is a supervisor that delegates sub-tasks to sub-agents on separate harnesses and worktrees, with cross-agent review and human-decided merges.",
+    "eyebrow": "Use Cases"
+  },
+  "/docs/use/coding-agents": {
+    "title": "Coding Agents",
+    "description": "Run Claude Code or Codex through Omnigent with one command and get a web UI, persistent sessions, collaboration, mobile, and policies.",
+    "eyebrow": "Use Cases"
+  },
+  "/docs/use/custom-agents": {
+    "title": "Custom Agents",
+    "description": "Define a custom agent in a short YAML file, with no code or frameworks, and get the full Omnigent platform around it.",
+    "eyebrow": "Use Cases"
+  },
+  "/faq": {
+    "title": "FAQ",
+    "description": "Answers to common questions about Omnigent: what it is, how it works, and how to get started.",
+    "eyebrow": "Help"
+  },
+  "/quickstart/coding-agent": {
+    "title": "Tutorial: Coding Agent",
+    "description": "Tutorial: see what Omnigent adds on top of Claude Code or Codex, including a web UI, mobile access, session sharing, and mid-conversation agent switching.",
+    "eyebrow": "Quickstart"
+  },
+  "/quickstart/collaborate": {
+    "title": "Tutorial: Collaborate from Anywhere",
+    "description": "Tutorial: deploy a server to access agents from your phone, share live sessions with teammates, and run agents on cloud sandbox hosts.",
+    "eyebrow": "Quickstart"
+  },
+  "/quickstart/install": {
+    "title": "Install",
+    "description": "Install the Omnigent CLI with a single command — via the installer script, uv, pip, or Homebrew — and grab the macOS desktop app.",
+    "eyebrow": "Quickstart"
+  },
+  "/quickstart/policies": {
+    "title": "Tutorial: Contextual Policies",
+    "description": "Tutorial: attach context-aware policies to a live session to warn on spend, pause for approval, or block risky actions, with no code required.",
+    "eyebrow": "Quickstart"
+  },
+  "/quickstart/polly": {
+    "title": "Tutorial: Polly (Multi-AI Coding)",
+    "description": "Tutorial: see Polly in practice, a multi-agent coding orchestrator that delegates sub-tasks across AI agents with built-in cross-vendor review.",
+    "eyebrow": "Quickstart"
+  }
+}

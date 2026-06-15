@@ -1,6 +1,10 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = { title: "Custom Agents" };
+export const metadata = pageMeta("Custom Agents", "Define a custom agent in a short YAML file, with no code or frameworks, and get the full Omnigent platform around it.", {
+  eyebrow: "Use Cases",
+  path: "/docs/use/custom-agents",
+});
 
 export default function Page() {
   return (

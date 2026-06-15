@@ -1,6 +1,10 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = { title: "Terminal" };
+export const metadata = pageMeta("Terminal", "Omnigent's keyboard-first default interface, with streaming output and real-time tool execution for people who live in the terminal.", {
+  eyebrow: "Interact",
+  path: "/docs/interact/terminal",
+});
 
 export default function Page() {
   return (

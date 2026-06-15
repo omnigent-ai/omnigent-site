@@ -1,7 +1,11 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 import { MACOS_DOWNLOAD_URL } from "@/components/links";
 
-export const metadata = { title: "Desktop App" };
+export const metadata = pageMeta("Desktop App", "The Omnigent desktop app brings the full web UI to a native window, with notifications, a dock badge, and multiple windows.", {
+  eyebrow: "Interact",
+  path: "/docs/interact/desktop",
+});
 
 export default function Page() {
   return (

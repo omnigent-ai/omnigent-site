@@ -1,6 +1,10 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = { title: "Tutorial: Contextual Policies" };
+export const metadata = pageMeta("Tutorial: Contextual Policies", "Tutorial: attach context-aware policies to a live session to warn on spend, pause for approval, or block risky actions, with no code required.", {
+  eyebrow: "Quickstart",
+  path: "/quickstart/policies",
+});
 
 export default function Page() {
   return (

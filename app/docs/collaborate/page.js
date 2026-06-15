@@ -1,6 +1,10 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = { title: "Pair Programming" };
+export const metadata = pageMeta("Pair Programming", "Omnigent is multi-user: share a live session by link, let a teammate co-drive, or fork a conversation across terminal, web, and mobile.", {
+  eyebrow: "Collaborate",
+  path: "/docs/collaborate",
+});
 
 export default function Page() {
   return (

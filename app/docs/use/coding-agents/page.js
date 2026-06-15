@@ -1,6 +1,10 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = { title: "Coding Agents" };
+export const metadata = pageMeta("Coding Agents", "Run Claude Code or Codex through Omnigent with one command and get a web UI, persistent sessions, collaboration, mobile, and policies.", {
+  eyebrow: "Use Cases",
+  path: "/docs/use/coding-agents",
+});
 
 export default function Page() {
   return (

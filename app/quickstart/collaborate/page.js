@@ -1,6 +1,10 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = { title: "Tutorial: Collaborate from Anywhere" };
+export const metadata = pageMeta("Tutorial: Collaborate from Anywhere", "Tutorial: deploy a server to access agents from your phone, share live sessions with teammates, and run agents on cloud sandbox hosts.", {
+  eyebrow: "Quickstart",
+  path: "/quickstart/collaborate",
+});
 
 export default function Page() {
   return (

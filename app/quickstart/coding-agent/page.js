@@ -1,7 +1,11 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 import ContentTabs from "@/components/ContentTabs";
 
-export const metadata = { title: "Tutorial: Coding Agent" };
+export const metadata = pageMeta("Tutorial: Coding Agent", "Tutorial: see what Omnigent adds on top of Claude Code or Codex, including a web UI, mobile access, session sharing, and mid-conversation agent switching.", {
+  eyebrow: "Quickstart",
+  path: "/quickstart/coding-agent",
+});
 
 export default function Page() {
   return (

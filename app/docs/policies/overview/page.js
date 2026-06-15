@@ -1,6 +1,10 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = { title: "Contextual Policies" };
+export const metadata = pageMeta("Contextual Policies", "Policies control what your Omnigent can do, intercepting every action to allow, ask for approval, or deny it in real time.", {
+  eyebrow: "Policies",
+  path: "/docs/policies/overview",
+});
 
 export default function Page() {
   return (

@@ -1,6 +1,10 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = { title: "Cloud Sandbox Host" };
+export const metadata = pageMeta("Cloud Sandbox Host", "Move the Omnigent runner from your laptop to a remote container so your agent keeps working in an isolated cloud environment.", {
+  eyebrow: "Deploy",
+  path: "/docs/deploy/cloud-sandbox-host",
+});
 
 export default function Page() {
   return (

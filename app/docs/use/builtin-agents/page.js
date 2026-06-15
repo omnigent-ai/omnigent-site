@@ -1,6 +1,10 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = { title: "Built-in Multi-AI Agents" };
+export const metadata = pageMeta("Built-in Multi-AI Agents", "Omnigent ships with multi-agent orchestrators that combine different AI agents into a single workflow, ready to run out of the box.", {
+  eyebrow: "Use Cases",
+  path: "/docs/use/builtin-agents",
+});
 
 export default function Page() {
   return (

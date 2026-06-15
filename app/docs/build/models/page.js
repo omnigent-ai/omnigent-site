@@ -1,6 +1,10 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = { title: "Models & Credentials" };
+export const metadata = pageMeta("Models & Credentials", "Declare your model in agent YAML and let Omnigent manage the credentials that authenticate to each provider.", {
+  eyebrow: "Build",
+  path: "/docs/build/models",
+});
 
 const providerLogoStyle = {
   display: "inline",

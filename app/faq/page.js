@@ -1,8 +1,12 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 
-export const metadata = { title: "FAQ" };
+export const metadata = pageMeta("FAQ", "Answers to common questions about Omnigent: what it is, how it works, and how to get started.", {
+  eyebrow: "Help",
+  path: "/faq",
+});
 
 export default function Page() {
   return (

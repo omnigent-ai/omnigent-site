@@ -1,6 +1,10 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = { title: "Prompts & Skills" };
+export const metadata = pageMeta("Prompts & Skills", "Shape agent behavior with system prompts, and extend it with skills: reusable instruction sets the agent loads on demand.", {
+  eyebrow: "Build",
+  path: "/docs/build/prompts",
+});
 
 export default function Page() {
   return (

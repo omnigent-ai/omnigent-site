@@ -6,7 +6,7 @@
   "scripts": {
     "og:manifest": "node scripts/gen-og-manifest.mjs",
     "dev": "node scripts/gen-og-manifest.mjs && next dev",
-    "build": "node scripts/gen-og-manifest.mjs && next build",
+    "build": "node scripts/gen-og-manifest.mjs && next build && node scripts/build-search-index.mjs",
     "start": "next start",
     "lint": "next lint",
     "lint:links": "node scripts/check-links.mjs",
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "eslint": "8.57.1",
-    "eslint-config-next": "14.2.35"
+    "eslint-config-next": "14.2.35",
+    "pagefind": "^1.5.2"
   }
 }

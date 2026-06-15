@@ -1112,4 +1112,153 @@ figcaption {
   .nav-link + .nav-icon { margin-left: 0.25rem; }
   .nav-icon { padding: 0.45rem; }
   .try-it .try-code { width: 100%; max-width: 100%; }
+  /* Collapse header search to an icon-only button to save space. */
+  .docsearch-trigger--header {
+    padding: 0.45rem;
+    margin-left: 0.1rem;
+  }
+  .docsearch-trigger--header .docsearch-trigger-label,
+  .docsearch-trigger--header .docsearch-kbd {
+    display: none;
+  }
+}
+
+/* ---- Doc search (header trigger + ⌘K modal) ---- */
+.docsearch-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--fg-soft);
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.docsearch-trigger:hover {
+  border-color: var(--border-strong);
+  background: var(--bg);
+  color: var(--fg);
+}
+.docsearch-trigger svg { color: currentColor; flex-shrink: 0; }
+.docsearch-trigger-label { text-align: left; }
+
+/* Header variant: compact pill sitting at the right end of the nav. */
+.docsearch-trigger--header {
+  padding: 0.38rem 0.5rem 0.38rem 0.6rem;
+  margin-left: 0.4rem;
+}
+.docsearch-trigger--header .docsearch-trigger-label { min-width: 6rem; }
+
+/* Sidebar variant: full-width box. */
+.docsearch-trigger--sidebar {
+  width: 100%;
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius);
+}
+.docsearch-trigger--sidebar .docsearch-trigger-label { flex: 1; }
+
+.docsearch-kbd {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--fg-soft);
+}
+
+.docsearch-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(21, 19, 26, 0.45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12vh 1rem 1rem;
+}
+.docsearch-modal {
+  width: 100%;
+  max-width: 38rem;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 60px rgba(21, 19, 26, 0.3);
+  overflow: hidden;
+}
+.docsearch-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.docsearch-input-row svg { color: var(--fg-soft); flex-shrink: 0; }
+.docsearch-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--fg);
+  font-size: 1rem;
+  font-family: inherit;
+}
+.docsearch-results {
+  overflow-y: auto;
+  padding: 0.4rem;
+}
+.docsearch-empty {
+  color: var(--fg-soft);
+  text-align: center;
+  padding: 1.5rem 1rem;
+  font-size: 0.9rem;
+}
+.docsearch-result {
+  display: block;
+  padding: 0.6rem 0.75rem;
+  border-radius: 9px;
+  text-decoration: none;
+  color: var(--fg);
+}
+.docsearch-result.is-active {
+  background: var(--accent-soft);
+}
+.docsearch-result-title {
+  display: block;
+  font-weight: 600;
+  font-size: 0.92rem;
+  margin-bottom: 0.15rem;
+}
+.docsearch-result.is-active .docsearch-result-title { color: var(--accent-text); }
+.docsearch-result-excerpt {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--fg-soft);
+  line-height: 1.4;
+}
+.docsearch-result-excerpt mark {
+  background: transparent;
+  color: var(--accent-text);
+  font-weight: 600;
+}
+.docsearch-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 0.6rem 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--fg-soft);
+}
+@media (max-width: 600px) {
+  .docsearch-footer { display: none; }
+  .docsearch-overlay { padding-top: 6vh; }
 }

@@ -2,6 +2,7 @@
 /.next
 /out
 /build
+/public/pagefind
 .DS_Store
 *.pem
 .env*.local

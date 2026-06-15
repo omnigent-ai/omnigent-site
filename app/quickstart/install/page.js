@@ -30,7 +30,6 @@ function AppleLogo() {
 }
 
 export default function Page() {
-  const [setup, setSetup] = useState("cli");
   const [cliTab, setCliTab] = useState(0);
   const [origin, setOrigin] = useState("https://omnigent.ai");
   useEffect(() => {
@@ -42,137 +41,90 @@ export default function Page() {
     <>
       <h1>Install</h1>
 
-      <div className="setup-tabs setup-tabs--full">
-        <button className={`setup-tab${setup === "cli" ? " active" : ""}`} onClick={() => setSetup("cli")}>
-          CLI
-        </button>
-        <button className={`setup-tab${setup === "app" ? " active" : ""}`} onClick={() => setSetup("app")}>
-          Desktop App
-        </button>
+      <p>
+        Get Omnigent running in a few minutes. Install the CLI, set up your
+        credentials, and launch your first agent. Once it&apos;s running you can
+        add the native macOS app for a full UI &mdash; it&apos;s the last step
+        of this same flow.
+      </p>
+
+      <h2>Requirements</h2>
+      <ul>
+        <li><strong>Python 3.12+</strong></li>
+        <li><strong>Node.js 22 LTS</strong> and npm</li>
+        <li><strong>tmux</strong></li>
+      </ul>
+
+      <h2>Install Omnigent</h2>
+
+      <div className="tabbed-code">
+        <div className="tab-bar">
+          {CLI_TABS.map((t, i) => (
+            <button key={t.label} onClick={() => setCliTab(i)} className={cliTab === i ? "active" : ""}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <pre><code>{CLI_TABS[cliTab].code}</code></pre>
       </div>
 
-      {setup === "cli" && (
-        <>
-          <h2>Requirements</h2>
-          <ul>
-            <li><strong>Python 3.12+</strong></li>
-            <li><strong>Node.js 22 LTS</strong> and npm</li>
-            <li><strong>tmux</strong></li>
-          </ul>
+      <p>Run the same command to upgrade an existing installation.</p>
 
-          <h2>Install Omnigent</h2>
+      <h2>Set up credentials</h2>
+      <pre><code>{"omni setup"}</code></pre>
+      <p>
+        The wizard detects credentials in your environment and prompts for
+        any that are missing. See{" "}
+        <Link href="/docs/build/models#credentials">Models &amp; Credentials</Link> for the
+        full reference.
+      </p>
 
-          <div className="tabbed-code">
-            <div className="tab-bar">
-              {CLI_TABS.map((t, i) => (
-                <button key={t.label} onClick={() => setCliTab(i)} className={cliTab === i ? "active" : ""}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-            <pre><code>{CLI_TABS[cliTab].code}</code></pre>
-          </div>
+      <h2>Launch Debby</h2>
+      <p>
+        Try your install with Debby, a built-in multi-AI agent that sends every
+        question to both Claude and GPT and lets them debate.
+      </p>
+      <pre><code>{"omni debby"}</code></pre>
+      <p>
+        This launches a web UI and prints the server URL and port. Ask something
+        like <code>What came first, the chicken or the egg?</code> and watch the
+        models challenge each other. See
+        the <Link href="/docs/use/builtin-agents/debby">Debby reference</Link>{" "}
+        for more.
+      </p>
 
-          <p>Run the same command to upgrade an existing installation.</p>
-
-          <h2>Set up credentials</h2>
-          <pre><code>{"omni setup"}</code></pre>
-          <p>
-            The wizard detects credentials in your environment and prompts for
-            any that are missing. See{" "}
-            <Link href="/docs/build/models#credentials">Models &amp; Credentials</Link> for the
-            full reference.
-          </p>
-
-          <h2>Launch Debby</h2>
-          <p>
-            Try your install with Debby, a built-in multi-AI agent that sends every
-            question to both Claude and GPT and lets them debate.
-          </p>
-          <pre><code>{"omni debby"}</code></pre>
-          <p>
-            Ask something like{" "}
-            <code>What came first, the chicken or the egg?</code> and watch the
-            models challenge each other. See
-            the <Link href="/docs/use/builtin-agents/debby">Debby reference</Link>{" "}
-            for more.
-          </p>
-        </>
-      )}
-
-      {setup === "app" && (
-        <>
-          <p>
-            Download the native macOS app for a full UI, session history, and
-            the ability to connect to a local or remote server.
-          </p>
-
-          <p>
-            <a href={MACOS_DOWNLOAD_URL} className="btn btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
-              <AppleLogo />
-              Download macOS App
-            </a>
-          </p>
-
-          <h2>Install Omnigent</h2>
-
-          <div className="tabbed-code">
-            <div className="tab-bar">
-              {CLI_TABS.map((t, i) => (
-                <button key={t.label} onClick={() => setCliTab(i)} className={cliTab === i ? "active" : ""}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-            <pre><code>{CLI_TABS[cliTab].code}</code></pre>
-          </div>
-
-          <p>Run the same command to upgrade an existing installation.</p>
-
-          <h2>Set up credentials</h2>
-          <pre><code>{"omni setup"}</code></pre>
-          <p>
-            The wizard detects credentials in your environment and prompts for
-            any that are missing. See{" "}
-            <Link href="/docs/build/models#credentials">Models &amp; Credentials</Link> for the
-            full reference.
-          </p>
-
-          <h2>Launch Debby</h2>
-          <p>
-            Try your install with Debby, a built-in multi-AI agent that sends every
-            question to both Claude and GPT and lets them debate.
-          </p>
-          <pre><code>{"omni debby"}</code></pre>
-
-          <h2>Connect the Desktop App</h2>
-          <p>
-            Open the downloaded app — it will ask for a server URL. The{" "}
-            <code>omni debby</code> command launches a web UI and prints the
-            server URL and port. By default this is{" "}
-            <code>http://localhost:6767</code>. If port 6767 is already taken,
-            the server will use the next available port — check the web UI
-            for the actual URL (e.g. <code>http://localhost:6768</code>).
-            Paste that into the desktop app to connect.
-          </p>
-          <p>
-            Now your desktop app is ready to use. Pick <strong>Debby</strong>{" "}
-            from the agent picker in the UI (along with other agents we have)
-            and ask something like{" "}
-            <code>What came first, the chicken or the egg?</code> and watch the
-            models challenge each other. See
-            the <Link href="/docs/use/builtin-agents/debby">Debby reference</Link>{" "}
-            for more.
-          </p>
-          <p>
-            This also works with a remote server. See{" "}
-            <Link href="/docs/deploy/overview">Shared Server</Link> to learn how to
-            deploy your own server.
-          </p>
-        </>
-      )}
-
-
+      <h2 id="add-the-macos-app">Add the macOS app</h2>
+      <p>
+        Prefer a native experience? The macOS app gives you a full UI, session
+        history, and the ability to connect to a local or remote server &mdash;
+        on top of the install you just set up. It&apos;s optional; everything
+        above already works from the terminal.
+      </p>
+      <p>
+        <a href={MACOS_DOWNLOAD_URL} className="btn btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
+          <AppleLogo />
+          Download macOS App
+        </a>
+      </p>
+      <p>
+        Open the downloaded app &mdash; it will ask for a server URL. The{" "}
+        <code>omni debby</code> command above prints that URL when it launches
+        the web UI. By default it is <code>http://localhost:6767</code>. If
+        port 6767 is already taken, the server uses the next available port, so
+        check the web UI for the actual URL (e.g.{" "}
+        <code>http://localhost:6768</code>). Paste that into the desktop app to
+        connect.
+      </p>
+      <p>
+        Now your desktop app is ready to use. Pick <strong>Debby</strong> from
+        the agent picker in the UI (along with the other agents we ship) and ask
+        it anything.
+      </p>
+      <p>
+        This also works with a remote server. See{" "}
+        <Link href="/docs/deploy/overview">Shared Server</Link> to learn how to
+        deploy your own server.
+      </p>
     </>
   );
 }

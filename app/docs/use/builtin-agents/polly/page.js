@@ -2,7 +2,7 @@ import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
 export const metadata = pageMeta("Polly", "Polly is a supervisor that delegates sub-tasks to sub-agents on separate harnesses and worktrees, with cross-agent review and human-decided merges.", {
-  eyebrow: "Use",
+  eyebrow: "Use Cases",
 });
 
 export default function Page() {

@@ -203,7 +203,7 @@ export default function DocsSidebarFull() {
                           <Link
                             href={sub.href}
                             className={subIsActive ? "active" : ""}
-                            style={{ flex: 1, display: "block", padding: "0.25rem 0.6rem 0.25rem 1.2rem", borderRadius: "7px", fontSize: "0.9rem" }}
+                            style={{ display: "block", padding: "0.25rem 0.1rem 0.25rem 1.2rem", borderRadius: "7px", fontSize: "0.9rem" }}
                           >
                             {sub.title}
                           </Link>
@@ -223,7 +223,7 @@ export default function DocsSidebarFull() {
                           onClick={() => setSubOpen((o) => ({ ...o, [subKey]: !o[subKey] }))}
                           role="button"
                           tabIndex={0}
-                          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", padding: "0.25rem 0.6rem", borderRadius: "7px", fontSize: "0.9rem", color: "var(--fg-soft)" }}
+                          style={{ display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer", padding: "0.25rem 0.6rem", borderRadius: "7px", fontSize: "0.9rem", color: "var(--fg-soft)" }}
                         >
                           {sub.title}
                           <span style={{ fontSize: "0.5rem", opacity: 0.4, transition: "transform 0.15s", transform: subIsOpen ? "rotate(90deg)" : "rotate(0deg)" }}>

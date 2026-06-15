@@ -139,6 +139,29 @@ export default function DocsSidebarFull() {
     return state;
   });
 
+  // Expand the section + subsection containing the active page on every route
+  // change. The sidebar persists across client-side navigation (it lives in the
+  // layout and never remounts), so the useState initializers above only run on
+  // first mount. Without this, navigating into a collapsed subsection — via a
+  // search result, an in-content link, or prev/next nav — leaves it closed and
+  // hides where you are. Only force-opens the matching entries, never collapses.
+  useEffect(() => {
+    SECTIONS.forEach((s, si) => {
+      const inSectionPages = s.pages.some((p) => p.href === path);
+      if (inSectionPages) {
+        setSectionOpen((o) => (o[si] ? o : { ...o, [si]: true }));
+      }
+      s.subsections?.forEach((sub, ci) => {
+        const isActive = sub.href === path || sub.pages.some((p) => p.href === path);
+        if (isActive) {
+          setSectionOpen((o) => (o[si] ? o : { ...o, [si]: true }));
+          const key = `${si}-${ci}`;
+          setSubOpen((o) => (o[key] ? o : { ...o, [key]: true }));
+        }
+      });
+    });
+  }, [path]);
+
   return (
     <>
       {drawerOpen && <div className="docs-sidebar-backdrop" onClick={closeDrawer} />}

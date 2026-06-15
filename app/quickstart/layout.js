@@ -14,7 +14,7 @@ export default function DocsLayout({ children }) {
       <Nav menuToggle={<DocsSidebarToggle />} />
       <div className="docs">
         <DocsSidebarFull />
-        <article className="docs-main">
+        <article className="docs-main" data-pagefind-body>
           {children}
           <PrevNextNav />
           <CopyCodeButtons />

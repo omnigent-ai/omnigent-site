@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GitHubIcon, DiscordIcon } from "./icons";
 import { GITHUB_URL, DISCORD_URL } from "./links";
+import DocSearch from "./DocSearch";
 
 export default function Nav({ menuToggle }) {
   return (
@@ -22,6 +23,7 @@ export default function Nav({ menuToggle }) {
           <a href={DISCORD_URL} className="nav-icon" target="_blank" rel="noreferrer" aria-label="Discord">
             <DiscordIcon size={20} />
           </a>
+          <DocSearch />
         </nav>
       </div>
     </header>

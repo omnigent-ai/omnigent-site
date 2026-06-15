@@ -43,7 +43,7 @@ export default function PrevNextNav() {
   const next = idx < ALL_PAGES.length - 1 ? ALL_PAGES[idx + 1] : null;
 
   return (
-    <nav className="prev-next-nav">
+    <nav className="prev-next-nav" data-pagefind-ignore>
       {prev ? (
         <Link href={prev.href} className="prev-next-link prev-next-link--prev">
           <span className="prev-next-dir">← Previous</span>

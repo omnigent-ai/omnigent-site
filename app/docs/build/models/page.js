@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Models & Credentials",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "Declare your model in agent YAML and let Omnigent manage the credentials that authenticate to each provider.",
-};
+export const metadata = pageMeta("Models & Credentials", "Declare your model in agent YAML and let Omnigent manage the credentials that authenticate to each provider.", {
+  eyebrow: "Build",
+});
 
 const providerLogoStyle = {
   display: "inline",

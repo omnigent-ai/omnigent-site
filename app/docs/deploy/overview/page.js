@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Shared Server",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "Deploy the Omnigent server so your agents are reachable from your phone, shareable with teammates, and running while your laptop sleeps.",
-};
+export const metadata = pageMeta("Shared Server", "Deploy the Omnigent server so your agents are reachable from your phone, shareable with teammates, and running while your laptop sleeps.", {
+  eyebrow: "Deploy",
+});
 
 export default function Page() {
   return (

@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Terminal",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "Omnigent's keyboard-first default interface, with streaming output and real-time tool execution for people who live in the terminal.",
-};
+export const metadata = pageMeta("Terminal", "Omnigent's keyboard-first default interface, with streaming output and real-time tool execution for people who live in the terminal.", {
+  eyebrow: "Interact",
+});
 
 export default function Page() {
   return (

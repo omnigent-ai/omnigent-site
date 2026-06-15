@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Web UI",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "The Omnigent web UI starts automatically with every session; open the printed URL in any browser to work with your agent.",
-};
+export const metadata = pageMeta("Web UI", "The Omnigent web UI starts automatically with every session; open the printed URL in any browser to work with your agent.", {
+  eyebrow: "Interact",
+});
 
 export default function Page() {
   return (

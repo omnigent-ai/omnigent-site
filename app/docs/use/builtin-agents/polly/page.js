@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Polly",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "Polly is a supervisor that delegates sub-tasks to sub-agents on separate harnesses and worktrees, with cross-agent review and human-decided merges.",
-};
+export const metadata = pageMeta("Polly", "Polly is a supervisor that delegates sub-tasks to sub-agents on separate harnesses and worktrees, with cross-agent review and human-decided merges.", {
+  eyebrow: "Use",
+});
 
 export default function Page() {
   return (

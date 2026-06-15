@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Omnibox",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "Omnibox is Omnigent's secure OS-level sandbox that wraps any agent to run it unattended without exposing your credentials, files, or network.",
-};
+export const metadata = pageMeta("Omnibox", "Omnibox is Omnigent's secure OS-level sandbox that wraps any agent to run it unattended without exposing your credentials, files, or network.", {
+  eyebrow: "Security",
+});
 
 export default function Page() {
   return (

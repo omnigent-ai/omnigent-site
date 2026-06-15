@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Built-in Multi-AI Agents",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "Omnigent ships with multi-agent orchestrators that combine different AI agents into a single workflow, ready to run out of the box.",
-};
+export const metadata = pageMeta("Built-in Multi-AI Agents", "Omnigent ships with multi-agent orchestrators that combine different AI agents into a single workflow, ready to run out of the box.", {
+  eyebrow: "Use",
+});
 
 export default function Page() {
   return (

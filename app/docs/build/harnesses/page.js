@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Harnesses",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "The harness is the runtime that executes your agent loop. Swap one line of YAML to switch between Claude, Codex, and other runtimes.",
-};
+export const metadata = pageMeta("Harnesses", "The harness is the runtime that executes your agent loop. Swap one line of YAML to switch between Claude, Codex, and other runtimes.", {
+  eyebrow: "Build",
+});
 
 export default function Page() {
   return (

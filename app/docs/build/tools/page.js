@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = {
-  title: "MCP & Tools",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "Give your agent capabilities beyond conversation. Declare tools and MCP servers in your agent YAML, each with a name you choose.",
-};
+export const metadata = pageMeta("MCP & Tools", "Give your agent capabilities beyond conversation. Declare tools and MCP servers in your agent YAML, each with a name you choose.", {
+  eyebrow: "Build",
+});
 
 export default function Page() {
   return (

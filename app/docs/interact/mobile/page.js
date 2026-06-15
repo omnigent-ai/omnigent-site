@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Mobile",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.",
-};
+export const metadata = pageMeta("Mobile", "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.", {
+  eyebrow: "Interact",
+});
 
 export default function Page() {
   return (

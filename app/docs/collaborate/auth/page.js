@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Auth & SSO",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "Authenticate users in Omnigent three ways. Pick the approach that fits your setup, from simple tokens to full SSO.",
-};
+export const metadata = pageMeta("Auth & SSO", "Authenticate users in Omnigent three ways. Pick the approach that fits your setup, from simple tokens to full SSO.", {
+  eyebrow: "Collaborate",
+});
 
 export default function Page() {
   return (

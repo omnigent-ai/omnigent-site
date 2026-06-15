@@ -1,13 +1,11 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 
-export const metadata = {
-  title: "FAQ",
-  // TODO(seo): review/refine this share-card description (auto-derived from page intro).
-  description:
-    "Answers to common questions about Omnigent: what it is, how it works, and how to get started.",
-};
+export const metadata = pageMeta("FAQ", "Answers to common questions about Omnigent: what it is, how it works, and how to get started.", {
+  eyebrow: "Help",
+});
 
 export default function Page() {
   return (

@@ -18,6 +18,18 @@ const nextConfig = {
         destination: "/docs/collaborate",
         permanent: true,
       },
+      {
+        source: "/download/mac",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.1.1-arm64.dmg",
+        permanent: false,
+      },
+      {
+        source: "/download/mac/v0.1.1",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.1.1-arm64.dmg",
+        permanent: false,
+      },
     ];
   },
   async rewrites() {
@@ -26,16 +38,6 @@ const nextConfig = {
         source: "/install.sh",
         destination:
           "https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/install_oss.sh",
-      },
-      {
-        source: "/download/mac",
-        destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.1.1-arm64.dmg",
-      },
-      {
-        source: "/download/mac/v0.1.1",
-        destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.1.1-arm64.dmg",
       },
     ];
   },

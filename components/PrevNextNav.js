@@ -28,6 +28,7 @@ const ALL_PAGES = [
   { href: "/docs/collaborate/auth", label: "Auth & SSO", section: "Collaboration" },
   { href: "/docs/deploy/database", label: "Database", section: "Collaboration" },
   { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host", section: "Collaboration" },
+  { href: "/docs/deploy/tailscale", label: "Tailscale", section: "Collaboration" },
   { href: "/docs/policies/overview", label: "Overview", section: "Contextual Policies" },
   { href: "/docs/policies/builtin", label: "Builtin Policies", section: "Contextual Policies" },
   { href: "/docs/policies/custom", label: "Custom Policies", section: "Contextual Policies" },

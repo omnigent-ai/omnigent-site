@@ -1,0 +1,159 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Shared Server", "Deploy the Omnigent server so your agents are reachable from your phone, shareable with teammates, and running while your laptop sleeps.", {
+  eyebrow: "Deploy",
+  path: "/docs/deploy/overview",
+});
+
+# Shared Server
+
+Everything in the previous sections runs on your laptop. That's the fastest way to get
+started, but when you want your Omnigent accessible from your phone, shareable with
+teammates, or running while your laptop sleeps, you need to deploy.
+
+This section covers Omnigent's architecture, the options for hosting the server, and the
+options for hosting the runner.
+
+Omnigent has three components: the server, the runner, and the UI.
+
+<figure className="section-graphic" style={{ margin: "1rem 0" }}>
+  {/* eslint-disable-next-line @next/next/no-img-element */}
+  <img
+    src="/images/architecture.svg"
+    alt="Omnigent architecture: CLI agents and custom agents run through a runner (on your machine, Modal, or Daytona), then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API."
+    width={1541}
+    height={700}
+  />
+</figure>
+
+## Server
+
+The **server** is the central coordinator. It manages:
+
+- **Session history.** Every conversation, message, and tool call is persisted in a [database](/docs/deploy/database) (Postgres or SQLite).
+- **Artifacts.** Files, Omnigent bundles, and uploads.
+- **Catalog.** Registered and built-in Omnigent specs.
+- **MCP proxy & policies.** Proxies MCP tool calls with server-side policy enforcement.
+- **Skills.** Skill definitions that Omnigent can load.
+- **Auth & accounts.** User authentication (built-in accounts or OIDC/SSO).
+
+There are a few options for hosting the server on the cloud:
+
+### Docker Compose
+
+Deploy the Omnigent server with Docker Compose. The stack includes the server and a Postgres
+database.
+
+```
+cd deploy/docker
+./bootstrap.sh          # generates DB password + cookie secret into .env
+docker compose up -d    # Omnigent server + Postgres
+```
+
+Key variables in `.env` (See [Auth & SSO](/docs/collaborate/auth) for details on multi-user auth):
+
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Postgres connection string |
+| `OMNIGENT_AUTH_ENABLED` | Enable multi-user auth (default: `1` in Docker) |
+| `OMNIGENT_OIDC_COOKIE_SECRET` | Session cookie secret |
+| `OMNIGENT_OIDC_ISSUER` | OIDC issuer URL (enables SSO) |
+| `OMNIGENT_OIDC_CLIENT_ID` | OIDC client ID |
+| `OMNIGENT_OIDC_CLIENT_SECRET` | OIDC client secret |
+
+<div className="note">
+
+No admin password is auto-generated. On first boot the server reports
+`needs_setup`: open the web UI and create the admin account there, or set
+`OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD` in `.env` to preset it for headless deploys.
+
+</div>
+
+### Cloud platforms
+
+Deploy the server to a cloud platform with managed infrastructure.
+
+| Platform | Database | Deploy method |
+| --- | --- | --- |
+| **Railway** | Managed Postgres | Import repo from GitHub |
+| **Render** | Managed Postgres | [One-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent) |
+| **Fly.io** | SQLite on volume | `fly deploy` from CLI |
+| **Hugging Face Spaces** | SQLite (ephemeral) | Docker Space |
+
+**Railway & Render.** On Railway, import the repo and it handles the
+rest, including managed Postgres; Render provisions the app and managed Postgres over
+HTTPS via [one-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent).
+Both default to built-in `accounts` auth, so multi-user works out of the box.
+
+**Fly.io.** Deploy with `fly deploy` using SQLite on a persistent
+volume. Configuration files are in `deploy/fly/` in the repo.
+
+```
+cd deploy/fly
+fly deploy
+```
+
+<div className="note">
+
+The server idles around ~275 MB RSS. Fly's default 256 MB machine will OOM-loop. The
+`fly.toml` in the repo pins a 1 GB machine. If you changed it, run `fly scale memory 1024`.
+
+</div>
+
+**Hugging Face Spaces.** Demo-grade Docker Space with SQLite. See
+`deploy/hf-spaces/` in the repo.
+
+<div className="note">
+
+**Warning:** On Hugging Face Spaces, disk is ephemeral by default and
+persistent storage is a paid add-on. Data resets on
+every restart. Use this for demos only.
+
+</div>
+
+## Runner
+
+The **runner** is the per-session process that executes Omnigent loops. It
+manages the harness (Claude Code, Codex, Claude SDK, etc.), runs tools, and streams events
+back to the server over WebSocket. The server starts runners on a **host**: a
+machine you register with the server.
+
+By default, the host is your laptop. Register it with:
+
+```
+omni login <server-url>  // if auth is enabled
+omni host <server-url>
+```
+
+This is why your local Claude Code or Codex installation "just works." Runners
+started on your laptop have direct access to your machine's tools, files, and
+credentials.
+
+However, moving the runner to a
+[cloud sandbox host](/docs/deploy/cloud-sandbox-host) gives you:
+
+- **No laptop dependency.** Your Omnigent runs even when your machine is off.
+- **Cloud-native tooling.** Your Omnigent can access cloud resources directly.
+- **Isolation.** Each Omnigent runs in its own container, separate from your local environment.
+- **Scalability.** Run many Omnigents in parallel without taxing your machine.
+
+We currently support the [Modal](https://modal.com) and [Daytona](https://www.daytona.io)
+platforms, with more integrations on the way. Check out the
+[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host) page for more detailed setup instructions.
+
+## UI
+
+The [web UI](/docs/interact/web-ui), [terminal UI](/docs/interact/terminal), and
+[mobile UI](/docs/interact/mobile) all talk to the server. They never talk
+to the runner directly. This means:
+
+- If the server is on your laptop, UI access is local only
+- If the server is deployed to the cloud, any device can reach it, including your phone. Notably, cloud-hosted servers also allow you to collaborate with other users on the same server.
+
+## Collaboration
+
+Once the server is cloud-hosted, Omnigent is multi-user: share a live session with a link,
+let a teammate co-drive your Omnigent, or fork a conversation so someone can continue
+independently. This has moved to its own page — see
+[Pair Programming](/docs/collaborate) for co-drive, sharing with VIEW/EDIT
+permissions, and forking.

@@ -7,6 +7,9 @@ build
 
 # Generated artifacts (written by scripts/CLIs, not hand-edited)
 public/pagefind
+public/llms.txt
+public/llms-full.txt
+public/sitemap.xml
 lib/og-manifest.json
 bun.lock
 package-lock.json

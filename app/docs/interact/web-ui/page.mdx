@@ -1,0 +1,82 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Web UI", "The Omnigent web UI starts automatically with every session; open the printed URL in any browser to work with your agent.", {
+  eyebrow: "Interact",
+  path: "/docs/interact/web-ui",
+});
+
+# Web UI
+
+The web UI starts automatically with every session. When the server launches, the URL is
+printed in your terminal. Open it in any browser to get started.
+
+![Omnigent web UI](/images/docs/single-harness-demo.gif)
+
+## Session management
+
+See all your sessions in one place. Resume any previous conversation, start new ones, switch
+between them. Switch agents mid-conversation directly from the UI.
+
+Sessions persist across browser refreshes and server restarts.
+
+### Browser-first mode
+
+If you prefer to work in the browser rather than the terminal UI, start the server and host
+daemon once from the command line:
+
+```
+omni server start   # start the local server + web UI in the background
+omni host           # (separate terminal) register this machine as a host
+```
+
+After that, open **http://localhost:6767** and drive the agent entirely from
+the browser; no further terminal interaction needed.
+
+## File editor
+
+A full markdown editor with syntax highlighting for browsing and editing every file your
+Omnigent touches.
+
+Your Omnigent drafts a documentation page. You open it in the editor, read it properly
+formatted, and make direct edits. Your Omnigent generates a config file. You review it with
+full syntax highlighting.
+
+Use cases: updating documentation sites, reviewing Omnigent-generated plans, editing configs.
+
+## Code viewer and diffs
+
+Review what your Omnigent changed before accepting. Syntax-highlighted diffs show exactly
+what was added, modified, or removed.
+
+![Omnigent file editor](/images/docs/file-editor.gif)
+
+## Inline comments and addressing
+
+Instead of typing in chat "change the third paragraph to be more concise," you click
+on that paragraph and leave a comment: "too verbose, tighten this up." The Omnigent
+sees exactly what you're referring to and revises it.
+
+**Addressing** closes the loop: resolve a comment and the Omnigent acts on the
+feedback. The workflow is: Omnigent proposes, you annotate, Omnigent revises.
+
+Where this matters most:
+
+- **Reviewing plans before execution.** Annotate the steps you want changed before the Omnigent starts building.
+- **Editing drafted docs.** Leave line-level feedback instead of rewriting in chat.
+- **Iterating on configs.** Flag the fields that need adjustment.
+
+![Addressing an inline comment](/images/docs/address-comment.png)
+
+## Multi-modal input
+
+Paste images, screenshots, diagrams, and mockups directly into the conversation. The
+Omnigent sees them alongside your text. Useful for frontend work where describing a layout
+issue in words is slower than screenshotting it.
+
+## Collaboration
+
+Share your session with teammates for real-time co-driving. Multiple people see the same
+conversation, leave comments, and interact with the Omnigent simultaneously.
+
+See [Pair Programming](/docs/collaborate) for details on sharing,
+permissions, and multi-user workflows.

@@ -1,0 +1,117 @@
+import { pageMeta } from "@/lib/og";
+import GatewayLogos from "@/components/GatewayLogos";
+import ProviderKeyTable from "@/components/ProviderKeyTable";
+
+export const metadata = pageMeta("Models & Credentials", "Declare your model in agent YAML and let Omnigent manage the credentials that authenticate to each provider.", {
+  eyebrow: "Build",
+  path: "/docs/build/models",
+});
+
+# Models & Credentials
+
+Every harness needs a model to run and credentials to reach it. You declare the model in
+your agent YAML, and Omnigent manages the credentials that authenticate to each provider.
+
+## Choose a model
+
+Declare the model in your agent YAML:
+
+```
+executor:
+  harness: claude-sdk
+  model: claude-sonnet-4-6
+```
+
+Override it at runtime without editing the file:
+
+```
+omni run agent.yaml --model claude-sonnet-4-6
+```
+
+### Switch models mid-session
+
+Use the `/model` command inside any running session to switch models on the fly.
+The agent keeps its conversation history and tool state – only the underlying model changes.
+
+## Credentials
+
+Omnigent needs credentials to talk to a model provider.
+
+```
+omni setup
+```
+
+The setup wizard walks you through adding a credential, setting a default, or removing one.
+It also auto-detects credentials already on your machine (API keys in environment variables,
+logged-in CLIs, and local servers) so you can confirm them with one tap.
+
+## Credential types
+
+| Type | What it is |
+| --- | --- |
+| **API key** | A first-party provider key (Anthropic, OpenAI, OpenRouter, and more) |
+| **Subscription** | A Claude Pro/Max or ChatGPT Plus/Pro plan, via the official `claude` / `codex` CLIs |
+| **Gateway** | Bring your own proxy or local model. Just paste a base URL and key. |
+| **Databricks** | A Databricks workspace profile, routing through the [Foundation Model API](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/) |
+
+### API key
+
+Get a key from your provider's dashboard and add it via `omni setup`.
+Supported providers:
+
+<ProviderKeyTable />
+
+### Subscription
+
+If you have a **Claude Pro/Max** or **ChatGPT Plus/Pro** plan,
+Omnigent can use your existing CLI login. No API key needed. Just make sure you're
+logged in:
+
+```
+claude auth login    # for Claude Pro/Max
+codex login          # for ChatGPT
+```
+
+`omni setup` auto-detects an active CLI login and offers it as a one-tap option.
+
+### Gateway
+
+Omnigent works with any **OpenAI-compatible** or **Anthropic-compatible** gateway:
+
+<GatewayLogos />
+
+`omni setup` asks for a **base URL** and a **key**. The base URL differs depending on the agent:
+
+| Provider | For | Base URL | Key |
+| --- | --- | --- | --- |
+| **OpenRouter** | Claude Code | `https://openrouter.ai/api` | your OpenRouter key (`sk-or-...`) |
+| **OpenRouter** | Codex / OpenAI agents | `https://openrouter.ai/api/v1` | your OpenRouter key (`sk-or-...`) |
+| **Ollama** (local) | Codex / OpenAI agents | `http://localhost:11434/v1` | any value (Ollama ignores it) |
+
+<div className="note">
+
+**Note:** For Claude Code, point at OpenRouter's Anthropic-compatible
+endpoint (`.../api`, **not** `.../api/v1`); for Codex
+and the OpenAI-agents harness, use the OpenAI-compatible `.../api/v1`.
+
+</div>
+
+### Databricks
+
+Route models through your Databricks workspace using the
+[Foundation Model API](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/).
+Omnigent resolves credentials from your `~/.databrickscfg` profile.
+
+```
+executor:
+  harness: claude-sdk
+  model: databricks-claude-sonnet-4-6
+  auth:
+    type: databricks
+    profile: <your-profile>
+```
+
+Model names are prefixed with `databricks-` so Omnigent routes them through your
+workspace automatically. See the
+[Databricks Foundation Model API docs](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/supported-models)
+for the full list of available models.

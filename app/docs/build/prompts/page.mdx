@@ -1,0 +1,211 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Prompts & Skills", "Shape agent behavior with system prompts, and extend it with skills: reusable instruction sets the agent loads on demand.", {
+  eyebrow: "Build",
+  path: "/docs/build/prompts",
+});
+
+# Prompts & Skills
+
+An agent's behavior starts with its system prompt. Skills extend that by providing
+reusable instruction sets the agent can load on demand.
+
+## System prompt
+
+Set your agent's system prompt with either `prompt` or `instructions`. Both take
+inline text; `instructions` also accepts a file path.
+
+```
+# Inline text (either field):
+prompt: You are a concise coding assistant.
+
+# Or equivalently:
+instructions: You are a concise coding assistant.
+
+# From a file (instructions only):
+instructions: prompts/system.md
+```
+
+`instructions` also accepts file paths (resolved relative to the agent YAML's
+directory). If you set both fields, `instructions` wins.
+
+### Auto-discovery
+
+When neither `prompt` nor `instructions` is set, Omnigent scans the agent
+directory for context files in this order:
+
+1. `AGENTS.md`
+2. `CLAUDE.md`
+3. `.cursorrules`
+
+The first file found becomes the system prompt. No merge, first wins.
+
+## Skills
+
+Skills are reusable instruction bundles that your agent can load at runtime via the
+`/skill-name` slash command or the built-in `load_skill` tool. Each skill is a
+markdown file with structured instructions. Think of it as a recipe the agent
+follows for a specific task.
+
+### How skills are discovered
+
+Omnigent discovers skills from two sources:
+
+**1. Bundled skills**, shipped with the agent itself:
+
+```
+my-agent/
+  config.yaml
+  skills/
+    code-review/
+      SKILL.md
+    deploy/
+      SKILL.md
+```
+
+Skills in the agent's `skills/` directory are always available. The agent can
+invoke each skill by its slash command, such as `/code-review`, or load it with
+`load_skill`.
+
+**2. Project and user skills**, discovered from the filesystem:
+
+Omnigent walks up the directory tree from the agent's working directory, looking for
+skills in `.agents/skills/` and `.claude/skills/` at each level, plus your home
+directory for global skills:
+
+- `<project>/.agents/skills/`: available to any agent run from this project
+- `<project>/.claude/skills/`: same, Claude Code convention
+- `~/.agents/skills/`: available to every agent on your machine
+- `~/.claude/skills/`: same, Claude Code convention
+
+This works like `.gitignore`. Drop a skill folder in your project and every agent
+picks it up automatically.
+
+### Existing Claude Code skills
+
+If you already have skills in `.claude/skills/`, they work alongside Omnigent
+bundled skills automatically. Omnigent discovers them during its directory walk.
+
+One caveat: Omnigent's skill loader only reads `name` and `description` from
+SKILL.md frontmatter. Claude Code's additional frontmatter fields are handled
+differently depending on your harness:
+
+| Frontmatter field | Omnigent skill loader | `claude-native` harness |
+| --- | --- | --- |
+| `name` | Parsed | Parsed |
+| `description` | Parsed | Parsed |
+| `disable-model-invocation` | Ignored | Honored |
+| `allowed-tools` | Ignored | Honored |
+
+If you need `disable-model-invocation` or `allowed-tools` behavior, use the
+`claude-native` harness and place those skills in `.claude/skills/`.
+
+### SKILL.md format
+
+Each skill lives in its own folder and must have a `SKILL.md` file with YAML
+frontmatter:
+
+```
+skills/
+  my-skill/
+    SKILL.md
+    references/      # optional resource files
+      style-guide.md
+    scripts/         # optional scripts
+    assets/          # optional assets
+```
+
+The `SKILL.md` file has two parts: YAML frontmatter and markdown content.
+
+```
+---
+name: code-review
+description: >-
+  Review code changes for correctness, tests, security, and
+  maintainability. Use when asked to review a PR or diff.
+---
+
+# Code review
+
+## Procedure
+1. Read the diff carefully.
+2. Check for correctness and edge cases.
+3. Verify tests cover the changes.
+4. Flag security concerns.
+5. Summarize findings as blocking / non-blocking / suggestions.
+
+## What to look for
+- Off-by-one errors
+- Missing error handling
+- Untested branches
+...
+```
+
+**Required frontmatter fields:**
+
+| Field | Description |
+| --- | --- |
+| `name` | Unique skill identifier. Used in slash commands (`/code-review`) and `load_skill` calls. |
+| `description` | One-line description. Shown to the agent so it knows when to use the skill. |
+
+The markdown body after the frontmatter is the full instruction set. It can be as long and
+detailed as needed.
+
+### Resource files
+
+Skills can bundle reference materials in `references/`, `scripts/`, and `assets/`
+subdirectories. When a skill is loaded, the agent sees a listing of available files
+and can read them with the `read_skill_file` tool:
+
+```
+skills/
+  deploy/
+    SKILL.md
+    references/
+      runbook.md
+      checklist.md
+    scripts/
+      validate.sh
+```
+
+### Example: Polly's skills
+
+The [Polly orchestrator](https://github.com/omnigent-ai/omnigent/tree/main/examples/polly)
+bundles three skills that define its workflows:
+
+```
+examples/polly/
+  config.yaml
+  skills/
+    investigate/
+      SKILL.md      # read-only investigation workflow
+    fanout/
+      SKILL.md      # parallel task dispatch
+    cross-review/
+      SKILL.md      # cross-vendor PR review
+```
+
+Each skill defines a step-by-step procedure the orchestrator follows. For example, the
+`investigate` skill instructs Polly to decompose a question into bounded tasks,
+dispatch sub-agents, and synthesize their reports.
+
+### Filter discovered skills
+
+By default, all project and user skills are loaded (`skills: all`). You can
+restrict this in your agent YAML:
+
+```
+# Load all discovered skills (default):
+skills: all
+
+# Load no discovered skills (hermetic):
+skills: none
+
+# Load only specific discovered skills by name:
+skills:
+  - code-review
+  - deploy
+```
+
+This only affects discovered skills (from `.agents/skills/` and `.claude/skills/`).
+Bundled skills in the agent's own `skills/` directory are always available regardless.

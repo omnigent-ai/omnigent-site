@@ -1,0 +1,36 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Harnesses", "The harness is the runtime that executes your agent loop. Swap one line of YAML to switch between Claude, Codex, and other runtimes.", {
+  eyebrow: "Build",
+  path: "/docs/build/harnesses",
+});
+
+# Harnesses
+
+The harness is the runtime that executes your agent loop. Swap one line to switch runtimes.
+
+```
+executor:
+  harness: claude
+```
+
+## Supported harnesses
+
+| Harness | Runtime | Best for |
+| --- | --- | --- |
+| `claude` | Claude Code | Claude Code out of the box. Add tools, policies, and prompts to customize. |
+| `codex` | Codex | Codex out of the box. Add tools, policies, and prompts to customize. |
+| `pi` | Pi | Headless multi-model worker that runs on any gateway model. Ideal for review, exploration, and read-heavy tasks delegated by a supervisor agent. |
+
+More harness integrations are on the way.
+
+## Swap harnesses
+
+Tools, policies, and other config stay the same across harnesses. Just change the
+`harness` value in your YAML, or override it at runtime:
+
+```
+omni run agent.yaml --harness codex
+```
+
+See [Models & Credentials](/docs/build/models) for how to set up API keys and choose models.

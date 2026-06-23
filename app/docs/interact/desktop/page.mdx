@@ -1,0 +1,90 @@
+import { pageMeta } from "@/lib/og";
+import { MACOS_DOWNLOAD_URL } from "@/components/links";
+import MacDownloadButton from "@/components/MacDownloadButton";
+
+export const metadata = pageMeta("Desktop App", "The Omnigent desktop app brings the full web UI to a native window, with notifications, a dock badge, and multiple windows.", {
+  eyebrow: "Interact",
+  path: "/docs/interact/desktop",
+});
+
+# Desktop App
+
+The Omnigent desktop app gives you the full
+[web UI](/docs/interact/web-ui) in a native window, plus OS-level features
+a browser can't provide: notifications when your agent needs attention, a dock badge
+showing how many sessions are waiting, and multiple independent windows.
+
+<MacDownloadButton />
+
+{/* eslint-disable-next-line @next/next/no-img-element */}
+<img src="/images/docs/desktop-app.png" alt="Omnigent native desktop app showing the session chat and file workspace" style={{ width: "100%", borderRadius: "8px" }} />
+
+## Why use it over the browser?
+
+- **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing.
+- **Dock badge.** See at a glance how many sessions need your attention, without switching to the app.
+- **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
+
+Everything else (sessions, file editor, inline comments, collaboration) works exactly the
+same as the web UI.
+
+## Prerequisites
+
+- **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.
+- **At least one runner.** A [runner](/docs/deploy/overview) is the process that actually executes your agent. If you have [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host) set up, you'll be able to launch them from the app. Otherwise, register your machine by running `omni host` from your CLI.
+
+## Install
+
+<table>
+  <thead>
+    <tr>
+      <th>Platform</th>
+      <th>Format</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>macOS</td>
+      <td><code>.dmg</code></td>
+      <td><a href={MACOS_DOWNLOAD_URL}>Download</a></td>
+    </tr>
+    <tr>
+      <td>Linux</td>
+      <td><code>.AppImage</code> or <code>.deb</code></td>
+      <td>Coming soon</td>
+    </tr>
+    <tr>
+      <td>Windows</td>
+      <td>Installer (<code>.exe</code>)</td>
+      <td>Coming soon</td>
+    </tr>
+  </tbody>
+</table>
+
+## Get started
+
+{/* eslint-disable-next-line @next/next/no-img-element */}
+<img src="/images/docs/desktop-start.png" alt="Omnigent desktop app first-launch setup screen" style={{ width: "100%", borderRadius: "8px" }} />
+
+1. **Launch the app.** On first launch, you'll see a setup screen.
+2. **Enter your server URL.** `http://localhost:6767` if running locally, or your deployed server URL (e.g. `https://your-app.onrender.com`).
+3. **Start working.** The app connects and shows the same UI you'd see in a browser.
+
+{/* eslint-disable-next-line @next/next/no-img-element */}
+<img src="/images/docs/desktop-conversation.png" alt="Omnigent desktop app showing an agent conversation alongside the session workspace" style={{ width: "100%", borderRadius: "8px" }} />
+
+The app remembers your server URL for future launches. To change it later, go to
+**Server > Change Server**.
+
+## Work with multiple servers
+
+Each window connects to one server. To work with multiple servers at the same time:
+
+1. Go to **Server > New Window on Different Server**
+2. Enter the URL of the second server
+
+Notifications and badge counts are combined across all connected servers.
+
+{/* eslint-disable-next-line @next/next/no-img-element */}
+<img src="/images/docs/desktop-connect.png" alt="Omnigent desktop app setup screen prompting for the server URL to connect to" style={{ width: "100%", borderRadius: "8px" }} />

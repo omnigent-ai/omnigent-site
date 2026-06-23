@@ -23,7 +23,8 @@ const LOCK_PATH = resolve(import.meta.dirname, "..", "bun.lock");
 
 // Group 1 is the entry head: ["<name>@<version>", . Group 2 is the proxied
 // resolution URL, which we drop (replace the whole match with group 1 + "").
-const PROXY_RESOLUTION = /(\["[^"]+@[^"]+", )"https?:\/\/[^"]*\/-\/[^"]*\.tgz"/g;
+const PROXY_RESOLUTION =
+  /(\["[^"]+@[^"]+", )"https?:\/\/[^"]*\/-\/[^"]*\.tgz"/g;
 
 const checkOnly = process.argv.includes("--check");
 

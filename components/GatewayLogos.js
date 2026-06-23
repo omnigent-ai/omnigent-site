@@ -20,7 +20,14 @@ const gateways = [
 
 export default function GatewayLogos() {
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", margin: "16px 0" }}>
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "16px",
+        margin: "16px 0",
+      }}
+    >
       {gateways.map((gateway) => (
         <div
           key={gateway.logo}
@@ -40,7 +47,9 @@ export default function GatewayLogos() {
             height="40"
             style={{ borderRadius: "4px" }}
           />
-          <span style={{ fontSize: "11px", textAlign: "center", lineHeight: "1.2" }}>
+          <span
+            style={{ fontSize: "11px", textAlign: "center", lineHeight: "1.2" }}
+          >
             {gateway.name}
           </span>
         </div>

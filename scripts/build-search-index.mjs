@@ -46,7 +46,7 @@ function fileToUrl(file) {
 async function main() {
   const files = (
     await Promise.all(
-      SEARCH_PREFIXES.map((p) => htmlFilesUnder(path.join(APP_DIR, p)))
+      SEARCH_PREFIXES.map((p) => htmlFilesUnder(path.join(APP_DIR, p))),
     )
   ).flat();
 
@@ -54,7 +54,7 @@ async function main() {
     console.error(
       "search index: no prerendered HTML found under " +
         APP_DIR +
-        " — run `next build` first."
+        " — run `next build` first.",
     );
     process.exit(1);
   }

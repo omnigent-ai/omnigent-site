@@ -26,12 +26,18 @@ export default function InstallCommandTabs() {
     <div className="tabbed-code">
       <div className="tab-bar">
         {CLI_TABS.map((t, i) => (
-          <button key={t.label} onClick={() => setCliTab(i)} className={cliTab === i ? "active" : ""}>
+          <button
+            key={t.label}
+            onClick={() => setCliTab(i)}
+            className={cliTab === i ? "active" : ""}
+          >
             {t.label}
           </button>
         ))}
       </div>
-      <pre><code>{CLI_TABS[cliTab].code}</code></pre>
+      <pre>
+        <code>{CLI_TABS[cliTab].code}</code>
+      </pre>
     </div>
   );
 }

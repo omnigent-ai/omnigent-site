@@ -20,7 +20,12 @@ export function useMDXComponents(components) {
       // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
       <img
         {...props}
-        style={{ width: "100%", borderRadius: "8px", margin: "1rem 0", ...style }}
+        style={{
+          width: "100%",
+          borderRadius: "8px",
+          margin: "1rem 0",
+          ...style,
+        }}
       />
     ),
     ...components,

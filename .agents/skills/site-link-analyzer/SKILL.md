@@ -16,7 +16,7 @@ Find and fix broken links across the site. The work splits in two:
 - **`scripts/check-links.mjs`** (run via `bun run lint:links`) is the deterministic
   source of truth. It extracts links and validates them, prints a report, and
   exits non-zero when any link is **broken**. It never edits files.
-- **You** are the judgment layer: read the checker's JSON, apply the *confident*
+- **You** are the judgment layer: read the checker's JSON, apply the _confident_
   fixes, leave the ambiguous ones for the human, and **re-run the checker to
   confirm green** before you call the job done.
 
@@ -45,13 +45,13 @@ branch is `main`, create a branch first (offer a suggested name such as
 
 ## How to run
 
-| Command | What it does |
-|---|---|
-| `bun run lint:links` | Internal + anchor + relative checks (no network). This is the deterministic gate; exit 1 on any broken link. |
-| `bun run lint:links -- --json` | Same checks, machine-readable JSON to stdout — use this to drive fixes. |
-| `bun run lint:links -- --quiet` | Suppress the per-file `ok` lines; show only problems + summary. |
-| `bun run lint:links -- --external` | **Also** network-check external `http(s)` URLs. Slow + flaky — advisory only, never a gate. |
-| `bun run lint:links -- --ignore <pat>` | Skip external URLs containing `<pat>` (repeatable). |
+| Command                                | What it does                                                                                                 |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `bun run lint:links`                   | Internal + anchor + relative checks (no network). This is the deterministic gate; exit 1 on any broken link. |
+| `bun run lint:links -- --json`         | Same checks, machine-readable JSON to stdout — use this to drive fixes.                                      |
+| `bun run lint:links -- --quiet`        | Suppress the per-file `ok` lines; show only problems + summary.                                              |
+| `bun run lint:links -- --external`     | **Also** network-check external `http(s)` URLs. Slow + flaky — advisory only, never a gate.                  |
+| `bun run lint:links -- --ignore <pat>` | Skip external URLs containing `<pat>` (repeatable).                                                          |
 
 Exit codes: `0` = no broken links, `1` = broken links found, `2` = usage/internal error.
 
@@ -114,7 +114,7 @@ declare success until it exits 0, or until every remaining finding is a delibera
 
 - **Dynamic links are skipped by design.** `href={expr}` / `src={expr}` expressions
   (including the shared link constants used as `href={GITHUB_URL}`) can't be
-  statically resolved and are reported as `dynamic-skipped`. The URLs *behind* those
+  statically resolved and are reported as `dynamic-skipped`. The URLs _behind_ those
   constants are still checked separately: the checker reads external URL string
   literals (e.g. `export const GITHUB_URL = "https://…"` in `components/links.js`),
   so the `--external` sweep covers them. Coverage is intentionally partial — check

@@ -25,7 +25,7 @@ export default function TableOfContents() {
 
     const scan = () => {
       const headings = Array.from(main.querySelectorAll("h2, h3")).filter(
-        (h) => !h.closest("details")
+        (h) => !h.closest("details"),
       );
       const next = headings.map((h) => {
         const text = h.textContent.replace(/#$/, "").trim();
@@ -37,7 +37,7 @@ export default function TableOfContents() {
         prev.length === next.length &&
         prev.every((p, i) => p.id === next[i].id && p.text === next[i].text)
           ? prev
-          : next
+          : next,
       );
     };
 

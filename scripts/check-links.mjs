@@ -41,7 +41,9 @@ const ROOT = dirname(SCRIPT_DIR);
 
 function usageError(msg) {
   process.stderr.write(`check-links: ${msg}\n`);
-  process.stderr.write(`Run \`node scripts/check-links.mjs --help\` for usage.\n`);
+  process.stderr.write(
+    `Run \`node scripts/check-links.mjs --help\` for usage.\n`,
+  );
   process.exit(2);
 }
 
@@ -64,7 +66,13 @@ function printHelp() {
 }
 
 function parseArgs(argv) {
-  const opts = { external: false, json: false, quiet: false, ignore: [], timeout: 10000 };
+  const opts = {
+    external: false,
+    json: false,
+    quiet: false,
+    ignore: [],
+    timeout: 10000,
+  };
   let forceInternal = false;
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -159,8 +167,10 @@ function routeRegex(template) {
   const segs = template.split("/").filter((s, i) => !(i === 0 && s === ""));
   let re = "^";
   for (const seg of segs) {
-    if (/^\[\[?\.\.\..+\]\]?$/.test(seg)) re += "(?:/.+)?"; // catch-all (optionally empty)
-    else if (/^\[.+\]$/.test(seg)) re += "/[^/]+"; // single dynamic segment
+    if (/^\[\[?\.\.\..+\]\]?$/.test(seg))
+      re += "(?:/.+)?"; // catch-all (optionally empty)
+    else if (/^\[.+\]$/.test(seg))
+      re += "/[^/]+"; // single dynamic segment
     else re += "/" + seg.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
   re += "/?$";
@@ -195,7 +205,8 @@ function buildModel() {
 
 function computeLineStarts(text) {
   const starts = [0];
-  for (let i = 0; i < text.length; i++) if (text[i] === "\n") starts.push(i + 1);
+  for (let i = 0; i < text.length; i++)
+    if (text[i] === "\n") starts.push(i + 1);
   return starts;
 }
 
@@ -343,7 +354,8 @@ function closest(candidates, value) {
   if (candidates.length === 0) return null;
   const lower = value.toLowerCase();
   const ciExact = candidates.find((c) => c.toLowerCase() === lower);
-  if (ciExact && ciExact !== value) return { value: ciExact, confidence: "high" };
+  if (ciExact && ciExact !== value)
+    return { value: ciExact, confidence: "high" };
   let best = null;
   let bestD = Infinity;
   let ties = 0;
@@ -415,18 +427,31 @@ function validateTarget(rawTarget, pageUrl, model) {
     return {
       category: "malformed",
       status: "broken",
-      reason: "link target wrapped in backticks; the rendered href contains literal backticks",
+      reason:
+        "link target wrapped in backticks; the rendered href contains literal backticks",
       suggestion: t.replace(/`/g, ""),
       suggestionConfidence: "high",
     };
   }
   if (/^(https?:)?\/\//i.test(t)) {
-    return { category: "external", status: "pending", _url: t.replace(/^\/\//, "https://") };
+    return {
+      category: "external",
+      status: "pending",
+      _url: t.replace(/^\/\//, "https://"),
+    };
   }
   if (/^mailto:/i.test(t))
-    return { category: "external", status: "skipped", reason: "mailto: not checked" };
+    return {
+      category: "external",
+      status: "skipped",
+      reason: "mailto: not checked",
+    };
   if (/^tel:/i.test(t))
-    return { category: "external", status: "skipped", reason: "tel: not checked" };
+    return {
+      category: "external",
+      status: "skipped",
+      reason: "tel: not checked",
+    };
   if (/^[a-z][a-z0-9+.-]*:/i.test(t) && !t.startsWith("/")) {
     return {
       category: "external",
@@ -599,7 +624,14 @@ function pushFinding(findings, file, lineStarts, offset, rawLink, res) {
   if (!res) return; // empty/ignored target — not recorded
   const { line, column } = lineColFromOffset(lineStarts, offset);
   const { _url, ...rest } = res;
-  findings.push({ file, line, column, rawLink, ...rest, ...(_url ? { _url } : {}) });
+  findings.push({
+    file,
+    line,
+    column,
+    rawLink,
+    ...rest,
+    ...(_url ? { _url } : {}),
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -617,7 +649,8 @@ async function fetchWithTimeout(url, method, timeout) {
       redirect: "follow",
       signal: ctrl.signal,
       headers: {
-        "User-Agent": "omnigent-link-checker/1.0 (+https://github.com/omnigent-ai/omnigent)",
+        "User-Agent":
+          "omnigent-link-checker/1.0 (+https://github.com/omnigent-ai/omnigent)",
       },
     });
   } finally {
@@ -634,9 +667,13 @@ async function probe(url, opts) {
       }
       const s = res.status;
       if (s >= 200 && s < 400) return { status: "ok", reason: `HTTP ${s}` };
-      if (s === 404 || s === 410) return { status: "broken", reason: `HTTP ${s}` };
+      if (s === 404 || s === 410)
+        return { status: "broken", reason: `HTTP ${s}` };
       if (s === 401 || s === 403 || s === 429) {
-        return { status: "skipped", reason: `HTTP ${s} (auth/rate-limit/bot-block — uncertain)` };
+        return {
+          status: "skipped",
+          reason: `HTTP ${s} (auth/rate-limit/bot-block — uncertain)`,
+        };
       }
       if (s >= 500 && attempt < 2) {
         await delay(400 * (attempt + 1));
@@ -652,14 +689,19 @@ async function probe(url, opts) {
         await delay(400 * (attempt + 1));
         continue;
       }
-      return { status: "warning", reason: `unreachable: ${code || e?.message || "error"}` };
+      return {
+        status: "warning",
+        reason: `unreachable: ${code || e?.message || "error"}`,
+      };
     }
   }
   return { status: "warning", reason: "unreachable" };
 }
 
 async function resolveExternal(findings, opts) {
-  const external = findings.filter((f) => f.category === "external" && f.status === "pending");
+  const external = findings.filter(
+    (f) => f.category === "external" && f.status === "pending",
+  );
   if (!opts.external) {
     for (const f of external) {
       f.status = "skipped";
@@ -687,7 +729,9 @@ async function resolveExternal(findings, opts) {
       cache.set(url, await probe(url, opts));
     }
   };
-  await Promise.all(Array.from({ length: Math.min(CONCURRENCY, queue.length) }, worker));
+  await Promise.all(
+    Array.from({ length: Math.min(CONCURRENCY, queue.length) }, worker),
+  );
   for (const f of external) {
     if (f.status !== "pending") continue;
     const r = cache.get(f._url);
@@ -701,7 +745,12 @@ async function resolveExternal(findings, opts) {
 // Reporting
 // ---------------------------------------------------------------------------
 
-const STATUS_GLYPH = { ok: "ok  ", broken: "FAIL", warning: "warn", skipped: "skip" };
+const STATUS_GLYPH = {
+  ok: "ok  ",
+  broken: "FAIL",
+  warning: "warn",
+  skipped: "skip",
+};
 
 function buildSummary(findings, opts, filesScanned) {
   const summary = {
@@ -740,7 +789,8 @@ function printHuman(findings, summary, opts) {
       const cat = f.category.padEnd(9);
       let line = `  ${STATUS_GLYPH[f.status]} ${loc} ${cat} ${f.rawLink}`;
       if (f.reason) line += `\n        ↳ ${f.reason}`;
-      if (f.suggestion) line += ` — did you mean ${f.suggestion}? (${f.suggestionConfidence})`;
+      if (f.suggestion)
+        line += ` — did you mean ${f.suggestion}? (${f.suggestionConfidence})`;
       out.push(line);
     }
     out.push("");

@@ -1,0 +1,195 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Omnibox (OS Sandbox)", "Omnibox is Omnigent's secure OS sandbox: restrict filesystem and network access and hide credentials for unattended, locked-down agents.", {
+  eyebrow: "Policies",
+  path: "/docs/policies/os-sandbox",
+});
+
+# Omnibox: OS Sandbox
+
+Omnibox is Omnigent's secure OS sandbox for any agent. It restricts filesystem and
+network access at the OS level, and it hides credentials from the agent and brokers
+access to them. Run agents with minimal permissions, or lock them down for unattended
+YOLO-mode execution.
+
+The OS sandbox restricts what commands and file operations your agent can perform. It
+controls which files the agent can read and write, whether it can access the network, and
+which environment variables it sees.
+
+This is different from the [cloud sandbox host](/docs/deploy/cloud-sandbox-host),
+which controls *where* the runner executes. The OS sandbox controls
+*what the agent can access*, regardless of where it runs.
+
+The OS sandbox applies to the built-in OS tools (`sys_os_read`, `sys_os_write`,
+`sys_os_edit`, `sys_os_shell`) and any terminals you declare in the agent config.
+
+<div className="note">
+
+**Requirements:** Linux: install bubblewrap (`apt install bubblewrap` or
+`dnf install bubblewrap`). macOS: `sandbox-exec` ships with stock macOS. If you ask for a
+sandbox and the backend isn't available, Omnigent errors rather than running unsandboxed.
+
+</div>
+
+## Minimal config
+
+The smallest useful OS sandbox. Make the working directory writable and let Omnigent pick
+the backend for your platform:
+
+```
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    write_paths: [.]          # cwd is read-only by default; opt it back in
+    allow_network: true
+```
+
+On Linux, Omnigent uses bubblewrap (`bwrap`). On macOS, it uses Seatbelt
+(`sandbox-exec`). Omit `type` to auto-detect.
+
+| Platform | Backend | Mechanism |
+| --- | --- | --- |
+| Linux | `linux_bwrap` | Bubblewrap namespaces + seccomp |
+| macOS | `darwin_seatbelt` | `sandbox-exec` SBPL profiles |
+| Other | `none` | No sandboxing (explicit opt-out) |
+
+## What you can restrict
+
+### Filesystem
+
+By default, `cwd` is read-only on hardened backends. You opt in to writes explicitly.
+
+```
+sandbox:
+  read_paths: [~/.gitconfig, ~/.ssh]        # read-only access outside cwd
+  write_paths: [.]                          # writable directories
+  write_files: [~/.ssh/known_hosts]         # individual writable files
+  cwd_allow_hidden: [.venv, .git, .env]     # dotfiles to allow (rest are masked)
+```
+
+Dotfiles under `cwd` and `read_paths` are hidden by default unless
+listed in `cwd_allow_hidden`. This makes broad read grants safe: granting
+`~` doesn't expose `~/.aws/credentials` or `~/.ssh/id_rsa`. On macOS, `~/Library` is also
+denied by default.
+
+### Network
+
+```
+sandbox:
+  allow_network: true                       # basic on/off
+  egress_rules:                             # optional HTTP(S) allow-list
+    - "GET api.github.com/repos/myorg/**"   # GET only, one org
+    - "* pypi.org/**"                       # any method
+    - "* *.github.com/**"                   # wildcard subdomain
+```
+
+When `egress_rules` is set, all HTTP(S) traffic goes through a MITM proxy with
+default-deny. Only requests matching a rule are allowed. Requires a hardened backend
+(`linux_bwrap` or `darwin_seatbelt`).
+
+Each rule is `"METHODS host/path-glob"`: comma-separated HTTP verbs (or
+`*` for any), a hostname (or `*.domain` for subdomains), and a path
+glob where `**` matches any depth.
+
+By default, the proxy also blocks connections to private IPs (RFC1918, loopback, cloud
+metadata like `169.254.169.254`). Set
+`egress_allow_private_destinations: true` if your agent needs to reach internal services.
+
+### Environment
+
+```
+sandbox:
+  env_passthrough: [GH_TOKEN, AWS_PROFILE]  # only these vars reach the agent
+```
+
+The sandbox strips environment variables to a minimal default set (`PATH`, `HOME`, `USER`,
+`LANG`, etc.). Secrets only reach the agent if you name them explicitly.
+
+## Sharing a policy
+
+Declare the sandbox once and reuse it with a YAML anchor:
+
+```
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox: &shared
+    write_paths: [.]
+    read_paths: [~/.gitconfig, ~/.ssh]
+    allow_network: true
+
+terminals:
+  zsh:
+    command: zsh
+    os_env:
+      type: caller_process
+      cwd: .
+      sandbox: *shared              # same policy as sys_os_* tools
+```
+
+Or use `os_env: inherit` on a terminal or sub-agent to inherit the parent's
+full environment including its sandbox.
+
+In a multi-harness setup, each sub-agent defines its own sandbox in its own
+`config.yaml` file in the `agents/` subdirectory. Agent entries
+in `tools.agents` are just names (strings), not inline config blocks.
+
+```
+# Parent config.yaml
+tools:
+  agents:
+    - researcher
+    - coder
+
+# agents/researcher/config.yaml
+os_env:
+  sandbox:
+    write_paths: [./research]
+    allow_network: true
+
+# agents/coder/config.yaml
+os_env:
+  sandbox:
+    write_paths: [./src]
+    allow_network: false
+```
+
+## What is and isn't sandboxed
+
+The OS sandbox applies to `sys_os_*` tool calls and terminals that reference the
+policy. It does **not** apply to:
+
+- **MCP servers.** The runner spawns MCP subprocesses outside the sandbox. Constrain an MCP server at its own configuration site.
+- **The Omnigent supervisor process.** It runs the model loop and dispatches tools. Only the commands it issues through OS tools run inside the sandbox.
+
+If you ask for a sandbox (explicitly or via the default) and it can't be provided,
+Omnigent errors instead of quietly running unsandboxed. The only opt-out is
+`sandbox.type: none`.
+
+## Field reference
+
+### `os_env`
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `type` | string | `caller_process` | OS environment backend |
+| `cwd` | string | `.` | Working directory |
+| `sandbox` | block | platform default | Sandbox policy (see below) |
+| `start_in_scratch` | bool | `false` | Start in a writable scratch tmpdir instead of `cwd`. Workspace bound read-only. Requires an active sandbox. |
+
+### `os_env.sandbox`
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `type` | string | auto-detect | `linux_bwrap`, `darwin_seatbelt`, or `none` |
+| `write_paths` | string[] | `[]` | Writable directories. `cwd` is read-only by default. |
+| `write_files` | string[] | `[]` | Individual writable files |
+| `read_paths` | string[] | none | Read-only grants outside `cwd` |
+| `allow_network` | bool | `true` | Network access on/off |
+| `cwd_allow_hidden` | string[] | `[".venv"]` | Dotfile basenames to allow |
+| `cwd_hidden_scan_max_entries` | int | `50000` | Max entries for dotfile mask walk |
+| `cwd_hidden_scan_overflow` | string | `warn` | `error`, `warn`, or `unlimited` |
+| `env_passthrough` | string[] | minimal set | Env vars the agent can see |
+| `egress_rules` | string[] | none | HTTP(S) allow-list. Default-deny when set. |
+| `egress_allow_private_destinations` | bool | `false` | Allow connections to private/metadata IPs |

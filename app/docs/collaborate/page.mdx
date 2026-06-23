@@ -1,10 +1,14 @@
 import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 
-export const metadata = pageMeta("Pair Programming", "Omnigent is multi-user: share a live session by link, let a teammate co-drive, or fork a conversation across terminal, web, and mobile.", {
-  eyebrow: "Collaborate",
-  path: "/docs/collaborate",
-});
+export const metadata = pageMeta(
+  "Pair Programming",
+  "Omnigent is multi-user: share a live session by link, let a teammate co-drive, or fork a conversation across terminal, web, and mobile.",
+  {
+    eyebrow: "Collaborate",
+    path: "/docs/collaborate",
+  },
+);
 
 # Pair Programming
 
@@ -21,8 +25,23 @@ A teammate attaches to your running session and their messages execute on your m
 Great for pairing or handing the keyboard to a domain expert mid-investigation.
 
 <ul>
-  <li>In the <Link href="/docs/interact/web-ui">web UI</Link>, hit <strong>Share</strong> and send the link to your teammate.<ul><li>Share grants one of two permission levels: <strong>VIEW</strong> (read-only, teammates watch the session stream) or <strong>EDIT</strong> (teammates can co-drive and send messages).</li></ul></li>
-  <li>From the terminal, run:<pre><code>{"omni attach <session_id>"}</code></pre></li>
+  <li>
+    In the <Link href="/docs/interact/web-ui">web UI</Link>, hit{" "}
+    <strong>Share</strong> and send the link to your teammate.
+    <ul>
+      <li>
+        Share grants one of two permission levels: <strong>VIEW</strong>{" "}
+        (read-only, teammates watch the session stream) or <strong>EDIT</strong>{" "}
+        (teammates can co-drive and send messages).
+      </li>
+    </ul>
+  </li>
+  <li>
+    From the terminal, run:
+    <pre>
+      <code>{"omni attach <session_id>"}</code>
+    </pre>
+  </li>
 </ul>
 
 Teammates see everything in real time: messages, tool calls, and file changes stream to every

@@ -1,0 +1,78 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Tutorial: Collaborate from Anywhere", "Tutorial: deploy a server to access agents from your phone, share live sessions with teammates, and run agents on cloud sandbox hosts.", {
+  eyebrow: "Quickstart",
+  path: "/quickstart/collaborate",
+});
+
+# Tutorial: Collaborate from Anywhere
+
+So far everything runs on your laptop. This tutorial takes you beyond
+that: deploy a server so you can access your agents from your phone,
+share live sessions with teammates, and run agents on cloud sandbox
+hosts that keep working after you close your laptop.
+
+**Time:** 15 minutes. **Requires a Railway account (free tier works).**
+
+## 1. Deploy to Railway
+
+Railway is the quickest way to get a multi-user Omnigent server running.
+
+1. Go to [railway.app](https://railway.app) and import the [Omnigent repo](https://github.com/omnigent-ai/omnigent) from GitHub.
+2. Railway detects the Dockerfile and deploys automatically with a managed Postgres database.
+3. Once deployed, note your server URL (something like `https://omnigent-production-xxxx.up.railway.app`).
+
+## 2. Connect your laptop
+
+```
+omni login https://your-server.up.railway.app
+omni host https://your-server.up.railway.app
+```
+
+`login` authenticates you. `host` registers your machine so the server
+can dispatch agent work to it. You're now running agents through the
+deployed server.
+
+## 3. Access from your phone
+
+Open `https://your-server.up.railway.app` on your phone's browser (the
+same URL from step 1). You see the same web UI with the same sessions.
+Start a task on your laptop, check progress from your phone over lunch,
+answer an approval prompt from the coffee line.
+
+## 4. Share a session with a teammate
+
+In the web UI, click **Share** on any session. Send the link to a
+teammate. They open it in their browser and join in real time.
+
+Now both of you can:
+
+- Watch the agent's output as it streams.
+- Send messages to the agent.
+- Comment on the agent's work.
+- Fork the session to try a different direction without affecting the original.
+
+<div className="note">
+
+**Only share EDIT with people you trust to run arbitrary code on your machine.**
+A teammate with EDIT can drive the agent, which runs code on whatever
+machine hosts the session. Share read-only when you can. See
+[Co-driving grants code execution on the host](/docs/collaborate#code-execution-risk)
+for details.
+
+</div>
+
+## 5. Run a cloud sandbox host
+
+Want the agent to keep working after you close your laptop? Launch a
+cloud sandbox host from the web UI. The agent runs in a remote container
+and you check results whenever you're ready.
+
+Set it up by adding a `sandbox` section to your server config. See
+[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host) for the full setup guide.
+
+## What's next
+
+- [Set up SSO](/docs/collaborate/auth) with Google, GitHub, or Okta for your team.
+- [Explore other deployment options](/docs/deploy/overview): Docker, Render, Fly.io.
+- [Build a custom agent](/docs/use/custom-agents) that your whole team can use.

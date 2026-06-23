@@ -10,7 +10,9 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 
-const files = execSync('grep -rl "pageMeta(" app --include=page.js --include=layout.js')
+const files = execSync(
+  'grep -rl "pageMeta(" app --include=page.js --include=page.mdx --include=layout.js'
+)
   .toString()
   .trim()
   .split("\n")
@@ -19,7 +21,7 @@ const files = execSync('grep -rl "pageMeta(" app --include=page.js --include=lay
 
 // app/docs/deploy/database/page.js -> /docs/deploy/database
 const routeFor = (file) =>
-  "/" + file.replace(/^app\//, "").replace(/\/(page|layout)\.js$/, "");
+  "/" + file.replace(/^app\//, "").replace(/\/(page|layout)\.(js|mdx)$/, "");
 
 // Matches: pageMeta("title", "desc", { ...options })
 const CALL = /pageMeta\(\s*("(?:[^"\\]|\\.)*")\s*,\s*("(?:[^"\\]|\\.)*")\s*,\s*\{([\s\S]*?)\}\s*\)/;

@@ -1,0 +1,142 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Custom Agents", "Define a custom agent in a short YAML file, with no code or frameworks, and get the full Omnigent platform around it.", {
+  eyebrow: "Use Cases",
+  path: "/docs/use/custom-agents",
+});
+
+# Custom Agents
+
+A custom agent is defined in a short YAML file. No imperative code, no
+framework subclassing. The YAML file **is** the agent. You get the entire
+Omnigent platform for free: web UI, persistent sessions, team collaboration,
+deployment infrastructure, and [contextual policies](/docs/policies/overview).
+
+## Create it with your coding agent
+
+The recommended way to create a custom agent is to ask your coding agent to
+build it for you in natural language:
+
+```
+You: Build me a documentation reviewer agent. It should use Claude as
+     the model, have access to the file system and GitHub, and follow
+     our style guide at docs/STYLE.md.
+
+Agent: Created "docs-reviewer" agent. Opening a new session with it now.
+       You can select it from the session dropdown anytime.
+```
+
+The agent writes the YAML behind the scenes and registers it so you can
+reuse it. If you want to tweak the config later, the YAML file is there
+to edit directly.
+
+## The config file
+
+Every custom agent lives in its own directory with a `config.yaml` at the
+root. You can place the directory anywhere on disk. Run it with:
+
+```
+omni run ./my-agent/              # directory containing config.yaml
+```
+
+## What you can configure
+
+The config file supports these sections:
+
+### [Harnesses](/docs/build/harnesses)
+
+The harness is the runtime that executes your agent loop. Swap one line
+to switch runtimes.
+
+```
+executor:
+  type: omnigent
+  config:
+    harness: claude
+```
+
+### [Models & Credentials](/docs/build/models)
+
+Pick the LLM that powers your harness.
+
+```
+executor:
+  type: omnigent
+  config:
+    harness: claude
+  model: claude-sonnet-4-6
+```
+
+### [Prompts & Skills](/docs/build/prompts)
+
+Set the system prompt inline, or point at a file.
+
+```
+prompt: You are a concise coding assistant.
+
+# Or from a file:
+instructions: AGENTS.md
+```
+
+### [MCP & Tools](/docs/build/tools)
+
+Wire in MCP servers, Python functions, or sub-agents.
+
+```
+tools:
+  github:
+    type: mcp
+    command: uv
+    args: [run, python, -m, github_mcp]
+  summarize:
+    type: function
+    callable: my_package.tools.summarize_file
+```
+
+### [Policies](/docs/policies/overview)
+
+Declarative guardrails in YAML.
+
+```
+policies:
+  rate_limit:
+    type: function
+    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+    factory_params:
+      limit: 50
+```
+
+## Putting it all together
+
+```
+spec_version: 1
+name: coding_agent
+prompt: |
+  You are a coding agent. Inspect files before editing, run targeted tests,
+  and summarize changes with validation results.
+
+executor:
+  type: omnigent
+  config:
+    harness: claude
+  model: claude-sonnet-4-6
+
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    write_paths: [.]
+    allow_network: true
+
+tools:
+  repo_search:
+    type: function
+    callable: my_package.tools.repo_search
+
+policies:
+  rate_limit:
+    type: function
+    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+    factory_params:
+      limit: 50
+```

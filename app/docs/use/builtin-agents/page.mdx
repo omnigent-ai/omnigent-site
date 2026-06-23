@@ -1,0 +1,29 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Built-in Multi-AI Agents", "Omnigent ships with multi-agent orchestrators that combine different AI agents into a single workflow, ready to run out of the box.", {
+  eyebrow: "Use Cases",
+  path: "/docs/use/builtin-agents",
+});
+
+# Built-in Multi-AI Agents
+
+Omnigent ships with multi-agent orchestrators that combine different AI agents
+in a single workflow. Both are ready to run out of the box, with more coming.
+
+## [Polly](/docs/use/builtin-agents/polly)
+
+Multi-agent coding orchestrator. Breaks tasks into sub-tasks, delegates to
+Claude Code, Codex, and Pi sub-agents in separate git worktrees, and enforces
+cross-vendor review. Run `omni` (Polly is the default agent).
+
+## [Debby](/docs/use/builtin-agents/debby)
+
+Multi-model brainstorming partner. Sends every question to both Claude and GPT,
+with a `/debate` skill for multi-round critique. Run `omni examples/debby/` from
+a git checkout.
+
+---
+
+Polly and Debby are just YAML configs. You can build your own multi-agent
+orchestrator the same way. See [Custom Agents](/docs/use/custom-agents) to
+learn how.

@@ -1,0 +1,163 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Contextual Policies", "Policies control what your Omnigent can do, intercepting every action to allow, ask for approval, or deny it in real time.", {
+  eyebrow: "Policies",
+  path: "/docs/policies/overview",
+});
+
+# Contextual Policies
+
+Policies control what your Omnigent can and cannot do. They intercept every
+action (tool calls, LLM requests, file operations) and decide in real time
+whether to **allow**, **ask for approval**, or **deny**.
+
+## Why “contextual”?
+
+Most agent frameworks offer static rules: allow this tool, deny that one.
+Omnigent policies are different. They are **stateful** and **dynamic**: each
+policy maintains its own state across the entire session and makes decisions
+based on what has happened so far.
+
+This is what enables policies that static systems simply cannot express:
+
+- **Cost budgets.** Track cumulative LLM spend across every turn. Warn at $3, block expensive models at $5. The policy remembers what you've spent.
+- **Rate limiting.** Count tool calls over time and deny after a threshold. The count persists across the session, not per-request.
+- **Risk scoring.** Accumulate a risk score from sensitive operations (accessing credentials, modifying production data). Escalate to human approval once the score crosses a threshold.
+- **Model routing.** Classify tasks as trivial or complex and redirect trivial ones away from expensive models, based on conversation context.
+
+Every policy evaluation receives the full session context: cumulative cost,
+tool call history, data classification labels, and custom state you define.
+This makes Omnigent's policy system fundamentally more powerful than the
+static security controls built into individual coding agents.
+
+## What you can enforce
+
+For example: cap spending, require approval before destructive actions,
+restrict access to repos or services, block PII, or route models. See
+[Builtin Policies](/docs/policies/builtin) for the full list.
+
+## How policies work
+
+Each policy returns one of three decisions:
+
+| Decision | What happens |
+| --- | --- |
+| **ALLOW** | The action proceeds. |
+| **ASK** | The action pauses until the user approves or rejects it. |
+| **DENY** | The action is blocked with an error message. |
+
+Policies are checked in order. The first policy to return a decision wins. No opinion
+(`None`) passes to the next policy.
+
+### Available policies
+
+Omnigent provides [builtin policies](/docs/policies/builtin) for common guardrails (cost
+budgets, approval gates, access controls, PII blocking, model routing). You can also write
+your own [custom policies](/docs/policies/custom) in Python and register
+them on the server to make them available:
+
+```
+# server config (config.yaml)
+policy_modules:
+  - myorg.policies
+```
+
+This makes your custom policies discoverable alongside the builtins. See
+[Custom Policies](/docs/policies/custom) for how to write and register them.
+
+### Three levels
+
+To apply a policy, you pick one (builtin or custom) and add it at one of three levels. Each
+level has a different scope and priority:
+
+| Level | Who | Scope | How to add | Priority |
+| --- | --- | --- | --- | --- |
+| **Session** | End user | Current session only, not persistent | Ask your Omnigent, or use the UI settings panel | First |
+| **Omnigent config** | Developer | Every session using this Omnigent | `policies` block in the Omnigent YAML | Second |
+| **Server-wide** | Admin | Every agent and session on the server | Server config YAML or REST API | Last |
+
+An admin can set a company-wide cost cap, a developer can restrict which repos the Omnigent
+writes to, and an end user can add extra approval gates. All three levels are enforced
+simultaneously.
+
+## Adding a policy
+
+### Session level: ask your Omnigent (recommended)
+
+The easiest way to add a policy is to ask your Omnigent directly. Describe what you want in
+plain language:
+
+```
+You: Add a policy that asks me before running any shell commands.
+
+You: Limit this session to $5 of LLM spend.
+
+You: Block access to all GitHub repos except myorg/frontend.
+```
+
+Your Omnigent picks the right policy from the available registry (both
+[builtin](/docs/policies/builtin) and any [custom policies](/docs/policies/custom) registered
+on the server), configures the parameters, and asks for your approval. Once you approve, the
+policy takes effect immediately on the next turn of the current session.
+
+You can also browse and toggle policies from the **settings panel** in the web
+UI without typing anything in chat.
+
+### Omnigent config level: declare in YAML
+
+For policies that should always apply, declare them in the `policies` block of
+your Omnigent config. These take effect every time the Omnigent starts.
+
+```
+policies:
+  approve_file_ops:
+    type: function
+    handler: omnigent.policies.builtins.safety.ask_on_os_tools
+  rate_limit:
+    type: function
+    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+    factory_params:
+      limit: 50
+```
+
+Here `rate_limit` caps the total number of tool calls a single session can make
+(50 in this example), a guard against runaway agent loops and surprise cost. Once the cap
+is reached, further tool calls are denied for the rest of the session.
+
+Policies without parameters use just `handler`. Configurable policies add
+`factory_params`. Multiple policies are evaluated in the order declared.
+
+### Server-wide level: server config
+
+Server-wide policies apply to every session on your deployed server. Add them to your server
+config YAML (`~/.omnigent/config.yaml` on a laptop, `/data/config.yaml` in Docker):
+
+```
+policies:
+  session_cost_guard:
+    type: function
+    function:
+      path: omnigent.policies.builtins.cost.cost_budget
+      arguments:
+        ask_thresholds_usd: [1.0]
+        max_cost_usd: 5.0
+  user_daily_cost_guard:
+    type: function
+    function:
+      path: omnigent.policies.builtins.cost.user_daily_cost_budget
+      arguments:
+        ask_thresholds_usd: [10.0, 25.0]
+        max_cost_usd: 50.0
+```
+
+Server-wide policies use the `function: {path, arguments}` format (not
+`handler` / `factory_params`). Restart the server after editing.
+
+Server-wide policies can also be managed at runtime via the REST API:
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/v1/policies` | Create a policy |
+| `GET` | `/v1/policies` | List all policies |
+| `PATCH` | `/v1/policies/{id}` | Update a policy |
+| `DELETE` | `/v1/policies/{id}` | Remove a policy |

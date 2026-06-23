@@ -1,0 +1,41 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Builtin Policies", "Built-in Omnigent policies for common safety and cost-control guardrails. Apply them by name or reference them in YAML.", {
+  eyebrow: "Policies",
+  path: "/docs/policies/builtin",
+});
+
+# Builtin Policies
+
+Omnigent ships with policies for common guardrails, organized into two categories:
+**Safety** and **Cost Control**. Your Omnigent can apply any of
+these by name when you [ask it to add a policy](/docs/policies/overview#adding-a-policy), or you
+can reference them in YAML by their full path in the `handler` field.
+
+All builtin policies live under `omnigent.policies.builtins`.
+
+## Safety
+
+| Policy | What it does | Parameters |
+| --- | --- | --- |
+| `ask_on_os_tools` | ASKs before any file or shell operation. | None |
+| `block_skills` | Prevents specific skills from loading. | `blocked` (string[], required) |
+| `block_working_dir_changes` | Blocks shell commands that change the working directory. | `block_cd` (bool), `block_worktree` (bool), `allowed_dirs` (string[]), `action` (`"deny"` or `"ask"`) |
+| `cel_policy` | Write custom policy logic using CEL (Common Expression Language), a safe, non-Turing-complete expression language. | `expression` (CEL expression string), `reason` (deny message) |
+| `deny_pii_in_llm_request` | Scans outgoing messages for PII and blocks or flags them. | `pii_types` (string[]), `action` (`"DENY"` or `"ASK"`) |
+| `enforce_sandbox` | Forces a sandbox configuration on agent start. | `sandbox_type`, `allow_network`, `write_paths`, `read_paths` |
+| `gcalendar_policy` | Controls Google Calendar. Defaults to read-only. | None |
+| `gdrive_policy` | Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to agent-created files by default. | `read_all`, `allow_create`, `write_files` |
+| `github_policy` | Controls GitHub read/write access across MCP tools and shell commands. | `read_all`, `write_repos`, `write_branches` |
+| `gmail_policy` | Controls Gmail. Defaults to read + draft, no send. | `allow_read`, `allow_send`, `allow_drafts` |
+| `max_tool_calls_per_session` | DENYs after a total tool-call limit is reached. | `limit` (int, default `100`) |
+| `prompt_policy` | Evaluate policy decisions using an LLM. The policy sends the event context to a model and interprets the response as ALLOW/ASK/DENY. Useful for nuanced decisions that can't be expressed as static rules. | `prompt` (system instructions for the evaluator model) |
+| `risk_score_policy` | Accumulate a risk score from tool calls and sensitive data labels. Escalates guarded tools to ASK or DENY once the score exceeds a threshold. | `threshold` (int), `tool_points` (object mapping tool names to points), `sensitive_labels` (object mapping labels to points), `guarded_tools` (string[]), `escalate_action` (`"ASK"` or `"DENY"`) |
+
+## Cost Control
+
+| Policy | What it does | Parameters |
+| --- | --- | --- |
+| `cost_budget` | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit. | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models` |
+| `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models. | None |
+| `user_daily_cost_budget` | Same as `cost_budget`, but enforced per-user daily across all sessions. | `max_cost_usd` (required), `ask_thresholds_usd` |

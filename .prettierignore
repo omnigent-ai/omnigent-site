@@ -10,11 +10,3 @@ public/pagefind
 lib/og-manifest.json
 bun.lock
 package-lock.json
-
-# Two MDX pages pack literal JSX onto single lines so it renders "tight"
-# (no <p> wrapping): the Co-drive list in collaborate and the install table
-# in desktop (which also keeps a plain <a> download link, not next/link).
-# Prettier breaks those lines apart, which makes MDX wrap the contents in
-# <p> and changes the rendered output. Every other .mdx file IS formatted.
-app/docs/collaborate/page.mdx
-app/docs/interact/desktop/page.mdx

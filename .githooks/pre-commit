@@ -2,8 +2,8 @@
 #
 # Repo pre-commit hook.
 #
-# 1. Delegates to any globally-configured hooks (e.g. the Databricks gitleaks
-#    secret scanner). A repo-local core.hooksPath overrides the global one, so
+# 1. Delegates to any globally-configured hooks (e.g. a global secret
+#    scanner). A repo-local core.hooksPath overrides the global one, so
 #    we re-invoke the global hook here to avoid disabling it for this repo.
 # 2. Strips npm registry proxy URLs out of bun.lock so they never get committed.
 #

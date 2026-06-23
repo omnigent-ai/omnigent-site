@@ -1,15 +1,20 @@
 import { pageMeta } from "@/lib/og";
 
-export const metadata = pageMeta("Polly", "Polly is a supervisor that delegates sub-tasks to sub-agents on separate harnesses and worktrees, with cross-agent review and human-decided merges.", {
-  eyebrow: "Use Cases",
-  path: "/docs/use/builtin-agents/polly",
-});
+export const metadata = pageMeta(
+  "Polly",
+  "Polly is a supervisor that delegates sub-tasks to sub-agents on separate harnesses and worktrees, with cross-agent review and human-decided merges.",
+  {
+    eyebrow: "Use Cases",
+    path: "/docs/use/builtin-agents/polly",
+  },
+);
 
 # Polly
 
 <p className="lede-block">
   Multi-agent coding orchestrator. Polly breaks your task into sub-tasks and
-  delegates each one to a different AI agent, with cross-vendor code review built in.
+  delegates each one to a different AI agent, with cross-vendor code review
+  built in.
 </p>
 
 ```
@@ -24,11 +29,11 @@ into sub-tasks and delegates each one to a sub-agent running on its own harness
 and git worktree. One agent implements, a different agent reviews. Each
 implementer opens its own PR. Polly never merges. The human decides.
 
-| Sub-agent | Harness | Role |
-| --- | --- | --- |
-| `claude_code` | `claude-native` | Claude Code |
-| `codex` | `codex-native` | Codex |
-| `pi` | `pi` | Pi (headless, any gateway model) |
+| Sub-agent     | Harness         | Role                             |
+| ------------- | --------------- | -------------------------------- |
+| `claude_code` | `claude-native` | Claude Code                      |
+| `codex`       | `codex-native`  | Codex                            |
+| `pi`          | `pi`            | Pi (headless, any gateway model) |
 
 ## Skills
 

@@ -1,9 +1,13 @@
 import { pageMeta } from "@/lib/og";
 
-export const metadata = pageMeta("Omnibox (OS Sandbox)", "Omnibox is Omnigent's secure OS sandbox: restrict filesystem and network access and hide credentials for unattended, locked-down agents.", {
-  eyebrow: "Policies",
-  path: "/docs/policies/os-sandbox",
-});
+export const metadata = pageMeta(
+  "Omnibox (OS Sandbox)",
+  "Omnibox is Omnigent's secure OS sandbox: restrict filesystem and network access and hide credentials for unattended, locked-down agents.",
+  {
+    eyebrow: "Policies",
+    path: "/docs/policies/os-sandbox",
+  },
+);
 
 # Omnibox: OS Sandbox
 
@@ -17,8 +21,8 @@ controls which files the agent can read and write, whether it can access the net
 which environment variables it sees.
 
 This is different from the [cloud sandbox host](/docs/deploy/cloud-sandbox-host),
-which controls *where* the runner executes. The OS sandbox controls
-*what the agent can access*, regardless of where it runs.
+which controls _where_ the runner executes. The OS sandbox controls
+_what the agent can access_, regardless of where it runs.
 
 The OS sandbox applies to the built-in OS tools (`sys_os_read`, `sys_os_write`,
 `sys_os_edit`, `sys_os_shell`) and any terminals you declare in the agent config.
@@ -48,11 +52,11 @@ os_env:
 On Linux, Omnigent uses bubblewrap (`bwrap`). On macOS, it uses Seatbelt
 (`sandbox-exec`). Omit `type` to auto-detect.
 
-| Platform | Backend | Mechanism |
-| --- | --- | --- |
-| Linux | `linux_bwrap` | Bubblewrap namespaces + seccomp |
-| macOS | `darwin_seatbelt` | `sandbox-exec` SBPL profiles |
-| Other | `none` | No sandboxing (explicit opt-out) |
+| Platform | Backend           | Mechanism                        |
+| -------- | ----------------- | -------------------------------- |
+| Linux    | `linux_bwrap`     | Bubblewrap namespaces + seccomp  |
+| macOS    | `darwin_seatbelt` | `sandbox-exec` SBPL profiles     |
+| Other    | `none`            | No sandboxing (explicit opt-out) |
 
 ## What you can restrict
 
@@ -171,25 +175,25 @@ Omnigent errors instead of quietly running unsandboxed. The only opt-out is
 
 ### `os_env`
 
-| Field | Type | Default | Description |
-| --- | --- | --- | --- |
-| `type` | string | `caller_process` | OS environment backend |
-| `cwd` | string | `.` | Working directory |
-| `sandbox` | block | platform default | Sandbox policy (see below) |
-| `start_in_scratch` | bool | `false` | Start in a writable scratch tmpdir instead of `cwd`. Workspace bound read-only. Requires an active sandbox. |
+| Field              | Type   | Default          | Description                                                                                                 |
+| ------------------ | ------ | ---------------- | ----------------------------------------------------------------------------------------------------------- |
+| `type`             | string | `caller_process` | OS environment backend                                                                                      |
+| `cwd`              | string | `.`              | Working directory                                                                                           |
+| `sandbox`          | block  | platform default | Sandbox policy (see below)                                                                                  |
+| `start_in_scratch` | bool   | `false`          | Start in a writable scratch tmpdir instead of `cwd`. Workspace bound read-only. Requires an active sandbox. |
 
 ### `os_env.sandbox`
 
-| Field | Type | Default | Description |
-| --- | --- | --- | --- |
-| `type` | string | auto-detect | `linux_bwrap`, `darwin_seatbelt`, or `none` |
-| `write_paths` | string[] | `[]` | Writable directories. `cwd` is read-only by default. |
-| `write_files` | string[] | `[]` | Individual writable files |
-| `read_paths` | string[] | none | Read-only grants outside `cwd` |
-| `allow_network` | bool | `true` | Network access on/off |
-| `cwd_allow_hidden` | string[] | `[".venv"]` | Dotfile basenames to allow |
-| `cwd_hidden_scan_max_entries` | int | `50000` | Max entries for dotfile mask walk |
-| `cwd_hidden_scan_overflow` | string | `warn` | `error`, `warn`, or `unlimited` |
-| `env_passthrough` | string[] | minimal set | Env vars the agent can see |
-| `egress_rules` | string[] | none | HTTP(S) allow-list. Default-deny when set. |
-| `egress_allow_private_destinations` | bool | `false` | Allow connections to private/metadata IPs |
+| Field                               | Type     | Default     | Description                                          |
+| ----------------------------------- | -------- | ----------- | ---------------------------------------------------- |
+| `type`                              | string   | auto-detect | `linux_bwrap`, `darwin_seatbelt`, or `none`          |
+| `write_paths`                       | string[] | `[]`        | Writable directories. `cwd` is read-only by default. |
+| `write_files`                       | string[] | `[]`        | Individual writable files                            |
+| `read_paths`                        | string[] | none        | Read-only grants outside `cwd`                       |
+| `allow_network`                     | bool     | `true`      | Network access on/off                                |
+| `cwd_allow_hidden`                  | string[] | `[".venv"]` | Dotfile basenames to allow                           |
+| `cwd_hidden_scan_max_entries`       | int      | `50000`     | Max entries for dotfile mask walk                    |
+| `cwd_hidden_scan_overflow`          | string   | `warn`      | `error`, `warn`, or `unlimited`                      |
+| `env_passthrough`                   | string[] | minimal set | Env vars the agent can see                           |
+| `egress_rules`                      | string[] | none        | HTTP(S) allow-list. Default-deny when set.           |
+| `egress_allow_private_destinations` | bool     | `false`     | Allow connections to private/metadata IPs            |

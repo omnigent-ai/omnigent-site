@@ -1,9 +1,13 @@
 import { pageMeta } from "@/lib/og";
 
-export const metadata = pageMeta("Custom Policies", "When built-in policies aren't enough, write your own in Python, register them on the server, and use them like builtins.", {
-  eyebrow: "Policies",
-  path: "/docs/policies/custom",
-});
+export const metadata = pageMeta(
+  "Custom Policies",
+  "When built-in policies aren't enough, write your own in Python, register them on the server, and use them like builtins.",
+  {
+    eyebrow: "Policies",
+    path: "/docs/policies/custom",
+  },
+);
 
 # Custom Policies
 
@@ -99,9 +103,9 @@ ways to apply it (chat, Omnigent YAML, or server config).
 Every policy receives a `PolicyEvent` dict. Use the `type` field to
 filter which events you care about:
 
-| Event type | When it fires | Key data fields |
-| --- | --- | --- |
-| `tool_call` | Omnigent is about to call a tool | `name`, `arguments` |
+| Event type    | When it fires                                  | Key data fields     |
+| ------------- | ---------------------------------------------- | ------------------- |
+| `tool_call`   | Omnigent is about to call a tool               | `name`, `arguments` |
 | `llm_request` | Omnigent is about to send a message to the LLM | `messages`, `model` |
 
 Return `None` for event types you don't handle.

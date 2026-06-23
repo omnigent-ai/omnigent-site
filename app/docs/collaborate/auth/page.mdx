@@ -1,19 +1,23 @@
 import { pageMeta } from "@/lib/og";
 
-export const metadata = pageMeta("Auth & SSO", "Authenticate users in Omnigent three ways. Pick the approach that fits your setup, from simple tokens to full SSO.", {
-  eyebrow: "Collaborate",
-  path: "/docs/collaborate/auth",
-});
+export const metadata = pageMeta(
+  "Auth & SSO",
+  "Authenticate users in Omnigent three ways. Pick the approach that fits your setup, from simple tokens to full SSO.",
+  {
+    eyebrow: "Collaborate",
+    path: "/docs/collaborate/auth",
+  },
+);
 
 # Auth & SSO
 
 Omnigent supports three ways to authenticate users. Pick the one that fits your setup:
 
-| Mode | When to use |
-| --- | --- |
-| [Built-in accounts](#built-in-accounts) | Standalone deploy, no external IdP. Username/password with invite links. |
-| [Single sign-on (OIDC)](#single-sign-on-oidc) | Your own IdP: Google, GitHub, Okta, Microsoft. |
-| [Header-based auth](#header-based-auth) | Behind an existing SSO proxy that injects `X-Forwarded-Email`. |
+| Mode                                          | When to use                                                              |
+| --------------------------------------------- | ------------------------------------------------------------------------ |
+| [Built-in accounts](#built-in-accounts)       | Standalone deploy, no external IdP. Username/password with invite links. |
+| [Single sign-on (OIDC)](#single-sign-on-oidc) | Your own IdP: Google, GitHub, Okta, Microsoft.                           |
+| [Header-based auth](#header-based-auth)       | Behind an existing SSO proxy that injects `X-Forwarded-Email`.           |
 
 ## Built-in accounts
 

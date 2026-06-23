@@ -11,8 +11,10 @@ lib/og-manifest.json
 bun.lock
 package-lock.json
 
-# MDX docs: rendering is structure-sensitive (JSX-in-markdown). Prettier
-# reflows embedded JSX in ways that change the rendered output — e.g. it
-# breaks a single-line <li> apart, which turns a tight list into a loose
-# one (<li><p>...) and shifts spacing. Author MDX by hand instead.
-*.mdx
+# Two MDX pages pack literal JSX onto single lines so it renders "tight"
+# (no <p> wrapping): the Co-drive list in collaborate and the install table
+# in desktop (which also keeps a plain <a> download link, not next/link).
+# Prettier breaks those lines apart, which makes MDX wrap the contents in
+# <p> and changes the rendered output. Every other .mdx file IS formatted.
+app/docs/collaborate/page.mdx
+app/docs/interact/desktop/page.mdx

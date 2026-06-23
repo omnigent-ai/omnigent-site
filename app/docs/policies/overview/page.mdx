@@ -1,9 +1,13 @@
 import { pageMeta } from "@/lib/og";
 
-export const metadata = pageMeta("Contextual Policies", "Policies control what your Omnigent can do, intercepting every action to allow, ask for approval, or deny it in real time.", {
-  eyebrow: "Policies",
-  path: "/docs/policies/overview",
-});
+export const metadata = pageMeta(
+  "Contextual Policies",
+  "Policies control what your Omnigent can do, intercepting every action to allow, ask for approval, or deny it in real time.",
+  {
+    eyebrow: "Policies",
+    path: "/docs/policies/overview",
+  },
+);
 
 # Contextual Policies
 
@@ -40,11 +44,11 @@ restrict access to repos or services, block PII, or route models. See
 
 Each policy returns one of three decisions:
 
-| Decision | What happens |
-| --- | --- |
-| **ALLOW** | The action proceeds. |
-| **ASK** | The action pauses until the user approves or rejects it. |
-| **DENY** | The action is blocked with an error message. |
+| Decision  | What happens                                             |
+| --------- | -------------------------------------------------------- |
+| **ALLOW** | The action proceeds.                                     |
+| **ASK**   | The action pauses until the user approves or rejects it. |
+| **DENY**  | The action is blocked with an error message.             |
 
 Policies are checked in order. The first policy to return a decision wins. No opinion
 (`None`) passes to the next policy.
@@ -70,11 +74,11 @@ This makes your custom policies discoverable alongside the builtins. See
 To apply a policy, you pick one (builtin or custom) and add it at one of three levels. Each
 level has a different scope and priority:
 
-| Level | Who | Scope | How to add | Priority |
-| --- | --- | --- | --- | --- |
-| **Session** | End user | Current session only, not persistent | Ask your Omnigent, or use the UI settings panel | First |
-| **Omnigent config** | Developer | Every session using this Omnigent | `policies` block in the Omnigent YAML | Second |
-| **Server-wide** | Admin | Every agent and session on the server | Server config YAML or REST API | Last |
+| Level               | Who       | Scope                                 | How to add                                      | Priority |
+| ------------------- | --------- | ------------------------------------- | ----------------------------------------------- | -------- |
+| **Session**         | End user  | Current session only, not persistent  | Ask your Omnigent, or use the UI settings panel | First    |
+| **Omnigent config** | Developer | Every session using this Omnigent     | `policies` block in the Omnigent YAML           | Second   |
+| **Server-wide**     | Admin     | Every agent and session on the server | Server config YAML or REST API                  | Last     |
 
 An admin can set a company-wide cost cap, a developer can restrict which repos the Omnigent
 writes to, and an end user can add extra approval gates. All three levels are enforced
@@ -155,9 +159,9 @@ Server-wide policies use the `function: {path, arguments}` format (not
 
 Server-wide policies can also be managed at runtime via the REST API:
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `POST` | `/v1/policies` | Create a policy |
-| `GET` | `/v1/policies` | List all policies |
-| `PATCH` | `/v1/policies/{id}` | Update a policy |
-| `DELETE` | `/v1/policies/{id}` | Remove a policy |
+| Method   | Endpoint            | Description       |
+| -------- | ------------------- | ----------------- |
+| `POST`   | `/v1/policies`      | Create a policy   |
+| `GET`    | `/v1/policies`      | List all policies |
+| `PATCH`  | `/v1/policies/{id}` | Update a policy   |
+| `DELETE` | `/v1/policies/{id}` | Remove a policy   |

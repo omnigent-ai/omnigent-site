@@ -71,7 +71,7 @@ export default function DocSearch({ variant = "header" }) {
       const search = await pf.debouncedSearch(q);
       if (search === null) return; // superseded by a newer keystroke
       const data = await Promise.all(
-        search.results.slice(0, 8).map((r) => r.data())
+        search.results.slice(0, 8).map((r) => r.data()),
       );
       if (!mounted.current) return;
       setResults(data);
@@ -99,7 +99,7 @@ export default function DocSearch({ variant = "header" }) {
       close();
       router.push(url);
     },
-    [close, router]
+    [close, router],
   );
 
   function onInputKeyDown(e) {
@@ -126,9 +126,20 @@ export default function DocSearch({ variant = "header" }) {
       onClick={() => setOpen(true)}
       aria-label="Search docs"
     >
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
         <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
-        <path d="M21 21l-4.3-4.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path
+          d="M21 21l-4.3-4.3"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
       </svg>
       <span className="docsearch-trigger-label">Search docs</span>
       <kbd className="docsearch-kbd">⌘K</kbd>
@@ -147,9 +158,26 @@ export default function DocSearch({ variant = "header" }) {
               onMouseDown={(e) => e.stopPropagation()}
             >
               <div className="docsearch-input-row">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
-                  <path d="M21 21l-4.3-4.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    cx="11"
+                    cy="11"
+                    r="7"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  />
+                  <path
+                    d="M21 21l-4.3-4.3"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
                 </svg>
                 <input
                   ref={inputRef}
@@ -168,8 +196,8 @@ export default function DocSearch({ variant = "header" }) {
               <div className="docsearch-results">
                 {error && (
                   <p className="docsearch-empty">
-                    Search index unavailable. Run a production build
-                    (<code>bun run build</code>) to generate it.
+                    Search index unavailable. Run a production build (
+                    <code>bun run build</code>) to generate it.
                   </p>
                 )}
                 {!error && query.trim() && ready && results.length === 0 && (
@@ -201,13 +229,20 @@ export default function DocSearch({ variant = "header" }) {
               </div>
 
               <div className="docsearch-footer">
-                <span><kbd className="docsearch-kbd">↑</kbd><kbd className="docsearch-kbd">↓</kbd> to navigate</span>
-                <span><kbd className="docsearch-kbd">↵</kbd> to select</span>
-                <span><kbd className="docsearch-kbd">Esc</kbd> to close</span>
+                <span>
+                  <kbd className="docsearch-kbd">↑</kbd>
+                  <kbd className="docsearch-kbd">↓</kbd> to navigate
+                </span>
+                <span>
+                  <kbd className="docsearch-kbd">↵</kbd> to select
+                </span>
+                <span>
+                  <kbd className="docsearch-kbd">Esc</kbd> to close
+                </span>
               </div>
             </div>
           </div>,
-          document.body
+          document.body,
         )
       : null;
 

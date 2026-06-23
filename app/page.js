@@ -34,10 +34,10 @@ export default function Home() {
             />
           </h1>
           <p className="lede">
-            A common layer over Claude Code, Codex, Pi, and the agents you
-            write yourself: swap or combine harnesses without rewriting, keep
-            them in check with policies and sandboxing, and collaborate in
-            real time on the same live session, from any device.
+            A common layer over Claude Code, Codex, Pi, and the agents you write
+            yourself: swap or combine harnesses without rewriting, keep them in
+            check with policies and sandboxing, and collaborate in real time on
+            the same live session, from any device.
           </p>
           <InstallTabs />
           <CtaButtons />
@@ -62,17 +62,28 @@ export default function Home() {
             <h2>Features</h2>
             <ul className="features">
               <li>
-                <strong><Link href="/docs/use/builtin-agents">Polly &amp; Debby</Link>:</strong> built-in multi-AI agents (a
-                coding orchestrator and a model debate). Build your own in YAML.
+                <strong>
+                  <Link href="/docs/use/builtin-agents">Polly &amp; Debby</Link>
+                  :
+                </strong>{" "}
+                built-in multi-AI agents (a coding orchestrator and a model
+                debate). Build your own in YAML.
               </li>
               <li>
-                <strong><Link href="/docs/policies/overview">Contextual Policies</Link>:</strong> stateful spend caps, model
-                routing, and risk-based escalation.
+                <strong>
+                  <Link href="/docs/policies/overview">
+                    Contextual Policies
+                  </Link>
+                  :
+                </strong>{" "}
+                stateful spend caps, model routing, and risk-based escalation.
               </li>
               <li>
-                <strong><Link href="/docs/omnibox">Secure OS Sandbox</Link>:</strong> restrict filesystem
-                and network access. Hide credentials from the agent, and broker access to them.
-                Run YOLO mode safely.
+                <strong>
+                  <Link href="/docs/omnibox">Secure OS Sandbox</Link>:
+                </strong>{" "}
+                restrict filesystem and network access. Hide credentials from
+                the agent, and broker access to them. Run YOLO mode safely.
               </li>
             </ul>
           </div>
@@ -93,8 +104,8 @@ export default function Home() {
             <h2>Architecture</h2>
             <p className="arch-outro">
               A runner wraps any agent in a sandboxed, uniform session. A server
-              adds policies and shared history, and exposes every session over the
-              terminal, the web, a native app, mobile, and a REST API.
+              adds policies and shared history, and exposes every session over
+              the terminal, the web, a native app, mobile, and a REST API.
             </p>
             <figure className="section-graphic">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -105,7 +116,6 @@ export default function Home() {
                 height={700}
               />
             </figure>
-
           </div>
         </section>
 
@@ -114,12 +124,20 @@ export default function Home() {
 
           {/* Build with us */}
           <section className="section center">
-            <p className="muted" style={{ maxWidth: "38rem", margin: "0 auto 1.8rem" }}>
+            <p
+              className="muted"
+              style={{ maxWidth: "38rem", margin: "0 auto 1.8rem" }}
+            >
               Omnigent is alpha and built in the open. Try it and give us
               feedback on Discord.
             </p>
             <div className="hero-cta">
-              <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
+              <a
+                href={DISCORD_URL}
+                className="btn"
+                target="_blank"
+                rel="noreferrer"
+              >
                 <DiscordIcon /> Join the Discord
               </a>
             </div>

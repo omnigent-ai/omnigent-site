@@ -9,7 +9,11 @@ const options = (origin) => [
   { id: "installer", label: "installer", cmd: installerCmd(origin) },
   { id: "uv", label: "uv", cmd: "uv tool install omnigent" },
   { id: "pip", label: "pip", cmd: "pip install omnigent" },
-  { id: "homebrew", label: "homebrew", cmd: "brew install omnigent-ai/tap/omnigent" },
+  {
+    id: "homebrew",
+    label: "homebrew",
+    cmd: "brew install omnigent-ai/tap/omnigent",
+  },
 ];
 
 export default function InstallTabs() {
@@ -59,7 +63,12 @@ export default function InstallTabs() {
         <code>
           <span className="term-prompt">$</span> {current.cmd}
         </code>
-        <button className="term-copy" type="button" onClick={copy} aria-label="Copy command">
+        <button
+          className="term-copy"
+          type="button"
+          onClick={copy}
+          aria-label="Copy command"
+        >
           {copied ? "copied" : "copy"}
         </button>
       </div>

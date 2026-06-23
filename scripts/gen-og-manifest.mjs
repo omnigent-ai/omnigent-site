@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 
 const files = execSync(
-  'grep -rl "pageMeta(" app --include=page.js --include=page.mdx --include=layout.js'
+  'grep -rl "pageMeta(" app --include=page.js --include=page.mdx --include=layout.js',
 )
   .toString()
   .trim()
@@ -23,8 +23,10 @@ const files = execSync(
 const routeFor = (file) =>
   "/" + file.replace(/^app\//, "").replace(/\/(page|layout)\.(js|mdx)$/, "");
 
-// Matches: pageMeta("title", "desc", { ...options })
-const CALL = /pageMeta\(\s*("(?:[^"\\]|\\.)*")\s*,\s*("(?:[^"\\]|\\.)*")\s*,\s*\{([\s\S]*?)\}\s*\)/;
+// Matches: pageMeta("title", "desc", { ...options }) — tolerates a trailing
+// comma after the options object (Prettier adds one when it wraps the call).
+const CALL =
+  /pageMeta\(\s*("(?:[^"\\]|\\.)*")\s*,\s*("(?:[^"\\]|\\.)*")\s*,\s*\{([\s\S]*?)\}\s*,?\s*\)/;
 
 const manifest = {};
 let injected = 0;
@@ -47,7 +49,7 @@ for (const file of files) {
   // Ensure the call carries its own path (used to build the og:image URL).
   if (!/\bpath:\s*"/.test(opts)) {
     const rebuilt = `pageMeta(${titleLit}, ${descLit}, {\n  eyebrow: ${JSON.stringify(
-      eyebrow
+      eyebrow,
     )},\n  path: ${JSON.stringify(path)},\n})`;
     src = src.replace(full, rebuilt);
     writeFileSync(file, src);
@@ -55,12 +57,9 @@ for (const file of files) {
   }
 }
 
-writeFileSync(
-  "lib/og-manifest.json",
-  JSON.stringify(manifest, null, 2) + "\n"
-);
+writeFileSync("lib/og-manifest.json", JSON.stringify(manifest, null, 2) + "\n");
 
 console.log(
   `og manifest: ${Object.keys(manifest).length} pages` +
-    (injected ? `, injected path into ${injected} call(s)` : "")
+    (injected ? `, injected path into ${injected} call(s)` : ""),
 );

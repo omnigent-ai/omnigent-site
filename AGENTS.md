@@ -21,8 +21,8 @@ When new rules are added to `.agents/rules/`, treat them as always-on guidance a
 
 Reusable, task-specific playbooks live in `.agents/skills/`. Load the relevant skill when a task matches its description.
 
-| Skill | Use when |
-|-------|----------|
+| Skill                                                              | Use when                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [`site-link-analyzer`](.agents/skills/site-link-analyzer/SKILL.md) | Auditing and fixing links across the site — broken internal routes, missing public assets, relative/external targets. Runs the deterministic checker (`bun run lint:links`, backed by `scripts/check-links.mjs`), then applies the confident fixes and reports the rest. |
 
 When you add or change a skill in `.agents/skills/`, update this table.

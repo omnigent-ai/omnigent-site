@@ -1,0 +1,18 @@
+# Build output and dependencies
+node_modules
+.next
+out
+build
+.vercel
+
+# Generated artifacts (written by scripts/CLIs, not hand-edited)
+public/pagefind
+lib/og-manifest.json
+bun.lock
+package-lock.json
+
+# MDX docs: rendering is structure-sensitive (JSX-in-markdown). Prettier
+# reflows embedded JSX in ways that change the rendered output — e.g. it
+# breaks a single-line <li> apart, which turns a tight list into a loose
+# one (<li><p>...) and shifts spacing. Author MDX by hand instead.
+*.mdx

@@ -17,7 +17,7 @@ export default function HeadingAnchors() {
 
   useEffect(() => {
     const headings = document.querySelectorAll(
-      ".docs-main h1, .docs-main h2, .docs-main h3"
+      ".docs-main h1, .docs-main h2, .docs-main h3",
     );
     headings.forEach((h) => {
       const id = h.id || slugify(h.textContent.replace(/#$/, "").trim());

@@ -10,6 +10,8 @@
     "start": "next start",
     "lint": "next lint",
     "lint:links": "node scripts/check-links.mjs",
+    "fmt": "prettier --write .",
+    "fmt:check": "prettier --check .",
     "strip-lock-proxy": "bun run scripts/strip-bun-lock-proxy.ts",
     "strip-lock-proxy:check": "bun run scripts/strip-bun-lock-proxy.ts --check",
     "setup-hooks": "git config core.hooksPath .githooks",
@@ -28,6 +30,7 @@
   "devDependencies": {
     "eslint": "8.57.1",
     "eslint-config-next": "14.2.35",
-    "pagefind": "^1.5.2"
+    "pagefind": "^1.5.2",
+    "prettier": "^3.8.4"
   }
 }

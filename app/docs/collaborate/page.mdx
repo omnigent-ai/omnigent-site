@@ -1,0 +1,58 @@
+import { pageMeta } from "@/lib/og";
+import Link from "next/link";
+
+export const metadata = pageMeta("Pair Programming", "Omnigent is multi-user: share a live session by link, let a teammate co-drive, or fork a conversation across terminal, web, and mobile.", {
+  eyebrow: "Collaborate",
+  path: "/docs/collaborate",
+});
+
+# Pair Programming
+
+Omnigent is multi-user. Once your server is reachable by your team (see
+[Shared Server](/docs/deploy/overview)), you can share a live
+session with a link, let a teammate co-drive your Omnigent, or fork a conversation so someone
+can continue independently. The same session works across
+[terminal](/docs/interact/terminal), [web UI](/docs/interact/web-ui), and
+[mobile](/docs/interact/mobile) simultaneously.
+
+## Co-drive
+
+A teammate attaches to your running session and their messages execute on your machine.
+Great for pairing or handing the keyboard to a domain expert mid-investigation.
+
+<ul>
+  <li>In the <Link href="/docs/interact/web-ui">web UI</Link>, hit <strong>Share</strong> and send the link to your teammate.<ul><li>Share grants one of two permission levels: <strong>VIEW</strong> (read-only, teammates watch the session stream) or <strong>EDIT</strong> (teammates can co-drive and send messages).</li></ul></li>
+  <li>From the terminal, run:<pre><code>{"omni attach <session_id>"}</code></pre></li>
+</ul>
+
+Teammates see everything in real time: messages, tool calls, and file changes stream to every
+connected viewer.
+
+<h3 id="code-execution-risk">Co-driving grants code execution on the host</h3>
+
+Only share **EDIT** with people you trust to run arbitrary code on your machine.
+A session runs commands in a non-sandboxed process on whatever machine hosts it, so a teammate
+with EDIT can drive the agent and gets the same access to your filesystem, credentials, and
+network.
+
+To collaborate more safely, share read-only instead, or host the session on a
+[cloud sandbox host](/docs/deploy/cloud-sandbox-host) so the agent runs in
+an isolated remote container rather than on your personal machine. To constrain what the
+agent can touch even on a trusted host, apply an
+[OS sandbox](/docs/policies/os-sandbox) policy.
+
+## Fork
+
+Clone a conversation and continue independently from the fork point. The original session is
+unaffected.
+
+In the [web UI](/docs/interact/web-ui), click **Clone Session**.
+
+From the terminal:
+
+```
+omni run --fork <session_id>
+```
+
+Forking copies the full conversation history up to the fork point. From there, each session
+diverges independently.

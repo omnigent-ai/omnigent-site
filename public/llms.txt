@@ -1,0 +1,60 @@
+# Omnigent
+
+> Omnigent is an open-source meta-harness for AI agents. It provides a common layer over Claude Code, Codex, Pi, and custom agents, with shared sessions, contextual policies, OS sandboxing, model and credential configuration, real-time collaboration, and multiple interfaces.
+
+Use this file to find the most relevant Omnigent documentation for coding agents, custom agents, deployment, collaboration, policies, sandboxing, and end-user interfaces.
+
+For a single-file expanded context, use [llms-full.txt](https://omnigent.ai/llms-full.txt).
+
+## Quickstart
+
+- [Install Omnigent](https://omnigent.ai/quickstart/install): Requirements, installation, credentials, launching Debby, and adding the macOS app.
+- [Tutorial: Coding Agent](https://omnigent.ai/quickstart/coding-agent): Start a coding agent, give it a task, use comments, edit files, paste images, fork sessions, and add policies.
+- [Tutorial: Polly](https://omnigent.ai/quickstart/polly): Run Polly, Omnigent's multi-AI coding orchestrator, and follow progress in the UI.
+- [Tutorial: Collaborate](https://omnigent.ai/quickstart/collaborate): Deploy a shared server, connect from laptop and phone, share a session, and run a cloud sandbox host.
+- [Tutorial: Contextual Policies](https://omnigent.ai/quickstart/policies): Add plain-language policies and see soft and hard limits in action.
+
+## Agent Use Cases
+
+- [Coding Agents](https://omnigent.ai/docs/use/coding-agents): Use Omnigent with coding agents and shared agent sessions.
+- [Built-in Multi-AI Agents](https://omnigent.ai/docs/use/builtin-agents): Overview of Omnigent's built-in multi-agent workflows.
+- [Polly](https://omnigent.ai/docs/use/builtin-agents/polly): Multi-AI coding orchestrator, workflow, skills, and when to use it.
+- [Debby](https://omnigent.ai/docs/use/builtin-agents/debby): Model debate agent, debate workflow, and when to use it.
+- [Custom Agents](https://omnigent.ai/docs/use/custom-agents): Create custom agents in YAML and configure harnesses, models, prompts, skills, tools, and policies.
+
+## Build Custom Agents
+
+- [Harnesses](https://omnigent.ai/docs/build/harnesses): Runtime harnesses for executing agent loops and switching between Claude, Codex, and other runtimes.
+- [Models & Credentials](https://omnigent.ai/docs/build/models): Declare models and configure API keys, subscriptions, gateways, and Databricks credentials.
+- [Prompts & Skills](https://omnigent.ai/docs/build/prompts): Shape agent behavior with system prompts and reusable skills.
+- [MCP & Tools](https://omnigent.ai/docs/build/tools): Add MCP servers, Python function tools, sub-agent tools, authentication, and tool inheritance.
+
+## Interfaces
+
+- [Terminal](https://omnigent.ai/docs/interact/terminal): Start and manage sessions from the command line.
+- [Web UI](https://omnigent.ai/docs/interact/web-ui): Browser session management, file editing, code diffs, inline comments, multimodal input, and collaboration.
+- [Mobile](https://omnigent.ai/docs/interact/mobile): Access Omnigent sessions from mobile devices.
+- [Desktop App](https://omnigent.ai/docs/interact/desktop): Install and use the native desktop app with one or more servers.
+
+## Collaboration And Deployment
+
+- [Pair Programming](https://omnigent.ai/docs/collaborate): Co-drive and fork shared live sessions.
+- [Auth & SSO](https://omnigent.ai/docs/collaborate/auth): Built-in accounts, OIDC SSO, header-based auth, access control, and migration.
+- [Shared Server](https://omnigent.ai/docs/deploy/overview): Deploy the Omnigent server, runner, UI, and collaboration stack.
+- [Database](https://omnigent.ai/docs/deploy/database): Postgres, SQLite, comparison, and first boot behavior.
+- [Cloud Sandbox Host](https://omnigent.ai/docs/deploy/cloud-sandbox-host): Configure server-managed or CLI cloud sandbox hosts.
+
+## Policies And Sandboxing
+
+- [Contextual Policies](https://omnigent.ai/docs/policies/overview): Policy concepts, enforcement targets, levels, and configuration.
+- [Builtin Policies](https://omnigent.ai/docs/policies/builtin): Safety and cost-control policies.
+- [Custom Policies](https://omnigent.ai/docs/policies/custom): Write, register, and use custom policy functions.
+- [OS Sandbox Config](https://omnigent.ai/docs/policies/os-sandbox): Filesystem, network, and environment restrictions for Omnibox sandboxing.
+- [Omnibox](https://omnigent.ai/docs/omnibox): Filesystem isolation, network isolation, and credential injection.
+
+## Optional
+
+- [Homepage](https://omnigent.ai/): Product overview and architecture.
+- [FAQ](https://omnigent.ai/faq): Answers to common questions about Omnigent, models, custom agents, safety, Databricks, and production readiness.
+- [GitHub repository](https://github.com/omnigent-ai/omnigent-site): Website source code.
+- [Sitemap](https://omnigent.ai/sitemap.xml): Full public route index.

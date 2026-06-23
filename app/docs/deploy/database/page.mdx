@@ -1,0 +1,60 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Database", "The Omnigent server persists session history, accounts, and artifacts. Choose between Postgres and SQLite, with the same schema and migrations.", {
+  eyebrow: "Deploy",
+  path: "/docs/deploy/database",
+});
+
+# Database
+
+The Omnigent server needs a database to persist session history, user accounts, and
+artifacts. Two backends are supported. Both use the same schema and migrations.
+
+## Postgres (recommended)
+
+Postgres is the production choice. It is required if you run more than one server instance.
+
+- Auto-provisioned on [Render and Railway](/docs/deploy/overview#cloud-platforms).
+- For other platforms, bring your own. The fastest option is [Neon](https://pg.new): create a database and set `DATABASE_URL`.
+- Any `postgres://` or `postgresql://` URL works. The entrypoint normalizes it automatically.
+
+```
+DATABASE_URL=postgresql://user:pass@host:5432/omnigent
+```
+
+## SQLite
+
+SQLite is the zero-dependency option for demos and single-instance deploys.
+
+```
+DATABASE_URL=sqlite:////data/artifacts/chat.db
+```
+
+The `.db` file lives on the platform's persistent disk or volume.
+
+## Comparison
+
+|  | Postgres | SQLite |
+| --- | --- | --- |
+| Multi-instance | Yes | No |
+| Managed backups | Yes (with managed Postgres) | No |
+| Setup required | Database provisioning | None |
+| Best for | Production | Demos, single-user |
+
+<div className="note">
+
+**Warning:** SQLite stores its `.db` file on local disk, so it
+needs a persistent disk or volume. On platforms with ephemeral disk, such as Hugging Face
+Spaces (persistent storage there is a paid add-on), the database is wiped on every
+restart; use Postgres there. See the
+[deployment overview](/docs/deploy/overview) page for platform specifics.
+
+</div>
+
+## First boot
+
+First boot against a remote Postgres runs migrations over the network. This takes
+approximately one minute on services like Neon. Subsequent boots are fast.
+
+Make sure your platform's healthcheck grace period tolerates the initial migration time.
+A 120-second grace period is typically sufficient.

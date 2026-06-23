@@ -1,9 +1,13 @@
 import { pageMeta } from "@/lib/og";
 
-export const metadata = pageMeta("Shared Server", "Deploy the Omnigent server so your agents are reachable from your phone, shareable with teammates, and running while your laptop sleeps.", {
-  eyebrow: "Deploy",
-  path: "/docs/deploy/overview",
-});
+export const metadata = pageMeta(
+  "Shared Server",
+  "Deploy the Omnigent server so your agents are reachable from your phone, shareable with teammates, and running while your laptop sleeps.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/overview",
+  },
+);
 
 # Shared Server
 
@@ -52,14 +56,14 @@ docker compose up -d    # Omnigent server + Postgres
 
 Key variables in `.env` (See [Auth & SSO](/docs/collaborate/auth) for details on multi-user auth):
 
-| Variable | Purpose |
-| --- | --- |
-| `DATABASE_URL` | Postgres connection string |
-| `OMNIGENT_AUTH_ENABLED` | Enable multi-user auth (default: `1` in Docker) |
-| `OMNIGENT_OIDC_COOKIE_SECRET` | Session cookie secret |
-| `OMNIGENT_OIDC_ISSUER` | OIDC issuer URL (enables SSO) |
-| `OMNIGENT_OIDC_CLIENT_ID` | OIDC client ID |
-| `OMNIGENT_OIDC_CLIENT_SECRET` | OIDC client secret |
+| Variable                      | Purpose                                         |
+| ----------------------------- | ----------------------------------------------- |
+| `DATABASE_URL`                | Postgres connection string                      |
+| `OMNIGENT_AUTH_ENABLED`       | Enable multi-user auth (default: `1` in Docker) |
+| `OMNIGENT_OIDC_COOKIE_SECRET` | Session cookie secret                           |
+| `OMNIGENT_OIDC_ISSUER`        | OIDC issuer URL (enables SSO)                   |
+| `OMNIGENT_OIDC_CLIENT_ID`     | OIDC client ID                                  |
+| `OMNIGENT_OIDC_CLIENT_SECRET` | OIDC client secret                              |
 
 <div className="note">
 
@@ -73,12 +77,12 @@ No admin password is auto-generated. On first boot the server reports
 
 Deploy the server to a cloud platform with managed infrastructure.
 
-| Platform | Database | Deploy method |
-| --- | --- | --- |
-| **Railway** | Managed Postgres | Import repo from GitHub |
-| **Render** | Managed Postgres | [One-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent) |
-| **Fly.io** | SQLite on volume | `fly deploy` from CLI |
-| **Hugging Face Spaces** | SQLite (ephemeral) | Docker Space |
+| Platform                | Database           | Deploy method                                                                              |
+| ----------------------- | ------------------ | ------------------------------------------------------------------------------------------ |
+| **Railway**             | Managed Postgres   | Import repo from GitHub                                                                    |
+| **Render**              | Managed Postgres   | [One-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent) |
+| **Fly.io**              | SQLite on volume   | `fly deploy` from CLI                                                                      |
+| **Hugging Face Spaces** | SQLite (ephemeral) | Docker Space                                                                               |
 
 **Railway & Render.** On Railway, import the repo and it handles the
 rest, including managed Postgres; Render provisions the app and managed Postgres over

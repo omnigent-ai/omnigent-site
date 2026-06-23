@@ -1,9 +1,13 @@
 import { pageMeta } from "@/lib/og";
 
-export const metadata = pageMeta("Cloud Sandbox Host", "Move the Omnigent runner from your laptop to a remote container so your agent keeps working in an isolated cloud environment.", {
-  eyebrow: "Deploy",
-  path: "/docs/deploy/cloud-sandbox-host",
-});
+export const metadata = pageMeta(
+  "Cloud Sandbox Host",
+  "Move the Omnigent runner from your laptop to a remote container so your agent keeps working in an isolated cloud environment.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/cloud-sandbox-host",
+  },
+);
 
 # Cloud Sandbox Host
 
@@ -17,21 +21,21 @@ That's [Omnibox](/docs/omnibox).
 
 </div>
 
-|  | Local runner | Cloud sandbox host |
-| --- | --- | --- |
-| **Availability** | Stops when laptop closes | Runs independently |
-| **Compute** | Your CPU and memory | Cloud compute |
-| **Environment** | Local files | Isolated, reproducible |
-| **Best for** | Interactive work | Long-running tasks |
+|                  | Local runner             | Cloud sandbox host     |
+| ---------------- | ------------------------ | ---------------------- |
+| **Availability** | Stops when laptop closes | Runs independently     |
+| **Compute**      | Your CPU and memory      | Cloud compute          |
+| **Environment**  | Local files              | Isolated, reproducible |
+| **Best for**     | Interactive work         | Long-running tasks     |
 
 Omnigent currently supports [Modal](https://modal.com) and [Daytona](https://www.daytona.io)
 as hosting platforms for cloud sandbox hosts, with more on the way.
 
-|  | [Modal](https://modal.com) | [Daytona](https://www.daytona.io) |
-| --- | --- | --- |
-| **Runner lifetime** | 24 hours (platform cap) | No cap (runs until deleted) |
-| **Credential injection** | Named secrets (Modal secret store) | Env vars copied from server |
-| **Free-tier egress** | Full egress | Allowlisted domains only |
+|                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) |
+| ------------------------ | ---------------------------------- | --------------------------------- |
+| **Runner lifetime**      | 24 hours (platform cap)            | No cap (runs until deleted)       |
+| **Credential injection** | Named secrets (Modal secret store) | Env vars copied from server       |
+| **Free-tier egress**     | Full egress                        | Allowlisted domains only          |
 
 ## Server-managed (recommended)
 

@@ -1,9 +1,13 @@
 import { pageMeta } from "@/lib/og";
 
-export const metadata = pageMeta("Debby", "Debby asks two models the same question and runs a multi-round debate where each critiques and refines the other's answer.", {
-  eyebrow: "Use Cases",
-  path: "/docs/use/builtin-agents/debby",
-});
+export const metadata = pageMeta(
+  "Debby",
+  "Debby asks two models the same question and runs a multi-round debate where each critiques and refines the other's answer.",
+  {
+    eyebrow: "Use Cases",
+    path: "/docs/use/builtin-agents/debby",
+  },
+);
 
 # Debby
 
@@ -23,10 +27,10 @@ side by side. Then use the `/debate` skill to start a multi-round critique where
 each model reviews the other's answer, challenges weak points, and refines its
 own response.
 
-| Sub-agent | Role |
-| --- | --- |
-| `claude` | Responds and debates with an Anthropic Claude model |
-| `gpt` | Responds and debates with an OpenAI GPT model |
+| Sub-agent | Role                                                |
+| --------- | --------------------------------------------------- |
+| `claude`  | Responds and debates with an Anthropic Claude model |
+| `gpt`     | Responds and debates with an OpenAI GPT model       |
 
 ## The /debate skill
 

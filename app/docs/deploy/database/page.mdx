@@ -1,9 +1,13 @@
 import { pageMeta } from "@/lib/og";
 
-export const metadata = pageMeta("Database", "The Omnigent server persists session history, accounts, and artifacts. Choose between Postgres and SQLite, with the same schema and migrations.", {
-  eyebrow: "Deploy",
-  path: "/docs/deploy/database",
-});
+export const metadata = pageMeta(
+  "Database",
+  "The Omnigent server persists session history, accounts, and artifacts. Choose between Postgres and SQLite, with the same schema and migrations.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/database",
+  },
+);
 
 # Database
 
@@ -34,12 +38,12 @@ The `.db` file lives on the platform's persistent disk or volume.
 
 ## Comparison
 
-|  | Postgres | SQLite |
-| --- | --- | --- |
-| Multi-instance | Yes | No |
-| Managed backups | Yes (with managed Postgres) | No |
-| Setup required | Database provisioning | None |
-| Best for | Production | Demos, single-user |
+|                 | Postgres                    | SQLite             |
+| --------------- | --------------------------- | ------------------ |
+| Multi-instance  | Yes                         | No                 |
+| Managed backups | Yes (with managed Postgres) | No                 |
+| Setup required  | Database provisioning       | None               |
+| Best for        | Production                  | Demos, single-user |
 
 <div className="note">
 

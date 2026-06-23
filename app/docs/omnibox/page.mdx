@@ -1,9 +1,13 @@
 import { pageMeta } from "@/lib/og";
 
-export const metadata = pageMeta("Omnibox", "Omnibox is Omnigent's secure OS-level sandbox that wraps any agent to run it unattended without exposing your credentials, files, or network.", {
-  eyebrow: "Security",
-  path: "/docs/omnibox",
-});
+export const metadata = pageMeta(
+  "Omnibox",
+  "Omnibox is Omnigent's secure OS-level sandbox that wraps any agent to run it unattended without exposing your credentials, files, or network.",
+  {
+    eyebrow: "Security",
+    path: "/docs/omnibox",
+  },
+);
 
 # Omnibox
 
@@ -52,5 +56,5 @@ worthless, since it only works through the proxy, against allowed hosts.
 ## Related
 
 - [OS sandbox configuration](/docs/policies/os-sandbox): the full reference, covering filesystem grants, egress rules, environment passthrough, and the `bubblewrap`/Seatbelt backends.
-- [Cloud sandbox host](/docs/deploy/cloud-sandbox-host): controls *where* the runner executes. Omnibox controls *what it can access*. They compose.
+- [Cloud sandbox host](/docs/deploy/cloud-sandbox-host): controls _where_ the runner executes. Omnibox controls _what it can access_. They compose.
 - [Contextual policies](/docs/policies/overview): govern behavior at the tool-call level. Omnibox is the hard boundary underneath.

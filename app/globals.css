@@ -870,6 +870,22 @@ figcaption {
   text-align: left;
 }
 
+/* ---- API reference (Scalar) ---- */
+.reference-shell {
+  /* Scalar owns its own three-panel layout and internal scrolling.
+     Give it at least the viewport below the sticky nav so its sidebar
+     can stick and the page doesn't collapse before the spec loads. */
+  min-height: calc(100svh - var(--nav-h));
+}
+/* The site nav is sticky at top:0 (z-index 50). Push Scalar's own
+   sticky endpoint sidebar and header down by the nav height so they
+   don't slide under it. */
+.reference-shell .scalar-app .references-navigation,
+.reference-shell .scalar-app .sidebar {
+  top: var(--nav-h);
+  height: calc(100svh - var(--nav-h));
+}
+
 /* ---- footer ---- */
 .footer {
   border-top: 1px solid var(--border);

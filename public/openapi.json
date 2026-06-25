@@ -4558,7 +4558,7 @@
   "paths": {
     "/api/version": {
       "get": {
-        "description": "Return the installed omnigent package version.\n\nUsed by the web UI to include version info in bug reports.\n\n:returns: ``{\"version\": \"<semver string>\"}``,\n    e.g. ``{\"version\": \"0.1.0\"}``.",
+        "description": "Return the installed omnigent package version.\n\nUsed by the web UI to include version info in bug reports.\n\n**Returns:** `{\"version\": \"<semver string>\"}`, e.g. `{\"version\": \"0.1.0\"}`.",
         "operationId": "version_api_version_get",
         "responses": {
           "200": {
@@ -4584,10 +4584,11 @@
     },
     "/health": {
       "get": {
-        "description": "Liveness check with optional session-scoped runner status.\n\nWithout session params, returns ``{\"status\": \"ok\"}`` (bare\nliveness). With ``session_id``, adds a single ``session``\nobject. With ``session_ids`` (comma-separated), adds a\n``sessions`` dict keyed by id \u2014 used by the sidebar to\nbatch-check all visible sessions in one request. The batch\npath runs a single SQL ``IN`` query, not N per-id round-trips.\n\nEach per-session object carries both ``runner_online`` (strict\nrunner reachability) and ``host_online`` (host tunnel live, or\n``None`` when the session has no host binding) \u2014 see\n:class:`~omnigent.server.routes.sessions.SessionLiveness`.\n\n:param session_id: Optional single session id, e.g.\n    ``\"conv_abc123\"``.\n:param session_ids: Optional comma-separated session ids\n    for batch lookup, e.g.\n    ``\"conv_abc,conv_def,conv_ghi\"``.\n:returns: ``{\"status\": \"ok\"}`` with optional ``session``\n    and/or ``sessions`` fields. Each session object has shape\n    ``{\"runner_online\": bool, \"host_online\": bool | None}``\n    (the single ``session`` object also includes its ``id``).",
+        "description": "Liveness check with optional session-scoped runner status.\n\nWithout session params, returns `{\"status\": \"ok\"}` (bare\nliveness). With `session_id`, adds a single `session`\nobject. With `session_ids` (comma-separated), adds a\n`sessions` dict keyed by id \u2014 used by the sidebar to\nbatch-check all visible sessions in one request. The batch\npath runs a single SQL `IN` query, not N per-id round-trips.\n\nEach per-session object carries both `runner_online` (strict\nrunner reachability) and `host_online` (host tunnel live, or\n`None` when the session has no host binding) \u2014 see\n`~omnigent.server.routes.sessions.SessionLiveness`.\n\n**Returns:** `{\"status\": \"ok\"}` with optional `session` and/or `sessions` fields. Each session object has shape `{\"runner_online\": bool, \"host_online\": bool | None}` (the single `session` object also includes its `id`).",
         "operationId": "health_health_get",
         "parameters": [
           {
+            "description": "Optional single session id, e.g. `\"conv_abc123\"`.",
             "in": "query",
             "name": "session_id",
             "required": false,
@@ -4604,6 +4605,7 @@
             }
           },
           {
+            "description": "Optional comma-separated session ids for batch lookup, e.g. `\"conv_abc,conv_def,conv_ghi\"`.",
             "in": "query",
             "name": "session_ids",
             "required": false,
@@ -4652,10 +4654,11 @@
     },
     "/v1/agents": {
       "get": {
-        "description": "List built-in agents with cursor-based pagination.\n\nReturns only built-in agents \u2014 ``agent_store.list()`` filters\n``session_id IS NULL`` \u2014 so session-scoped agents never appear.\n\n:param request: The incoming FastAPI request (for auth).\n:param limit: Maximum number of agents to return (1-1000).\n:param after: Cursor \u2014 return agents after this id.\n:param before: Cursor \u2014 return agents before this id.\n:param order: Sort order, ``\"asc\"`` or ``\"desc\"``.\n:returns: A :class:`PaginatedList` of built-in agents.",
+        "description": "List built-in agents with cursor-based pagination.\n\nReturns only built-in agents \u2014 `agent_store.list()` filters\n`session_id IS NULL` \u2014 so session-scoped agents never appear.\n\n**Returns:** A `PaginatedList` of built-in agents.",
         "operationId": "list_builtin_agents_v1_agents_get",
         "parameters": [
           {
+            "description": "Maximum number of agents to return (1-1000).",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -4668,6 +4671,7 @@
             }
           },
           {
+            "description": "Cursor \u2014 return agents after this id.",
             "in": "query",
             "name": "after",
             "required": false,
@@ -4684,6 +4688,7 @@
             }
           },
           {
+            "description": "Cursor \u2014 return agents before this id.",
             "in": "query",
             "name": "before",
             "required": false,
@@ -4700,6 +4705,7 @@
             }
           },
           {
+            "description": "Sort order, `\"asc\"` or `\"desc\"`.",
             "in": "query",
             "name": "order",
             "required": false,
@@ -4741,7 +4747,7 @@
     },
     "/v1/hosts": {
       "get": {
-        "description": "List all hosts owned by the authenticated user.\n\nReturns both online and offline hosts, with live runner\ninformation for online hosts.\n\n:param request: The incoming request (for auth).\n:returns: ``{\"hosts\": [...]}`` with host details.",
+        "description": "List all hosts owned by the authenticated user.\n\nReturns both online and offline hosts, with live runner\ninformation for online hosts.\n\n**Returns:** `{\"hosts\": [...]}` with host details.",
         "operationId": "list_hosts_v1_hosts_get",
         "responses": {
           "200": {
@@ -4771,10 +4777,11 @@
     },
     "/v1/hosts/{host_id}": {
       "get": {
-        "description": "Get details for a single host.\n\n:param request: The incoming request (for auth).\n:param host_id: Host identifier, e.g.\n    ``\"host_a1b2c3d4...\"``.\n:returns: Host details dict.\n:raises HTTPException: 404 if the host does not exist.",
+        "description": "Get details for a single host.\n\n**Returns:** Host details dict.\n\n**Raises**\n\n- `HTTPException` \u2014 404 if the host does not exist.",
         "operationId": "get_host_v1_hosts__host_id__get",
         "parameters": [
           {
+            "description": "Host identifier, e.g. `\"host_a1b2c3d4...\"`.",
             "in": "path",
             "name": "host_id",
             "required": true,
@@ -4816,10 +4823,11 @@
     },
     "/v1/hosts/{host_id}/directories": {
       "post": {
-        "description": "Create a new directory on a host.\n\nBacks the Web UI workspace picker's \"New folder\" action so a\nuser can make a fresh directory to start a session in without\ndropping to a terminal. Owner-scoped exactly like the\nfilesystem browse endpoints (``GET /v1/hosts/{id}/filesystem``):\nonly the host owner can create directories, and \u2014 like browse \u2014\nthis is NOT scoped to a session. The workspace-boundary check\nstill runs at session-create time, so creating a directory here\ndoes not by itself grant an agent access to it.\n\n:param request: FastAPI request (for auth).\n:param host_id: Host identifier, e.g. ``\"host_a1b2c3d4...\"``.\n:param body: Request body carrying the absolute (or\n    tilde-prefixed) ``path`` to create.\n:returns: ``{\"object\": \"directory\", \"path\": \"<created abs path>\"}``.\n:raises HTTPException: 404 if host not found, 403 if not owned\n    by caller, 409 if host is offline or the directory could not\n    be created (already exists / permission denied), 400 on path\n    validation, 504 on host timeout, 502 on host I/O failure.",
+        "description": "Create a new directory on a host.\n\nBacks the Web UI workspace picker's \"New folder\" action so a\nuser can make a fresh directory to start a session in without\ndropping to a terminal. Owner-scoped exactly like the\nfilesystem browse endpoints (`GET /v1/hosts/{id}/filesystem`):\nonly the host owner can create directories, and \u2014 like browse \u2014\nthis is NOT scoped to a session. The workspace-boundary check\nstill runs at session-create time, so creating a directory here\ndoes not by itself grant an agent access to it.\n\n**Parameters**\n\n- `body` \u2014 Request body carrying the absolute (or tilde-prefixed) `path` to create.\n\n**Returns:** `{\"object\": \"directory\", \"path\": \"<created abs path>\"}`.\n\n**Raises**\n\n- `HTTPException` \u2014 404 if host not found, 403 if not owned by caller, 409 if host is offline or the directory could not be created (already exists / permission denied), 400 on path validation, 504 on host timeout, 502 on host I/O failure.",
         "operationId": "create_host_directory_v1_hosts__host_id__directories_post",
         "parameters": [
           {
+            "description": "Host identifier, e.g. `\"host_a1b2c3d4...\"`.",
             "in": "path",
             "name": "host_id",
             "required": true,
@@ -4871,10 +4879,11 @@
     },
     "/v1/hosts/{host_id}/filesystem": {
       "get": {
-        "description": "List the contents of the host daemon's home directory.\n\nEmpty trailing path \u2192 forward ``~`` to the host (the host\nexpands against its own process owner). Used by the\nWeb UI's directory picker to show the \"root\" view.\n\n:param request: FastAPI request (for auth).\n:param host_id: Host identifier, e.g.\n    ``\"host_a1b2c3d4...\"``.\n:param limit: Max entries per page.\n:param after: Optional forward pagination cursor (entry\n    path), e.g. ``\"/Users/corey/projects/m\"``.\n:param before: Optional backward pagination cursor.\n:returns: ``{\"object\": \"list\", \"data\": [...], \"has_more\": bool}``\n    mirroring the existing session-scoped filesystem\n    endpoint shape.\n:raises HTTPException: 404 if host not found, 403 if not\n    owned by caller, 409 if host is offline, 504 on host\n    timeout, 502 on host I/O failure.",
+        "description": "List the contents of the host daemon's home directory.\n\nEmpty trailing path \u2192 forward `~` to the host (the host\nexpands against its own process owner). Used by the\nWeb UI's directory picker to show the \"root\" view.\n\n**Returns:** `{\"object\": \"list\", \"data\": [...], \"has_more\": bool}` mirroring the existing session-scoped filesystem endpoint shape.\n\n**Raises**\n\n- `HTTPException` \u2014 404 if host not found, 403 if not owned by caller, 409 if host is offline, 504 on host timeout, 502 on host I/O failure.",
         "operationId": "list_host_filesystem_root_v1_hosts__host_id__filesystem_get",
         "parameters": [
           {
+            "description": "Host identifier, e.g. `\"host_a1b2c3d4...\"`.",
             "in": "path",
             "name": "host_id",
             "required": true,
@@ -4884,6 +4893,7 @@
             }
           },
           {
+            "description": "Max entries per page.",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -4896,6 +4906,7 @@
             }
           },
           {
+            "description": "Optional forward pagination cursor (entry path), e.g. `\"/Users/corey/projects/m\"`.",
             "in": "query",
             "name": "after",
             "required": false,
@@ -4912,6 +4923,7 @@
             }
           },
           {
+            "description": "Optional backward pagination cursor.",
             "in": "query",
             "name": "before",
             "required": false,
@@ -4960,10 +4972,11 @@
     },
     "/v1/hosts/{host_id}/filesystem/{path}": {
       "get": {
-        "description": "List the contents of a directory on a host.\n\nUsed by the Web UI's directory picker (and stat-style\nexistence checks) to render the host's filesystem before\nany runner exists. Owner-scoped: only the host owner can\nbrowse. NOT scoped to a session \u2014 this endpoint exposes\nthe entire host filesystem to the authenticated host owner\nper ``designs/SESSION_WORKSPACE_SELECTION.md`` \"Security\nsurface\".\n\n:param request: FastAPI request (for auth).\n:param host_id: Host identifier.\n:param path: Absolute path on the host (e.g.\n    ``\"/Users/corey/universe\"``) OR a tilde-prefixed\n    path (``\"~/foo\"``). The host expands ``~`` itself.\n    FastAPI's ``:path`` converter strips the leading\n    ``/`` from the URL, so we re-add it for absolute paths.\n:param limit: Max entries per page.\n:param after: Optional forward pagination cursor.\n:param before: Optional backward pagination cursor.\n:returns: ``{\"object\": \"list\", \"data\": [...], \"has_more\": bool}``.\n:raises HTTPException: 404 (host or path missing), 403\n    (not owner), 409 (offline), 400 (path validation),\n    504 (timeout), 502 (host I/O).",
+        "description": "List the contents of a directory on a host.\n\nUsed by the Web UI's directory picker (and stat-style\nexistence checks) to render the host's filesystem before\nany runner exists. Owner-scoped: only the host owner can\nbrowse. NOT scoped to a session \u2014 this endpoint exposes\nthe entire host filesystem to the authenticated host owner\nper `designs/SESSION_WORKSPACE_SELECTION.md` \"Security\nsurface\".\n\n**Returns:** `{\"object\": \"list\", \"data\": [...], \"has_more\": bool}`.\n\n**Raises**\n\n- `HTTPException` \u2014 404 (host or path missing), 403 (not owner), 409 (offline), 400 (path validation), 504 (timeout), 502 (host I/O).",
         "operationId": "list_host_filesystem_v1_hosts__host_id__filesystem__path__get",
         "parameters": [
           {
+            "description": "Host identifier.",
             "in": "path",
             "name": "host_id",
             "required": true,
@@ -4973,6 +4986,7 @@
             }
           },
           {
+            "description": "Absolute path on the host (e.g. `\"/Users/corey/universe\"`) OR a tilde-prefixed path (`\"~/foo\"`). The host expands `~` itself. FastAPI's `:path` converter strips the leading `/` from the URL, so we re-add it for absolute paths.",
             "in": "path",
             "name": "path",
             "required": true,
@@ -4982,6 +4996,7 @@
             }
           },
           {
+            "description": "Max entries per page.",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -4994,6 +5009,7 @@
             }
           },
           {
+            "description": "Optional forward pagination cursor.",
             "in": "query",
             "name": "after",
             "required": false,
@@ -5010,6 +5026,7 @@
             }
           },
           {
+            "description": "Optional backward pagination cursor.",
             "in": "query",
             "name": "before",
             "required": false,
@@ -5058,10 +5075,11 @@
     },
     "/v1/hosts/{host_id}/runners": {
       "post": {
-        "description": "Launch a runner on a host for a session.\n\nGenerates a binding token, writes the expected runner_id\nto the session row, sends the launch command to the host,\nand waits for the host's acknowledgement.\n\n:param request: The incoming request (for auth).\n:param host_id: Target host, e.g. ``\"host_a1b2c3d4...\"``.\n:param body: Launch request with ``session_id`` and\n    ``workspace``.\n:returns: ``{\"runner_id\": ..., \"status\": \"launching\"}``.\n:raises HTTPException: 404 if host not found, 409 if host\n    offline, 403 if caller doesn't own the host, 400 if\n    session already has a runner.",
+        "description": "Launch a runner on a host for a session.\n\nGenerates a binding token, writes the expected runner_id\nto the session row, sends the launch command to the host,\nand waits for the host's acknowledgement.\n\n**Parameters**\n\n- `body` \u2014 Launch request with `session_id` and `workspace`.\n\n**Returns:** `{\"runner_id\": ..., \"status\": \"launching\"}`.\n\n**Raises**\n\n- `HTTPException` \u2014 404 if host not found, 409 if host offline, 403 if caller doesn't own the host, 400 if session already has a runner.",
         "operationId": "launch_runner_v1_hosts__host_id__runners_post",
         "parameters": [
           {
+            "description": "Target host, e.g. `\"host_a1b2c3d4...\"`.",
             "in": "path",
             "name": "host_id",
             "required": true,
@@ -5113,7 +5131,7 @@
     },
     "/v1/info": {
       "get": {
-        "description": "Runtime capabilities probe for the SPA + CLI.\n\nReturned at app boot by the frontend (and by ``omnigent\nlogin`` when it needs to choose between flows). Drives\nconditional route registration and chrome on the SPA side\n\u2014 when ``accounts_enabled`` is false, the SPA never\nregisters ``/login``, ``/register``, ``/members`` and\nnever renders the AccountMenu, so the bundle behaves\nidentically to a pre-PR-2008 build for header / OIDC\ndeploys (in particular, the internal hosted product that\nsyncs from this repo).\n\nAuthentication: this endpoint is intentionally UNAUTHED\nso the SPA can probe it before holding a session cookie.\nIt exposes no sensitive state \u2014 only the active auth\nsource, the login URL, whether first-run admin setup is\nstill pending (``needs_setup``), coarse capability\nbooleans (``databricks_features``,\n``managed_sandboxes_enabled``), and the short sandbox\nprovider name (``sandbox_provider``) the web UI labels the\nnew-session sandbox option with.",
+        "description": "Runtime capabilities probe for the SPA + CLI.\n\nReturned at app boot by the frontend (and by `omnigent\nlogin` when it needs to choose between flows). Drives\nconditional route registration and chrome on the SPA side\n\u2014 when `accounts_enabled` is false, the SPA never\nregisters `/login`, `/register`, `/members` and\nnever renders the AccountMenu, so the bundle behaves\nidentically to a pre-PR-2008 build for header / OIDC\ndeploys (in particular, the internal hosted product that\nsyncs from this repo).\n\nAuthentication: this endpoint is intentionally UNAUTHED\nso the SPA can probe it before holding a session cookie.\nIt exposes no sensitive state \u2014 only the active auth\nsource, the login URL, whether first-run admin setup is\nstill pending (`needs_setup`), coarse capability\nbooleans (`databricks_features`,\n`managed_sandboxes_enabled`), and the short sandbox\nprovider name (`sandbox_provider`) the web UI labels the\nnew-session sandbox option with.",
         "operationId": "info_v1_info_get",
         "responses": {
           "200": {
@@ -5149,7 +5167,7 @@
     },
     "/v1/me": {
       "get": {
-        "description": "Return the current user's identity.\n\nReads the user from the auth provider (same logic that\nsession routes use). The frontend calls this on load to\ndiscover who it is.\n\nWhen OIDC is active and the user is unauthenticated,\nreturns 401 with a ``login_url`` so the frontend knows\nwhere to redirect.\n\n:param request: The incoming FastAPI request.\n:returns: ``{\"user_id\": \"alice@example.com\"}``,\n    ``{\"user_id\": null}`` if unauthenticated in header\n    mode, or 401 with ``login_url`` in OIDC mode.",
+        "description": "Return the current user's identity.\n\nReads the user from the auth provider (same logic that\nsession routes use). The frontend calls this on load to\ndiscover who it is.\n\nWhen OIDC is active and the user is unauthenticated,\nreturns 401 with a `login_url` so the frontend knows\nwhere to redirect.\n\n**Returns:** `{\"user_id\": \"alice@example.com\"}`, `{\"user_id\": null}` if unauthenticated in header mode, or 401 with `login_url` in OIDC mode.",
         "operationId": "me_v1_me_get",
         "responses": {
           "200": {
@@ -5169,7 +5187,7 @@
     },
     "/v1/policies": {
       "get": {
-        "description": "List all default policies.\n\nRequires authentication in multi-user mode.\n\n:param request: The incoming request, used to extract the\n    user identity.\n:returns: ``{\"object\": \"list\", \"data\": [...]}``.\n:raises OmnigentError: 401 if unauthenticated in\n    multi-user mode.",
+        "description": "List all default policies.\n\nRequires authentication in multi-user mode.\n\n**Returns:** `{\"object\": \"list\", \"data\": [...]}`.\n\n**Raises**\n\n- `OmnigentError` \u2014 401 if unauthenticated in multi-user mode.",
         "operationId": "list_policies_v1_policies_get",
         "responses": {
           "200": {
@@ -5191,7 +5209,7 @@
         ]
       },
       "post": {
-        "description": "Create a new default policy.\n\nRequires admin privileges in multi-user mode.\n\n:param request: The incoming request, used to extract the\n    user identity.\n:param body: Policy payload including name, type, and\n    handler.\n:returns: The created policy as a serialized dict.\n:raises OmnigentError: 401/403 if the user lacks admin\n    privileges, or 409 if a policy with the same name\n    already exists.",
+        "description": "Create a new default policy.\n\nRequires admin privileges in multi-user mode.\n\n**Parameters**\n\n- `body` \u2014 Policy payload including name, type, and handler.\n\n**Returns:** The created policy as a serialized dict.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403 if the user lacks admin privileges, or 409 if a policy with the same name already exists.",
         "operationId": "create_policy_v1_policies_post",
         "requestBody": {
           "content": {
@@ -5235,10 +5253,11 @@
     },
     "/v1/policies/{policy_id}": {
       "delete": {
-        "description": "Delete a default policy.\n\nIdempotent \u2014 deleting a missing policy returns 204.\nRequires admin privileges.\n\n:param request: The incoming request, used to extract the\n    user identity.\n:param policy_id: The policy to delete, e.g.\n    ``\"pol_abc123\"``.\n:returns: ``{\"deleted\": true}``.\n:raises OmnigentError: 401/403 if the user lacks admin\n    privileges.",
+        "description": "Delete a default policy.\n\nIdempotent \u2014 deleting a missing policy returns 204.\nRequires admin privileges.\n\n**Returns:** `{\"deleted\": true}`.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403 if the user lacks admin privileges.",
         "operationId": "delete_policy_v1_policies__policy_id__delete",
         "parameters": [
           {
+            "description": "The policy to delete, e.g. `\"pol_abc123\"`.",
             "in": "path",
             "name": "policy_id",
             "required": true,
@@ -5278,10 +5297,11 @@
         ]
       },
       "get": {
-        "description": "Get a single default policy.\n\nRequires authentication in multi-user mode.\n\n:param request: The incoming request, used to extract the\n    user identity.\n:param policy_id: The policy to retrieve, e.g.\n    ``\"pol_abc123\"``.\n:returns: The policy as a serialized dict.\n:raises OmnigentError: 401 if unauthenticated, or\n    404 if the policy is not found.",
+        "description": "Get a single default policy.\n\nRequires authentication in multi-user mode.\n\n**Returns:** The policy as a serialized dict.\n\n**Raises**\n\n- `OmnigentError` \u2014 401 if unauthenticated, or 404 if the policy is not found.",
         "operationId": "get_policy_v1_policies__policy_id__get",
         "parameters": [
           {
+            "description": "The policy to retrieve, e.g. `\"pol_abc123\"`.",
             "in": "path",
             "name": "policy_id",
             "required": true,
@@ -5321,10 +5341,11 @@
         ]
       },
       "patch": {
-        "description": "Update a default policy's mutable fields.\n\n``type`` is immutable \u2014 the caller must delete and\nre-create to change it. Requires admin privileges.\n\n:param request: The incoming request, used to extract the\n    user identity.\n:param policy_id: The policy to update, e.g.\n    ``\"pol_abc123\"``.\n:param body: Fields to update; ``None`` fields are left\n    unchanged.\n:returns: The updated policy as a serialized dict.\n:raises OmnigentError: 401/403 if the user lacks admin\n    privileges, or 404 if the policy is not found.",
+        "description": "Update a default policy's mutable fields.\n\n`type` is immutable \u2014 the caller must delete and\nre-create to change it. Requires admin privileges.\n\n**Parameters**\n\n- `body` \u2014 Fields to update; `None` fields are left unchanged.\n\n**Returns:** The updated policy as a serialized dict.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403 if the user lacks admin privileges, or 404 if the policy is not found.",
         "operationId": "update_policy_v1_policies__policy_id__patch",
         "parameters": [
           {
+            "description": "The policy to update, e.g. `\"pol_abc123\"`.",
             "in": "path",
             "name": "policy_id",
             "required": true,
@@ -5376,7 +5397,7 @@
     },
     "/v1/policy-registry": {
       "get": {
-        "description": "List all registered policy functions.\n\nReturns the full catalog of built-in policy callables\nwith their handler paths, descriptions, and parameter\nschemas.\n\n:param request: The incoming request, used to extract\n    the user identity for authentication.\n:returns: ``{\"object\": \"list\", \"data\": [...]}``.",
+        "description": "List all registered policy functions.\n\nReturns the full catalog of built-in policy callables\nwith their handler paths, descriptions, and parameter\nschemas.\n\n**Returns:** `{\"object\": \"list\", \"data\": [...]}`.",
         "operationId": "list_registry_v1_policy_registry_get",
         "responses": {
           "200": {
@@ -5400,7 +5421,7 @@
     },
     "/v1/runners": {
       "get": {
-        "description": "Return currently online runners owned by the requesting user.\n\nWhen auth is active, only runners whose tunnel was\nestablished by the same user are returned. Without auth,\nall online runners are listed (single-user / dev mode).\n\n:param request: The incoming FastAPI request (for auth).\n:returns: A ``{\"data\": [...]}`` list with runner ids and\n    advertised harnesses.",
+        "description": "Return currently online runners owned by the requesting user.\n\nWhen auth is active, only runners whose tunnel was\nestablished by the same user are returned. Without auth,\nall online runners are listed (single-user / dev mode).\n\n**Returns:** A `{\"data\": [...]}` list with runner ids and advertised harnesses.",
         "operationId": "list_runners_v1_runners_get",
         "responses": {
           "200": {
@@ -5430,10 +5451,11 @@
     },
     "/v1/runners/{runner_id}/status": {
       "get": {
-        "description": "Return whether a runner currently has an open tunnel.\n\nWhen auth is active, a runner owned by a different user\nappears as offline to prevent enumeration.\n\n:param request: The incoming FastAPI request (for auth).\n:param runner_id: Stable runner id, e.g.\n    ``\"runner_0123456789abcdef\"``.\n:returns: A JSON object with ``runner_id`` and ``online``.",
+        "description": "Return whether a runner currently has an open tunnel.\n\nWhen auth is active, a runner owned by a different user\nappears as offline to prevent enumeration.\n\n**Returns:** A JSON object with `runner_id` and `online`.",
         "operationId": "runner_status_v1_runners__runner_id__status_get",
         "parameters": [
           {
+            "description": "Stable runner id, e.g. `\"runner_0123456789abcdef\"`.",
             "in": "path",
             "name": "runner_id",
             "required": true,
@@ -5484,10 +5506,11 @@
     },
     "/v1/sessions": {
       "get": {
-        "description": "List sessions with cursor-based pagination.\n\nSessions are conversations with a non-``None`` ``agent_id``\n\u2014 i.e. those created via ``POST /v1/sessions``.\nConversations without an agent binding are excluded.\n\n:param limit: Maximum number of sessions to return\n    (1-1000, default 20).\n:param after: Cursor \u2014 return sessions after this\n    session ID in sort order, e.g. ``\"conv_abc123\"``.\n:param before: Cursor \u2014 return sessions before this\n    session ID.\n:param agent_id: When set, only return sessions bound\n    to this agent, e.g. ``\"ag_abc123\"``. ``None``\n    returns sessions across all agents.\n:param agent_name: When set, only return sessions whose\n    bound agent row has this name. This intentionally\n    includes session-scoped agents that share a name but\n    have distinct bundles. ``None`` disables the filter.\n:param order: Sort direction, ``\"desc\"`` (newest-first)\n    or ``\"asc\"`` (oldest-first).\n:param sort_by: Column to sort on, ``\"created_at\"`` or\n    ``\"updated_at\"``.\n:param search_query: Case-insensitive substring filter on\n    the session title or conversation content. ``None``\n    or empty string disables the filter. A session\n    matches if its title contains the query or any of\n    its conversation items' text does. Powers the\n    sidebar's session search.\n:param include_archived: When ``False`` (default), archived\n    sessions are omitted. When ``True``, archived sessions\n    are returned alongside active ones (the sidebar groups\n    them into an \"Archived\" section). Powers the sidebar's\n    \"Show archived\" toggle.\n:param kind: Conversation kind to return. ``\"default\"``\n    (the default) returns only top-level user-initiated\n    sessions \u2014 the sidebar's view. ``\"sub_agent\"`` returns\n    only sub-agent child sessions. ``\"any\"`` returns both;\n    this lets the new-session agent picker discover agents\n    that are only bound to sub-agent sessions (e.g. ones\n    uploaded via ``sys_session_create``).\n:returns: A :class:`PaginatedList` of\n    :class:`SessionListItem`.",
+        "description": "List sessions with cursor-based pagination.\n\nSessions are conversations with a non-`None` `agent_id`\n\u2014 i.e. those created via `POST /v1/sessions`.\nConversations without an agent binding are excluded.\n\n**Returns:** A `PaginatedList` of `SessionListItem`.",
         "operationId": "list_sessions_v1_sessions_get",
         "parameters": [
           {
+            "description": "Maximum number of sessions to return (1-1000, default 20).",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -5500,6 +5523,7 @@
             }
           },
           {
+            "description": "Cursor \u2014 return sessions after this session ID in sort order, e.g. `\"conv_abc123\"`.",
             "in": "query",
             "name": "after",
             "required": false,
@@ -5516,6 +5540,7 @@
             }
           },
           {
+            "description": "Cursor \u2014 return sessions before this session ID.",
             "in": "query",
             "name": "before",
             "required": false,
@@ -5532,6 +5557,7 @@
             }
           },
           {
+            "description": "When set, only return sessions bound to this agent, e.g. `\"ag_abc123\"`. `None` returns sessions across all agents.",
             "in": "query",
             "name": "agent_id",
             "required": false,
@@ -5548,6 +5574,7 @@
             }
           },
           {
+            "description": "When set, only return sessions whose bound agent row has this name. This intentionally includes session-scoped agents that share a name but have distinct bundles. `None` disables the filter.",
             "in": "query",
             "name": "agent_name",
             "required": false,
@@ -5564,6 +5591,7 @@
             }
           },
           {
+            "description": "Sort direction, `\"desc\"` (newest-first) or `\"asc\"` (oldest-first).",
             "in": "query",
             "name": "order",
             "required": false,
@@ -5575,6 +5603,7 @@
             }
           },
           {
+            "description": "Column to sort on, `\"created_at\"` or `\"updated_at\"`.",
             "in": "query",
             "name": "sort_by",
             "required": false,
@@ -5586,6 +5615,7 @@
             }
           },
           {
+            "description": "Case-insensitive substring filter on the session title or conversation content. `None` or empty string disables the filter. A session matches if its title contains the query or any of its conversation items' text does. Powers the sidebar's session search.",
             "in": "query",
             "name": "search_query",
             "required": false,
@@ -5602,6 +5632,7 @@
             }
           },
           {
+            "description": "When `False` (default), archived sessions are omitted. When `True`, archived sessions are returned alongside active ones (the sidebar groups them into an \"Archived\" section). Powers the sidebar's \"Show archived\" toggle.",
             "in": "query",
             "name": "include_archived",
             "required": false,
@@ -5612,6 +5643,7 @@
             }
           },
           {
+            "description": "Conversation kind to return. `\"default\"` (the default) returns only top-level user-initiated sessions \u2014 the sidebar's view. `\"sub_agent\"` returns only sub-agent child sessions. `\"any\"` returns both; this lets the new-session agent picker discover agents that are only bound to sub-agent sessions (e.g. ones uploaded via `sys_session_create`).",
             "in": "query",
             "name": "kind",
             "required": false,
@@ -5651,7 +5683,7 @@
         ]
       },
       "post": {
-        "description": "Create a session.\n\n``application/json`` preserves the existing contract: bind to\nan already-registered agent by ``agent_id`` and return the full\nsession snapshot. ``multipart/form-data`` is the Alpha\nrunner-state create path: the request carries a JSON\n``metadata`` part and a ``bundle`` file part, then the server\nstores the bundle and creates the conversation row plus\nsession-scoped agent row in one database transaction.\n\n:param request: FastAPI request containing either JSON or\n    multipart form data.\n:returns: :class:`SessionResponse` for JSON create, or\n    :class:`CreatedSessionResponse` for bundled create.\n:raises OmnigentError: If metadata, bundle, or agent lookup\n    validation fails, artifact storage is unavailable, or\n    database creation fails.",
+        "description": "Create a session.\n\n`application/json` preserves the existing contract: bind to\nan already-registered agent by `agent_id` and return the full\nsession snapshot. `multipart/form-data` is the Alpha\nrunner-state create path: the request carries a JSON\n`metadata` part and a `bundle` file part, then the server\nstores the bundle and creates the conversation row plus\nsession-scoped agent row in one database transaction.\n\n**Returns:** `SessionResponse` for JSON create, or `CreatedSessionResponse` for bundled create.\n\n**Raises**\n\n- `OmnigentError` \u2014 If metadata, bundle, or agent lookup validation fails, artifact storage is unavailable, or database creation fails.",
         "operationId": "create_session_v1_sessions_post",
         "responses": {
           "201": {
@@ -5671,10 +5703,11 @@
     },
     "/v1/sessions/{session_id}": {
       "delete": {
-        "description": "Delete a session and all associated resources.\n\nRequires owner-level access. Tears down tasks, runner-side\nresources (environments, terminals), session files, and the\nconversation row.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:param delete_branch: Opt-in git cleanup, as a query param\n    (``?delete_branch=true``). When ``True`` and the session\n    has a server-created worktree (``git_branch`` set), the\n    host removes the worktree directory and deletes its branch\n    (``git worktree remove --force`` then ``git branch -D``).\n    Ignored for sessions with no worktree. Best-effort: a\n    cleanup failure does not block the delete. Defaults to\n    ``False`` (worktree and branch left untouched). See\n    designs/SESSION_GIT_WORKTREE.md.\n:returns: A :class:`ConversationDeleted` confirmation.\n:raises OmnigentError: 404 if no session or no access,\n    403 if insufficient permissions.",
+        "description": "Delete a session and all associated resources.\n\nRequires owner-level access. Tears down tasks, runner-side\nresources (environments, terminals), session files, and the\nconversation row.\n\n**Returns:** A `ConversationDeleted` confirmation.\n\n**Raises**\n\n- `OmnigentError` \u2014 404 if no session or no access, 403 if insufficient permissions.",
         "operationId": "delete_session_v1_sessions__session_id__delete",
         "parameters": [
           {
+            "description": "Session/conversation identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -5684,6 +5717,7 @@
             }
           },
           {
+            "description": "Opt-in git cleanup, as a query param (`?delete_branch=true`). When `True` and the session has a server-created worktree (`git_branch` set), the host removes the worktree directory and deletes its branch (`git worktree remove --force` then `git branch -D`). Ignored for sessions with no worktree. Best-effort: a cleanup failure does not block the delete. Defaults to `False` (worktree and branch left untouched). See designs/SESSION_GIT_WORKTREE.md.",
             "in": "query",
             "name": "delete_branch",
             "required": false,
@@ -5722,10 +5756,11 @@
         ]
       },
       "get": {
-        "description": "Return a session snapshot: identity, status, and committed\nitems.\n\n:param request: The incoming FastAPI request (for auth).\n:param response: The FastAPI response (for cache headers).\n:param session_id: Session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:param include_items: When ``False``, skip the committed-items\n    read and return ``items=[]``. The web chat surface passes\n    ``False`` because it hydrates the transcript via the\n    paginated ``GET /sessions/{id}/items`` endpoint in parallel\n    and never reads the snapshot's copy; the items read is the\n    single most expensive step of the snapshot build.\n:param include_liveness: When ``False``, skip the runner/host\n    liveness lookup and return ``runner_online``/``host_online``\n    as ``None``. The web chat surface passes ``False`` because\n    it sources liveness from the ``/health`` poll and the WS\n    stream, not the snapshot.\n:param refresh_state: When ``True``, refresh runner-derived\n    snapshot overlays from the live session instead of serving\n    stale AP-process caches. Browser reload/bind requests use\n    this to recover from fixed bugs without restarting the AP\n    server.\n:returns: The matching :class:`SessionResponse`.\n:raises OmnigentError: 404 if no session exists.",
+        "description": "Return a session snapshot: identity, status, and committed\nitems.\n\n**Returns:** The matching `SessionResponse`.\n\n**Raises**\n\n- `OmnigentError` \u2014 404 if no session exists.",
         "operationId": "get_session_v1_sessions__session_id__get",
         "parameters": [
           {
+            "description": "Session/conversation identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -5735,6 +5770,7 @@
             }
           },
           {
+            "description": "When `False`, skip the committed-items read and return `items=[]`. The web chat surface passes `False` because it hydrates the transcript via the paginated `GET /sessions/{id}/items` endpoint in parallel and never reads the snapshot's copy; the items read is the single most expensive step of the snapshot build.",
             "in": "query",
             "name": "include_items",
             "required": false,
@@ -5745,6 +5781,7 @@
             }
           },
           {
+            "description": "When `False`, skip the runner/host liveness lookup and return `runner_online`/`host_online` as `None`. The web chat surface passes `False` because it sources liveness from the `/health` poll and the WS stream, not the snapshot.",
             "in": "query",
             "name": "include_liveness",
             "required": false,
@@ -5755,6 +5792,7 @@
             }
           },
           {
+            "description": "When `True`, refresh runner-derived snapshot overlays from the live session instead of serving stale AP-process caches. Browser reload/bind requests use this to recover from fixed bugs without restarting the AP server.",
             "in": "query",
             "name": "refresh_state",
             "required": false,
@@ -5793,10 +5831,11 @@
         ]
       },
       "patch": {
-        "description": "Update a session's mutable fields. When ``runner_id`` is\nprovided, this is the mutable affinity primitive for the Alpha\nrunner-state pivot: create-bind, resume-bind, and recover-bind\nall send the currently registered runner id, and the server\natomically replaces ``conversations.runner_id`` with that\nvalue using last-write-wins semantics. Title, labels, and\nreasoning-effort updates remain supported for existing\nsessions clients.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:param body: The validated :class:`UpdateSessionRequest`.\n:returns: The updated :class:`SessionResponse` snapshot.\n:raises OmnigentError: 400 if the runner is not\n    registered; 404 if no session exists.",
+        "description": "Update a session's mutable fields. When `runner_id` is\nprovided, this is the mutable affinity primitive for the Alpha\nrunner-state pivot: create-bind, resume-bind, and recover-bind\nall send the currently registered runner id, and the server\natomically replaces `conversations.runner_id` with that\nvalue using last-write-wins semantics. Title, labels, and\nreasoning-effort updates remain supported for existing\nsessions clients.\n\n**Parameters**\n\n- `body` \u2014 The validated `UpdateSessionRequest`.\n\n**Returns:** The updated `SessionResponse` snapshot.\n\n**Raises**\n\n- `OmnigentError` \u2014 400 if the runner is not registered; 404 if no session exists.",
         "operationId": "update_session_v1_sessions__session_id__patch",
         "parameters": [
           {
+            "description": "Session/conversation identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -5846,10 +5885,11 @@
     },
     "/v1/sessions/{session_id}/agent": {
       "get": {
-        "description": "Return the :class:`AgentObject` for the session's bound agent.\n\nReplaces the standalone ``GET /api/agents/{id}`` endpoint by\nresolving the agent through the session's ``agent_id`` foreign\nkey. The caller only needs to know the session id.\n\n:param request: The incoming FastAPI request.\n:param session_id: Session identifier, e.g.\n    ``\"conv_abc123\"``.\n:returns: The bound agent's :class:`AgentObject`.\n:raises OmnigentError: If the session or agent is not found.",
+        "description": "Return the `AgentObject` for the session's bound agent.\n\nReplaces the standalone `GET /api/agents/{id}` endpoint by\nresolving the agent through the session's `agent_id` foreign\nkey. The caller only needs to know the session id.\n\n**Returns:** The bound agent's `AgentObject`.\n\n**Raises**\n\n- `OmnigentError` \u2014 If the session or agent is not found.",
         "operationId": "get_session_agent_v1_sessions__session_id__agent_get",
         "parameters": [
           {
+            "description": "Session identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -5887,10 +5927,11 @@
         ]
       },
       "put": {
-        "description": "Replace the session's agent bundle with a new upload.\n\nValidates the new bundle, checks that the spec name matches\nthe existing agent, stores the bundle under a\ncontent-addressed key, updates the agent row, and warm-swaps\nthe cache. Idempotent when the bundle content is unchanged.\n\n:param request: The incoming FastAPI request.\n:param session_id: Session identifier, e.g.\n    ``\"conv_abc123\"``.\n:param bundle: Uploaded ``.tar.gz`` agent bundle file.\n:returns: The updated :class:`AgentObject`.\n:raises OmnigentError: If the session or agent is not found,\n    the bundle is invalid, or the spec name doesn't match.",
+        "description": "Replace the session's agent bundle with a new upload.\n\nValidates the new bundle, checks that the spec name matches\nthe existing agent, stores the bundle under a\ncontent-addressed key, updates the agent row, and warm-swaps\nthe cache. Idempotent when the bundle content is unchanged.\n\n**Parameters**\n\n- `bundle` \u2014 Uploaded `.tar.gz` agent bundle file.\n\n**Returns:** The updated `AgentObject`.\n\n**Raises**\n\n- `OmnigentError` \u2014 If the session or agent is not found, the bundle is invalid, or the spec name doesn't match.",
         "operationId": "update_session_agent_v1_sessions__session_id__agent_put",
         "parameters": [
           {
+            "description": "Session identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -5940,10 +5981,11 @@
     },
     "/v1/sessions/{session_id}/agent/contents": {
       "get": {
-        "description": "Download the raw ``.tar.gz`` agent bundle for the session's\nbound agent.\n\nReplaces ``GET /api/agents/{id}/contents``. Runners call this\non cache miss to fetch the spec + bundled files.\n\n:param request: The incoming FastAPI request.\n:param session_id: Session identifier, e.g.\n    ``\"conv_abc123\"``.\n:returns: Raw bundle bytes as ``application/gzip``.\n:raises OmnigentError: If the session, agent, or bundle is\n    not found.",
+        "description": "Download the raw `.tar.gz` agent bundle for the session's\nbound agent.\n\nReplaces `GET /api/agents/{id}/contents`. Runners call this\non cache miss to fetch the spec + bundled files.\n\n**Returns:** Raw bundle bytes as `application/gzip`.\n\n**Raises**\n\n- `OmnigentError` \u2014 If the session, agent, or bundle is not found.",
         "operationId": "get_session_agent_contents_v1_sessions__session_id__agent_contents_get",
         "parameters": [
           {
+            "description": "Session identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -5982,10 +6024,11 @@
     },
     "/v1/sessions/{session_id}/child_sessions": {
       "get": {
-        "description": "List sub-agent (child) sessions under a parent session.\n\nReturns a page of :class:`ChildSessionSummary` objects\nderived from child conversations (``kind=\"sub_agent\"``,\n``parent_conversation_id=session_id``) plus each child's\nlatest task. Powers the web / REPL debug surfaces' \"child\nsessions\" panel without parsing parent\n``function_call_output`` JSON handles. Pagination contract\nmatches :func:`list_session_items` so existing client code\ncan reuse the same cursor logic.\n\n:param request: Inbound HTTP request; carries the caller\n    identity used to authorize READ on the parent session.\n:param session_id: Parent session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:param limit: Maximum number of children to return\n    (1-1000, default 20 \u2014 sub-agent fan-out is typically\n    sparse compared to conversation items).\n:param after: Cursor \u2014 return children whose id appears\n    after this one in sort order,\n    e.g. ``\"conv_child123\"``.\n:param before: Cursor \u2014 return children before this one.\n:param order: Sort direction, ``\"desc\"`` (newest-first,\n    default) or ``\"asc\"``. Sort column is ``created_at``.\n:returns: A :class:`PaginatedList` of\n    :class:`ChildSessionSummary` objects.\n:raises OmnigentError: 403 if the caller lacks READ on\n    ``session_id``; 404 if no session exists there.",
+        "description": "List sub-agent (child) sessions under a parent session.\n\nReturns a page of `ChildSessionSummary` objects\nderived from child conversations (`kind=\"sub_agent\"`,\n`parent_conversation_id=session_id`) plus each child's\nlatest task. Powers the web / REPL debug surfaces' \"child\nsessions\" panel without parsing parent\n`function_call_output` JSON handles. Pagination contract\nmatches `list_session_items` so existing client code\ncan reuse the same cursor logic.\n\n**Returns:** A `PaginatedList` of `ChildSessionSummary` objects.\n\n**Raises**\n\n- `OmnigentError` \u2014 403 if the caller lacks READ on `session_id`; 404 if no session exists there.",
         "operationId": "list_child_sessions_v1_sessions__session_id__child_sessions_get",
         "parameters": [
           {
+            "description": "Parent session/conversation identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -5995,6 +6038,7 @@
             }
           },
           {
+            "description": "Maximum number of children to return (1-1000, default 20 \u2014 sub-agent fan-out is typically sparse compared to conversation items).",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -6007,6 +6051,7 @@
             }
           },
           {
+            "description": "Cursor \u2014 return children whose id appears after this one in sort order, e.g. `\"conv_child123\"`.",
             "in": "query",
             "name": "after",
             "required": false,
@@ -6023,6 +6068,7 @@
             }
           },
           {
+            "description": "Cursor \u2014 return children before this one.",
             "in": "query",
             "name": "before",
             "required": false,
@@ -6039,6 +6085,7 @@
             }
           },
           {
+            "description": "Sort direction, `\"desc\"` (newest-first, default) or `\"asc\"`. Sort column is `created_at`.",
             "in": "query",
             "name": "order",
             "required": false,
@@ -6080,10 +6127,11 @@
     },
     "/v1/sessions/{session_id}/comments": {
       "get": {
-        "description": "List comments for a session, optionally filtered by file.\n\nRequires ``LEVEL_READ`` on the session in multi-user mode.\n\n:param request: The incoming request, used to extract the user identity.\n:param session_id: The session to query, e.g. ``\"conv_abc123\"``.\n:param path: When provided, only return comments for this file,\n    e.g. ``\"src/App.tsx\"``.\n:returns: List of serialized comment dicts.\n:raises OmnigentError: 401/403/404 if the user lacks read permission.",
+        "description": "List comments for a session, optionally filtered by file.\n\nRequires `LEVEL_READ` on the session in multi-user mode.\n\n**Returns:** List of serialized comment dicts.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403/404 if the user lacks read permission.",
         "operationId": "list_comments_v1_sessions__session_id__comments_get",
         "parameters": [
           {
+            "description": "The session to query, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6093,6 +6141,7 @@
             }
           },
           {
+            "description": "When provided, only return comments for this file, e.g. `\"src/App.tsx\"`.",
             "in": "query",
             "name": "path",
             "required": false,
@@ -6142,10 +6191,11 @@
         ]
       },
       "post": {
-        "description": "Create a new review comment.\n\nRequires ``LEVEL_EDIT`` on the session in multi-user mode.\n\n:param request: The incoming request, used to extract the user identity.\n:param session_id: The owning session, e.g. ``\"conv_abc123\"``.\n:param body: Comment payload including path, body text, and the\n    two range fields (start_index, end_index).\n:returns: The created comment as a serialized dict.\n:raises OmnigentError: 401/403/404 if the user lacks edit permission.",
+        "description": "Create a new review comment.\n\nRequires `LEVEL_EDIT` on the session in multi-user mode.\n\n**Parameters**\n\n- `body` \u2014 Comment payload including path, body text, and the two range fields (start_index, end_index).\n\n**Returns:** The created comment as a serialized dict.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403/404 if the user lacks edit permission.",
         "operationId": "add_comment_v1_sessions__session_id__comments_post",
         "parameters": [
           {
+            "description": "The owning session, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6197,10 +6247,11 @@
     },
     "/v1/sessions/{session_id}/comments/send": {
       "post": {
-        "description": "Mark comments as addressed and format them into an agent message.\n\nFetches each requested comment, marks it ``addressed``,\nand formats the full set into a grouped, sorted message string\nsuitable for pasting into the chat composer.\n\nRequires ``LEVEL_EDIT`` on the session in multi-user mode because\nit transitions comment status from ``draft`` to ``addressed``.\n\n:param request: The incoming request, used to extract the user identity.\n:param session_id: The owning session, e.g. ``\"conv_abc123\"``.\n:param body: List of comment IDs to send, with an optional\n    custom instruction prefix.\n:returns: ``{\"formatted_message\": str, \"sent_comment_ids\": list[str]}``.\n:raises OmnigentError: 401/403/404 if the user lacks edit permission,\n    or 404 if any requested comment is not found or does not belong to\n    this session.",
+        "description": "Mark comments as addressed and format them into an agent message.\n\nFetches each requested comment, marks it `addressed`,\nand formats the full set into a grouped, sorted message string\nsuitable for pasting into the chat composer.\n\nRequires `LEVEL_EDIT` on the session in multi-user mode because\nit transitions comment status from `draft` to `addressed`.\n\n**Parameters**\n\n- `body` \u2014 List of comment IDs to send, with an optional custom instruction prefix.\n\n**Returns:** `{\"formatted_message\": str, \"sent_comment_ids\": list[str]}`.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403/404 if the user lacks edit permission, or 404 if any requested comment is not found or does not belong to this session.",
         "operationId": "send_to_agent_v1_sessions__session_id__comments_send_post",
         "parameters": [
           {
+            "description": "The owning session, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6252,10 +6303,11 @@
     },
     "/v1/sessions/{session_id}/comments/{comment_id}": {
       "delete": {
-        "description": "Delete a comment.\n\nRequires ``LEVEL_EDIT`` on the session in multi-user mode, and\nadditionally that the caller is the comment's author \u2014 one\ncollaborator may not delete another user's comment.\n\n:param request: The incoming request, used to extract the user identity.\n:param session_id: The owning session, e.g. ``\"conv_abc123\"``.\n:param comment_id: The comment to delete, e.g. ``\"a1b2c3d4-...\"``.\n:returns: ``{\"deleted\": true}``.\n:raises OmnigentError: 401/403/404 if the user lacks edit permission,\n    403 if the caller is not the comment's author, or 404 if the\n    comment is not found or does not belong to this session.",
+        "description": "Delete a comment.\n\nRequires `LEVEL_EDIT` on the session in multi-user mode, and\nadditionally that the caller is the comment's author \u2014 one\ncollaborator may not delete another user's comment.\n\n**Returns:** `{\"deleted\": true}`.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403/404 if the user lacks edit permission, 403 if the caller is not the comment's author, or 404 if the comment is not found or does not belong to this session.",
         "operationId": "delete_comment_v1_sessions__session_id__comments__comment_id__delete",
         "parameters": [
           {
+            "description": "The owning session, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6265,6 +6317,7 @@
             }
           },
           {
+            "description": "The comment to delete, e.g. `\"a1b2c3d4-...\"`.",
             "in": "path",
             "name": "comment_id",
             "required": true,
@@ -6304,10 +6357,11 @@
         ]
       },
       "patch": {
-        "description": "Update a comment's status and/or body text.\n\nRequires ``LEVEL_EDIT`` on the session in multi-user mode.\nEditing the ``body`` additionally requires the caller to be the\ncomment's author: rewriting another user's comment is forbidden,\nwhile changing only the ``status`` (e.g. marking it ``\"addressed\"``)\nstays open to any editor as a shared review-workflow action.\n\n:param request: The incoming request, used to extract the user identity.\n:param session_id: The owning session, e.g. ``\"conv_abc123\"``.\n:param comment_id: The comment to update, e.g. ``\"a1b2c3d4-...\"``.\n:param body: Fields to update; ``None`` fields are left unchanged.\n:returns: The updated serialized comment.\n:raises OmnigentError: 401/403/404 if the user lacks edit permission,\n     403 if a body edit is attempted on another user's comment,\n    or 404 if the comment is not found.",
+        "description": "Update a comment's status and/or body text.\n\nRequires `LEVEL_EDIT` on the session in multi-user mode.\nEditing the `body` additionally requires the caller to be the\ncomment's author: rewriting another user's comment is forbidden,\nwhile changing only the `status` (e.g. marking it `\"addressed\"`)\nstays open to any editor as a shared review-workflow action.\n\n**Parameters**\n\n- `body` \u2014 Fields to update; `None` fields are left unchanged.\n\n**Returns:** The updated serialized comment.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403/404 if the user lacks edit permission, 403 if a body edit is attempted on another user's comment, or 404 if the comment is not found.",
         "operationId": "update_comment_v1_sessions__session_id__comments__comment_id__patch",
         "parameters": [
           {
+            "description": "The owning session, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6317,6 +6371,7 @@
             }
           },
           {
+            "description": "The comment to update, e.g. `\"a1b2c3d4-...\"`.",
             "in": "path",
             "name": "comment_id",
             "required": true,
@@ -6368,10 +6423,11 @@
     },
     "/v1/sessions/{session_id}/items": {
       "get": {
-        "description": "List items in a session with cursor-based pagination.\n\nDelegates to the conversation items store \u2014 session_id is\nthe conversation_id. Same pagination contract as\n``GET /v1/conversations/{id}/items``.\n\n:param session_id: Session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:param limit: Maximum number of items to return\n    (1-1000, default 100).\n:param after: Cursor \u2014 return items after this item ID,\n    e.g. ``\"msg_abc123\"``.\n:param before: Cursor \u2014 return items before this item ID.\n:param order: Sort order, ``\"asc\"`` (chronological,\n    default) or ``\"desc\"``.\n:returns: A :class:`PaginatedList` of conversation items.\n:raises OmnigentError: 404 if no session exists.",
+        "description": "List items in a session with cursor-based pagination.\n\nDelegates to the conversation items store \u2014 session_id is\nthe conversation_id. Same pagination contract as\n`GET /v1/conversations/{id}/items`.\n\n**Returns:** A `PaginatedList` of conversation items.\n\n**Raises**\n\n- `OmnigentError` \u2014 404 if no session exists.",
         "operationId": "list_session_items_v1_sessions__session_id__items_get",
         "parameters": [
           {
+            "description": "Session/conversation identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6381,6 +6437,7 @@
             }
           },
           {
+            "description": "Maximum number of items to return (1-1000, default 100).",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -6393,6 +6450,7 @@
             }
           },
           {
+            "description": "Cursor \u2014 return items after this item ID, e.g. `\"msg_abc123\"`.",
             "in": "query",
             "name": "after",
             "required": false,
@@ -6409,6 +6467,7 @@
             }
           },
           {
+            "description": "Cursor \u2014 return items before this item ID.",
             "in": "query",
             "name": "before",
             "required": false,
@@ -6425,6 +6484,7 @@
             }
           },
           {
+            "description": "Sort order, `\"asc\"` (chronological, default) or `\"desc\"`.",
             "in": "query",
             "name": "order",
             "required": false,
@@ -6466,10 +6526,11 @@
     },
     "/v1/sessions/{session_id}/labels": {
       "get": {
-        "description": "Return only the labels for a session.\n\nNative runner bridge setup needs labels during harness spawn,\nbut the full session snapshot also loads history, skills,\nrunner status, and agent metadata. This endpoint keeps that\nspawn-time dependency to one authorized conversation read.\n\n:param request: The incoming FastAPI request (for auth).\n:param response: The FastAPI response (for cache headers).\n:param session_id: Session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:returns: The session id and labels.\n:raises OmnigentError: 404 if no session exists.",
+        "description": "Return only the labels for a session.\n\nNative runner bridge setup needs labels during harness spawn,\nbut the full session snapshot also loads history, skills,\nrunner status, and agent metadata. This endpoint keeps that\nspawn-time dependency to one authorized conversation read.\n\n**Returns:** The session id and labels.\n\n**Raises**\n\n- `OmnigentError` \u2014 404 if no session exists.",
         "operationId": "get_session_labels_v1_sessions__session_id__labels_get",
         "parameters": [
           {
+            "description": "Session/conversation identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6509,10 +6570,11 @@
     },
     "/v1/sessions/{session_id}/owner": {
       "get": {
-        "description": "Return the owner of a session.\n\nRequires read-level access.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session to look up,\n    e.g. ``\"conv_abc123\"``.\n:returns: ``{\"owner\": \"<user_id>\"}`` or\n    ``{\"owner\": null}``.",
+        "description": "Return the owner of a session.\n\nRequires read-level access.\n\n**Returns:** `{\"owner\": \"<user_id>\"}` or `{\"owner\": null}`.",
         "operationId": "get_session_owner_v1_sessions__session_id__owner_get",
         "parameters": [
           {
+            "description": "Session to look up, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6550,10 +6612,11 @@
     },
     "/v1/sessions/{session_id}/permissions": {
       "get": {
-        "description": "List all permission grants on a session.\n\nRequires manage-level access.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session to list grants for,\n    e.g. ``\"conv_abc123\"``.\n:returns: List of :class:`PermissionObject`.\n:raises OmnigentError: 404 if no session or no access.",
+        "description": "List all permission grants on a session.\n\nRequires manage-level access.\n\n**Returns:** List of `PermissionObject`.\n\n**Raises**\n\n- `OmnigentError` \u2014 404 if no session or no access.",
         "operationId": "list_permissions_v1_sessions__session_id__permissions_get",
         "parameters": [
           {
+            "description": "Session to list grants for, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6595,10 +6658,11 @@
         ]
       },
       "put": {
-        "description": "Grant or update a permission on a session.\n\nRequires manage-level access. Upserts the grant \u2014 can\nupgrade or downgrade an existing level. Auto-creates the\ngrantee user if they don't exist yet.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session to grant access to,\n    e.g. ``\"conv_abc123\"``.\n:param body: The grant request with ``user_id`` and ``level``.\n:returns: The resulting :class:`PermissionObject`.\n:raises OmnigentError: 404 if no session or no access,\n    401 if unauthenticated.",
+        "description": "Grant or update a permission on a session.\n\nRequires manage-level access. Upserts the grant \u2014 can\nupgrade or downgrade an existing level. Auto-creates the\ngrantee user if they don't exist yet.\n\n**Parameters**\n\n- `body` \u2014 The grant request with `user_id` and `level`.\n\n**Returns:** The resulting `PermissionObject`.\n\n**Raises**\n\n- `OmnigentError` \u2014 404 if no session or no access, 401 if unauthenticated.",
         "operationId": "grant_permission_v1_sessions__session_id__permissions_put",
         "parameters": [
           {
+            "description": "Session to grant access to, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6648,10 +6712,11 @@
     },
     "/v1/sessions/{session_id}/permissions/{target_user_id}": {
       "delete": {
-        "description": "Revoke a user's permission on a session.\n\nRequires manage-level access. Cannot revoke your own\nmanage grant (prevents orphaned sessions). Returns 204\nwhether or not the grant existed (idempotent).\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session to revoke access from,\n    e.g. ``\"conv_abc123\"``.\n:param target_user_id: User whose grant to revoke,\n    e.g. ``\"alice@example.com\"``.\n:returns: 204 No Content.\n:raises OmnigentError: 404 if no session or no access,\n    403 if attempting to revoke own manage grant.",
+        "description": "Revoke a user's permission on a session.\n\nRequires manage-level access. Cannot revoke your own\nmanage grant (prevents orphaned sessions). Returns 204\nwhether or not the grant existed (idempotent).\n\n**Returns:** 204 No Content.\n\n**Raises**\n\n- `OmnigentError` \u2014 404 if no session or no access, 403 if attempting to revoke own manage grant.",
         "operationId": "revoke_permission_v1_sessions__session_id__permissions__target_user_id__delete",
         "parameters": [
           {
+            "description": "Session to revoke access from, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6661,6 +6726,7 @@
             }
           },
           {
+            "description": "User whose grant to revoke, e.g. `\"alice@example.com\"`.",
             "in": "path",
             "name": "target_user_id",
             "required": true,
@@ -6693,10 +6759,11 @@
     },
     "/v1/sessions/{session_id}/policies": {
       "get": {
-        "description": "List all policies for a session.\n\nReturns both store-persisted (``source=\"session\"``) and\nspec-declared (``source=\"spec\"``) policies. Spec policies\nhave ``id=None`` and cannot be patched or deleted.\n\nRequires ``LEVEL_READ`` on the session in multi-user mode.\n\n:param request: The incoming request, used to extract the\n    user identity.\n:param session_id: The session to query, e.g.\n    ``\"conv_abc123\"``.\n:returns: ``{\"object\": \"list\", \"data\": [...]}``.\n:raises OmnigentError: 401/403 if the user lacks read\n    permission, 404 if the session is not found.",
+        "description": "List all policies for a session.\n\nReturns both store-persisted (`source=\"session\"`) and\nspec-declared (`source=\"spec\"`) policies. Spec policies\nhave `id=None` and cannot be patched or deleted.\n\nRequires `LEVEL_READ` on the session in multi-user mode.\n\n**Returns:** `{\"object\": \"list\", \"data\": [...]}`.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403 if the user lacks read permission, 404 if the session is not found.",
         "operationId": "list_policies_v1_sessions__session_id__policies_get",
         "parameters": [
           {
+            "description": "The session to query, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6736,10 +6803,11 @@
         ]
       },
       "post": {
-        "description": "Create a new session policy.\n\nRequires ``LEVEL_EDIT`` on the session in multi-user mode.\n\n:param request: The incoming request, used to extract the\n    user identity.\n:param session_id: The owning session, e.g.\n    ``\"conv_abc123\"``.\n:param body: Policy payload including name, type, and\n    handler.\n:returns: The created policy as a serialized dict.\n:raises OmnigentError: 401/403 if the user lacks edit\n    permission, 404 if the session is not found, or 409\n    if a policy with the same name already exists.",
+        "description": "Create a new session policy.\n\nRequires `LEVEL_EDIT` on the session in multi-user mode.\n\n**Parameters**\n\n- `body` \u2014 Policy payload including name, type, and handler.\n\n**Returns:** The created policy as a serialized dict.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403 if the user lacks edit permission, 404 if the session is not found, or 409 if a policy with the same name already exists.",
         "operationId": "create_policy_v1_sessions__session_id__policies_post",
         "parameters": [
           {
+            "description": "The owning session, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6791,10 +6859,11 @@
     },
     "/v1/sessions/{session_id}/policies/evaluate": {
       "post": {
-        "description": "Generic policy evaluation endpoint (proto-compatible).\n\nAccepts an ``EvaluationRequest`` JSON body whose ``event``\nfield carries the phase (``PHASE_TOOL_CALL``,\n``PHASE_TOOL_RESULT``, ``PHASE_LLM_REQUEST``,\n``PHASE_LLM_RESPONSE``), the event data, and optional\ncontext. Returns an ``EvaluationResponse`` with the policy\nverdict (``result``), an optional ``reason``, and optional\n``data`` for content-rewriting policies.\n\nUsed by Claude Code's ``PreToolUse`` and ``PostToolUse``\ncommand hooks (via ``omnigent.claude_native_hook``) to\nevaluate admin policies on native tool calls. Also usable\nby any client that speaks the proto-compatible JSON schema.\n\n:param request: FastAPI request \u2014 body is the\n    ``EvaluationRequest`` JSON envelope.\n:param session_id: Omnigent conversation id from the URL path.\n:returns: ``EvaluationResponse`` JSON with ``result``,\n    ``reason``, and optional ``data``.\n:raises OmnigentError: 404 if the session doesn't exist,\n    400 if the body is malformed.",
+        "description": "Generic policy evaluation endpoint (proto-compatible).\n\nAccepts an `EvaluationRequest` JSON body whose `event`\nfield carries the phase (`PHASE_TOOL_CALL`,\n`PHASE_TOOL_RESULT`, `PHASE_LLM_REQUEST`,\n`PHASE_LLM_RESPONSE`), the event data, and optional\ncontext. Returns an `EvaluationResponse` with the policy\nverdict (`result`), an optional `reason`, and optional\n`data` for content-rewriting policies.\n\nUsed by Claude Code's `PreToolUse` and `PostToolUse`\ncommand hooks (via `omnigent.claude_native_hook`) to\nevaluate admin policies on native tool calls. Also usable\nby any client that speaks the proto-compatible JSON schema.\n\n**Returns:** `EvaluationResponse` JSON with `result`, `reason`, and optional `data`.\n\n**Raises**\n\n- `OmnigentError` \u2014 404 if the session doesn't exist, 400 if the body is malformed.",
         "operationId": "evaluate_policy_v1_sessions__session_id__policies_evaluate_post",
         "parameters": [
           {
+            "description": "Omnigent conversation id from the URL path.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6832,10 +6901,11 @@
     },
     "/v1/sessions/{session_id}/policies/{policy_id}": {
       "delete": {
-        "description": "Delete a session policy.\n\nIdempotent \u2014 deleting a missing policy returns 204.\nRequires ``LEVEL_EDIT``.\n\n:param request: The incoming request, used to extract the\n    user identity.\n:param session_id: The owning session, e.g.\n    ``\"conv_abc123\"``.\n:param policy_id: The policy to delete, e.g.\n    ``\"pol_abc123\"``.\n:returns: ``{\"deleted\": true}``.\n:raises OmnigentError: 401/403 if the user lacks edit\n    permission.",
+        "description": "Delete a session policy.\n\nIdempotent \u2014 deleting a missing policy returns 204.\nRequires `LEVEL_EDIT`.\n\n**Returns:** `{\"deleted\": true}`.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403 if the user lacks edit permission.",
         "operationId": "delete_policy_v1_sessions__session_id__policies__policy_id__delete",
         "parameters": [
           {
+            "description": "The owning session, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6845,6 +6915,7 @@
             }
           },
           {
+            "description": "The policy to delete, e.g. `\"pol_abc123\"`.",
             "in": "path",
             "name": "policy_id",
             "required": true,
@@ -6884,10 +6955,11 @@
         ]
       },
       "get": {
-        "description": "Get a single session policy.\n\nRequires ``LEVEL_READ`` on the session in multi-user mode.\n\n:param request: The incoming request, used to extract the\n    user identity.\n:param session_id: The owning session, e.g.\n    ``\"conv_abc123\"``.\n:param policy_id: The policy to retrieve, e.g.\n    ``\"pol_abc123\"``.\n:returns: The policy as a serialized dict.\n:raises OmnigentError: 401/403 if the user lacks read\n    permission, or 404 if the policy is not found.",
+        "description": "Get a single session policy.\n\nRequires `LEVEL_READ` on the session in multi-user mode.\n\n**Returns:** The policy as a serialized dict.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403 if the user lacks read permission, or 404 if the policy is not found.",
         "operationId": "get_policy_v1_sessions__session_id__policies__policy_id__get",
         "parameters": [
           {
+            "description": "The owning session, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6897,6 +6969,7 @@
             }
           },
           {
+            "description": "The policy to retrieve, e.g. `\"pol_abc123\"`.",
             "in": "path",
             "name": "policy_id",
             "required": true,
@@ -6936,10 +7009,11 @@
         ]
       },
       "patch": {
-        "description": "Update a session policy's mutable fields.\n\n``type`` is immutable \u2014 the caller must delete and\nre-create to change it. Requires ``LEVEL_EDIT``.\n\n:param request: The incoming request, used to extract the\n    user identity.\n:param session_id: The owning session, e.g.\n    ``\"conv_abc123\"``.\n:param policy_id: The policy to update, e.g.\n    ``\"pol_abc123\"``.\n:param body: Fields to update; ``None`` fields are left\n    unchanged.\n:returns: The updated policy as a serialized dict.\n:raises OmnigentError: 401/403 if the user lacks edit\n    permission, or 404 if the policy is not found.",
+        "description": "Update a session policy's mutable fields.\n\n`type` is immutable \u2014 the caller must delete and\nre-create to change it. Requires `LEVEL_EDIT`.\n\n**Parameters**\n\n- `body` \u2014 Fields to update; `None` fields are left unchanged.\n\n**Returns:** The updated policy as a serialized dict.\n\n**Raises**\n\n- `OmnigentError` \u2014 401/403 if the user lacks edit permission, or 404 if the policy is not found.",
         "operationId": "update_policy_v1_sessions__session_id__policies__policy_id__patch",
         "parameters": [
           {
+            "description": "The owning session, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -6949,6 +7023,7 @@
             }
           },
           {
+            "description": "The policy to update, e.g. `\"pol_abc123\"`.",
             "in": "path",
             "name": "policy_id",
             "required": true,
@@ -7000,10 +7075,11 @@
     },
     "/v1/sessions/{session_id}/resources": {
       "get": {
-        "description": "Return the runner-authoritative resource inventory for a session.\n\nRequires the session to be bound to a runner via\n``PATCH /v1/sessions/{id}``; raises ``conflict`` otherwise.\nThe server validates the session exists, then proxies to the\nrunner's ``GET /v1/sessions/{id}/resources`` endpoint. In\nunit-test / in-process setups with no runner router/client, the\nroute falls back to adapting the local terminal registry.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:param type: Optional resource-type filter, e.g.\n    ``\"environment\"`` / ``\"terminal\"`` / ``\"file\"``. Forwarded\n    to the runner (its registry applies it) and honored by the\n    local-registry fallback and the file-store merge below.",
+        "description": "Return the runner-authoritative resource inventory for a session.\n\nRequires the session to be bound to a runner via\n`PATCH /v1/sessions/{id}`; raises `conflict` otherwise.\nThe server validates the session exists, then proxies to the\nrunner's `GET /v1/sessions/{id}/resources` endpoint. In\nunit-test / in-process setups with no runner router/client, the\nroute falls back to adapting the local terminal registry.",
         "operationId": "list_session_resources_v1_sessions__session_id__resources_get",
         "parameters": [
           {
+            "description": "Session/conversation identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7013,6 +7089,7 @@
             }
           },
           {
+            "description": "Optional resource-type filter, e.g. `\"environment\"` / `\"terminal\"` / `\"file\"`. Forwarded to the runner (its registry applies it) and honored by the local-registry fallback and the file-store merge below.",
             "in": "query",
             "name": "type",
             "required": false,
@@ -7059,10 +7136,11 @@
     },
     "/v1/sessions/{session_id}/resources/environments": {
       "get": {
-        "description": "Return only environment resources for a session.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier.\n:returns: ``PaginatedList`` of environment resources.",
+        "description": "Return only environment resources for a session.\n\n**Returns:** `PaginatedList` of environment resources.",
         "operationId": "list_session_environments_v1_sessions__session_id__resources_environments_get",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7100,10 +7178,11 @@
     },
     "/v1/sessions/{session_id}/resources/environments/{environment_id}": {
       "get": {
-        "description": "Return a single environment resource by id.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier.\n:param environment_id: Opaque environment resource id,\n    e.g. ``\"default\"``.\n:returns: The environment resource object.",
+        "description": "Return a single environment resource by id.\n\n**Returns:** The environment resource object.",
         "operationId": "get_session_environment_v1_sessions__session_id__resources_environments__environment_id__get",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7113,6 +7192,7 @@
             }
           },
           {
+            "description": "Opaque environment resource id, e.g. `\"default\"`.",
             "in": "path",
             "name": "environment_id",
             "required": true,
@@ -7150,10 +7230,11 @@
     },
     "/v1/sessions/{session_id}/resources/environments/{environment_id}/changes": {
       "get": {
-        "description": "List all files changed since session start (flat, registry-backed).\n\nReturns the watchdog change set for the session \u2014 every file\ncreated, modified, or deleted since the session began, regardless\nof directory depth.  Use for the flat \"changed files\" view.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier.\n:param environment_id: Environment resource id.\n:returns: Flat list of changed filesystem entries with ``status``.",
+        "description": "List all files changed since session start (flat, registry-backed).\n\nReturns the watchdog change set for the session \u2014 every file\ncreated, modified, or deleted since the session began, regardless\nof directory depth.  Use for the flat \"changed files\" view.\n\n**Returns:** Flat list of changed filesystem entries with `status`.",
         "operationId": "list_environment_filesystem_changes_v1_sessions__session_id__resources_environments__environment_id__changes_get",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7163,6 +7244,7 @@
             }
           },
           {
+            "description": "Environment resource id.",
             "in": "path",
             "name": "environment_id",
             "required": true,
@@ -7200,10 +7282,11 @@
     },
     "/v1/sessions/{session_id}/resources/environments/{environment_id}/filesystem": {
       "get": {
-        "description": "List root directory of an environment.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier.\n:param environment_id: Environment resource id.\n:param limit: Maximum number of entries to return (1-1000, default 20).\n:param after: Cursor entry id for forward pagination.\n:param before: Cursor entry id for backward pagination.\n:param order: Sort order, ``\"asc\"`` or ``\"desc\"``.\n:returns: PaginatedList of filesystem entries.",
+        "description": "List root directory of an environment.\n\n**Returns:** PaginatedList of filesystem entries.",
         "operationId": "list_environment_root_v1_sessions__session_id__resources_environments__environment_id__filesystem_get",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7213,6 +7296,7 @@
             }
           },
           {
+            "description": "Environment resource id.",
             "in": "path",
             "name": "environment_id",
             "required": true,
@@ -7222,6 +7306,7 @@
             }
           },
           {
+            "description": "Maximum number of entries to return (1-1000, default 20).",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -7234,6 +7319,7 @@
             }
           },
           {
+            "description": "Cursor entry id for forward pagination.",
             "in": "query",
             "name": "after",
             "required": false,
@@ -7250,6 +7336,7 @@
             }
           },
           {
+            "description": "Cursor entry id for backward pagination.",
             "in": "query",
             "name": "before",
             "required": false,
@@ -7266,6 +7353,7 @@
             }
           },
           {
+            "description": "Sort order, `\"asc\"` or `\"desc\"`.",
             "in": "query",
             "name": "order",
             "required": false,
@@ -7305,10 +7393,11 @@
     },
     "/v1/sessions/{session_id}/resources/environments/{environment_id}/filesystem/{relative_path}": {
       "delete": {
-        "description": "Delete a file or directory in an environment.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier.\n:param environment_id: Environment resource id.\n:param relative_path: Path relative to environment root.\n:returns: Delete result.",
+        "description": "Delete a file or directory in an environment.\n\n**Returns:** Delete result.",
         "operationId": "delete_environment_path_v1_sessions__session_id__resources_environments__environment_id__filesystem__relative_path__delete",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7318,6 +7407,7 @@
             }
           },
           {
+            "description": "Environment resource id.",
             "in": "path",
             "name": "environment_id",
             "required": true,
@@ -7327,6 +7417,7 @@
             }
           },
           {
+            "description": "Path relative to environment root.",
             "in": "path",
             "name": "relative_path",
             "required": true,
@@ -7362,10 +7453,11 @@
         ]
       },
       "get": {
-        "description": "Read a file or list a directory in an environment.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier.\n:param environment_id: Environment resource id.\n:param relative_path: Path relative to environment root.\n:param limit: Maximum number of entries to return for directory\n    listings (1-1000, default 20). Ignored for file reads.\n:param after: Cursor entry id for forward pagination.\n:param before: Cursor entry id for backward pagination.\n:param order: Sort order, ``\"asc\"`` or ``\"desc\"``.\n:returns: File content or directory listing.",
+        "description": "Read a file or list a directory in an environment.\n\n**Returns:** File content or directory listing.",
         "operationId": "read_or_list_environment_path_v1_sessions__session_id__resources_environments__environment_id__filesystem__relative_path__get",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7375,6 +7467,7 @@
             }
           },
           {
+            "description": "Environment resource id.",
             "in": "path",
             "name": "environment_id",
             "required": true,
@@ -7384,6 +7477,7 @@
             }
           },
           {
+            "description": "Path relative to environment root.",
             "in": "path",
             "name": "relative_path",
             "required": true,
@@ -7393,6 +7487,7 @@
             }
           },
           {
+            "description": "Maximum number of entries to return for directory listings (1-1000, default 20). Ignored for file reads.",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -7405,6 +7500,7 @@
             }
           },
           {
+            "description": "Cursor entry id for forward pagination.",
             "in": "query",
             "name": "after",
             "required": false,
@@ -7421,6 +7517,7 @@
             }
           },
           {
+            "description": "Cursor entry id for backward pagination.",
             "in": "query",
             "name": "before",
             "required": false,
@@ -7437,6 +7534,7 @@
             }
           },
           {
+            "description": "Sort order, `\"asc\"` or `\"desc\"`.",
             "in": "query",
             "name": "order",
             "required": false,
@@ -7474,10 +7572,11 @@
         ]
       },
       "patch": {
-        "description": "Edit a file in an environment via text replacement.\n\n:param session_id: Session/conversation identifier.\n:param environment_id: Environment resource id.\n:param relative_path: Path relative to environment root.\n:param request: JSON body with ``old_text`` and ``new_text``.\n:returns: Edit result.",
+        "description": "Edit a file in an environment via text replacement.\n\n**Returns:** Edit result.",
         "operationId": "edit_environment_file_v1_sessions__session_id__resources_environments__environment_id__filesystem__relative_path__patch",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7487,6 +7586,7 @@
             }
           },
           {
+            "description": "Environment resource id.",
             "in": "path",
             "name": "environment_id",
             "required": true,
@@ -7496,6 +7596,7 @@
             }
           },
           {
+            "description": "Path relative to environment root.",
             "in": "path",
             "name": "relative_path",
             "required": true,
@@ -7531,10 +7632,11 @@
         ]
       },
       "put": {
-        "description": "Write/replace a file in an environment.\n\n:param session_id: Session/conversation identifier.\n:param environment_id: Environment resource id.\n:param relative_path: Path relative to environment root.\n:param request: JSON body with ``content``.\n:returns: Write result.",
+        "description": "Write/replace a file in an environment.\n\n**Returns:** Write result.",
         "operationId": "write_environment_file_v1_sessions__session_id__resources_environments__environment_id__filesystem__relative_path__put",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7544,6 +7646,7 @@
             }
           },
           {
+            "description": "Environment resource id.",
             "in": "path",
             "name": "environment_id",
             "required": true,
@@ -7553,6 +7656,7 @@
             }
           },
           {
+            "description": "Path relative to environment root.",
             "in": "path",
             "name": "relative_path",
             "required": true,
@@ -7590,10 +7694,11 @@
     },
     "/v1/sessions/{session_id}/resources/environments/{environment_id}/search": {
       "get": {
-        "description": "Search for files recursively by name/path substring and glob filters.\n\nProxies to the runner's search endpoint.  Returns a flat list of\nmatching file entries (not directories) whose name or relative path\ncontains ``q`` (case-insensitive), optionally scoped by ``include`` /\n``exclude`` globs.  Requires at least one non-whitespace character in\n``q`` to prevent accidental full-tree scans.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:param environment_id: Environment resource id,\n    e.g. ``\"default\"``.\n:param q: Case-insensitive search substring, e.g. ``\"test.md\"``.\n    Must contain at least one non-whitespace character.\n:param include: Comma-separated glob patterns scoping which files are\n    returned, e.g. ``\"*.ts,src/**\"``.\n:param exclude: Comma-separated glob patterns for files to drop,\n    e.g. ``\"**/node_modules,*.test.ts\"``.\n:param limit: Maximum number of results (1-500, default 500).\n:returns: JSON list response with matching filesystem entries.",
+        "description": "Search for files recursively by name/path substring and glob filters.\n\nProxies to the runner's search endpoint.  Returns a flat list of\nmatching file entries (not directories) whose name or relative path\ncontains `q` (case-insensitive), optionally scoped by `include` /\n`exclude` globs.  Requires at least one non-whitespace character in\n`q` to prevent accidental full-tree scans.\n\n**Returns:** JSON list response with matching filesystem entries.",
         "operationId": "search_environment_files_v1_sessions__session_id__resources_environments__environment_id__search_get",
         "parameters": [
           {
+            "description": "Session/conversation identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7603,6 +7708,7 @@
             }
           },
           {
+            "description": "Environment resource id, e.g. `\"default\"`.",
             "in": "path",
             "name": "environment_id",
             "required": true,
@@ -7612,6 +7718,7 @@
             }
           },
           {
+            "description": "Case-insensitive search substring, e.g. `\"test.md\"`. Must contain at least one non-whitespace character.",
             "in": "query",
             "name": "q",
             "required": true,
@@ -7623,6 +7730,7 @@
             }
           },
           {
+            "description": "Comma-separated glob patterns scoping which files are returned, e.g. `\"*.ts,src/**\"`.",
             "in": "query",
             "name": "include",
             "required": false,
@@ -7639,6 +7747,7 @@
             }
           },
           {
+            "description": "Comma-separated glob patterns for files to drop, e.g. `\"**/node_modules,*.test.ts\"`.",
             "in": "query",
             "name": "exclude",
             "required": false,
@@ -7655,6 +7764,7 @@
             }
           },
           {
+            "description": "Maximum number of results (1-500, default 500).",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -7695,10 +7805,11 @@
     },
     "/v1/sessions/{session_id}/resources/environments/{environment_id}/shell": {
       "post": {
-        "description": "Execute a shell command in an environment.\n\n:param session_id: Session/conversation identifier.\n:param environment_id: Environment resource id.\n:param request: JSON body with ``command`` and optional\n    ``timeout``.\n:returns: Shell result.",
+        "description": "Execute a shell command in an environment.\n\n**Returns:** Shell result.",
         "operationId": "run_environment_shell_v1_sessions__session_id__resources_environments__environment_id__shell_post",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7708,6 +7819,7 @@
             }
           },
           {
+            "description": "Environment resource id.",
             "in": "path",
             "name": "environment_id",
             "required": true,
@@ -7745,10 +7857,11 @@
     },
     "/v1/sessions/{session_id}/resources/files": {
       "get": {
-        "description": "List files owned by a session.\n\n:param session_id: Session/conversation identifier.\n:param limit: Maximum number of files to return.\n:param after: Cursor file ID for forward pagination.\n:param before: Cursor file ID for backward pagination.\n:param order: Sort direction, ``\"desc\"`` or ``\"asc\"``.\n:returns: ``PaginatedList`` of session file resources.",
+        "description": "List files owned by a session.\n\n**Returns:** `PaginatedList` of session file resources.",
         "operationId": "list_session_files_v1_sessions__session_id__resources_files_get",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7758,6 +7871,7 @@
             }
           },
           {
+            "description": "Maximum number of files to return.",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -7770,6 +7884,7 @@
             }
           },
           {
+            "description": "Cursor file ID for forward pagination.",
             "in": "query",
             "name": "after",
             "required": false,
@@ -7786,6 +7901,7 @@
             }
           },
           {
+            "description": "Cursor file ID for backward pagination.",
             "in": "query",
             "name": "before",
             "required": false,
@@ -7802,6 +7918,7 @@
             }
           },
           {
+            "description": "Sort direction, `\"desc\"` or `\"asc\"`.",
             "in": "query",
             "name": "order",
             "required": false,
@@ -7839,10 +7956,11 @@
         ]
       },
       "post": {
-        "description": "Upload a file into the session file namespace.\n\nAccepts the multipart upload shape used by session file resources.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier.\n:param file: The uploaded file (multipart form data).\n:returns: The session file resource object.",
+        "description": "Upload a file into the session file namespace.\n\nAccepts the multipart upload shape used by session file resources.\n\n**Parameters**\n\n- `file` \u2014 The uploaded file (multipart form data).\n\n**Returns:** The session file resource object.",
         "operationId": "upload_session_file_v1_sessions__session_id__resources_files_post",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7890,10 +8008,11 @@
     },
     "/v1/sessions/{session_id}/resources/files/{file_id}": {
       "delete": {
-        "description": "Delete a session file resource and its artifact bytes.\n\n:param session_id: Session/conversation identifier.\n:param file_id: Unique file identifier.\n:returns: Deletion confirmation object.",
+        "description": "Delete a session file resource and its artifact bytes.\n\n**Returns:** Deletion confirmation object.",
         "operationId": "delete_session_file_v1_sessions__session_id__resources_files__file_id__delete",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7903,6 +8022,7 @@
             }
           },
           {
+            "description": "Unique file identifier.",
             "in": "path",
             "name": "file_id",
             "required": true,
@@ -7938,10 +8058,11 @@
         ]
       },
       "get": {
-        "description": "Retrieve metadata for a session file resource.\n\nVerifies that ``file_id`` belongs to ``session_id``.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier.\n:param file_id: Unique file identifier.\n:returns: The session file resource object.",
+        "description": "Retrieve metadata for a session file resource.\n\nVerifies that `file_id` belongs to `session_id`.\n\n**Returns:** The session file resource object.",
         "operationId": "get_session_file_v1_sessions__session_id__resources_files__file_id__get",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -7951,6 +8072,7 @@
             }
           },
           {
+            "description": "Unique file identifier.",
             "in": "path",
             "name": "file_id",
             "required": true,
@@ -7988,10 +8110,11 @@
     },
     "/v1/sessions/{session_id}/resources/files/{file_id}/content": {
       "get": {
-        "description": "Download raw content of a session file resource.\n\n:param session_id: Session/conversation identifier.\n:param file_id: Unique file identifier.\n:returns: Response with file bytes and Content-Type.",
+        "description": "Download raw content of a session file resource.\n\n**Returns:** Response with file bytes and Content-Type.",
         "operationId": "get_session_file_content_v1_sessions__session_id__resources_files__file_id__content_get",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -8001,6 +8124,7 @@
             }
           },
           {
+            "description": "Unique file identifier.",
             "in": "path",
             "name": "file_id",
             "required": true,
@@ -8038,10 +8162,11 @@
     },
     "/v1/sessions/{session_id}/resources/terminals": {
       "get": {
-        "description": "Return only terminal resources for a session.\n\nThe runner endpoint's pagination params (``limit`` / ``after`` /\n``before`` / ``order``) are forwarded from the incoming query\nstring \u2014 without this, a client-requested ``order=asc`` (the web\nterminal tabs rely on creation order to keep the session's own\nterminal first) would be silently dropped and the runner's\n``desc`` default would apply.\n\n:param request: The incoming FastAPI request (for auth and the\n    forwarded query params).\n:param session_id: Session/conversation identifier.\n:returns: ``PaginatedList`` of terminal resources.",
+        "description": "Return only terminal resources for a session.\n\nThe runner endpoint's pagination params (`limit` / `after` /\n`before` / `order`) are forwarded from the incoming query\nstring \u2014 without this, a client-requested `order=asc` (the web\nterminal tabs rely on creation order to keep the session's own\nterminal first) would be silently dropped and the runner's\n`desc` default would apply.\n\n**Returns:** `PaginatedList` of terminal resources.",
         "operationId": "list_session_terminals_v1_sessions__session_id__resources_terminals_get",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -8077,10 +8202,11 @@
         ]
       },
       "post": {
-        "description": "Launch or return an existing terminal resource.\n\nPreserves ``sys_terminal_launch`` idempotency: an\nalready-running ``(terminal, session_key)`` returns the\nexisting resource.\n\nUser-initiated creates are gated on the agent's terminal\naccess: the requested ``terminal`` must be one of the names\ndeclared in the agent spec's ``terminals:`` block. Native\nharness bootstrap requests (marked ``ensure_native_terminal``\nor ``bridge_inject_dir`` \u2014 the ``omnigent claude`` / ``codex``\nwrappers launching the session's own CLI terminal) are exempt:\nthey launch undeclared names via the runner's\nsynthesize-from-body path and predate the gate. The markers\nare client-controlled, so the exemption is narrowed to the\nexact shape those wrappers send \u2014 a registered native terminal\nname with ``session_key`` ``\"main\"`` \u2014 anything else carrying a\nmarker still goes through the declared-name gate (it would\notherwise be an arbitrary-terminal bypass).\n\n:param session_id: Session/conversation identifier.\n:param request: JSON body with ``terminal`` and\n    ``session_key``.\n:returns: The terminal resource object.\n:raises OmnigentError: 400 when the requested terminal is not\n    declared by the agent spec (or the agent has no\n    ``terminals:`` block at all).",
+        "description": "Launch or return an existing terminal resource.\n\nPreserves `sys_terminal_launch` idempotency: an\nalready-running `(terminal, session_key)` returns the\nexisting resource.\n\nUser-initiated creates are gated on the agent's terminal\naccess: the requested `terminal` must be one of the names\ndeclared in the agent spec's `terminals:` block. Native\nharness bootstrap requests (marked `ensure_native_terminal`\nor `bridge_inject_dir` \u2014 the `omnigent claude` / `codex`\nwrappers launching the session's own CLI terminal) are exempt:\nthey launch undeclared names via the runner's\nsynthesize-from-body path and predate the gate. The markers\nare client-controlled, so the exemption is narrowed to the\nexact shape those wrappers send \u2014 a registered native terminal\nname with `session_key` `\"main\"` \u2014 anything else carrying a\nmarker still goes through the declared-name gate (it would\notherwise be an arbitrary-terminal bypass).\n\n**Returns:** The terminal resource object.\n\n**Raises**\n\n- `OmnigentError` \u2014 400 when the requested terminal is not declared by the agent spec (or the agent has no `terminals:` block at all).",
         "operationId": "create_session_terminal_v1_sessions__session_id__resources_terminals_post",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -8118,10 +8244,11 @@
     },
     "/v1/sessions/{session_id}/resources/terminals/{terminal_id}": {
       "delete": {
-        "description": "Close a terminal resource.\n\nDelegates to ``TerminalRegistry.close()`` on the runner.\nReturns 404 for unknown terminals.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier.\n:param terminal_id: Opaque terminal resource id.\n:returns: Deletion confirmation object.",
+        "description": "Close a terminal resource.\n\nDelegates to `TerminalRegistry.close()` on the runner.\nReturns 404 for unknown terminals.\n\n**Returns:** Deletion confirmation object.",
         "operationId": "delete_session_terminal_v1_sessions__session_id__resources_terminals__terminal_id__delete",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -8131,6 +8258,7 @@
             }
           },
           {
+            "description": "Opaque terminal resource id.",
             "in": "path",
             "name": "terminal_id",
             "required": true,
@@ -8166,10 +8294,11 @@
         ]
       },
       "get": {
-        "description": "Return a single terminal resource by id.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier.\n:param terminal_id: Opaque terminal resource id.\n:returns: The terminal resource object.",
+        "description": "Return a single terminal resource by id.\n\n**Returns:** The terminal resource object.",
         "operationId": "get_session_terminal_v1_sessions__session_id__resources_terminals__terminal_id__get",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -8179,6 +8308,7 @@
             }
           },
           {
+            "description": "Opaque terminal resource id.",
             "in": "path",
             "name": "terminal_id",
             "required": true,
@@ -8216,10 +8346,11 @@
     },
     "/v1/sessions/{session_id}/resources/{resource_id}": {
       "get": {
-        "description": "Return a single resource by id from the unified inventory.\n\n:param session_id: Session/conversation identifier.\n:param resource_id: Opaque resource id.\n:returns: The resource object regardless of type.",
+        "description": "Return a single resource by id from the unified inventory.\n\n**Returns:** The resource object regardless of type.",
         "operationId": "get_session_resource_v1_sessions__session_id__resources__resource_id__get",
         "parameters": [
           {
+            "description": "Session/conversation identifier.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -8229,6 +8360,7 @@
             }
           },
           {
+            "description": "Opaque resource id.",
             "in": "path",
             "name": "resource_id",
             "required": true,
@@ -8266,10 +8398,11 @@
     },
     "/v1/sessions/{session_id}/stream": {
       "get": {
-        "description": "Subscribe to the session's live SSE event stream.\n\nDoes NOT replay history; clients reconcile via the snapshot\nendpoint. The generator handles disconnects via a\n``try/finally`` that emits the ``[DONE]`` sentinel in all\nexit paths \u2014 see :func:`_stream_live_events`.\n\nHolding this stream open registers the caller as a session\n*viewer* (presence): co-viewers' streams receive\n``session.presence`` events on join/leave/idle edges, and\nthis stream's snapshot-on-connect includes the current\nviewer list. Presence is scoped to the session tree's root\nconversation, so viewers of different agents/sub-agents in\none session see each other. See\n``omnigent/server/presence.py``.\n\n:param request: The FastAPI request, used to detect\n    disconnect.\n:param session_id: Session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:param idle: Presence idle flag computed by the web client\n    at connect time (tab backgrounded \u2265 its debounce). An\n    idle *flip* mid-view arrives as a reconnect carrying the\n    new value \u2014 there is no separate update endpoint.\n:returns: An SSE :class:`StreamingResponse`.\n:raises OmnigentError: 404 if no session exists.",
+        "description": "Subscribe to the session's live SSE event stream.\n\nDoes NOT replay history; clients reconcile via the snapshot\nendpoint. The generator handles disconnects via a\n`try/finally` that emits the `[DONE]` sentinel in all\nexit paths \u2014 see `_stream_live_events`.\n\nHolding this stream open registers the caller as a session\n*viewer* (presence): co-viewers' streams receive\n`session.presence` events on join/leave/idle edges, and\nthis stream's snapshot-on-connect includes the current\nviewer list. Presence is scoped to the session tree's root\nconversation, so viewers of different agents/sub-agents in\none session see each other. See\n`omnigent/server/presence.py`.\n\n**Returns:** An SSE `StreamingResponse`.\n\n**Raises**\n\n- `OmnigentError` \u2014 404 if no session exists.",
         "operationId": "stream_session_v1_sessions__session_id__stream_get",
         "parameters": [
           {
+            "description": "Session/conversation identifier, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -8279,6 +8412,7 @@
             }
           },
           {
+            "description": "Presence idle flag computed by the web client at connect time (tab backgrounded \u2265 its debounce). An idle *flip* mid-view arrives as a reconnect carrying the new value \u2014 there is no separate update endpoint.",
             "in": "query",
             "name": "idle",
             "required": false,
@@ -8322,10 +8456,11 @@
     },
     "/v1/sessions/{session_id}/switch-agent": {
       "post": {
-        "description": "Switch an existing session in place to a different agent/harness.\n\nUnlike fork, this keeps the SAME session \u2014 transcript, comments,\nfiles, host, and workspace are untouched; only the agent/harness\nchanges. The current session-scoped agent is replaced by a clone\nof the target built-in, model settings carry over only within the\nsame provider family (a model id is provider-bound), the native\nruntime session id is cleared, and the harness-presentation labels\nare recomputed for the target. The next turn cold-starts the new\nharness (rebuilding the native transcript from this session's own\nitems for a same-family native target). Only built-in agents are\nbindable, and only while the session is idle.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier to switch,\n    e.g. ``\"conv_abc123\"``.\n:param body: The validated :class:`SessionSwitchAgentRequest`.\n:returns: A :class:`SessionResponse` describing the session after\n    the switch (status ``\"idle\"``).\n:raises OmnigentError: 404 if the session or target agent does\n    not exist or the target is not a bindable built-in; 403 if the\n    caller lacks edit access; 400 if the session is a sub-agent,\n    has no agent binding, or the target bundle can't be loaded;\n    409 if a turn is currently running.",
+        "description": "Switch an existing session in place to a different agent/harness.\n\nUnlike fork, this keeps the SAME session \u2014 transcript, comments,\nfiles, host, and workspace are untouched; only the agent/harness\nchanges. The current session-scoped agent is replaced by a clone\nof the target built-in, model settings carry over only within the\nsame provider family (a model id is provider-bound), the native\nruntime session id is cleared, and the harness-presentation labels\nare recomputed for the target. The next turn cold-starts the new\nharness (rebuilding the native transcript from this session's own\nitems for a same-family native target). Only built-in agents are\nbindable, and only while the session is idle.\n\n**Parameters**\n\n- `body` \u2014 The validated `SessionSwitchAgentRequest`.\n\n**Returns:** A `SessionResponse` describing the session after the switch (status `\"idle\"`).\n\n**Raises**\n\n- `OmnigentError` \u2014 404 if the session or target agent does not exist or the target is not a bindable built-in; 403 if the caller lacks edit access; 400 if the session is a sub-agent, has no agent binding, or the target bundle can't be loaded; 409 if a turn is currently running.",
         "operationId": "switch_session_agent_v1_sessions__session_id__switch_agent_post",
         "parameters": [
           {
+            "description": "Session/conversation identifier to switch, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -8375,10 +8510,11 @@
     },
     "/v1/sessions/{source_id}/fork": {
       "post": {
-        "description": "Fork an existing session into a new session.\n\nDeep-copies the source session's conversation items and\nclones the agent into a new session. When ``body.agent_id``\nis set, the fork binds that built-in agent instead of the\nsource's \u2014 switching harness (e.g. Claude-SDK \u2192 Claude Code,\nor Claude \u2192 Codex). The source's model settings carry over\nonly within the same provider family; a same-family native\ntarget also carries conversation history (the runner rebuilds\nits transcript). The REPL/CLI binds the fork to its runner via\n``PATCH /v1/sessions/{id}`` after creation.\n\nWhen ``body.up_to_response_id`` is set, only history up to and\nincluding that response is copied into the fork (a \"fork from\nthis response\"); a native target then rebuilds its transcript\nfrom the truncated items instead of resuming the source's full\nnative transcript.\n\n:param request: The incoming FastAPI request (for auth).\n:param source_id: Session/conversation identifier of the\n    source session to fork, e.g. ``\"conv_abc123\"``.\n:param body: The validated :class:`SessionForkRequest`.\n:returns: A :class:`SessionResponse` describing the newly\n    created fork (status ``\"idle\"``).\n:raises OmnigentError: 404 if *source_id* does not exist\n    or ``body.agent_id`` is not a bindable built-in agent;\n    403 if the caller lacks read access; 400 if the source\n    is a sub-agent session, has no agent binding, or\n    ``body.up_to_response_id`` names no response in the\n    source session.",
+        "description": "Fork an existing session into a new session.\n\nDeep-copies the source session's conversation items and\nclones the agent into a new session. When `body.agent_id`\nis set, the fork binds that built-in agent instead of the\nsource's \u2014 switching harness (e.g. Claude-SDK \u2192 Claude Code,\nor Claude \u2192 Codex). The source's model settings carry over\nonly within the same provider family; a same-family native\ntarget also carries conversation history (the runner rebuilds\nits transcript). The REPL/CLI binds the fork to its runner via\n`PATCH /v1/sessions/{id}` after creation.\n\nWhen `body.up_to_response_id` is set, only history up to and\nincluding that response is copied into the fork (a \"fork from\nthis response\"); a native target then rebuilds its transcript\nfrom the truncated items instead of resuming the source's full\nnative transcript.\n\n**Parameters**\n\n- `body` \u2014 The validated `SessionForkRequest`.\n\n**Returns:** A `SessionResponse` describing the newly created fork (status `\"idle\"`).\n\n**Raises**\n\n- `OmnigentError` \u2014 404 if *source_id* does not exist or `body.agent_id` is not a bindable built-in agent; 403 if the caller lacks read access; 400 if the source is a sub-agent session, has no agent binding, or `body.up_to_response_id` names no response in the source session.",
         "operationId": "fork_session_v1_sessions__source_id__fork_post",
         "parameters": [
           {
+            "description": "Session/conversation identifier of the source session to fork, e.g. `\"conv_abc123\"`.",
             "in": "path",
             "name": "source_id",
             "required": true,

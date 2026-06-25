@@ -97,6 +97,13 @@ export default function ApiReference() {
         // The rest of the site has no manual theme switch — it follows
         // the OS scheme — so hide Scalar's toggle to match.
         hideDarkModeToggle: true,
+        // Disable Scalar's hosted "Ask AI" agent and the "Generate MCP"
+        // install button. Both default to on for local URLs (which is why
+        // they appear in local dev), and "Ask AI" ships the OpenAPI doc +
+        // the question to Scalar's hosted service — not something we want
+        // on a self-hosted, read-only reference.
+        agent: { disabled: true },
+        mcp: { disabled: true },
         customCss: BRAND_CSS,
       }}
     />

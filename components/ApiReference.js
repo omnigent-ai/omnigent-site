@@ -104,6 +104,15 @@ export default function ApiReference() {
         // on a self-hosted, read-only reference.
         agent: { disabled: true },
         mcp: { disabled: true },
+        // Hide the "Open API Client" launcher — it opens client.scalar.com
+        // with this spec URL (another hosted surface we don't need).
+        hideClientButton: true,
+        // The "Developer Tools / Configure / Share / Deploy" toolbar
+        // defaults to rendering only on local URLs (isLocalUrl), so it
+        // would show on localhost dev/preview. The code ships in the
+        // bundle regardless — it's runtime-gated, not build-stripped — so
+        // force it off everywhere to be explicit.
+        showDeveloperTools: "never",
         customCss: BRAND_CSS,
       }}
     />

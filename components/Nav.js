@@ -33,6 +33,9 @@ export default function Nav({ menuToggle }) {
           <Link href="/docs/use/coding-agents" className="nav-link">
             Docs
           </Link>
+          <Link href="/reference" className="nav-link">
+            API
+          </Link>
           <a
             href={GITHUB_URL}
             className="nav-icon"

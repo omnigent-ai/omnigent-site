@@ -98,6 +98,10 @@ const SECTIONS = [
       { href: "/docs/policies/os-sandbox", label: "OS Sandbox Config" },
     ],
   },
+  {
+    title: "Reference",
+    pages: [{ href: "/reference", label: "REST API" }],
+  },
 ];
 
 function allHrefs(section) {

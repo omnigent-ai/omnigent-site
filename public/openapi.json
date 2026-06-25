@@ -665,61 +665,6 @@
         "title": "ElicitationResolvedEvent",
         "type": "object"
       },
-      "ElicitationResult": {
-        "description": "Consumer reply to an outstanding elicitation.\n\nField names + semantics mirror MCP's ``ElicitResult`` verbatim.\nOmnigent clients deliver this shape inside the session-scoped\n``approval`` event body, alongside the ``elicitation_id``\ncorrelation key.\n\n:param action: User action per MCP semantics. ``\"accept\"`` =\n    approved (form submitted / confirmation given).\n    ``\"decline\"`` = explicit refusal. ``\"cancel\"`` = dismissed\n    without an explicit choice (also the verdict the server\n    synthesizes on elicitation timeout).\n:param content: Form data when ``action == \"accept\"`` and the\n    ``requestedSchema`` had fields. ``None`` (or omitted) for\n    binary approve/reject elicitations and for ``decline`` /\n    ``cancel`` actions. Values are restricted to JSON scalars\n    and string lists per the MCP spec.",
-        "properties": {
-          "action": {
-            "enum": [
-              "accept",
-              "decline",
-              "cancel"
-            ],
-            "title": "Action",
-            "type": "string"
-          },
-          "content": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "integer"
-                    },
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "boolean"
-                    },
-                    {
-                      "items": {
-                        "type": "string"
-                      },
-                      "type": "array"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Content"
-          }
-        },
-        "required": [
-          "action"
-        ],
-        "title": "ElicitationResult",
-        "type": "object"
-      },
       "ErrorDetail": {
         "description": "Machine-readable error information attached to a failed response.\n\n:param code: Error code string, e.g. ``\"server_error\"``,\n    ``\"invalid_input\"``.\n:param message: Human-readable error description.",
         "properties": {
@@ -2225,51 +2170,6 @@
           "child_session_id"
         ],
         "title": "SessionCreatedEvent",
-        "type": "object"
-      },
-      "SessionEventInput": {
-        "description": "A single client-submitted event/input item for a session.\n\nUsed both as an element of ``initial_items`` on session\ncreation and as the body of ``POST /v1/sessions/{id}/events``.\nCarries a discriminator (``type``) and a free-form ``data``\npayload whose shape is interpreted by the route layer based\non ``type`` (e.g. user message, function-call output,\napproval, interrupt).\n\n:param model_override: Optional per-event LLM model override\n    used when this event starts a fresh agent turn. Distinct\n    from the session's bound agent; it substitutes for the\n    agent spec's ``llm.model`` for that turn.\n:param type: Discriminator for the event/input kind, e.g.\n    ``\"message\"``, ``\"function_call_output\"``, ``\"interrupt\"``.\n:param data: Type-specific payload. Shape varies by ``type``;\n    for ``\"message\"`` this looks like\n    ``{\"role\": \"user\", \"content\": [{\"type\": \"input_text\",\n    \"text\": \"Hello\"}]}``. For ``\"interrupt\"`` this is\n    typically ``{}``.\n:param tools: Optional OpenAI function-tool dicts registered\n    when this event creates a new task. Mirrors\n    :attr:`CreateResponseRequest.tools`, e.g. ``[{\"type\":\n    \"function\", \"function\": {\"name\": \"get_weather\",\n    \"description\": \"...\", \"parameters\": {...}}}]``. Ignored\n    when the event steers into an active task: that task's\n    tools are fixed at start time.",
-        "properties": {
-          "data": {
-            "additionalProperties": true,
-            "title": "Data",
-            "type": "object"
-          },
-          "model_override": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Model Override"
-          },
-          "tools": {
-            "anyOf": [
-              {
-                "items": {
-                  "additionalProperties": true,
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tools"
-          },
-          "type": {
-            "title": "Type",
-            "type": "string"
-          }
-        },
-        "required": [
-          "type"
-        ],
-        "title": "SessionEventInput",
         "type": "object"
       },
       "SessionForkRequest": {
@@ -5562,290 +5462,6 @@
         ]
       }
     },
-    "/v1/sessions/{session_id}/elicitations/{elicitation_id}": {
-      "get": {
-        "description": "Return the state of a pending elicitation as JSON.\n\nUsed by the frontend's standalone approval page\n(``/approve/:sessionId/:elicitationId``) to fetch the\nelicitation prompt and render approve/reject controls.\nThe payload is read from the in-memory\n:mod:`omnigent.runtime.pending_elicitations` index \u2014 no\ndatabase persistence required.\n\n:param request: The inbound request, used for identity\n    extraction.\n:param session_id: Session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:param elicitation_id: Correlation id of the elicitation,\n    e.g. ``\"elicit_abc123\"``.\n:returns: JSON with ``status`` (``\"pending\"`` or\n    ``\"resolved\"``), and when pending: ``message``,\n    ``phase``, ``policy_name``, ``content_preview``.\n:raises OmnigentError: 404 if the session does not exist.",
-        "operationId": "get_elicitation_v1_sessions__session_id__elicitations__elicitation_id__get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "session_id",
-            "required": true,
-            "schema": {
-              "title": "Session Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "path",
-            "name": "elicitation_id",
-            "required": true,
-            "schema": {
-              "title": "Elicitation Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Get Elicitation",
-        "tags": [
-          "sessions"
-        ]
-      }
-    },
-    "/v1/sessions/{session_id}/elicitations/{elicitation_id}/resolve": {
-      "post": {
-        "description": "Resolve an outstanding elicitation by its URL (URL-based\nelicitation).\n\nThe dedicated, RESTful counterpart to delivering a verdict\nvia the ``type == \"approval\"`` event on\n``POST /v1/sessions/{id}/events``. An elicitation request\npublished in ``mode == \"url\"`` carries this endpoint's path\nas its ``params.url``; the client hits it directly with the\nMCP :class:`ElicitationResult` body instead of POSTing a\ngeneric approval event. The verdict routes through the\nshared :func:`_resolve_elicitation`, so resolution semantics\nare identical to the event path.\n\nThe ``elicitation_id`` is taken from the URL rather than the\nbody, so the unguessable id (``secrets.token_hex(16)``) is\nthe capability scoping the resolution \u2014 combined with the\nsession-owner ``LEVEL_EDIT`` gate below and the server-side\nownership check inside :func:`_resolve_elicitation`.\n\n:param request: The inbound request, used for identity\n    extraction.\n:param session_id: Session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:param elicitation_id: Correlation id of the elicitation to\n    resolve, e.g. ``\"elicit_abc123\"``. Taken from the URL\n    path, not the body.\n:param body: The MCP-shaped verdict \u2014 ``action``\n    (``\"accept\"`` / ``\"decline\"`` / ``\"cancel\"``) plus\n    optional form ``content``.\n:returns: ``{\"queued\": False}`` \u2014 resolution is synchronous\n    and persists no conversation item.\n:raises OmnigentError: 404 if no session exists.",
-        "operationId": "resolve_elicitation_v1_sessions__session_id__elicitations__elicitation_id__resolve_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "session_id",
-            "required": true,
-            "schema": {
-              "title": "Session Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "path",
-            "name": "elicitation_id",
-            "required": true,
-            "schema": {
-              "title": "Elicitation Id",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ElicitationResult"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "202": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Resolve Elicitation",
-        "tags": [
-          "sessions"
-        ]
-      }
-    },
-    "/v1/sessions/{session_id}/events": {
-      "post": {
-        "description": "Submit a session event (input message, tool output,\napproval, or interrupt).\n\nDispatches on ``body.type``:\n\n- ``\"interrupt\"`` cancels any active task and publishes a\n  ``session.interrupted`` event. Bypasses item persistence.\n- ``\"approval\"`` resolves an outstanding elicitation\n  in-band (see :func:`_dispatch_approval`).\n- ``\"external_assistant_message\"`` appends and streams an\n  assistant message observed outside the Omnigent task runtime,\n  without starting or steering a task.\n- ``\"external_conversation_item\"`` appends and streams a\n  completed item observed outside the Omnigent task runtime,\n  without starting or steering a task.\n- ``\"external_output_text_delta\"`` publishes a transient\n  ``response.output_text.delta`` event observed outside the\n  Omnigent task runtime, without persisting an item or starting /\n  steering a task.\n- ``\"external_session_interrupted\"`` publishes a\n  ``session.interrupted`` event observed outside the Omnigent task\n  runtime, without persisting an item or starting / steering a\n  task.\n- ``\"external_elicitation_resolved\"`` marks a native\n  harness-originated elicitation as resolved elsewhere so\n  subscribed clients clear the pending approval card.\n- ``\"external_session_status\"`` publishes a terminal-observed\n  ``session.status`` edge without persisting an item or\n  starting/steering a task.\n- ``\"external_model_change\"`` persists a terminal-observed\n  model switch to ``model_override`` and publishes a\n  ``session.model`` SSE event so the web picker reflects it.\n- ``\"external_reasoning_effort_change\"`` persists a terminal-observed\n  thinking-level switch to ``reasoning_effort`` and publishes a\n  ``session.reasoning_effort`` SSE event so the web picker reflects it.\n- ``\"external_codex_collaboration_mode_change\"`` persists the\n  Codex app-server collaboration mode kind as an internal session label\n  (``omnigent.codex_native.collaboration_mode``).\n- ``\"stop_session\"`` terminates the live session without\n  deleting the conversation (owner-only). Forwarded\n  harness-agnostically to the runner, which hard-kills the\n  external process for harnesses that have one (claude-native\n  kills its tmux pane) and 204s otherwise. Stop is non-sticky:\n  it writes no persistent marker, so the next message\n  auto-relaunches the session on its (still-online) host via\n  the normal message-dispatch relaunch path.\n- ``\"message\"`` on an ``omnigent claude`` terminal session\n  is forwarded to the bound runner for tmux injection only;\n  the accepted prompt is persisted later when Claude records\n  it in the terminal transcript.\n- Any other (item-typed) event is persisted into\n  ``conversation_items`` via the legacy create-or-steer path\n  (legacy persist path): if an active\n  task is present, the item is delivered into its inbox;\n  otherwise a new task is created and started. In both\n  cases ``session.input.consumed`` fires with the persisted\n  item's id.\n\n:param session_id: Session/conversation identifier.\n:param body: The validated :class:`SessionEventInput`.\n:returns: ``{\"queued\": True, \"item_id\": \"...\"}`` for\n    item-typed events, where ``item_id`` is the persisted\n    conversation item id also emitted by\n    ``session.input.consumed``; ``{\"queued\": False}`` for\n    control and internal transient events.\n:raises OmnigentError: 404 if no session exists.",
-        "operationId": "post_event_v1_sessions__session_id__events_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "session_id",
-            "required": true,
-            "schema": {
-              "title": "Session Id",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SessionEventInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "202": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Post Event",
-        "tags": [
-          "sessions"
-        ]
-      }
-    },
-    "/v1/sessions/{session_id}/hooks/codex-elicitation-request": {
-      "post": {
-        "description": "Codex app-server elicitation request endpoint.\n\nReceives server-to-client JSON-RPC request envelopes forwarded\nby ``omnigent codex`` (for example\n``mcpServer/elicitation/request`` and\n``item/tool/requestUserInput``), publishes the standard\n``response.elicitation_request`` session event for the web UI,\nthen waits for the session-scoped ``approval`` reply. This uses\nthe same registry / publish / cleanup path as the Claude-native\n``PermissionRequest`` hook so pending badges and disconnect\nhandling stay consistent across native harnesses.\n\n:param request: FastAPI request carrying the Codex JSON-RPC\n    request envelope.\n:param session_id: Omnigent conversation id from the URL path.\n:returns: Codex JSON-RPC ``result`` payload for the forwarded\n    request, or ``200`` with empty body on timeout/disconnect.\n:raises OmnigentError: 404 if the session does not exist,\n    400 if the request envelope is malformed or unsupported.",
-        "operationId": "codex_elicitation_request_hook_v1_sessions__session_id__hooks_codex_elicitation_request_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "session_id",
-            "required": true,
-            "schema": {
-              "title": "Session Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Codex Elicitation Request Hook",
-        "tags": [
-          "sessions"
-        ]
-      }
-    },
-    "/v1/sessions/{session_id}/hooks/cursor-permission-request": {
-      "post": {
-        "description": "Cursor-native tool-approval hook (TUI \u2192 web elicitation).\n\nReceives a tool-approval prompt detected on the ``cursor-agent`` TUI\npane by the runner-side mirror\n(:mod:`omnigent.cursor_native_permissions`), publishes the standard\n``response.elicitation_request`` event for the web UI, then parks for\nthe session ``approval`` verdict \u2014 the same registry / publish /\ncleanup path as the Codex- and Claude-native hooks, so pending badges\nand disconnect handling stay consistent across native harnesses. An\nempty ``200`` (no web verdict \u2014 the prompt was answered in the TUI, or\nthe wait timed out) leaves cursor's native prompt authoritative.\n\n:param request: FastAPI request carrying the detected prompt\n    (``elicitation_id`` plus the ``message`` / ``content_preview`` /\n    ``operation_type`` to render).\n:param session_id: Omnigent conversation id from the URL path.\n:returns: An ``ElicitationResult`` (``{\"action\": \u2026}``) on a web\n    verdict, or ``200`` with empty body on TUI-resolution / timeout /\n    disconnect.\n:raises OmnigentError: 404 if the session does not exist, 400 if the\n    body is malformed.",
-        "operationId": "cursor_permission_request_hook_v1_sessions__session_id__hooks_cursor_permission_request_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "session_id",
-            "required": true,
-            "schema": {
-              "title": "Session Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Cursor Permission Request Hook",
-        "tags": [
-          "sessions"
-        ]
-      }
-    },
-    "/v1/sessions/{session_id}/hooks/permission-request": {
-      "post": {
-        "description": "Claude Code ``PermissionRequest`` HTTP hook endpoint.\n\nReceives Claude Code's PermissionRequest hook payload (tool\nname + input the user would otherwise see a TUI prompt for),\npublishes a ``response.elicitation_request`` SSE event on the\nsession stream so the web UI's :file:`ApprovalCard` renders\ninline, and long-polls until the verdict arrives via the\nsession ``approval`` event path.\n\nResponse shape follows Claude Code's PermissionRequest hook\ncontract: ``hookSpecificOutput.decision.behavior`` is\n``\"allow\"`` or ``\"deny\"``. On timeout the endpoint returns\n``200`` with an empty body \u2014 Claude Code treats that as\n\"defer to the TUI prompt\", which matches the wrapper's\nfail-ask contract (UI unreachable / unattended \u2192 fall back\nto terminal-side approval).\n\nAuth: standard session ACL \u2014 the wrapper's outbound headers\n(``ap_auth_headers`` in :func:`build_hook_settings`) carry\nthe same Bearer token used for every other Omnigent request. For\nlocal-server mode (no auth provider), unauth'd calls are\nallowed.\n\n:param request: FastAPI request \u2014 body is Claude Code's\n    PermissionRequest payload as JSON.\n:param session_id: Omnigent conversation id from the URL path.\n:returns: Claude PermissionRequest hookSpecificOutput JSON,\n    or ``200`` with empty body on timeout (fail-ask).\n:raises OmnigentError: 404 if the session doesn't exist,\n    400 if the body fails JSON parse or is missing\n    ``tool_name``.",
-        "operationId": "claude_permission_request_hook_v1_sessions__session_id__hooks_permission_request_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "session_id",
-            "required": true,
-            "schema": {
-              "title": "Session Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Claude Permission Request Hook",
-        "tags": [
-          "sessions"
-        ]
-      }
-    },
     "/v1/sessions/{session_id}/items": {
       "get": {
         "description": "List items in a session with cursor-based pagination.\n\nDelegates to the conversation items store \u2014 session_id is\nthe conversation_id. Same pagination contract as\n``GET /v1/conversations/{id}/items``.\n\n:param session_id: Session/conversation identifier,\n    e.g. ``\"conv_abc123\"``.\n:param limit: Maximum number of items to return\n    (1-1000, default 100).\n:param after: Cursor \u2014 return items after this item ID,\n    e.g. ``\"msg_abc123\"``.\n:param before: Cursor \u2014 return items before this item ID.\n:param order: Sort order, ``\"asc\"`` (chronological,\n    default) or ``\"desc\"``.\n:returns: A :class:`PaginatedList` of conversation items.\n:raises OmnigentError: 404 if no session exists.",
@@ -5980,47 +5596,6 @@
           }
         },
         "summary": "Get Session Labels",
-        "tags": [
-          "sessions"
-        ]
-      }
-    },
-    "/v1/sessions/{session_id}/mcp": {
-      "post": {
-        "description": "MCP Streamable HTTP proxy endpoint.\n\nImplements the MCP JSON-RPC 2.0 protocol over HTTP.  The AP\nserver owns policy enforcement (TOOL_CALL / TOOL_RESULT); the\nrunner owns execution via ``POST /v1/sessions/{id}/mcp/execute``\n(reached through the WS tunnel the runner opened at startup).\nThis split ensures:\n\n- Policy runs on the Omnigent server where the ConversationStore and\n  label state live.\n- Stdio MCP subprocesses spawn on the runner's machine with the\n  correct ``cwd``, environment, and installed tooling.\n\nSupported methods:\n\n- ``initialize`` \u2014 capability negotiation.\n- ``tools/list`` \u2014 list all tools; delegated to runner execute.\n- ``tools/call`` \u2014 policy eval on AP, execution on runner.\n\n:param session_id: Session whose agent's MCP servers to proxy,\n    e.g. ``\"conv_abc123\"``.\n:param request: The incoming FastAPI request. Body must be a\n    JSON-RPC 2.0 object.\n:returns: A ``application/json`` JSON-RPC 2.0 response.\n:raises HTTPException: 503 when no ``runner_router`` is configured.",
-        "operationId": "mcp_proxy_v1_sessions__session_id__mcp_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "session_id",
-            "required": true,
-            "schema": {
-              "title": "Session Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Mcp Proxy",
         "tags": [
           "sessions"
         ]
@@ -6564,7 +6139,7 @@
         },
         "summary": "List Session Resources",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -6605,7 +6180,7 @@
         },
         "summary": "List Session Environments",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -6655,7 +6230,7 @@
         },
         "summary": "Get Session Environment",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -6705,66 +6280,7 @@
         },
         "summary": "List Environment Filesystem Changes",
         "tags": [
-          "sessions"
-        ]
-      }
-    },
-    "/v1/sessions/{session_id}/resources/environments/{environment_id}/diff/{relative_path}": {
-      "get": {
-        "description": "Return before/after diff content for a changed file.\n\nProxies to the runner's diff endpoint and returns before/after\ncontent strings so the UI can render a diff view.  Returns 404 when\nthe file has not been modified this session.\n\n:param request: The incoming FastAPI request (for auth).\n:param session_id: Session/conversation identifier.\n:param environment_id: Environment resource id.\n:param relative_path: Path relative to environment root.\n:returns: JSON with ``before`` and ``after`` content strings.",
-        "operationId": "read_environment_file_diff_v1_sessions__session_id__resources_environments__environment_id__diff__relative_path__get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "session_id",
-            "required": true,
-            "schema": {
-              "title": "Session Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "path",
-            "name": "environment_id",
-            "required": true,
-            "schema": {
-              "title": "Environment Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "path",
-            "name": "relative_path",
-            "required": true,
-            "schema": {
-              "title": "Relative Path",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Read Environment File Diff",
-        "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -6869,7 +6385,7 @@
         },
         "summary": "List Environment Root",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -6928,7 +6444,7 @@
         },
         "summary": "Delete Environment Path",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       },
       "get": {
@@ -7040,7 +6556,7 @@
         },
         "summary": "Read Or List Environment Path",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       },
       "patch": {
@@ -7097,7 +6613,7 @@
         },
         "summary": "Edit Environment File",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       },
       "put": {
@@ -7154,7 +6670,7 @@
         },
         "summary": "Write Environment File",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -7259,7 +6775,7 @@
         },
         "summary": "Search Environment Files",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -7309,7 +6825,7 @@
         },
         "summary": "Run Environment Shell",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -7405,7 +6921,7 @@
         },
         "summary": "List Session Files",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       },
       "post": {
@@ -7454,7 +6970,7 @@
         },
         "summary": "Upload Session File",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -7504,7 +7020,7 @@
         },
         "summary": "Delete Session File",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       },
       "get": {
@@ -7552,7 +7068,7 @@
         },
         "summary": "Get Session File",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -7602,7 +7118,7 @@
         },
         "summary": "Get Session File Content",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -7643,7 +7159,7 @@
         },
         "summary": "List Session Terminals",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       },
       "post": {
@@ -7682,7 +7198,7 @@
         },
         "summary": "Create Session Terminal",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -7732,7 +7248,7 @@
         },
         "summary": "Delete Session Terminal",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       },
       "get": {
@@ -7780,57 +7296,7 @@
         },
         "summary": "Get Session Terminal",
         "tags": [
-          "sessions"
-        ]
-      }
-    },
-    "/v1/sessions/{session_id}/resources/terminals/{terminal_id}/transfer": {
-      "post": {
-        "description": "Move a terminal resource to another session without closing it.\n\nUsed by native Claude ``/clear`` rotation: ownership changes\nfrom the previous conversation to the fresh one while the tmux\npane keeps running.\n\n:param request: The incoming FastAPI request (for auth) with\n    JSON body ``{\"target_session_id\": \"conv_new\"}``.\n:param session_id: Current owning session/conversation id,\n    e.g. ``\"conv_old\"``.\n:param terminal_id: Opaque terminal resource id,\n    e.g. ``\"terminal_claude_main\"``.\n:returns: The terminal resource object under the target session.",
-        "operationId": "transfer_session_terminal_v1_sessions__session_id__resources_terminals__terminal_id__transfer_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "session_id",
-            "required": true,
-            "schema": {
-              "title": "Session Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "path",
-            "name": "terminal_id",
-            "required": true,
-            "schema": {
-              "title": "Terminal Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Transfer Session Terminal",
-        "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -7880,7 +7346,7 @@
         },
         "summary": "Get Session Resource",
         "tags": [
-          "sessions"
+          "session_resources"
         ]
       }
     },
@@ -8051,9 +7517,14 @@
   ],
   "tags": [
     {
-      "description": "Create, inspect, fork, and drive agent sessions \u2014 the core unit of work. Covers session items and events, agent binding, permissions, labels, child sessions, and per-session resources (files, terminals, and sandboxed environments).",
+      "description": "Create, inspect, fork, and drive agent sessions \u2014 the core unit of work. Covers session items and events, agent binding, permissions, labels, and child sessions. The files, terminals, and sandboxed environments attached to a session live under Session Resources.",
       "name": "sessions",
       "x-displayName": "Sessions"
+    },
+    {
+      "description": "Files, terminals, and sandboxed environments attached to a session: upload and read files, create and manage terminals, and read, write, edit, and search the environment filesystem.",
+      "name": "session_resources",
+      "x-displayName": "Session Resources"
     },
     {
       "description": "Discover the built-in agents available to bind to a session.",

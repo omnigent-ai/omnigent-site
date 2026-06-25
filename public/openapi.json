@@ -214,6 +214,229 @@
         "title": "CancelledEvent",
         "type": "object"
       },
+      "ChildSessionList": {
+        "description": "Paginated list of child sessions; `data` is a page of `ChildSessionSummary`.",
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ChildSessionSummary"
+            },
+            "title": "Data",
+            "type": "array"
+          },
+          "first_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Id"
+          },
+          "has_more": {
+            "default": false,
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "last_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Id"
+          },
+          "object": {
+            "const": "list",
+            "default": "list",
+            "title": "Object",
+            "type": "string"
+          }
+        },
+        "title": "ChildSessionList",
+        "type": "object"
+      },
+      "ChildSessionSummary": {
+        "description": "Summary of a sub-agent (child) session under a parent session.\n\nPowers `GET /v1/sessions/{id}/child_sessions`. Lets the web /\nREPL debug surface enumerate sub-agent calls spawned from a\nparent session without parsing parent `function_call_output`\nJSON handles (the legacy TUI Ctrl+O path). The endpoint is the\ncanonical \"historical truth\" source; the existing transient\n`session.created` SSE event handles live incremental updates.\n\nFields are derived from the child `Conversation` plus its\nlatest `Task` (newest by `created_at`).",
+        "properties": {
+          "agent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Agent id recorded on the latest task, e.g. `\"ag_abc123\"`. `None` if the child has no tasks yet (rare \u2014 `_spawn_one` creates a task atomically with the conversation).",
+            "title": "Agent Id"
+          },
+          "agent_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Agent type recorded on the latest task, e.g. `\"researcher\"`. Mirrors the `tool` prefix in `title` and is provided alongside it because the title is a denormalized string while `agent_name` is the durable per-task value.",
+            "title": "Agent Name"
+          },
+          "busy": {
+            "default": false,
+            "description": "`True` when the child's session loop is live. Mirrors the algorithm used by `GET /v1/sessions/{id}` to compute `status`: read the live in-memory cache first (`\"running\"`/`\"waiting\"` \u2192 busy), and fall back to the latest task's status on cache miss (`\"queued\"` / `\"in_progress\"` \u2192 busy). For NO_DBOS sessions the tasks table is not populated during active runs, so the cache consult is what keeps the rail's \"Working\" badge correct.",
+            "title": "Busy",
+            "type": "boolean"
+          },
+          "created_at": {
+            "description": "Unix epoch timestamp of child creation.",
+            "title": "Created At",
+            "type": "integer"
+          },
+          "current_task_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Latest task id for the child (newest by `created_at`), e.g. `\"task_abc123\"`. `None` if no tasks exist.",
+            "title": "Current Task Id"
+          },
+          "current_task_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Status of the latest task, e.g. `\"completed\"`, `\"in_progress\"`, `\"failed\"`. `None` if no tasks exist.",
+            "title": "Current Task Status"
+          },
+          "id": {
+            "description": "Child conversation/session identifier, e.g. `\"conv_child123\"`.",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "default": "sub_agent",
+            "description": "Conversation kind discriminator, always `\"sub_agent\"` for rows surfaced by this endpoint.",
+            "title": "Kind",
+            "type": "string"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Session-scoped guardrails labels on the child conversation (mirrors `ConversationObject.labels`).",
+            "title": "Labels",
+            "type": "object"
+          },
+          "last_message_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Single-line preview of the most recent message item in the child's conversation, truncated to ~150 chars with a trailing ellipsis when longer. `None` when the child has no message items yet (rare \u2014 the spawn tool immediately commits a user message). Lets the UI render a real-time \"what's the sub-agent saying right now\" line without fetching the child's full item history.",
+            "title": "Last Message Preview"
+          },
+          "last_task_error": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Error details from the child's most recent failed run, e.g. `{\"code\": \"required_terminal_exited\", \"message\": \"...\"}`. `None` when the child has no durable failure detail. This is the typed projection of runner-owned failure labels; clients should not parse those labels directly.",
+            "title": "Last Task Error"
+          },
+          "object": {
+            "default": "child_session",
+            "description": "Fixed resource type, always `\"child_session\"`.",
+            "title": "Object",
+            "type": "string"
+          },
+          "parent_session_id": {
+            "description": "Parent conversation id (echo of the route's `session_id` path parameter), e.g. `\"conv_parent987\"`. Stable join key for clients that cache child rows across multiple parents.",
+            "title": "Parent Session Id",
+            "type": "string"
+          },
+          "pending_elicitations_count": {
+            "default": 0,
+            "description": "Number of approval / input prompts the child is currently blocked on, read from the server's `omnigent.runtime.pending_elicitations` index. `> 0` means the sub-agent is parked awaiting user input \u2014 the Agents rail renders an \"awaiting input\" badge so a fanned-out sub-agent that needs attention is visible without opening its chat. Mirrors `SessionListItem.pending_elicitations_count`.",
+            "title": "Pending Elicitations Count",
+            "type": "integer"
+          },
+          "session_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sub-agent instance name, the suffix of `title` after the first `\":\"`, e.g. `\"auth\"`. `None` if `title` is `None` or missing a colon.",
+            "title": "Session Name"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sub-agent title, `\"{agent_type}:{session_name}\"` as written by `omnigent.tools.builtins.spawn._spawn_one`, e.g. `\"researcher:auth\"`. `None` only for legacy / malformed rows; the spawn path always sets it.",
+            "title": "Title"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "UI-facing sub-agent label. For Omnigent-spawned children this is derived from the prefix of `title` before the first `\":\"`, e.g. `\"researcher\"`. For Codex-native children this is the Codex-assigned `agent_nickname` when available, then `agent_role`, then `\"Codex\"`. Falls back to the raw title for legacy / malformed rows; `None` only when `title` itself is `None` or empty.",
+            "title": "Tool"
+          },
+          "updated_at": {
+            "description": "Unix epoch timestamp of the child's most recent update.",
+            "title": "Updated At",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "parent_session_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ChildSessionSummary",
+        "type": "object"
+      },
       "ClientTaskCancelEvent": {
         "description": "Server-side request that the client cancel a tunneled tool call.\n\nEmitted by `omnigent/runtime/workflow.py` when a parent\ncancellation needs to propagate to a long-running async client\ntool. Wire shape matches `workflow.py:4258-4266`.",
         "properties": {
@@ -3070,6 +3293,279 @@
           "id"
         ],
         "title": "SessionLabelsResponse",
+        "type": "object"
+      },
+      "SessionList": {
+        "description": "Paginated list of sessions; `data` is a page of `SessionListItem`.",
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/SessionListItem"
+            },
+            "title": "Data",
+            "type": "array"
+          },
+          "first_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Id"
+          },
+          "has_more": {
+            "default": false,
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "last_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Id"
+          },
+          "object": {
+            "const": "list",
+            "default": "list",
+            "title": "Object",
+            "type": "string"
+          }
+        },
+        "title": "SessionList",
+        "type": "object"
+      },
+      "SessionListItem": {
+        "description": "Lightweight session summary for `GET /v1/sessions` list responses.\n\nSame shape as `SessionResponse` minus `items`.",
+        "properties": {
+          "agent_id": {
+            "description": "Durable identifier of the bound agent.",
+            "title": "Agent Id",
+            "type": "string"
+          },
+          "agent_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Human-readable name of the bound agent, e.g. `\"research-agent\"`. `None` when the agent row cannot be found.",
+            "title": "Agent Name"
+          },
+          "archived": {
+            "default": false,
+            "description": "Whether the session is archived. Archived sessions are returned by `GET /v1/sessions` only when the request passes `include_archived=true`; the sidebar groups them into a dedicated \"Archived\" section. `False` for normal sessions.",
+            "title": "Archived",
+            "type": "boolean"
+          },
+          "comments_count": {
+            "default": 0,
+            "description": "Total number of review comments (any status) on this session. Together with `comments_updated_at` it forms a change fingerprint: an add or edit bumps the timestamp, a delete changes the count, so the web client can invalidate its cached comment list when either field changes in a `WS /v1/sessions/updates` frame. `0` when the session has no comments or the server has no comment store wired.",
+            "title": "Comments Count",
+            "type": "integer"
+          },
+          "comments_updated_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Unix epoch **microseconds** of the most recently mutated comment on this session (max `updated_at` across its comments). Microsecond precision keeps back-to-back mutations within one second distinguishable while staying an exact integer in JavaScript; clients only compare it for change. `None` when the session has no comments or the server has no comment store wired.",
+            "title": "Comments Updated At"
+          },
+          "created_at": {
+            "description": "Unix epoch seconds of creation.",
+            "title": "Created At",
+            "type": "integer"
+          },
+          "external_session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Runtime-native session id this conversation wraps, e.g. a Claude Code session uuid for `omnigent claude` sessions. `None` for regular AP-only conversations. Lets the sidebar / picker render a runtime badge without a follow-up GET.",
+            "title": "External Session Id"
+          },
+          "git_branch": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Git branch checked out in the session's worktree, e.g. `\"feature/login\"`. Set only when the session was created with a server-created git worktree; `None` otherwise. The Web UI uses a non-`None` value to offer the \"delete local branch\" cleanup checkbox on session delete. See designs/SESSION_GIT_WORKTREE.md.",
+            "title": "Git Branch"
+          },
+          "host_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Host that launched the runner for this session.",
+            "title": "Host Id"
+          },
+          "host_online": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Whether the session's host tunnel is live (status online and fresh within the host liveness TTL). `None` when the session has no `host_id` (CLI/local). Distinguishes \"runner down but host can relaunch\" from \"host offline\" for the open-session view; not used by the sidebar.",
+            "title": "Host Online"
+          },
+          "id": {
+            "description": "Session/conversation identifier, e.g. `\"conv_abc123\"`.",
+            "title": "Id",
+            "type": "string"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Session-scoped guardrails labels.",
+            "title": "Labels",
+            "type": "object"
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The user_id of the session owner, or `None` when permissions are disabled. Included so the sidebar can display the owner without a separate API call.",
+            "title": "Owner"
+          },
+          "pending_elicitations_count": {
+            "default": 0,
+            "description": "Number of approval prompts currently waiting on this session. Powers the sidebar's \"needs attention\" badge so a user with several sessions running can tell which ones are blocked on them without opening each chat. Sourced from the Omnigent server's in-memory `omnigent.runtime.pending_elicitations` index, which mirrors every `response.elicitation_request` event passing through `session_stream` and decrements when a verdict is dispatched. `0` when the session has no outstanding elicitations.",
+            "title": "Pending Elicitations Count",
+            "type": "integer"
+          },
+          "permission_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The requesting user's numeric permission level on this session: `1` = read, `2` = edit, `3` = manage. `None` when permissions are disabled.",
+            "title": "Permission Level"
+          },
+          "reasoning_effort": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Per-session reasoning-effort hint.",
+            "title": "Reasoning Effort"
+          },
+          "runner_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Runner currently bound to the session.",
+            "title": "Runner Id"
+          },
+          "runner_online": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Strict runner liveness \u2014 `True` iff a runner tunnel is currently registered for this session. Matches `GET /health`'s `runner_online` value. Strict: a dead runner on a live host reads `False` here (no host-relaunch optimism folded in), unlike the legacy conflated value. `None` when the server has no runner liveness lookup wired.",
+            "title": "Runner Online"
+          },
+          "status": {
+            "description": "Derived session lifecycle status.",
+            "enum": [
+              "idle",
+              "running",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional human-readable title.",
+            "title": "Title"
+          },
+          "updated_at": {
+            "description": "Unix epoch seconds of last update.",
+            "title": "Updated At",
+            "type": "integer"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Absolute path on disk where the runner cd's, e.g. `\"/Users/corey/universe/src/foo\"`. `None` for sessions that haven't been bound to a host workspace.",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "id",
+          "agent_id",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "SessionListItem",
         "type": "object"
       },
       "SessionModelEvent": {
@@ -6020,7 +6516,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginatedList"
+                  "$ref": "#/components/schemas/SessionList"
                 }
               }
             },
@@ -6462,7 +6958,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginatedList"
+                  "$ref": "#/components/schemas/ChildSessionList"
                 }
               }
             },

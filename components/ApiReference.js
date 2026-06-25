@@ -77,6 +77,13 @@ const BRAND_CSS = `
   --scalar-font: system-ui, sans-serif;
   --scalar-radius: 10px;
 }
+
+/* The sticky "Powered by Scalar" sidebar footer ships with px-3/pb-3
+   (12px) but no top padding, so the text sits flush against the scroll
+   content above. Add a matching top so it's evenly padded all around. */
+.scalar-app .darklight-reference {
+  padding-top: 12px;
+}
 `;
 
 export default function ApiReference() {

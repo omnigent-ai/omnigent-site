@@ -91,6 +91,12 @@
             "title": "Mcp Servers",
             "type": "array"
           },
+          "mcp_servers_editable": {
+            "default": false,
+            "description": "Whether the MCP list can be edited through the session UI. Built-in template agents are read-only; session-scoped uploaded agents are editable.",
+            "title": "Mcp Servers Editable",
+            "type": "boolean"
+          },
           "name": {
             "description": "Human-readable agent name, e.g. `\"research-agent\"`.",
             "title": "Name",
@@ -485,8 +491,24 @@
         "type": "object"
       },
       "CompactionCompletedEvent": {
-        "description": "Conversation history compaction has finished.\n\nEmitted by `omnigent/server/routes/sessions.py` after\n`compact_conversation_now()` returns successfully. Clients\nthat rendered a \"Compacting\u2026\" spinner on\n`CompactionInProgressEvent` should upgrade it to the\npermanent \"Conversation compacted\" marker on this event.",
+        "description": "Conversation history compaction has finished.\n\nEmitted after compaction completes \u2014 either by the server after\n`compact_conversation_now()` (explicit `/compact`), or by a\nharness that compacted its own internal context. Clients that\nrendered a \"Compacting\u2026\" spinner on\n`CompactionInProgressEvent` should upgrade it to the\npermanent \"Conversation compacted\" marker on this event.\n\nWhen emitted by a harness, `summary` and `summary_model`\nare populated so the runner can persist a compaction item for\nsession resume. When emitted by the server's explicit\n`/compact` path, those fields are `None`.",
         "properties": {
+          "compacted_messages": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Compacted Messages"
+          },
           "sequence_number": {
             "anyOf": [
               {
@@ -498,6 +520,32 @@
             ],
             "default": null,
             "title": "Sequence Number"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Text summary of the compacted conversation, or `None` for server-side compaction (already persisted).",
+            "title": "Summary"
+          },
+          "summary_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Model used for summarization, or `None` if truncation-based or server-side.",
+            "title": "Summary Model"
           },
           "total_tokens": {
             "anyOf": [
@@ -528,15 +576,37 @@
       "CompactionData": {
         "description": "Data payload for a compaction summary item.\n\nStored as a conversation item of `type=\"compaction\"`.\nThe summary covers all items from the start of the\nconversation (or the previous compaction item) through\nthe item identified by `last_item_id`.",
         "properties": {
+          "compacted_messages": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compacted Messages"
+          },
           "last_item_id": {
             "description": "The item ID (inclusive) of the last conversation item covered by this summary, e.g. `\"msg_abc123\"`. Items at positions <= this item are summarized and do not need to be loaded for prompt construction.",
             "title": "Last Item Id",
             "type": "string"
           },
           "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "description": "The model used to generate the summary, e.g. `\"openai/gpt-4o\"`.",
-            "title": "Model",
-            "type": "string"
+            "title": "Model"
           },
           "summary": {
             "description": "The LLM-generated summary text covering all conversation items up through `last_item_id`, e.g. `\"User asked to analyze a dataset. Agent loaded data.csv and computed statistics.\"`.",
@@ -552,7 +622,6 @@
         "required": [
           "summary",
           "last_item_id",
-          "model",
           "token_count"
         ],
         "title": "CompactionData",
@@ -5269,6 +5338,74 @@
         "title": "UpdateSessionRequest",
         "type": "object"
       },
+      "UpsertMCPServerRequest": {
+        "description": "Request body for creating or updating a session agent MCP server.\n\nSecret-bearing fields (`headers` and `env`) are intentionally\nnot accepted by the UI route. Existing secrets are preserved when a\nserver is edited without changing transport.",
+        "properties": {
+          "args": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 64,
+            "title": "Args",
+            "type": "array"
+          },
+          "command": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Command"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_-][A-Za-z0-9_.-]{0,127}$",
+            "title": "Name",
+            "type": "string"
+          },
+          "transport": {
+            "enum": [
+              "http",
+              "stdio"
+            ],
+            "title": "Transport",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "required": [
+          "name",
+          "transport"
+        ],
+        "title": "UpsertMCPServerRequest",
+        "type": "object"
+      },
       "Usage": {
         "description": "Token usage statistics for a response.",
         "properties": {
@@ -5398,15 +5535,15 @@
         "type": "apiKey"
       },
       "sessionCookieAuth": {
-        "description": "Signed session cookie minted after an interactive OIDC or accounts login (oidc / accounts auth modes).",
+        "description": "Signed session cookie minted after an interactive OIDC or accounts login (oidc / accounts auth modes). Named `ap_session` over HTTP (the advertised local default); under HTTPS the secure `__Host-ap_session` prefixed form is used instead.",
         "in": "cookie",
-        "name": "__Host-ap_session",
+        "name": "ap_session",
         "type": "apiKey"
       }
     }
   },
   "info": {
-    "description": "Omnigent is an open-source meta-harness for building and running AI agents. This is the REST API exposed by the Omnigent server: use it to create and drive **sessions**, manage **agents**, **hosts**, and **runners**, attach **contextual policies**, post **comments**, and work with session **resources** \u2014 files, terminals, and sandboxed environments.\n\n## Base URL\n\nOmnigent is self-hosted. The server binds `http://127.0.0.1:6767` by default (`omnigent server`); point the base URL at your own deployment.\n\n## Authentication\n\nThere is no API-key or bearer-token scheme. Identity is supplied by the deployment's configured auth provider (`OMNIGENT_AUTH_PROVIDER`):\n\n- **Trusted proxy header** (default) \u2014 an upstream proxy injects an identity header (`X-Forwarded-Email`, configurable). Single-user local runtimes fall back to a reserved `local` user.\n- **Session cookie** \u2014 a signed `__Host-ap_session` cookie minted after an interactive OIDC or accounts login.\n\nAuth is configured server-side; clients send the cookie or proxy header according to your deployment.\n\n## Streaming\n\n`GET /v1/sessions/{session_id}/stream` streams Server-Sent Events (`text/event-stream`). Each event conforms to the `ServerStreamEvent` schema documented below.\n",
+    "description": "Omnigent is an open-source meta-harness for building and running AI agents. This is the REST API exposed by the Omnigent server: use it to create and drive **sessions**, manage **agents**, **hosts**, and **runners**, attach **contextual policies**, post **comments**, and work with session **resources** \u2014 files, terminals, and sandboxed environments.\n\n## Base URL\n\nOmnigent is self-hosted. The server binds `http://127.0.0.1:6767` by default (`omnigent server`); point the base URL at your own deployment.\n\n## Authentication\n\nThere is no API-key or bearer-token scheme. Identity is supplied by the deployment's configured auth provider (`OMNIGENT_AUTH_PROVIDER`):\n\n- **Trusted proxy header** (default) \u2014 an upstream proxy injects an identity header (`X-Forwarded-Email`, configurable). Single-user local runtimes fall back to a reserved `local` user.\n- **Session cookie** \u2014 a signed session cookie minted after an interactive OIDC or accounts login. It is named `ap_session` over HTTP (the advertised local default) and `__Host-ap_session` under HTTPS, where the `__Host-` prefix guards against subdomain cookie-tossing.\n\nAuth is configured server-side; clients send the cookie or proxy header according to your deployment.\n\n## Streaming\n\n`GET /v1/sessions/{session_id}/stream` streams Server-Sent Events (`text/event-stream`). Each event conforms to the `ServerStreamEvent` schema documented below.\n",
     "title": "Omnigent Server",
     "version": "0.1.0"
   },
@@ -6875,6 +7012,207 @@
         "summary": "Get Session Agent Contents",
         "tags": [
           "sessions"
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/agent/mcp-servers": {
+      "get": {
+        "description": "List safe MCP server summaries for a session's bound agent.",
+        "operationId": "list_mcp_servers_v1_sessions__session_id__agent_mcp_servers_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Mcp Servers V1 Sessions  Session Id  Agent Mcp Servers Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Mcp Servers",
+        "tags": [
+          "session_mcp_servers"
+        ]
+      },
+      "post": {
+        "description": "Create one MCP server declaration on a session-scoped agent.",
+        "operationId": "create_mcp_server_v1_sessions__session_id__agent_mcp_servers_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertMCPServerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MCPServerSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Mcp Server",
+        "tags": [
+          "session_mcp_servers"
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/agent/mcp-servers/{server_name}": {
+      "delete": {
+        "description": "Delete one MCP server declaration from a session-scoped agent.",
+        "operationId": "delete_mcp_server_v1_sessions__session_id__agent_mcp_servers__server_name__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "server_name",
+            "required": true,
+            "schema": {
+              "title": "Server Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Mcp Server",
+        "tags": [
+          "session_mcp_servers"
+        ]
+      },
+      "put": {
+        "description": "Replace one MCP server declaration on a session-scoped agent.",
+        "operationId": "update_mcp_server_v1_sessions__session_id__agent_mcp_servers__server_name__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "server_name",
+            "required": true,
+            "schema": {
+              "title": "Server Name",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertMCPServerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MCPServerSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Mcp Server",
+        "tags": [
+          "session_mcp_servers"
         ]
       }
     },
@@ -9435,6 +9773,11 @@
       "description": "Files, terminals, and sandboxed environments attached to a session: upload and read files, create and manage terminals, and read, write, edit, and search the environment filesystem.",
       "name": "session_resources",
       "x-displayName": "Session Resources"
+    },
+    {
+      "description": "Manage the MCP server declarations on a session's bound agent: list the configured servers and create, update, and remove them on session-scoped agents.",
+      "name": "session_mcp_servers",
+      "x-displayName": "Session MCP Servers"
     },
     {
       "description": "Discover the built-in agents available to bind to a session.",

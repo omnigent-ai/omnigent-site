@@ -21,8 +21,35 @@ executor:
 | `claude` | Claude Code | Claude Code out of the box. Add tools, policies, and prompts to customize. |
 | `codex` | Codex | Codex out of the box. Add tools, policies, and prompts to customize. |
 | `pi` | Pi | Headless multi-model worker that runs on any gateway model. Ideal for review, exploration, and read-heavy tasks delegated by a supervisor agent. |
+| `kiro-native` | Kiro CLI | The native `kiro-cli` TUI, with its own Builder ID / social login / Identity Center auth. |
 
 More harness integrations are on the way.
+
+## Native CLI harnesses
+
+Some harnesses, like `kiro-native`, wrap a vendor's own command-line tool. These
+manage their own authentication and aren't configured with an Omnigent
+credential. You can install and sign in to them from the interactive setup menu:
+
+```
+omnigent setup
+```
+
+Kiro appears in the harness overview there. If the `kiro-cli` binary isn't
+installed yet, the menu shows its install command:
+
+```
+curl -fsSL https://cli.kiro.dev/install | bash
+```
+
+Once installed, sign in with Kiro's own login (Builder ID, social login, or
+Identity Center):
+
+```
+kiro-cli login
+```
+
+You can also launch Kiro directly with `omnigent kiro`.
 
 ## Swap harnesses
 

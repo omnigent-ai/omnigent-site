@@ -23,6 +23,36 @@ between them. Switch agents mid-conversation directly from the UI.
 
 Sessions persist across browser refreshes and server restarts.
 
+### Projects
+
+Group related sessions into a named **Project**. Each project renders as its own
+collapsible folder in the sidebar, so a long session list stays organized around the
+work you're actually doing. A session belongs to at most one project (no nesting).
+
+You can file a session under a project in two places:
+
+- **At session start.** The new-chat composer has a **Project** chip. Search your
+  existing projects, pick **No project** (the default, leaving the session unfiled), or
+  type a name under **New project…** to create one inline.
+- **Later, from the session row.** Open a session's kebab (⋯) menu and use **Add to
+  project** (unfiled session) or **Move session** (already filed) to search existing
+  projects, create a new one, or **Remove from project**.
+
+Projects are implicit — a project exists as long as at least one session is filed under
+it, and disappears on its own once its last session leaves. There's no separate
+create, rename, or delete-and-keep step. Removing the only remaining session from a
+project asks you to confirm, since the project folder is removed too (the session
+itself is kept). Each project folder also has a **new session** shortcut that opens the
+composer with that project pre-selected, and a **Delete project** action that archives
+every session in it (the folder disappears once its last member is archived;
+unarchiving a session restores it to its project).
+
+Project folders are collapsible and default to collapsed, with their state remembered
+across reloads. When a session is both pinned and in a project, pinning wins — it moves
+to the flat **Pinned** section. Archiving wins over both. The overall sidebar precedence
+is **Archived > Pinned > Project > Chats**. When no projects exist, the sidebar looks
+exactly as it does today.
+
 ### Browser-first mode
 
 If you prefer to work in the browser rather than the terminal UI, start the server and host

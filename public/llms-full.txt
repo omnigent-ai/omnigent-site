@@ -2085,6 +2085,14 @@ policy_modules:
   - myorg.policies
 ```
 
+Start the server with that file:
+
+```
+omnigent server -c config.yaml
+```
+
+The `-c` flag is short for `--config`. Without it, local servers look for
+`~/.omnigent/config.yaml`, and Docker deployments look for `/data/config.yaml`.
 This makes your custom policies discoverable alongside the builtins. See
 [Custom Policies](/docs/policies/custom) for how to write and register them.
 
@@ -2174,7 +2182,9 @@ policies:
 ```
 
 Server-wide policies use the `function: {path, arguments}` format (not
-`handler` / `factory_params`). Restart the server after editing.
+`handler` / `factory_params`). Pass an explicit server config with
+`omnigent server -c config.yaml` (`--config` is the long form), or place it at
+the default server config path. Restart the server after editing.
 
 Server-wide policies can also be managed at runtime via the REST API:
 
@@ -2306,6 +2316,16 @@ POLICY_REGISTRY = [
 policy_modules:
   - myorg.policies
 ```
+
+Then start the server with that config:
+
+```
+omnigent server -c config.yaml
+```
+
+The `-c` flag is short for `--config`. If you omit it, a local server reads
+`~/.omnigent/config.yaml` when present; Docker deployments read
+`/data/config.yaml`.
 
 Once registered, your custom policies appear alongside the builtins. Your Omnigent can
 select them when you ask it to add a policy in chat, and they show up in the UI settings

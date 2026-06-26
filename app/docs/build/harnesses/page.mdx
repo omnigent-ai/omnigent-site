@@ -20,9 +20,16 @@ executor:
 | --- | --- | --- |
 | `claude` | Claude Code | Claude Code out of the box. Add tools, policies, and prompts to customize. |
 | `codex` | Codex | Codex out of the box. Add tools, policies, and prompts to customize. |
+| `cursor` | Cursor | Cursor out of the box. Add tools, policies, and prompts to customize. |
+| `opencode` | OpenCode | OpenCode out of the box. Add tools, policies, and prompts to customize. |
+| `hermes` | Hermes Agent (Nous Research) | Hermes out of the box. Add tools, policies, and prompts to customize. |
 | `pi` | Pi | Headless multi-model worker that runs on any gateway model. Ideal for review, exploration, and read-heavy tasks delegated by a supervisor agent. |
 
-More harness integrations are on the way.
+Several harnesses ship in two flavors: an SDK-backed variant (the default, e.g.
+`claude-sdk`) and a `-native` terminal-wrapper variant (e.g. `claude-native`,
+`codex-native`, `cursor-native`, `hermes-native`, `pi-native`). The
+`openai-agents` harness is available too. More harness integrations are on the
+way.
 
 ## Swap harnesses
 

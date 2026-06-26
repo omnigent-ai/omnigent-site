@@ -38,6 +38,22 @@ You can set or change a session's project from two places:
 Each project folder has a shortcut to start a new session already filed there.
 Removing a session from a project moves the session back to `Chats` section, and deleting a project archives all its sessions.
 
+### Model and reasoning effort
+
+When you start a session with a Claude Code (claude-native) agent, the new-chat
+composer shows a model + reasoning-effort picker. It defaults to Claude Code's
+own effective defaults — `Sonnet` / `Medium` — and lets you switch both before
+you send the first message:
+
+- **Model** — pick the Claude model for the session (for example `Sonnet` or `Opus`).
+- **Effort** — pick the reasoning effort: `Low`, `Medium`, `High`, `xHigh`, or `Max`.
+
+Your choice is persisted on the session before the runner launches the harness:
+native Claude Code reads them as `--model` and `--effort` at terminal launch.
+The picker only appears for claude-native agents; other agents expose their
+run-mode controls elsewhere in the composer and start with their harness
+defaults.
+
 ### Browser-first mode
 
 If you prefer to work in the browser rather than the terminal UI, start the server and host

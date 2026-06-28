@@ -24,7 +24,7 @@ Omnigent has three components: the server, the runner, and the UI.
   {/* eslint-disable-next-line @next/next/no-img-element */}
   <img
     src="/images/architecture.svg"
-    alt="Omnigent architecture: CLI agents and custom agents run through a runner (on your machine, Modal, or Daytona), then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API."
+    alt="Omnigent architecture: CLI agents and custom agents run through a runner on your machine or a managed sandbox host, then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API."
     width={1541}
     height={700}
   />
@@ -77,12 +77,16 @@ No admin password is auto-generated. On first boot the server reports
 
 Deploy the server to a cloud platform with managed infrastructure.
 
-| Platform                | Database           | Deploy method                                                                              |
-| ----------------------- | ------------------ | ------------------------------------------------------------------------------------------ |
-| **Railway**             | Managed Postgres   | Import repo from GitHub                                                                    |
-| **Render**              | Managed Postgres   | [One-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent) |
-| **Fly.io**              | SQLite on volume   | `fly deploy` from CLI                                                                      |
-| **Hugging Face Spaces** | SQLite (ephemeral) | Docker Space                                                                               |
+| Platform                | Database / storage                 | Deploy method                                                                              |
+| ----------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------ |
+| **Railway**             | Managed Postgres                   | Import repo from GitHub                                                                    |
+| **Render**              | Managed Postgres                   | [One-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent) |
+| **Fly.io**              | SQLite on volume                   | `fly deploy` from CLI                                                                      |
+| **Hugging Face Spaces** | SQLite (ephemeral unless paid)     | Docker Space                                                                               |
+| **Modal**               | Bring-your-own Postgres + Volume   | `modal deploy`                                                                             |
+| **Cloudflare**          | D1 + R2                            | Cloudflare Containers                                                                      |
+| **Databricks Apps**     | Lakebase Postgres + UC Volumes     | Databricks Asset Bundle                                                                    |
+| **Docker / Kubernetes** | Postgres or SQLite, platform-owned | Container image                                                                            |
 
 **Railway & Render.** On Railway, import the repo and it handles the
 rest, including managed Postgres; Render provisions the app and managed Postgres over
@@ -115,6 +119,12 @@ every restart. Use this for demos only.
 
 </div>
 
+**Cloudflare, Modal, Kubernetes, and Databricks Apps.** These use the same
+server/runner split with platform-specific storage. Cloudflare runs the server
+on Containers with D1 and R2. Databricks Apps uses Lakebase Postgres and Unity
+Catalog Volumes. Kubernetes and other container platforms can run the Docker
+image with either Postgres or SQLite, depending on the storage you provide.
+
 ## Runner
 
 The **runner** is the per-session process that executes Omnigent loops. It
@@ -141,9 +151,10 @@ However, moving the runner to a
 - **Isolation.** Each Omnigent runs in its own container, separate from your local environment.
 - **Scalability.** Run many Omnigents in parallel without taxing your machine.
 
-We currently support the [Modal](https://modal.com) and [Daytona](https://www.daytona.io)
-platforms, with more integrations on the way. Check out the
-[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host) page for more detailed setup instructions.
+Omnigent supports several managed sandbox providers, including Modal, Daytona,
+Islo, E2B, CoreWeave Sandbox, Kubernetes runner pods, NVIDIA OpenShell, and
+Boxlite. Check out the [Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)
+page for setup details and provider caveats.
 
 ## UI
 

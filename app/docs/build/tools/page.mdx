@@ -10,8 +10,8 @@ export const metadata = pageMeta("MCP & Tools", "Give your agent capabilities be
 Tools give your agent capabilities beyond conversation. They are declared under the
 `tools` key in your agent YAML, each identified by a name you choose.
 
-Omnigent supports four tool types: MCP servers, Python functions, sub-agents, and inherited
-tools.
+Omnigent supports MCP servers, Python functions, built-in tools, sub-agents,
+and inherited tools.
 
 ## MCP servers
 
@@ -104,6 +104,22 @@ tools:
 The JSON Schema under `parameters` is optional. If you omit it, Omnigent
 auto-generates the schema from the function's type annotations and signature.
 
+## Built-in tools
+
+Omnigent ships a small set of built-in tools for common agent capabilities:
+
+| Tool | What it does |
+| --- | --- |
+| `web_search` | Search the web from an agent session. |
+| `web_fetch` | Fetch a web page or document. |
+| `upload_file` / `download_file` | Move files into and out of a session. |
+| `list_files` | List files visible to the session. |
+| `search_conversations` | Search session history the agent can access. |
+| `export_agent` | Export an agent bundle. |
+
+Session-aware agents can also use `sys_session_share` to share a session with
+another user when the server grants them permission to do so.
+
 ## Sub-agent tools
 
 Declare agents as tools so a supervisor agent can delegate work to them. You can define a
@@ -151,6 +167,11 @@ A sub-agent tool can have its own [harness](/docs/build/harnesses), model, tools
 parent's conversation history is forwarded, and `max_sessions` limits concurrent
 invocations.
 
+You can add MCP servers from the custom agent creation flow, and inspect
+session MCP configuration from **Agent Info** in the web UI. YAML stays the
+source of truth for agents checked into a repo; the UI is the faster path for
+session-scoped or newly-authored agents.
+
 ## Tool inheritance
 
 Use `inherit` to pass one of the parent's tools down to a sub-agent:
@@ -188,4 +209,17 @@ tools:
   reviewer:
     type: agent
     config: agents/reviewer.yaml
+```
+
+## Tool sandbox containers
+
+Python function tools can run inside a container image. Use `container_image`
+for new specs; `docker_image` is still accepted as a legacy alias. Set
+`container_runtime: podman` when you want Podman instead of Docker.
+
+```
+tools:
+  sandbox:
+    container_image: python:3.12-slim
+    container_runtime: podman
 ```

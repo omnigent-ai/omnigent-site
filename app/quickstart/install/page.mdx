@@ -21,14 +21,31 @@ same flow.
 ## Requirements
 
 - **Python 3.12+**
-- **Node.js 22 LTS** and npm
-- **tmux**
+- **uv** and **git**
+- **Node.js 22 LTS** and npm, for npm-installed native harness CLIs
+- **tmux**, for native terminal wrappers on macOS and Linux
+- **bubblewrap** (`bwrap`), on Linux when using OS sandboxing
 
 ## Install Omnigent
 
 <InstallCommandTabs />
 
-Run the same command to upgrade an existing installation.
+To update later, run:
+
+```
+omni upgrade
+omni upgrade --check    # report whether a newer release is available
+```
+
+Source checkouts update with `git pull` instead.
+
+<div className="note">
+
+**Windows:** Omnigent runs natively on Windows for core server, web UI, and
+SDK-based harness flows. Native tmux/PTY wrappers and hardened filesystem or
+network sandboxing are not available there; use Linux, macOS, or WSL for those.
+
+</div>
 
 ## Set up credentials
 
@@ -69,8 +86,10 @@ command above prints that URL when it launches the web UI. By default it is
 next available port, so check the web UI for the actual URL (e.g.
 `http://localhost:6768`). Paste that into the desktop app to connect.
 
-Now your desktop app is ready to use. Pick **Debby** from the agent picker
-in the UI (along with the other agents we ship) and ask it anything.
+Now your desktop app is ready to use. It can connect to a server you started
+yourself, or manage a local server and runner for you. Pick **Debby** from the
+agent picker in the UI (along with the other agents we ship) and ask it
+anything.
 
 This also works with a remote server. See [Shared Server](/docs/deploy/overview)
 to learn how to deploy your own server.

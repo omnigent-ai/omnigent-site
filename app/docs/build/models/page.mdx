@@ -49,10 +49,11 @@ logged-in CLIs, and local servers) so you can confirm them with one tap.
 
 | Type | What it is |
 | --- | --- |
-| **API key** | A first-party provider key (Anthropic, OpenAI, OpenRouter, and more) |
+| **API key** | A first-party provider key (Anthropic, OpenAI, Gemini/Antigravity, OpenRouter, and more) |
 | **Subscription** | A Claude Pro/Max or ChatGPT Plus/Pro plan, via the official `claude` / `codex` CLIs |
 | **Gateway** | Bring your own proxy or local model. Just paste a base URL and key. |
 | **Databricks** | A Databricks workspace profile, routing through the [Foundation Model API](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/) |
+| **Native provider login** | Runtime-owned auth, such as Cursor, Kimi Code, Qwen Code, Goose, OpenCode, Hermes, Kiro, or GitHub Copilot |
 
 ### API key
 
@@ -73,6 +74,24 @@ codex login          # for ChatGPT
 ```
 
 `omni setup` auto-detects an active CLI login and offers it as a one-tap option.
+
+Some harnesses authenticate with their own provider rather than through an
+OpenAI- or Anthropic-compatible endpoint:
+
+| Harness | Authentication |
+| --- | --- |
+| `cursor` / `cursor-native` | Cursor API key or `cursor-agent login`; use Cursor model IDs such as `auto` or `gpt-5`. |
+| `antigravity` / `antigravity-native` | Gemini or Antigravity API key, or Vertex AI credentials. |
+| `copilot` | GitHub token with Copilot access. |
+| `kimi` / `kimi-native` | `kimi login`, or Kimi gateway/provider settings. |
+| `qwen` / `qwen-native` | Qwen Code CLI auth. |
+| `goose` / `goose-native` | Goose provider configuration. |
+| `opencode-native` | OpenCode auth and provider configuration. |
+| `hermes` / `hermes-native` | Hermes CLI auth and configuration. |
+| `kiro-native` | Kiro CLI auth. |
+
+Those harnesses can still run inside Omnigent sessions, but their model IDs and
+auth setup come from the underlying runtime.
 
 ### Gateway
 
@@ -115,3 +134,16 @@ Model names are prefixed with `databricks-` so Omnigent routes them through your
 workspace automatically. See the
 [Databricks Foundation Model API docs](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/supported-models)
 for the full list of available models.
+
+### Bedrock
+
+AWS Bedrock is supported as a model provider. Configure AWS credentials in your
+environment and select Bedrock-backed model IDs from your Omnigent provider
+configuration.
+
+### Model routing
+
+Policies can route or block model usage based on the session context. For
+example, the built-in cost policies can warn at soft thresholds, require a
+downgrade after a hard budget, or steer trivial requests away from expensive
+models. See [Builtin Policies](/docs/policies/builtin#cost-control).

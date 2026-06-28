@@ -27,7 +27,8 @@ Sessions persist across browser refreshes and server restarts.
 
 Organize related sessions into a named `Project`. Each project is a collapsible
 folder in the sidebar, keeping a long session list grouped around the work you're
-doing. Projects don't nest, and a session belongs to at most one.
+doing. Projects don't nest, and a session belongs to at most one. Drag sessions
+between projects when you reorganize work.
 
 You can set or change a session's project from two places:
 
@@ -37,6 +38,18 @@ You can set or change a session's project from two places:
 
 Each project folder has a shortcut to start a new session already filed there.
 Removing a session from a project moves the session back to `Chats` section, and deleting a project archives all its sessions.
+
+### Settings and run modes
+
+Use Settings to manage local preferences and per-harness run-mode memory. If
+you switch a native harness into a mode such as planning or agentic execution,
+Omnigent remembers that choice for the next session on the same harness.
+
+### Custom agents and MCP
+
+Create a custom agent from the UI instead of hand-writing YAML. The creation
+flow covers the prompt, harness, model, and MCP servers. For existing agents,
+open **Agent Info** to review and manage MCP servers attached to that session.
 
 ### Browser-first mode
 
@@ -48,7 +61,7 @@ omni server start   # start the local server + web UI in the background
 omni host           # (separate terminal) register this machine as a host
 ```
 
-After that, open **http://localhost:6767** and drive the agent entirely from
+After that, open `http://localhost:6767` and drive the agent entirely from
 the browser; no further terminal interaction needed.
 
 ## File editor
@@ -91,6 +104,14 @@ Where this matters most:
 Paste images, screenshots, diagrams, and mockups directly into the conversation. The
 Omnigent sees them alongside your text. Useful for frontend work where describing a layout
 issue in words is slower than screenshotting it.
+
+Click an image to open it in the lightbox when you need a closer look.
+
+## Shortcuts
+
+Use the shortcuts overlay to see the current keyboard shortcuts. Pinned-session
+hotkeys let you jump back to important sessions without hunting through the
+sidebar.
 
 ## Collaboration
 

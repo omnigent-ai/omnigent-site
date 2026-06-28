@@ -284,6 +284,30 @@ function absolute(href) {
   return `${SITE_URL}${href}`;
 }
 
+function stripTagsOutsideCode(markdown) {
+  let inFence = false;
+
+  return markdown
+    .split("\n")
+    .map((line) => {
+      if (/^\s*```/.test(line)) {
+        inFence = !inFence;
+        return line;
+      }
+      if (inFence) return line;
+
+      return line
+        .split(/(`[^`]*`)/g)
+        .map((part) =>
+          part.startsWith("`") && part.endsWith("`")
+            ? part
+            : part.replace(/<[^>\n]+>/g, ""),
+        )
+        .join("");
+    })
+    .join("\n");
+}
+
 function cleanMdx(sourcePath) {
   const source = readFileSync(sourcePath, "utf8");
   const lines = source.split("\n");
@@ -305,45 +329,46 @@ function cleanMdx(sourcePath) {
     kept.push(line);
   }
 
-  return kept
-    .join("\n")
-    .replace(
-      /<InstallCommandTabs \/>/g,
-      [
-        "```sh",
-        "curl -fsSL https://omnigent.ai/install.sh | sh",
-        "# or",
-        "uv tool install omnigent",
-        "# or",
-        "pip install omnigent",
-        "# or",
-        "brew install omnigent-ai/tap/omnigent",
-        "```",
-      ].join("\n"),
-    )
-    .replace(
-      /<MacDownloadButton \/>/g,
-      "[Download macOS App](https://omnigent.ai/download/mac/v0.1.1)",
-    )
-    .replace(
-      /<ProviderKeyTable \/>/g,
-      "Provider credentials can be configured for supported model providers using API keys, subscriptions, gateways, or Databricks profiles.",
-    )
-    .replace(
-      /<GatewayLogos \/>/g,
-      "Supported OpenAI- or Anthropic-compatible gateways include OpenRouter, LiteLLM, Ollama, Azure, vLLM, and similar providers.",
-    )
-    .replace(/^<ContentTabs[^\n]*>\n?/gm, "")
-    .replace(/^<\/ContentTabs>\n?/gm, "")
-    .replace(/\{\/\*[\s\S]*?\*\/\}/g, "")
-    .replace(/<img\s+([\s\S]*?)\/>/g, (_match, attrs) => {
-      const src = attrs.match(/src="([^"]+)"/)?.[1];
-      const alt = attrs.match(/alt="([^"]+)"/)?.[1] ?? "";
-      return src ? `![${alt}](${src})` : "";
-    })
-    .replace(/\{" "\}/g, " ")
-    .replace(/<Link href="([^"]+)">([^<]+)<\/Link>/g, "[$2]($1)")
-    .replace(/<[^>\n]+>/g, "")
+  return stripTagsOutsideCode(
+    kept
+      .join("\n")
+      .replace(
+        /<InstallCommandTabs \/>/g,
+        [
+          "```sh",
+          "curl -fsSL https://omnigent.ai/install.sh | sh",
+          "# or",
+          "uv tool install omnigent",
+          "# or",
+          "pip install omnigent",
+          "# or",
+          "brew install omnigent-ai/tap/omnigent",
+          "```",
+        ].join("\n"),
+      )
+      .replace(
+        /<MacDownloadButton \/>/g,
+        "[Download macOS App](https://omnigent.ai/download/mac/v0.1.1)",
+      )
+      .replace(
+        /<ProviderKeyTable \/>/g,
+        "Provider credentials can be configured for supported model providers using API keys, subscriptions, gateways, or Databricks profiles.",
+      )
+      .replace(
+        /<GatewayLogos \/>/g,
+        "Supported OpenAI- or Anthropic-compatible gateways include OpenRouter, LiteLLM, Ollama, Azure, vLLM, and similar providers.",
+      )
+      .replace(/^<ContentTabs[^\n]*>\n?/gm, "")
+      .replace(/^<\/ContentTabs>\n?/gm, "")
+      .replace(/\{\/\*[\s\S]*?\*\/\}/g, "")
+      .replace(/<img\s+([\s\S]*?)\/>/g, (_match, attrs) => {
+        const src = attrs.match(/src="([^"]+)"/)?.[1];
+        const alt = attrs.match(/alt="([^"]+)"/)?.[1] ?? "";
+        return src ? `![${alt}](${src})` : "";
+      })
+      .replace(/\{" "\}/g, " ")
+      .replace(/<Link href="([^"]+)">([^<]+)<\/Link>/g, "[$2]($1)"),
+  )
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }

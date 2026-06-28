@@ -62,8 +62,20 @@ tools:
       Authorization: "Bearer ${API_TOKEN}"   # env vars expanded at runtime
 ```
 
-The optional `tools` list filters which MCP tools are exposed to the agent. Omit
-it to expose everything the server provides.
+The optional `tools` list filters which MCP tools are exposed to the agent. It
+works the same on both transports — list the tool names you want to allow, and
+only those are surfaced to the model:
+
+```
+tools:
+  github:
+    type: mcp
+    command: npx
+    args: [-y, server-github]
+    tools: [search_issues, get_pull_request]   # only these two are exposed
+```
+
+Omit `tools` to expose everything the server provides.
 
 ### Authentication
 

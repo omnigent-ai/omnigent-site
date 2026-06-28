@@ -28,6 +28,13 @@ Override it at runtime without editing the file:
 omni run agent.yaml --model claude-sonnet-4-6
 ```
 
+### Available models
+
+Omnigent keeps a model catalog for each provider that lists the model ids you
+can declare, along with each model's context window, pricing, and capabilities.
+For example, xAI's Grok family — including `grok-4.3`, `grok-4.3-latest`, and
+`grok-build-0.1` — supports function calling, vision, and reasoning.
+
 ### Switch models mid-session
 
 Use the `/model` command inside any running session to switch models on the fly.

@@ -28,8 +28,22 @@ That's [Omnibox](/docs/omnibox).
 | **Environment**  | Local files              | Isolated, reproducible |
 | **Best for**     | Interactive work         | Long-running tasks     |
 
-Omnigent currently supports [Modal](https://modal.com) and [Daytona](https://www.daytona.io)
-as hosting platforms for cloud sandbox hosts, with more on the way.
+Omnigent supports eight providers for cloud sandbox hosts. Six can be created from the CLI or
+managed by the server. Boxlite and Kubernetes are server-managed only.
+
+| Provider                                         | Install                | Create via            | Credentials                                              |
+| ------------------------------------------------ | ---------------------- | --------------------- | -------------------------------------------------------- |
+| [Modal](https://modal.com)                       | `omnigent[modal]`      | CLI or server-managed | `modal token new`, or `MODAL_TOKEN_ID` + `MODAL_TOKEN_SECRET` |
+| [Daytona](https://www.daytona.io)                | `omnigent[daytona]`    | CLI or server-managed | `DAYTONA_API_KEY`                                        |
+| [Islo](https://islo.dev)                         | built-in (no extra)    | CLI or server-managed | `ISLO_API_KEY`                                           |
+| [E2B](https://e2b.dev)                           | `omnigent[e2b]`        | CLI or server-managed | `E2B_API_KEY`                                            |
+| [CoreWeave Sandbox](https://www.coreweave.com)   | `omnigent[cwsandbox]`  | CLI or server-managed | `CWSANDBOX_API_KEY`                                      |
+| [OpenShell](https://github.com/NVIDIA/openshell) | `omnigent[openshell]`  | CLI or server-managed | gateway login (`openshell gateway select`)              |
+| [BoxLite](https://github.com/boxlite-ai/boxlite) | `omnigent[boxlite]`    | Server-managed only   | `BOXLITE_API_KEY` (cloud mode)                          |
+| [Kubernetes](https://kubernetes.io)              | `omnigent[kubernetes]` | Server-managed only   | `KUBECONFIG` or in-cluster config                       |
+
+Modal and Daytona are the two most common, and the worked examples below use them. They differ
+in a few ways:
 
 |                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) |
 | ------------------------ | ---------------------------------- | --------------------------------- |
@@ -44,14 +58,20 @@ web UI.
 
 ### 1. Install
 
+Install the optional extra for your provider (see the table above). Islo needs no extra. For the
+two providers used in the examples below:
+
 ```
-pip install 'omnigent[modal]'       # for Modal
-pip install 'omnigent[daytona]'     # for Daytona
+pip install 'omnigent[modal]'       # Modal
+pip install 'omnigent[daytona]'     # Daytona
 ```
 
 ### 2. Set provider credentials
 
-**Modal:** run `modal setup` to authenticate, or set
+Each provider reads its own credentials from the server environment (the Credentials column
+above). For the two examples:
+
+**Modal:** run `modal token new` to authenticate, or set
 `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET` on the server.
 
 **Daytona:** create an API key in the [Daytona dashboard](https://app.daytona.io)
@@ -106,7 +126,7 @@ traffic to a [fixed allowlist](https://www.daytona.io/docs/en/network-limits).
 Your `server_url` and model endpoints must be reachable from Daytona's
 cloud. **Tier 3+** ($500 usage top-up) lifts the restriction. On free tier,
 use a Cloudflare Worker relay on the allowlisted `*.workers.dev` domain (see
-`deploy/daytona-relay/` in the repo). Modal has full egress on its entry tier.
+`deploy/daytona/` in the repo). Modal has full egress on its entry tier.
 
 </div>
 
@@ -114,15 +134,16 @@ use a Cloudflare Worker relay on the allowlisted `*.workers.dev` domain (see
 
 Start a new session and select **New Sandbox** in the host picker. The server
 provisions the cloud host, starts the runner, and connects it back automatically. This works
-the same on both hosting platforms.
+the same across providers.
 
 ## CLI
 
-Create and manage cloud sandbox hosts from the command line. The commands are the same across
-hosting platforms, just switch the `--provider` flag.
+Create and manage cloud sandbox hosts from the command line. CLI create is available for Modal,
+Daytona, Islo, E2B, CoreWeave Sandbox, and OpenShell. The commands are the same across providers,
+just switch the `--provider` flag.
 
 ```
-omni sandbox create --provider modal          # or --provider daytona
+omni sandbox create --provider modal          # or daytona, islo, e2b, cwsandbox, openshell
 omni sandbox connect --provider modal \
   --sandbox-id <id> --server <url>
 ```

@@ -115,6 +115,27 @@ every restart. Use this for demos only.
 
 </div>
 
+### Databricks
+
+On a Databricks workspace there are two paths, and most users want the
+managed one.
+
+**Managed (recommended).**
+[Omnigent on Databricks](https://docs.databricks.com/aws/en/omnigent/)
+(Beta) is a fully managed service: Databricks operates the Omnigent server
+for you, already wired to workspace identity, Foundation Models, AI Gateway,
+and MLflow Tracing. There is no deploy tooling, Lakebase bootstrap, or
+bundle to maintain. Enable the **Omnigent** preview in your workspace
+settings and follow the quickstart there.
+
+**Self-managed.** Deploy and operate the Omnigent server yourself on
+Databricks Apps via [Databricks Asset Bundles](https://docs.databricks.com/aws/en/dev-tools/bundles/),
+backed by Lakebase (Postgres) and Unity Catalog Volumes. Configuration is in
+`deploy/databricks/` in the repo. Reach for this only when the managed
+service is not available in your region, or when you need something it does
+not expose yet — custom YAML policies, bring-your-own provider API keys, or
+custom egress controls.
+
 ## Runner
 
 The **runner** is the per-session process that executes Omnigent loops. It

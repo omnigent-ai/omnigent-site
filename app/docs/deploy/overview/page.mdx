@@ -77,17 +77,31 @@ No admin password is auto-generated. On first boot the server reports
 
 Deploy the server to a cloud platform with managed infrastructure.
 
-| Platform                | Database           | Deploy method                                                                              |
-| ----------------------- | ------------------ | ------------------------------------------------------------------------------------------ |
-| **Railway**             | Managed Postgres   | Import repo from GitHub                                                                    |
-| **Render**              | Managed Postgres   | [One-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent) |
-| **Fly.io**              | SQLite on volume   | `fly deploy` from CLI                                                                      |
-| **Hugging Face Spaces** | SQLite (ephemeral) | Docker Space                                                                               |
+| Platform                | Database                                  | Deploy method                                                                              |
+| ----------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **Railway**             | Managed Postgres                          | One-click deploy / import repo from GitHub                                                  |
+| **Render**              | Managed Postgres                          | [One-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent) |
+| **Fly.io**              | SQLite on volume                          | `fly deploy` from CLI                                                                      |
+| **Cloudflare**          | —                                         | Serverless, scale-to-zero                                                                  |
+| **Hugging Face Spaces** | SQLite (ephemeral)                        | Docker Space                                                                               |
+| **Modal**               | —                                         | See `deploy/README.md`                                                                     |
+| **Databricks Apps**     | Lakebase Postgres + Unity Catalog Volumes | See `deploy/README.md`                                                                     |
 
-**Railway & Render.** On Railway, import the repo and it handles the
-rest, including managed Postgres; Render provisions the app and managed Postgres over
-HTTPS via [one-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent).
+**Railway & Render.** Both deploy with one click. On Railway, import the repo
+and it handles the rest, including managed Postgres; Render provisions the app
+and managed Postgres over HTTPS via
+[one-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent).
 Both default to built-in `accounts` auth, so multi-user works out of the box.
+
+**Cloudflare, Modal & Databricks Apps.** Cloudflare runs the server
+serverless with scale-to-zero. Databricks Apps is backed by Lakebase Postgres
+with artifacts stored in Unity Catalog Volumes. See
+[`deploy/README.md`](https://github.com/omnigent-ai/omnigent/blob/main/deploy/README.md)
+in the repo for the full menu of targets and per-platform setup.
+
+**Reach a laptop server without deploying.** A **Cloudflare quick tunnel**
+exposes a server running on your own laptop over a public URL, and **Tailscale**
+exposes it privately to your tailnet — both without a cloud deploy.
 
 **Fly.io.** Deploy with `fly deploy` using SQLite on a persistent
 volume. Configuration files are in `deploy/fly/` in the repo.

@@ -33,4 +33,26 @@ Tools, policies, and other config stay the same across harnesses. Just change th
 omni run agent.yaml --harness codex
 ```
 
+## Omnigent tools in terminal harnesses
+
+Terminal harnesses that run an external coding CLI in its own pane — such as
+qwen — can now call Omnigent's builtin tools (`sys_*`, `load_skill`,
+`web_fetch`, and more), not just the CLI's own native tools.
+
+Omnigent wires this up automatically at launch by registering a bundled MCP
+server named `omnigent` that bridges back to the platform's builtin tool
+surface. Inside the running CLI the server appears in the `/mcp` list as
+`omnigent`, and the model can invoke its tools like any other.
+
+The connection is set up per session, with no configuration on your part:
+
+- **Nothing lands in your repo.** The MCP config lives in a per-session bridge
+  directory, never your workspace, so there's no file to accidentally commit and
+  concurrent sessions in the same workspace can't collide.
+- **No extra approval prompt.** The `omnigent` server is trusted, so the CLI
+  won't add its own "Untrusted MCP server" prompt. Tool calls are still gated —
+  Omnigent enforces them through its own
+  [contextual policies](/docs/policies/overview) and approval flow, so the CLI's
+  prompt would only be a hidden duplicate.
+
 See [Models & Credentials](/docs/build/models) for how to set up API keys and choose models.

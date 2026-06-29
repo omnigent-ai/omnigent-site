@@ -35,7 +35,6 @@ and as server-managed hosts; others are server-managed only.
 | --------------------------------- | -------------------- | -------------- | ----------------------------------------------------------------------------------- |
 | [Modal](https://modal.com)        | Yes                  | Yes            | 24-hour platform cap. Credentials come from Modal secrets.                          |
 | [Daytona](https://www.daytona.io) | Yes                  | Yes            | Free-tier egress is allowlisted; use the relay if needed.                           |
-| Islo                              | Yes                  | Yes            | Credentials can be copied from server env or injected through Islo's gateway model. |
 | E2B                               | Yes                  | Yes            | 24-hour cap and a pre-built E2B template.                                           |
 | CoreWeave Sandbox                 | Yes                  | Yes            | Uses the `cwsandbox` provider.                                                      |
 | Kubernetes                        | No                   | Yes            | Starts an on-demand runner pod from the server.                                     |
@@ -133,7 +132,7 @@ Create and manage cloud sandbox hosts from the command line. The commands are th
 CLI-capable hosting platforms, just switch the `--provider` flag.
 
 ```
-omni sandbox create --provider modal          # or daytona / islo / e2b / cwsandbox / openshell
+omni sandbox create --provider modal          # or daytona / e2b / cwsandbox / openshell
 omni sandbox connect --provider modal \
   --sandbox-id <id> --server <url>
 ```

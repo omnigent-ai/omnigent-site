@@ -80,7 +80,7 @@ OpenAI- or Anthropic-compatible endpoint:
 
 | Harness | Authentication |
 | --- | --- |
-| `cursor` / `cursor-native` | Cursor API key or `cursor-agent login`; use Cursor model IDs such as `auto` or `gpt-5`. |
+| `cursor` / `cursor-native` | `cursor` uses a Cursor API key; `cursor-native` uses the Cursor Agent login. Use Cursor model IDs such as `auto` or `gpt-5`. |
 | `antigravity` / `antigravity-native` | Gemini or Antigravity API key, or Vertex AI credentials. |
 | `copilot` | GitHub token with Copilot access. |
 | `kimi` / `kimi-native` | `kimi login`, or Kimi gateway/provider settings. |
@@ -140,10 +140,3 @@ for the full list of available models.
 AWS Bedrock is supported as a model provider. Configure AWS credentials in your
 environment and select Bedrock-backed model IDs from your Omnigent provider
 configuration.
-
-### Model routing
-
-Policies can route or block model usage based on the session context. For
-example, the built-in cost policies can warn at soft thresholds, require a
-downgrade after a hard budget, or steer trivial requests away from expensive
-models. See [Builtin Policies](/docs/policies/builtin#cost-control).

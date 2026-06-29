@@ -43,7 +43,7 @@ the policy, and filling in its settings.
 As you can see in the clip, the cost policy gives you two kinds of guardrails:
 
 - **Soft limits**: a list of spend thresholds that act as gentle warnings. When the session cost crosses one, you get a heads-up on the next tool call and can decide whether to keep going. For the demo we'll set a soft limit of `0.01`.
-- **Hard limit**: a ceiling paired with a list of **expensive models**. Once spend passes the hard limit, the session blocks any of those pricey models until you downgrade to a cheaper one. We'll set the hard limit to `0.2` and keep the default expensive-model list (Opus and GPT-5 family models, except mini/nano variants).
+- **Hard limit**: a ceiling paired with a list of **expensive models**. Once spend passes the hard limit, the session blocks any of those pricey models until you downgrade to a cheaper one. We'll set the hard limit to `0.2` and keep the default expensive-model list.
 
 Once you fill in the values and click **Add**, the policy goes live on the
 session right away: you'll see it listed under **Policies** in the panel.

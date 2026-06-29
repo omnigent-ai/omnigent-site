@@ -10,7 +10,7 @@ export const metadata = pageMeta("MCP & Tools", "Give your agent capabilities be
 Tools give your agent capabilities beyond conversation. They are declared under the
 `tools` key in your agent YAML, each identified by a name you choose.
 
-Omnigent supports four tool types: MCP servers, Python functions, sub-agents, and inherited
+Omnigent supports MCP servers, Python functions, sub-agents, and inherited
 tools.
 
 ## MCP servers
@@ -104,6 +104,11 @@ tools:
 The JSON Schema under `parameters` is optional. If you omit it, Omnigent
 auto-generates the schema from the function's type annotations and signature.
 
+## Session sharing
+
+Session-aware agents can use `sys_session_share` to share a session with another
+user when the server grants them permission to do so.
+
 ## Sub-agent tools
 
 Declare agents as tools so a supervisor agent can delegate work to them. You can define a
@@ -150,6 +155,11 @@ A sub-agent tool can have its own [harness](/docs/build/harnesses), model, tools
 [policies](/docs/policies/overview). The `pass_history` flag controls whether the
 parent's conversation history is forwarded, and `max_sessions` limits concurrent
 invocations.
+
+You can add MCP servers from the custom agent creation flow, and inspect
+session MCP configuration from **Agent Info** in the web UI. YAML stays the
+source of truth for agents checked into a repo; the UI is the faster path for
+session-scoped or newly-authored agents.
 
 ## Tool inheritance
 

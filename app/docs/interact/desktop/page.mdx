@@ -14,7 +14,9 @@ export const metadata = pageMeta(
 # Desktop App
 
 The Omnigent desktop app gives you the full
-[web UI](/docs/interact/web-ui) in a native window, plus OS-level features
+[web UI](/docs/interact/web-ui) in a native window. It can connect to a
+server you started yourself, or manage a local server and runner for you. It
+also adds OS-level features
 a browser can't provide: notifications when your agent needs attention, a dock badge
 showing how many sessions are waiting, and multiple independent windows.
 
@@ -39,8 +41,9 @@ same as the web UI.
 
 ## Prerequisites
 
-- **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.
-- **At least one runner.** A [runner](/docs/deploy/overview) is the process that actually executes your agent. If you have [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host) set up, you'll be able to launch them from the app. Otherwise, register your machine by running `omni host` from your CLI.
+- **Omnigent installed.** For local work, the app can start and manage the local server and runner.
+- **A server URL, for remote work.** Point the app at a deployed server when you want shared team access or cloud sandbox hosts.
+- **At least one host for remote servers.** Register your machine with `omni host <server-url>`, or configure [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host).
 
 ## Install
 
@@ -90,7 +93,7 @@ same as the web UI.
 />
 
 1. **Launch the app.** On first launch, you'll see a setup screen.
-2. **Enter your server URL.** `http://localhost:6767` if running locally, or your deployed server URL (e.g. `https://your-app.onrender.com`).
+2. **Use local Omnigent or enter a server URL.** Use the local option for single-machine work, or paste your deployed server URL (e.g. `https://your-app.onrender.com`).
 3. **Start working.** The app connects and shows the same UI you'd see in a browser.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}

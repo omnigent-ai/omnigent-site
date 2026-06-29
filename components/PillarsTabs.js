@@ -14,7 +14,7 @@ const PILLARS = [
     id: "composition",
     label: "Composition",
     title: "Composition",
-    body: "Combine multiple models, harnesses, and techniques without rewriting code. Switch between Claude Code, Codex, Pi, and your own agents with one-line changes.",
+    body: "Combine multiple models, harnesses, and techniques without rewriting code. Switch between Claude Code, Codex, Cursor, OpenCode, Hermes, Pi, and your own agents with one-line changes.",
     icon: {
       src: "/images/composability-icon.png",
       alt: "Omnigent starfish mascots stacked in layers to illustrate composability.",

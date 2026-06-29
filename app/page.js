@@ -34,10 +34,11 @@ export default function Home() {
             />
           </h1>
           <p className="lede">
-            A common layer over Claude Code, Codex, Pi, and the agents you write
-            yourself: swap or combine harnesses without rewriting, keep them in
-            check with policies and sandboxing, and collaborate in real time on
-            the same live session, from any device.
+            A common layer over Claude Code, Codex, Cursor, OpenCode, Hermes,
+            Pi, and the agents you write yourself: swap or combine harnesses
+            without rewriting, keep them in check with policies and sandboxing,
+            and collaborate in real time on the same live session, from any
+            device.
           </p>
           <InstallTabs />
           <CtaButtons />
@@ -67,7 +68,7 @@ export default function Home() {
                   :
                 </strong>{" "}
                 built-in multi-AI agents (a coding orchestrator and a model
-                debate). Build your own in YAML.
+                debate). Build your own in the UI or in YAML.
               </li>
               <li>
                 <strong>
@@ -83,7 +84,7 @@ export default function Home() {
                   <Link href="/docs/omnibox">Secure OS Sandbox</Link>:
                 </strong>{" "}
                 restrict filesystem and network access. Hide credentials from
-                the agent, and broker access to them. Run YOLO mode safely.
+                the agent, and broker access to them on hardened platforms.
               </li>
             </ul>
           </div>

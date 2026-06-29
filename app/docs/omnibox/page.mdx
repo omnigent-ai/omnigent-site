@@ -15,7 +15,7 @@ Omnibox is Omnigent's secure OS-level sandbox. It wraps any agent (Claude Code, 
 or a custom agent) so you can run it unattended, in YOLO mode, without handing it your real
 credentials, file system, or network.
 
-The kernel enforces the rules, not the agent or its prompt: `bubblewrap` and
+The OS enforces the rules, not the agent or its prompt: `bubblewrap` and
 `seccomp` on Linux, Seatbelt (`sandbox-exec`) on macOS. Every process
 the agent spawns inherits the boundary, so a prompt-injected or misbehaving agent can't
 opt out.
@@ -52,6 +52,13 @@ agent can use a credential but never read it.
 
 Only the placeholder appears in logs, transcripts, and model context. A leaked token is
 worthless, since it only works through the proxy, against allowed hosts.
+
+<div className="note">
+
+Windows support is core-only: server, web UI, and SDK-based harness flows run
+natively, but hardened filesystem and network sandboxing are not available.
+
+</div>
 
 ## Related
 

@@ -36,8 +36,10 @@ same flow.
 ## Requirements
 
 - **Python 3.12+**
-- **Node.js 22 LTS** and npm
-- **tmux**
+- **uv** and **git**
+- **Node.js 22 LTS** and npm, for npm-installed native harness CLIs
+- **tmux**, for native terminal wrappers on macOS and Linux
+- **bubblewrap** (`bwrap`), on Linux when using OS sandboxing
 
 ## Install Omnigent
 
@@ -51,7 +53,18 @@ pip install omnigent
 brew install omnigent-ai/tap/omnigent
 ```
 
-Run the same command to upgrade an existing installation.
+To update later, run:
+
+```
+omni upgrade
+omni upgrade --check    # report whether a newer release is available
+```
+
+Source checkouts update with `git pull` instead.
+
+**Windows:** Omnigent runs natively on Windows for core server, web UI, and
+SDK-based harness flows. Native tmux/PTY wrappers and hardened filesystem or
+network sandboxing are not available there; use Linux, macOS, or WSL for those.
 
 ## Set up credentials
 
@@ -92,8 +105,10 @@ command above prints that URL when it launches the web UI. By default it is
 next available port, so check the web UI for the actual URL (e.g.
 `http://localhost:6768`). Paste that into the desktop app to connect.
 
-Now your desktop app is ready to use. Pick **Debby** from the agent picker
-in the UI (along with the other agents we ship) and ask it anything.
+Now your desktop app is ready to use. It can connect to a server you started
+yourself, or manage a local server and runner for you. Pick **Debby** from the
+agent picker in the UI (along with the other agents we ship) and ask it
+anything.
 
 This also works with a remote server. See [Shared Server](/docs/deploy/overview)
 to learn how to deploy your own server.
@@ -104,7 +119,7 @@ to learn how to deploy your own server.
 
 # Tutorial: Coding Agent
 
-Already using Claude Code or Codex? This tutorial shows you what Omnigent
+Already using Claude Code, Codex, Cursor, OpenCode, Hermes, or Pi? This tutorial shows you what Omnigent
 adds on top: a web UI with file editing and inline comments, mobile access,
 session sharing, and the ability to fork or switch agents mid-conversation.
 None of this is possible with a native coding agent alone.
@@ -114,13 +129,17 @@ None of this is possible with a native coding agent alone.
 ## 1. Start your coding agent
 
 ```
-omni claude    # Claude Code
-omni codex     # Codex
+omni claude       # Claude Code
+omni codex        # Codex
+omni cursor       # Cursor
+omni opencode     # OpenCode
+omni hermes       # Hermes Agent
+omni pi           # Pi
 ```
 
-Pick whichever you already use. Either command launches the coding agent
-in your terminal and opens a web UI at `http://localhost:6767`. Both are
-connected to the same session and stream output in real time.
+Pick whichever you already use. Each command launches the coding agent
+in your terminal and opens a web UI at `http://localhost:6767`. The terminal
+and browser are connected to the same session and stream output in real time.
 
 ## 2. Give it a task
 
@@ -412,7 +431,7 @@ the policy, and filling in its settings.
 As you can see in the clip, the cost policy gives you two kinds of guardrails:
 
 - **Soft limits**: a list of spend thresholds that act as gentle warnings. When the session cost crosses one, you get a heads-up on the next tool call and can decide whether to keep going. For the demo we'll set a soft limit of `0.01`.
-- **Hard limit**: a ceiling paired with a list of **expensive models**. Once spend passes the hard limit, the session blocks any of those pricey models until you downgrade to a cheaper one. We'll set the hard limit to `0.2` and keep the default expensive-model list (Opus, GPT-5.5).
+- **Hard limit**: a ceiling paired with a list of **expensive models**. Once spend passes the hard limit, the session blocks any of those pricey models until you downgrade to a cheaper one. We'll set the hard limit to `0.2` and keep the default expensive-model list.
 
 Once you fill in the values and click **Add**, the policy goes live on the
 session right away: you'll see it listed under **Policies** in the panel.
@@ -454,14 +473,18 @@ session to behave.
 
 # Coding Agents
 
-Run Claude Code or Codex through Omnigent with a single command. No YAML needed.
+Run native coding agents through Omnigent with a single command. No YAML needed.
 You get the full platform on top of the coding agent you already use: web UI,
 persistent sessions, team collaboration, mobile access, and
 [contextual policies](/docs/policies/overview).
 
 ```
-omni claude    # Claude Code
-omni codex     # Codex
+omni claude       # Claude Code
+omni codex        # Codex
+omni cursor       # Cursor
+omni opencode     # OpenCode
+omni hermes       # Hermes Agent
+omni pi           # Pi
 ```
 
 Under the hood, each coding agent runs as a **harness**: the runtime that
@@ -592,10 +615,15 @@ framework subclassing. The YAML file **is** the agent. You get the entire
 Omnigent platform for free: web UI, persistent sessions, team collaboration,
 deployment infrastructure, and [contextual policies](/docs/policies/overview).
 
+## Create it from the UI
+
+The fastest way to create a custom agent is from the web UI. Start a new
+agent, choose a harness and model, add a prompt, and attach MCP servers from
+the form. Omnigent writes the YAML and registers the agent so you can reuse it.
+
 ## Create it with your coding agent
 
-The recommended way to create a custom agent is to ask your coding agent to
-build it for you in natural language:
+You can also ask your coding agent to build one for you in natural language:
 
 ```
 You: Build me a documentation reviewer agent. It should use Claude as
@@ -738,11 +766,34 @@ executor:
 
 | Harness | Runtime | Best for |
 | --- | --- | --- |
-| `claude` | Claude Code | Claude Code out of the box. Add tools, policies, and prompts to customize. |
-| `codex` | Codex | Codex out of the box. Add tools, policies, and prompts to customize. |
+| `claude-sdk` | Claude Agent SDK | Custom agents powered by Claude models. `claude` is accepted as an alias. |
+| `claude-native` | Claude Code | Native Claude Code sessions, including the terminal-first `omni claude` path. |
+| `codex` | Codex | Headless Codex-backed agents and GPT-model sub-agents. |
+| `codex-native` | Codex | Native Codex sessions, including the terminal-first `omni codex` path. |
+| `openai-agents` | OpenAI Agents SDK | Agents built on the OpenAI Agents SDK. |
+| `cursor` | Cursor Agent SDK | Headless Cursor agents using Cursor's own backend and model IDs. |
+| `cursor-native` | Cursor Agent | Native Cursor sessions. |
 | `pi` | Pi | Headless multi-model worker that runs on any gateway model. Ideal for review, exploration, and read-heavy tasks delegated by a supervisor agent. |
+| `pi-native` | Pi | Native Pi sessions, including the terminal-first `omni pi` path. |
+| `antigravity` | Google Antigravity SDK | Gemini-native Antigravity agents. Aliases include `agy` and `google-antigravity`. |
+| `antigravity-native` | Google Antigravity CLI | Native Antigravity sessions. |
+| `opencode-native` | OpenCode | Native OpenCode sessions. `opencode` is accepted as an alias. |
+| `hermes` | Hermes Agent | Headless Hermes Agent sessions. |
+| `hermes-native` | Hermes Agent | Native Hermes TUI sessions, including `omni hermes`. |
+| `goose` | Goose | Headless Goose sessions through ACP. |
+| `goose-native` | Goose | Native Goose TUI sessions. |
+| `qwen` | Qwen Code | Headless Qwen Code sessions through ACP. |
+| `qwen-native` | Qwen Code | Native Qwen Code sessions. |
+| `kimi` | Kimi Code | Headless Kimi Code sessions. `kimi-code` is accepted as an alias. |
+| `kimi-native` | Kimi Code | Native Kimi Code TUI sessions. |
+| `copilot` | GitHub Copilot SDK | Agents routed through GitHub Copilot. `github-copilot` is accepted as an alias. |
+| `kiro-native` | Kiro CLI | Native Kiro sessions. |
 
-More harness integrations are on the way.
+Native harnesses run a vendor CLI/TUI and mirror it into Omnigent. SDK and
+headless harnesses run as Omnigent-managed agent loops. Across the native fleet,
+Omnigent supports the same session layer features where the underlying runtime
+allows them: resume, fork, compaction, cost tracking, model switching, and web
+approval cards.
 
 ## Swap harnesses
 
@@ -801,10 +852,11 @@ logged-in CLIs, and local servers) so you can confirm them with one tap.
 
 | Type | What it is |
 | --- | --- |
-| **API key** | A first-party provider key (Anthropic, OpenAI, OpenRouter, and more) |
+| **API key** | A first-party provider key (Anthropic, OpenAI, Gemini/Antigravity, OpenRouter, and more) |
 | **Subscription** | A Claude Pro/Max or ChatGPT Plus/Pro plan, via the official `claude` / `codex` CLIs |
 | **Gateway** | Bring your own proxy or local model. Just paste a base URL and key. |
 | **Databricks** | A Databricks workspace profile, routing through the [Foundation Model API](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/) |
+| **Native provider login** | Runtime-owned auth, such as Cursor, Kimi Code, Qwen Code, Goose, OpenCode, Hermes, Kiro, or GitHub Copilot |
 
 ### API key
 
@@ -825,6 +877,24 @@ codex login          # for ChatGPT
 ```
 
 `omni setup` auto-detects an active CLI login and offers it as a one-tap option.
+
+Some harnesses authenticate with their own provider rather than through an
+OpenAI- or Anthropic-compatible endpoint:
+
+| Harness | Authentication |
+| --- | --- |
+| `cursor` / `cursor-native` | `cursor` uses a Cursor API key; `cursor-native` uses the Cursor Agent login. Use Cursor model IDs such as `auto` or `gpt-5`. |
+| `antigravity` / `antigravity-native` | Gemini or Antigravity API key, or Vertex AI credentials. |
+| `copilot` | GitHub token with Copilot access. |
+| `kimi` / `kimi-native` | `kimi login`, or Kimi gateway/provider settings. |
+| `qwen` / `qwen-native` | Qwen Code CLI auth. |
+| `goose` / `goose-native` | Goose provider configuration. |
+| `opencode-native` | OpenCode auth and provider configuration. |
+| `hermes` / `hermes-native` | Hermes CLI auth and configuration. |
+| `kiro-native` | Kiro CLI auth. |
+
+Those harnesses can still run inside Omnigent sessions, but their model IDs and
+auth setup come from the underlying runtime.
 
 ### Gateway
 
@@ -856,13 +926,19 @@ executor:
   model: databricks-claude-sonnet-4-6
   auth:
     type: databricks
-    profile: 
+    profile: <your-profile>
 ```
 
 Model names are prefixed with `databricks-` so Omnigent routes them through your
 workspace automatically. See the
 [Databricks Foundation Model API docs](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/supported-models)
 for the full list of available models.
+
+### Bedrock
+
+AWS Bedrock is supported as a model provider. Configure AWS credentials in your
+environment and select Bedrock-backed model IDs from your Omnigent provider
+configuration.
 
 ---
 
@@ -936,8 +1012,8 @@ Omnigent walks up the directory tree from the agent's working directory, looking
 skills in `.agents/skills/` and `.claude/skills/` at each level, plus your home
 directory for global skills:
 
-- `/.agents/skills/`: available to any agent run from this project
-- `/.claude/skills/`: same, Claude Code convention
+- `<project>/.agents/skills/`: available to any agent run from this project
+- `<project>/.claude/skills/`: same, Claude Code convention
 - `~/.agents/skills/`: available to every agent on your machine
 - `~/.claude/skills/`: same, Claude Code convention
 
@@ -1082,7 +1158,7 @@ Bundled skills in the agent's own `skills/` directory are always available regar
 Tools give your agent capabilities beyond conversation. They are declared under the
 `tools` key in your agent YAML, each identified by a name you choose.
 
-Omnigent supports four tool types: MCP servers, Python functions, sub-agents, and inherited
+Omnigent supports MCP servers, Python functions, sub-agents, and inherited
 tools.
 
 ## MCP servers
@@ -1175,6 +1251,11 @@ tools:
 The JSON Schema under `parameters` is optional. If you omit it, Omnigent
 auto-generates the schema from the function's type annotations and signature.
 
+## Session sharing
+
+Session-aware agents can use `sys_session_share` to share a session with another
+user when the server grants them permission to do so.
+
 ## Sub-agent tools
 
 Declare agents as tools so a supervisor agent can delegate work to them. You can define a
@@ -1221,6 +1302,11 @@ A sub-agent tool can have its own [harness](/docs/build/harnesses), model, tools
 [policies](/docs/policies/overview). The `pass_history` flag controls whether the
 parent's conversation history is forwarded, and `max_sessions` limits concurrent
 invocations.
+
+You can add MCP servers from the custom agent creation flow, and inspect
+session MCP configuration from **Agent Info** in the web UI. YAML stays the
+source of truth for agents checked into a repo; the UI is the faster path for
+session-scoped or newly-authored agents.
 
 ## Tool inheritance
 
@@ -1293,11 +1379,15 @@ Then launch an agent:
 ```
 omni claude                          # Claude Code
 omni codex                           # Codex
+omni cursor                          # Cursor
+omni opencode                        # OpenCode
+omni hermes                          # Hermes Agent
+omni pi                              # Pi
 omni run agent.yaml                  # custom omnigent
 omni run ./my-agent/                 # directory with config.yaml
 ```
 
-`omni claude` and `omni codex` launch an existing coding agent with
+The direct `omni <agent>` commands launch native agent CLIs with
 Omnigent's UI. No YAML needed. See the
 [Coding Agent tutorial](/quickstart/coding-agent).
 
@@ -1328,7 +1418,7 @@ continuous thread. Sessions are the core unit of work in Omnigent, and three pro
 them useful:
 
 - **Agent-independent.** A session belongs to you, not to a specific agent. Switch agents mid-conversation: start with a planner, switch to a coder, bring in a reviewer. The full history carries forward.
-- **Persistent.** Every session has a conversation ID and lives beyond the current terminal window. Close your laptop, come back tomorrow, resume where you left off: `omni resume `
+- **Persistent.** Every session has a conversation ID and lives beyond the current terminal window. Close your laptop, come back tomorrow, resume where you left off: `omni resume <conversation_id>`
 - **Shared.** Any omnigent can read the history of other sessions you have access to. When you spin up a new task, the agent already has context from previous work.
 
 ## When to use the terminal
@@ -1358,6 +1448,34 @@ between them. Switch agents mid-conversation directly from the UI.
 
 Sessions persist across browser refreshes and server restarts.
 
+### Projects
+
+Organize related sessions into a named `Project`. Each project is a collapsible
+folder in the sidebar, keeping a long session list grouped around the work you're
+doing. Projects don't nest, and a session belongs to at most one. Drag sessions
+between projects when you reorganize work.
+
+You can set or change a session's project from two places:
+
+- When you start a session: in the new-chat composer, use the `Project` chip
+  to search your projects, or type a name to create one on the spot.
+- For an existing session: open the session's `⋯` menu and choose `Move session`, then search your projects, create a new one, or remove the session from its project.
+
+Each project folder has a shortcut to start a new session already filed there.
+Removing a session from a project moves the session back to `Chats` section, and deleting a project archives all its sessions.
+
+### Settings and run modes
+
+Use Settings to manage local preferences and per-harness run-mode memory. If
+you switch a native harness into a mode such as planning or agentic execution,
+Omnigent remembers that choice for the next session on the same harness.
+
+### Custom agents and MCP
+
+Create a custom agent from the UI instead of hand-writing YAML. The creation
+flow covers the prompt, harness, model, and MCP servers. For existing agents,
+open **Agent Info** to review and manage MCP servers attached to that session.
+
 ### Browser-first mode
 
 If you prefer to work in the browser rather than the terminal UI, start the server and host
@@ -1368,7 +1486,7 @@ omni server start   # start the local server + web UI in the background
 omni host           # (separate terminal) register this machine as a host
 ```
 
-After that, open **http://localhost:6767** and drive the agent entirely from
+After that, open `http://localhost:6767` and drive the agent entirely from
 the browser; no further terminal interaction needed.
 
 ## File editor
@@ -1411,6 +1529,14 @@ Where this matters most:
 Paste images, screenshots, diagrams, and mockups directly into the conversation. The
 Omnigent sees them alongside your text. Useful for frontend work where describing a layout
 issue in words is slower than screenshotting it.
+
+Click an image to open it in the lightbox when you need a closer look.
+
+## Shortcuts
+
+Use the shortcuts overlay to see the current keyboard shortcuts. Pinned-session
+hotkeys let you jump back to important sessions without hunting through the
+sidebar.
 
 ## Collaboration
 
@@ -1464,7 +1590,9 @@ and leave inline comments.
 # Desktop App
 
 The Omnigent desktop app gives you the full
-[web UI](/docs/interact/web-ui) in a native window, plus OS-level features
+[web UI](/docs/interact/web-ui) in a native window. It can connect to a
+server you started yourself, or manage a local server and runner for you. It
+also adds OS-level features
 a browser can't provide: notifications when your agent needs attention, a dock badge
 showing how many sessions are waiting, and multiple independent windows.
 
@@ -1483,8 +1611,9 @@ same as the web UI.
 
 ## Prerequisites
 
-- **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.
-- **At least one runner.** A [runner](/docs/deploy/overview) is the process that actually executes your agent. If you have [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host) set up, you'll be able to launch them from the app. Otherwise, register your machine by running `omni host` from your CLI.
+- **Omnigent installed.** For local work, the app can start and manage the local server and runner.
+- **A server URL, for remote work.** Point the app at a deployed server when you want shared team access or cloud sandbox hosts.
+- **At least one host for remote servers.** Register your machine with `omni host <server-url>`, or configure [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host).
 
 ## Install
 
@@ -1526,7 +1655,7 @@ same as the web UI.
 ![Omnigent desktop app first-launch setup screen](/images/docs/desktop-start.png)
 
 1. **Launch the app.** On first launch, you'll see a setup screen.
-2. **Enter your server URL.** `http://localhost:6767` if running locally, or your deployed server URL (e.g. `https://your-app.onrender.com`).
+2. **Use local Omnigent or enter a server URL.** Use the local option for single-machine work, or paste your deployed server URL (e.g. `https://your-app.onrender.com`).
 3. **Start working.** The app connects and shows the same UI you'd see in a browser.
 
 ![Omnigent desktop app showing an agent conversation alongside the session workspace](/images/docs/desktop-conversation.png)
@@ -1607,7 +1736,7 @@ In the [web UI](/docs/interact/web-ui), click **Clone Session**.
 From the terminal:
 
 ```
-omni run --fork 
+omni run --fork <session_id>
 ```
 
 Forking copies the full conversation history up to the fork point. From there, each session
@@ -1669,7 +1798,7 @@ docker compose up -d    # restart to apply
 
 The only outside step is creating an app with your provider (e.g. Google Cloud Console, or
 GitHub > Settings > Developer settings) to get the client ID and secret. Set its
-callback URL to `https:///auth/callback`.
+callback URL to `https://<your-domain>/auth/callback`.
 
 ## Header-based auth
 
@@ -1712,7 +1841,7 @@ If you started with built-in accounts and want to switch to OIDC, one command br
 everyone across so they keep their sessions and admin rights:
 
 ```
-omni debug migrate-accounts-to-oidc  --domain yourcompany.com --commit
+omni debug migrate-accounts-to-oidc <database-url> --domain yourcompany.com --commit
 ```
 
 Without `--commit` the command is a dry run that reports what would change
@@ -1734,7 +1863,7 @@ options for hosting the runner.
 Omnigent has three components: the server, the runner, and the UI.
 
   
-  ![Omnigent architecture: CLI agents and custom agents run through a runner (on your machine, Modal, or Daytona), then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API.](/images/architecture.svg)
+  ![Omnigent architecture: CLI agents and custom agents run through a runner on your machine or a managed sandbox host, then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API.](/images/architecture.svg)
 
 ## Server
 
@@ -1779,12 +1908,14 @@ No admin password is auto-generated. On first boot the server reports
 
 Deploy the server to a cloud platform with managed infrastructure.
 
-| Platform                | Database           | Deploy method                                                                              |
-| ----------------------- | ------------------ | ------------------------------------------------------------------------------------------ |
-| **Railway**             | Managed Postgres   | Import repo from GitHub                                                                    |
-| **Render**              | Managed Postgres   | [One-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent) |
-| **Fly.io**              | SQLite on volume   | `fly deploy` from CLI                                                                      |
-| **Hugging Face Spaces** | SQLite (ephemeral) | Docker Space                                                                               |
+| Platform                | Database / storage             | Deploy method                                                                              |
+| ----------------------- | ------------------------------ | ------------------------------------------------------------------------------------------ |
+| **Railway**             | Managed Postgres               | Import repo from GitHub                                                                    |
+| **Render**              | Managed Postgres               | [One-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent) |
+| **Fly.io**              | SQLite on volume               | `fly deploy` from CLI                                                                      |
+| **Hugging Face Spaces** | SQLite (ephemeral)             | Docker Space                                                                               |
+| **Cloudflare**          | D1 + R2                        | Cloudflare Containers                                                                      |
+| **Databricks Apps**     | Lakebase Postgres + UC Volumes | Databricks Asset Bundle                                                                    |
 
 **Railway & Render.** On Railway, import the repo and it handles the
 rest, including managed Postgres; Render provisions the app and managed Postgres over
@@ -1809,6 +1940,10 @@ The server idles around ~275 MB RSS. Fly's default 256 MB machine will OOM-loop.
 persistent storage is a paid add-on. Data resets on
 every restart. Use this for demos only.
 
+**Cloudflare and Databricks Apps.** These use the same server/runner split with
+platform-specific storage. Cloudflare runs the server on Containers with D1 and
+R2. Databricks Apps uses Lakebase Postgres and Unity Catalog Volumes.
+
 ## Runner
 
 The **runner** is the per-session process that executes Omnigent loops. It
@@ -1819,8 +1954,8 @@ machine you register with the server.
 By default, the host is your laptop. Register it with:
 
 ```
-omni login   // if auth is enabled
-omni host 
+omni login <server-url>  // if auth is enabled
+omni host <server-url>
 ```
 
 This is why your local Claude Code or Codex installation "just works." Runners
@@ -1835,9 +1970,10 @@ However, moving the runner to a
 - **Isolation.** Each Omnigent runs in its own container, separate from your local environment.
 - **Scalability.** Run many Omnigents in parallel without taxing your machine.
 
-We currently support the [Modal](https://modal.com) and [Daytona](https://www.daytona.io)
-platforms, with more integrations on the way. Check out the
-[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host) page for more detailed setup instructions.
+Omnigent supports several managed sandbox providers, including Modal, Daytona,
+E2B, CoreWeave Sandbox, Kubernetes runner pods, NVIDIA OpenShell, and Boxlite.
+Check out the [Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)
+page for setup details and provider caveats.
 
 ## UI
 
@@ -1870,6 +2006,7 @@ artifacts. Two backends are supported. Both use the same schema and migrations.
 Postgres is the production choice. It is required if you run more than one server instance.
 
 - Auto-provisioned on [Render and Railway](/docs/deploy/overview#cloud-platforms).
+- Lakebase Postgres backs the Databricks Apps deploy path.
 - For other platforms, bring your own. The fastest option is [Neon](https://pg.new): create a database and set `DATABASE_URL`.
 - Any `postgres://` or `postgresql://` URL works. The entrypoint normalizes it automatically.
 
@@ -1886,6 +2023,12 @@ DATABASE_URL=sqlite:////data/artifacts/chat.db
 ```
 
 The `.db` file lives on the platform's persistent disk or volume.
+
+## Cloudflare D1
+
+The Cloudflare deploy path uses D1 with Cloudflare Containers and R2 for
+artifacts. Use that path when you want a scale-to-zero Cloudflare-hosted
+server rather than a conventional VM or Postgres-backed container deploy.
 
 ## Comparison
 
@@ -1929,25 +2072,35 @@ That's [Omnibox](/docs/omnibox).
 | **Environment**  | Local files              | Isolated, reproducible |
 | **Best for**     | Interactive work         | Long-running tasks     |
 
-Omnigent currently supports [Modal](https://modal.com) and [Daytona](https://www.daytona.io)
-as hosting platforms for cloud sandbox hosts, with more on the way.
+Omnigent supports multiple cloud sandbox host providers. Some work from the CLI
+and as server-managed hosts; others are server-managed only.
 
-|                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) |
-| ------------------------ | ---------------------------------- | --------------------------------- |
-| **Runner lifetime**      | 24 hours (platform cap)            | No cap (runs until deleted)       |
-| **Credential injection** | Named secrets (Modal secret store) | Env vars copied from server       |
-| **Free-tier egress**     | Full egress                        | Allowlisted domains only          |
+| Provider                          | CLI `sandbox create` | Server-managed | Notes                                                                               |
+| --------------------------------- | -------------------- | -------------- | ----------------------------------------------------------------------------------- |
+| [Modal](https://modal.com)        | Yes                  | Yes            | 24-hour platform cap. Credentials come from Modal secrets.                          |
+| [Daytona](https://www.daytona.io) | Yes                  | Yes            | Free-tier egress is allowlisted; use the relay if needed.                           |
+| E2B                               | Yes                  | Yes            | 24-hour cap and a pre-built E2B template.                                           |
+| CoreWeave Sandbox                 | Yes                  | Yes            | Uses the `cwsandbox` provider.                                                      |
+| Kubernetes                        | No                   | Yes            | Starts an on-demand runner pod from the server.                                     |
+| NVIDIA OpenShell                  | Yes                  | No             | Self-hosted gRPC gateway.                                                           |
+| Boxlite                           | No                   | Yes            | Server-managed micro-VMs only; no CLI bootstrap yet.                                |
 
 ## Server-managed (recommended)
 
 Configure your server once and anyone on the team can launch a cloud sandbox host from the
-web UI.
+web UI. The examples below show Modal and Daytona; other providers follow the
+same shape with their own provider block and environment variables.
 
 ### 1. Install
 
 ```
 pip install 'omnigent[modal]'       # for Modal
 pip install 'omnigent[daytona]'     # for Daytona
+pip install 'omnigent[e2b]'         # for E2B
+pip install 'omnigent[cwsandbox]'   # for CoreWeave Sandbox
+pip install 'omnigent[openshell]'   # for NVIDIA OpenShell
+pip install 'omnigent[kubernetes]'  # for Kubernetes runner pods
+pip install 'omnigent[boxlite]'     # for Boxlite managed hosts
 ```
 
 ### 2. Set provider credentials
@@ -2016,13 +2169,16 @@ the same on both hosting platforms.
 ## CLI
 
 Create and manage cloud sandbox hosts from the command line. The commands are the same across
-hosting platforms, just switch the `--provider` flag.
+CLI-capable hosting platforms, just switch the `--provider` flag.
 
 ```
-omni sandbox create --provider modal          # or --provider daytona
+omni sandbox create --provider modal          # or daytona / e2b / cwsandbox / openshell
 omni sandbox connect --provider modal \
-  --sandbox-id  --server 
+  --sandbox-id <id> --server <url>
 ```
+
+Boxlite and Kubernetes are server-managed only. Configure them on the server
+and launch sessions with a managed host from the web UI or API.
 
 ---
 
@@ -2392,11 +2548,16 @@ os_env:
 On Linux, Omnigent uses bubblewrap (`bwrap`). On macOS, it uses Seatbelt
 (`sandbox-exec`). Omit `type` to auto-detect.
 
-| Platform | Backend           | Mechanism                        |
-| -------- | ----------------- | -------------------------------- |
-| Linux    | `linux_bwrap`     | Bubblewrap namespaces + seccomp  |
-| macOS    | `darwin_seatbelt` | `sandbox-exec` SBPL profiles     |
-| Other    | `none`            | No sandboxing (explicit opt-out) |
+| Platform | Backend             | Mechanism                                    |
+| -------- | ------------------- | -------------------------------------------- |
+| Linux    | `linux_bwrap`       | Bubblewrap namespaces + seccomp              |
+| macOS    | `darwin_seatbelt`   | `sandbox-exec` SBPL profiles                 |
+| Windows  | `windows_jobobject` | Process-tree containment and resource limits |
+| Other    | `none`              | No sandboxing (explicit opt-out)             |
+
+On Windows, Omnigent supports the core server, web UI, and SDK-based harness
+flows, but the Job Object backend does not provide filesystem or network
+isolation. Use Linux or macOS when you need hardened Omnibox boundaries.
 
 ## What you can restrict
 
@@ -2449,6 +2610,10 @@ sandbox:
 
 The sandbox strips environment variables to a minimal default set (`PATH`, `HOME`, `USER`,
 `LANG`, etc.). Secrets only reach the agent if you name them explicitly.
+
+For HTTP(S) egress, Omnibox can also inject bearer or basic auth at the proxy
+for allow-listed hosts. The agent sees a placeholder, while the real credential
+stays outside the sandbox and is swapped in only for matching requests.
 
 ## Sharing a policy
 
@@ -2506,6 +2671,7 @@ policy. It does **not** apply to:
 
 - **MCP servers.** The runner spawns MCP subprocesses outside the sandbox. Constrain an MCP server at its own configuration site.
 - **The Omnigent supervisor process.** It runs the model loop and dispatches tools. Only the commands it issues through OS tools run inside the sandbox.
+- **Windows Job Object containment.** It contains the process tree, but does not isolate files or network traffic.
 
 If you ask for a sandbox (explicitly or via the default) and it can't be provided,
 Omnigent errors instead of quietly running unsandboxed. The only opt-out is
@@ -2548,7 +2714,7 @@ Omnibox is Omnigent's secure OS-level sandbox. It wraps any agent (Claude Code, 
 or a custom agent) so you can run it unattended, in YOLO mode, without handing it your real
 credentials, file system, or network.
 
-The kernel enforces the rules, not the agent or its prompt: `bubblewrap` and
+The OS enforces the rules, not the agent or its prompt: `bubblewrap` and
 `seccomp` on Linux, Seatbelt (`sandbox-exec`) on macOS. Every process
 the agent spawns inherits the boundary, so a prompt-injected or misbehaving agent can't
 opt out.
@@ -2585,6 +2751,9 @@ agent can use a credential but never read it.
 
 Only the placeholder appears in logs, transcripts, and model context. A leaked token is
 worthless, since it only works through the proxy, against allowed hosts.
+
+Windows support is core-only: server, web UI, and SDK-based harness flows run
+natively, but hardened filesystem and network sandboxing are not available.
 
 ## Related
 

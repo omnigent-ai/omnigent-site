@@ -25,8 +25,9 @@ export default function Page() {
             <h3>What is Omnigent?</h3>
             <p className="muted">
               A framework that runs AI agents behind one interface. It wraps
-              Claude Code, Codex, and Pi, plus custom agents you write in YAML,
-              and gives each one a server, a UI, sandboxing, and policies.
+              Claude Code, Codex, Cursor, OpenCode, Hermes, Pi, and custom
+              agents you write in YAML, and gives each one a server, a UI,
+              sandboxing, and policies.
             </p>
 
             <h3>Which models can I use?</h3>
@@ -45,9 +46,10 @@ export default function Page() {
 
             <h3>Is it safe to let an agent run on my machine?</h3>
             <p className="muted">
-              Every command runs in an OS-level sandbox (bwrap on Linux,
-              seatbelt on macOS), and policies can pause, block, or cap what an
-              agent does.
+              Omnibox can run OS tools in a hardened sandbox on Linux and macOS,
+              and policies can pause, block, or cap what an agent does. Windows
+              supports core execution but not filesystem or network sandbox
+              isolation.
             </p>
 
             <h3>Do I need Databricks?</h3>

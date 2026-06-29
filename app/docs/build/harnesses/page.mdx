@@ -18,11 +18,34 @@ executor:
 
 | Harness | Runtime | Best for |
 | --- | --- | --- |
-| `claude` | Claude Code | Claude Code out of the box. Add tools, policies, and prompts to customize. |
-| `codex` | Codex | Codex out of the box. Add tools, policies, and prompts to customize. |
+| `claude-sdk` | Claude Agent SDK | Custom agents powered by Claude models. `claude` is accepted as an alias. |
+| `claude-native` | Claude Code | Native Claude Code sessions, including the terminal-first `omni claude` path. |
+| `codex` | Codex | Headless Codex-backed agents and GPT-model sub-agents. |
+| `codex-native` | Codex | Native Codex sessions, including the terminal-first `omni codex` path. |
+| `openai-agents` | OpenAI Agents SDK | Agents built on the OpenAI Agents SDK. |
+| `cursor` | Cursor Agent SDK | Headless Cursor agents using Cursor's own backend and model IDs. |
+| `cursor-native` | Cursor Agent | Native Cursor sessions. |
 | `pi` | Pi | Headless multi-model worker that runs on any gateway model. Ideal for review, exploration, and read-heavy tasks delegated by a supervisor agent. |
+| `pi-native` | Pi | Native Pi sessions, including the terminal-first `omni pi` path. |
+| `antigravity` | Google Antigravity SDK | Gemini-native Antigravity agents. Aliases include `agy` and `google-antigravity`. |
+| `antigravity-native` | Google Antigravity CLI | Native Antigravity sessions. |
+| `opencode-native` | OpenCode | Native OpenCode sessions. `opencode` is accepted as an alias. |
+| `hermes` | Hermes Agent | Headless Hermes Agent sessions. |
+| `hermes-native` | Hermes Agent | Native Hermes TUI sessions, including `omni hermes`. |
+| `goose` | Goose | Headless Goose sessions through ACP. |
+| `goose-native` | Goose | Native Goose TUI sessions. |
+| `qwen` | Qwen Code | Headless Qwen Code sessions through ACP. |
+| `qwen-native` | Qwen Code | Native Qwen Code sessions. |
+| `kimi` | Kimi Code | Headless Kimi Code sessions. `kimi-code` is accepted as an alias. |
+| `kimi-native` | Kimi Code | Native Kimi Code TUI sessions. |
+| `copilot` | GitHub Copilot SDK | Agents routed through GitHub Copilot. `github-copilot` is accepted as an alias. |
+| `kiro-native` | Kiro CLI | Native Kiro sessions. |
 
-More harness integrations are on the way.
+Native harnesses run a vendor CLI/TUI and mirror it into Omnigent. SDK and
+headless harnesses run as Omnigent-managed agent loops. Across the native fleet,
+Omnigent supports the same session layer features where the underlying runtime
+allows them: resume, fork, compaction, cost tracking, model switching, and web
+approval cards.
 
 ## Swap harnesses
 

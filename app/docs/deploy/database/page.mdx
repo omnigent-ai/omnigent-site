@@ -19,6 +19,7 @@ artifacts. Two backends are supported. Both use the same schema and migrations.
 Postgres is the production choice. It is required if you run more than one server instance.
 
 - Auto-provisioned on [Render and Railway](/docs/deploy/overview#cloud-platforms).
+- Lakebase Postgres backs the Databricks Apps deploy path.
 - For other platforms, bring your own. The fastest option is [Neon](https://pg.new): create a database and set `DATABASE_URL`.
 - Any `postgres://` or `postgresql://` URL works. The entrypoint normalizes it automatically.
 
@@ -35,6 +36,12 @@ DATABASE_URL=sqlite:////data/artifacts/chat.db
 ```
 
 The `.db` file lives on the platform's persistent disk or volume.
+
+## Cloudflare D1
+
+The Cloudflare deploy path uses D1 with Cloudflare Containers and R2 for
+artifacts. Use that path when you want a scale-to-zero Cloudflare-hosted
+server rather than a conventional VM or Postgres-backed container deploy.
 
 ## Comparison
 

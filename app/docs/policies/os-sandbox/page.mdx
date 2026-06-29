@@ -52,11 +52,16 @@ os_env:
 On Linux, Omnigent uses bubblewrap (`bwrap`). On macOS, it uses Seatbelt
 (`sandbox-exec`). Omit `type` to auto-detect.
 
-| Platform | Backend           | Mechanism                        |
-| -------- | ----------------- | -------------------------------- |
-| Linux    | `linux_bwrap`     | Bubblewrap namespaces + seccomp  |
-| macOS    | `darwin_seatbelt` | `sandbox-exec` SBPL profiles     |
-| Other    | `none`            | No sandboxing (explicit opt-out) |
+| Platform | Backend             | Mechanism                                    |
+| -------- | ------------------- | -------------------------------------------- |
+| Linux    | `linux_bwrap`       | Bubblewrap namespaces + seccomp              |
+| macOS    | `darwin_seatbelt`   | `sandbox-exec` SBPL profiles                 |
+| Windows  | `windows_jobobject` | Process-tree containment and resource limits |
+| Other    | `none`              | No sandboxing (explicit opt-out)             |
+
+On Windows, Omnigent supports the core server, web UI, and SDK-based harness
+flows, but the Job Object backend does not provide filesystem or network
+isolation. Use Linux or macOS when you need hardened Omnibox boundaries.
 
 ## What you can restrict
 
@@ -109,6 +114,10 @@ sandbox:
 
 The sandbox strips environment variables to a minimal default set (`PATH`, `HOME`, `USER`,
 `LANG`, etc.). Secrets only reach the agent if you name them explicitly.
+
+For HTTP(S) egress, Omnibox can also inject bearer or basic auth at the proxy
+for allow-listed hosts. The agent sees a placeholder, while the real credential
+stays outside the sandbox and is swapped in only for matching requests.
 
 ## Sharing a policy
 
@@ -166,6 +175,7 @@ policy. It does **not** apply to:
 
 - **MCP servers.** The runner spawns MCP subprocesses outside the sandbox. Constrain an MCP server at its own configuration site.
 - **The Omnigent supervisor process.** It runs the model loop and dispatches tools. Only the commands it issues through OS tools run inside the sandbox.
+- **Windows Job Object containment.** It contains the process tree, but does not isolate files or network traffic.
 
 If you ask for a sandbox (explicitly or via the default) and it can't be provided,
 Omnigent errors instead of quietly running unsandboxed. The only opt-out is

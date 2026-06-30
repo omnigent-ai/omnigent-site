@@ -47,8 +47,8 @@ All builtin policies live under `omnigent.policies.builtins`.
 ### Usage examples
 
 The instinct when AI spend grows is to lower caps and add friction. The more
-effective approach is smarter defaults, automatic routing, and visibility — so
-usage can keep growing without cost growing at the same rate.
+effective approach is visibility and soft guardrails — so usage can keep
+growing without cost growing at the same rate.
 
 #### Make spend visible before you restrict it
 
@@ -76,51 +76,15 @@ policies:
 This gives you real data on where spend is concentrated before you decide
 where to add guardrails.
 
-#### Route trivial tasks away from expensive models
-
-Most agent turns are not complex reasoning — they're file reads, short
-summaries, grep results, or status checks. `deny_trivial_to_expensive_model`
-automatically reclassifies those turns and steers them toward cheaper models,
-with no user involvement.
-
-```yaml
-policies:
-  smart_routing:
-    type: function
-    handler: omnigent.policies.builtins.cost.deny_trivial_to_expensive_model
-```
-
-Pair this with `cost_budget` and a moderate per-session cap. The routing
-policy catches the bulk of wasteful spend; the budget policy backstops the
-rare runaway session.
-
-```yaml
-policies:
-  smart_routing:
-    type: function
-    handler: omnigent.policies.builtins.cost.deny_trivial_to_expensive_model
-  session_budget:
-    type: function
-    handler: omnigent.policies.builtins.cost.cost_budget
-    factory_params:
-      ask_thresholds_usd: [2.0]
-      max_cost_usd: 10.0
-```
-
 #### Server-wide team policy
 
 A reasonable starting point for a team deployment: per-user daily visibility
-at $25, a soft check at $50, and routing to catch trivial tasks. Engineers
-can still use any model for complex work — they just get asked before spending
-more than $25 in a day.
+at $25, a soft check at $50. Engineers can still use any model for any
+task — they just get asked before spending more than $25 in a day.
 
 ```yaml
 # server config (~/.omnigent/config.yaml or /data/config.yaml)
 policies:
-  trivial_routing:
-    type: function
-    function:
-      path: omnigent.policies.builtins.cost.deny_trivial_to_expensive_model
   daily_budget:
     type: function
     function:
@@ -130,6 +94,5 @@ policies:
         max_cost_usd: 100.0
 ```
 
-With routing in place, most engineers will never see the spend prompts. The
-daily cap exists to surface sessions that are genuinely off the rails, not to
-penalize productive use.
+The daily cap exists to surface sessions that are genuinely off the rails,
+not to penalize productive use.

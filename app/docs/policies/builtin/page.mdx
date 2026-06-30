@@ -43,3 +43,56 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `cost_budget`                     | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit. | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models` |
 | `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                  | None                                                                |
 | `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                      | `max_cost_usd` (required), `ask_thresholds_usd`                     |
+
+### Usage examples
+
+The instinct when AI spend grows is to lower caps and add friction. The more
+effective approach is visibility and soft guardrails — so usage can keep
+growing without cost growing at the same rate.
+
+#### Make spend visible before you restrict it
+
+Start with soft thresholds only. Engineers see when they're running an
+expensive session and can decide whether the task warrants it. No one gets
+blocked; habits change on their own.
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  session_visibility:
+    type: function
+    handler: omnigent.policies.builtins.cost.cost_budget
+    factory_params:
+      ask_thresholds_usd: [1.0, 5.0]
+      max_cost_usd: 999.0 # effectively no hard cap
+  daily_visibility:
+    type: function
+    handler: omnigent.policies.builtins.cost.user_daily_cost_budget
+    factory_params:
+      ask_thresholds_usd: [10.0, 25.0]
+      max_cost_usd: 999.0
+```
+
+This gives you real data on where spend is concentrated before you decide
+where to add guardrails.
+
+#### Server-wide team policy
+
+A reasonable starting point for a team deployment: per-user daily visibility
+at $25, a soft check at $50. Engineers can still use any model for any
+task — they just get asked before spending more than $25 in a day.
+
+```yaml
+# server config (~/.omnigent/config.yaml or /data/config.yaml)
+policies:
+  daily_budget:
+    type: function
+    function:
+      path: omnigent.policies.builtins.cost.user_daily_cost_budget
+      arguments:
+        ask_thresholds_usd: [25.0, 50.0]
+        max_cost_usd: 100.0
+```
+
+The daily cap exists to surface sessions that are genuinely off the rails,
+not to penalize productive use.

@@ -64,7 +64,7 @@ policies:
     handler: omnigent.policies.builtins.cost.cost_budget
     factory_params:
       ask_thresholds_usd: [1.0, 5.0]
-      max_cost_usd: 999.0          # effectively no hard cap
+      max_cost_usd: 999.0 # effectively no hard cap
   daily_visibility:
     type: function
     handler: omnigent.policies.builtins.cost.user_daily_cost_budget

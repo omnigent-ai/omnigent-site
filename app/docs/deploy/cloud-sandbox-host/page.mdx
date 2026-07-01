@@ -63,8 +63,8 @@ export DAYTONA_API_KEY=dtn_…
 
 ### 3. Configure the cloud sandbox host
 
-Add a `sandbox` section to your server config YAML (`~/.omnigent/config.yaml` on a laptop,
-`/data/config.yaml` in Docker). This is the same file where you define
+Add a `sandbox` section to your server config YAML and pass it with `-c`.
+This is the same file where you define
 [server-wide policies](/docs/policies/overview).
 
 Only `provider` and `server_url` are required. The provider block is optional.

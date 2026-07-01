@@ -582,7 +582,7 @@ function scanCodeFile(absPath, model, opts, findings) {
   // String-literal href/src attributes: href="…" / src='…' / href={"…"} / src={'…'}
   const ATTR_RE =
     /\b(href|src)\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*"([^"]*)"\s*\}|\{\s*'([^']*)'\s*\})/g;
-  for (let m; (m = ATTR_RE.exec(text));) {
+  for (let m; (m = ATTR_RE.exec(text)); ) {
     const value = m[2] ?? m[3] ?? m[4] ?? m[5];
     const offset = m.index + m[0].lastIndexOf(value);
     capturedRanges.push([offset, offset + value.length]);
@@ -592,7 +592,7 @@ function scanCodeFile(absPath, model, opts, findings) {
 
   // Dynamic href={expr} / src={expr} — not a string literal, so unverifiable.
   const DYN_RE = /\b(href|src)\s*=\s*\{(?!\s*["'])/g;
-  for (let m; (m = DYN_RE.exec(text));) {
+  for (let m; (m = DYN_RE.exec(text)); ) {
     pushFinding(findings, file, lineStarts, m.index, `${m[1]}={…}`, {
       category: "dynamic-skipped",
       status: "skipped",
@@ -603,7 +603,7 @@ function scanCodeFile(absPath, model, opts, findings) {
   // External URL string literals not already captured as href/src — covers the
   // shared link constants (e.g. `export const GITHUB_URL = "https://…"`).
   const URL_LIT_RE = /(["'])((?:https?:)?\/\/[^"']+)\1/g;
-  for (let m; (m = URL_LIT_RE.exec(text));) {
+  for (let m; (m = URL_LIT_RE.exec(text)); ) {
     const offset = m.index + 1;
     if (capturedRanges.some(([s, e]) => offset >= s && offset < e)) continue;
     const res = validateTarget(m[2], null, model);
@@ -612,7 +612,7 @@ function scanCodeFile(absPath, model, opts, findings) {
 }
 
 function collectBareUrls(source, lineStarts, file, model, findings) {
-  for (let m; (m = BARE_URL_RE.exec(source));) {
+  for (let m; (m = BARE_URL_RE.exec(source)); ) {
     const raw = m[0].replace(TRAILING_PUNCT_RE, "");
     if (raw.length === 0) continue;
     const res = validateTarget(raw, null, model);

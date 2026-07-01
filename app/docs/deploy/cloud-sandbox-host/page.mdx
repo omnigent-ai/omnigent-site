@@ -82,7 +82,18 @@ sandbox:
 
 `secrets` injects [Modal secrets](https://modal.com/docs/guide/secrets)
 (API keys, gateway URLs) into the cloud sandbox host. Values stay in Modal's secret
-store.
+store. The host forwards the standard harness credential vars — and their
+`OMNIGENT_`-prefixed aliases — to its runners:
+
+```
+modal secret create omnigent-llm \
+  OMNIGENT_ANTHROPIC_API_KEY=sk-ant-… OPENAI_API_KEY=sk-…
+```
+
+Prefer `OMNIGENT_ANTHROPIC_API_KEY` for Claude Code API-key auth: Omnigent resolves it
+into Claude Code's `apiKeyHelper`, so a raw `ANTHROPIC_API_KEY` never appears in the
+Claude CLI process. See [Models & Credentials](/docs/build/models) for the full alias
+rules.
 
 **Daytona:**
 

@@ -29,11 +29,18 @@ into sub-tasks and delegates each one to a sub-agent running on its own harness
 and git worktree. One agent implements, a different agent reviews. Each
 implementer opens its own PR. Polly never merges. The human decides.
 
-| Sub-agent     | Harness         | Role                             |
-| ------------- | --------------- | -------------------------------- |
-| `claude_code` | `claude-native` | Claude Code                      |
-| `codex`       | `codex-native`  | Codex                            |
-| `pi`          | `pi`            | Pi (headless, any gateway model) |
+| Sub-agent     | Harness           | Role                                     |
+| ------------- | ----------------- | ---------------------------------------- |
+| `claude_code` | `claude-native`   | Claude Code                              |
+| `codex`       | `codex-native`    | Codex                                    |
+| `opencode`    | `opencode-native` | OpenCode                                 |
+| `pi`          | `pi`              | Pi (headless, any gateway model)         |
+
+`claude_code`, `codex`, and `opencode` are the primary implementers, each
+running as a real CLI coding harness in its own terminal you can open in the
+UI's Subagents panel to watch or take over. `pi` runs headless as the
+review/explore specialist. Four distinct vendors means any implementer's diff
+can be reviewed by a different one — the cross-vendor check is the point.
 
 ## Skills
 

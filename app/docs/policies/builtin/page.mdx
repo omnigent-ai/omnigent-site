@@ -104,42 +104,11 @@ not to penalize productive use.
 
 ### `detect_task_switch`
 
-This policy helps control cost by keeping an agent's working context lean. The goal isn't fewer
-tokens _used_ but fewer tokens _wasted_ — a session whose context is filled with
-stale tool results from a previous, unrelated task degrades quality without adding
-value. The recommended response is to start a fresh session for the new task
-rather than compacting or summarizing in place.
-
-The policy fires on user `request` events. It keeps a rolling window of recent
-user messages in session state and, once enough prior messages have accumulated
-(`min_turns`), asks the server-level LLM to classify the latest message. On a
-`TASK_SWITCH` verdict it returns `action` with a message recommending a fresh
-session; on a `CONTINUATION` verdict it records the message and lets the request
-through.
-
-- **`min_turns`** — number of prior user messages to accumulate before the
-  classifier starts firing. Set to `0` to classify from the very first message.
-- **`history_window`** — maximum number of recent user messages kept as prior
-  context for the classifier; older messages are dropped as the window slides.
-- **`action`** — response when a task switch is detected. `"ASK"` (default)
-  escalates to the user; `"DENY"` blocks the request outright. `"ASK"` is the
-  default because a false-positive task-switch classification is more harmful
-  than a false negative.
-- **`classification_prompt`** — system prompt for the classifier. It must instruct
-  the model to return `{"verdict": "CONTINUATION"|"TASK_SWITCH"}`; the output
-  schema is enforced via structured output regardless.
-
-This policy requires the server to have an `llm:` config block. When no LLM client
-is available it abstains (fail-open), letting the request through.
-
-<div className="note">
-
-**Note:** `action: "DENY"` is a context-hygiene nudge, not a security control.
-User messages are interpolated into the classifier prompt, so a determined user
-can craft a message that forces a `CONTINUATION` verdict. Use this policy for
-context hygiene, not access control.
-
-</div>
+Use this policy to keep sessions focused and avoid wasting tokens on stale context.
+On each user `request`, it classifies whether the latest message continues the
+current task or starts a new one, and returns the configured `action` when it
+detects a task switch. It requires a server `llm:` config and fails open if no
+LLM client is available.
 
 ```yaml
 # Omnigent config (policies block)
@@ -148,5 +117,7 @@ policies:
     type: function
     handler: omnigent.policies.builtins.context.detect_task_switch
     factory_params:
+      min_turns: 2
+      history_window: 4
       action: ASK
 ```

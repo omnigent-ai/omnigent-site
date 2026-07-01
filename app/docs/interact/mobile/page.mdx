@@ -48,7 +48,9 @@ from your phone:
 **From anywhere.** Deploy the Omnigent server beyond localhost. See
 [the deployment docs](/docs/deploy/overview) for options.
 
-No app to install. Just open the URL in your mobile browser.
+No app to install. Just open the URL in your mobile browser. An optional
+[native Android shell](#native-android-app) is also in development for people who
+want OS notifications and a home-screen app icon.
 
 ## What works on mobile
 
@@ -56,3 +58,41 @@ The full Web UI, touch-optimized: chat, monitor sub-agents, browse files, view c
 and leave inline comments.
 
 {/* TODO: Add screenshot of mobile file browser view */}
+
+## Native Android app
+
+Alongside the mobile browser, Omnigent has a native Android shell — a thin
+`WebView` wrapper that loads your server's web UI instead of shipping a separate
+copy of it. Like the [desktop app](/docs/interact/desktop) and the iOS shell, it
+adds OS-level features a browser tab can't provide while running the exact same
+UI. It's an optional client: the mobile browser remains the zero-install way in.
+
+On first launch you enter your **Server URL** (e.g.
+`https://omnigent.example.com`); the app loads that server's web UI directly and
+remembers recently used servers.
+
+### What the shell adds over the browser
+
+- **OS notifications** when a session needs your attention, with tap routing
+  back into the relevant session.
+- **A best-effort app badge.** Android has no universal numeric badge, so the
+  shell relies on the notification dot as the guaranteed surface (some launchers
+  also show a count).
+- **File downloads**, including `blob:` and `data:` exports that the mobile
+  browser and iOS shell can't save.
+- **File uploads** from `<input type="file">`, and **microphone capture** for
+  voice input (the app requests microphone access for your pinned server only).
+- **Edge-to-edge inset handling** so content lays out correctly around the
+  status bar and navigation area.
+
+The sidebar, server switcher, and chat/terminal bar are rendered by the web UI
+in-page (the same as a browser tab), so they work without any native chrome.
+
+### Status and install
+
+The Android shell is early: it builds cleanly but has not yet been verified on a
+device, and it isn't published to an app store. Because Google Play restricts
+"WebView of a website" apps, the initial distribution channel is a direct
+APK / F-Droid rather than the Play Store.
+
+{/* TODO(doc-drafter): add screenshots of the Android connect screen and running app once the shell is exercised on a device. */}

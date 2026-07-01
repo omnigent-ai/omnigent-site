@@ -45,6 +45,21 @@ The setup wizard walks you through adding a credential, setting a default, or re
 It also auto-detects credentials already on your machine (API keys in environment variables,
 logged-in CLIs, and local servers) so you can confirm them with one tap.
 
+### `OMNIGENT_`-prefixed environment variables
+
+Every provider credential variable Omnigent reads also accepts an `OMNIGENT_`-prefixed
+alias. Set `OMNIGENT_ANTHROPIC_API_KEY` instead of `ANTHROPIC_API_KEY`,
+`OMNIGENT_OPENAI_API_KEY` instead of `OPENAI_API_KEY` (and likewise for
+`OPENAI_BASE_URL`, `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, and the other harness
+credential vars). The prefixed form is detected, forwarded to runners, and resolved from
+`env:` and `$VAR` references just like the canonical name. When both are set, the
+unprefixed (canonical) name takes precedence.
+
+The alias lets you scope a key to Omnigent without exposing the provider's standard
+variable to every other process in the environment. This matters most for **Claude Code
+with an API key**: prefer `OMNIGENT_ANTHROPIC_API_KEY`, which Omnigent resolves into Claude
+Code's `apiKeyHelper` so a raw `ANTHROPIC_API_KEY` never appears in the Claude CLI process.
+
 ## Credential types
 
 | Type | What it is |

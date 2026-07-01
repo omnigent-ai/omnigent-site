@@ -104,7 +104,7 @@ not to penalize productive use.
 
 ### `detect_task_switch`
 
-This policy helps agents keep their working context lean. The goal isn't fewer
+This policy helps control cost by keeping an agent's working context lean. The goal isn't fewer
 tokens _used_ but fewer tokens _wasted_ — a session whose context is filled with
 stale tool results from a previous, unrelated task degrades quality without adding
 value. The recommended response is to start a fresh session for the new task

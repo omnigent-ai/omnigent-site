@@ -29,12 +29,53 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `deny_pii_in_llm_request`    | Scans outgoing messages for PII and blocks or flags them.                                                                                                                                                  | `pii_types` (string[]), `action` (`"DENY"` or `"ASK"`)                                                                                                                                            |
 | `enforce_sandbox`            | Forces a sandbox configuration on agent start.                                                                                                                                                             | `sandbox_type`, `allow_network`, `write_paths`, `read_paths`                                                                                                                                      |
 | `gcalendar_policy`           | Controls Google Calendar. Defaults to read-only.                                                                                                                                                           | None                                                                                                                                                                                              |
-| `gdrive_policy`              | Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to agent-created files by default.                                                                                               | `read_all`, `allow_create`, `write_files`                                                                                                                                                         |
+| `gdrive_policy`              | Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to agent-created files by default. Optionally enforces Bell-LaPadula "no write-down": once the session reads a confidential file, its writes are confined to that set.                                                                                               | `read_all`, `allow_create`, `write_files`, `read_files`, `comment_files`, `confidential_files` (string[]), `write_down_action` (`"DENY"` or `"ASK"`, default `"DENY"`)                              |
 | `github_policy`              | Controls GitHub read/write access across MCP tools and shell commands.                                                                                                                                     | `read_all`, `write_repos`, `write_branches`                                                                                                                                                       |
 | `gmail_policy`               | Controls Gmail. Defaults to read + draft, no send.                                                                                                                                                         | `allow_read`, `allow_send`, `allow_drafts`                                                                                                                                                        |
 | `max_tool_calls_per_session` | DENYs after a total tool-call limit is reached.                                                                                                                                                            | `limit` (int, default `100`)                                                                                                                                                                      |
 | `prompt_policy`              | Evaluate policy decisions using an LLM. The policy sends the event context to a model and interprets the response as ALLOW/ASK/DENY. Useful for nuanced decisions that can't be expressed as static rules. | `prompt` (system instructions for the evaluator model)                                                                                                                                            |
 | `risk_score_policy`          | Accumulate a risk score from tool calls and sensitive data labels. Escalates guarded tools to ASK or DENY once the score exceeds a threshold.                                                              | `threshold` (int), `tool_points` (object mapping tool names to points), `sensitive_labels` (object mapping labels to points), `guarded_tools` (string[]), `escalate_action` (`"ASK"` or `"DENY"`) |
+
+### Confine confidential Google Drive data (`gdrive_policy`)
+
+`gdrive_policy` can layer Bell-LaPadula's classic "no write-down" rule on top
+of its access controls. You declare a set of confidential documents up front
+with `confidential_files` (file IDs or Google URLs). The rule engages only once
+the session **reads** one of those files: from then on, its writes are confined
+to the confidential set. A write to — or creation of — any other file would move
+confidential data into a less-protected place, so it is blocked.
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  confidential_containment:
+    type: function
+    handler: omnigent.policies.builtins.google.gdrive_policy
+    factory_params:
+      # The confidential compartment: file IDs or Google URLs.
+      confidential_files:
+        - "1ConfidentialStrategyDocID"
+      # Allow creating new files, so a create can be shown being gated as a
+      # write-down rather than blocked outright by the base access rules.
+      allow_create: true
+      # DENY (hard block) or ASK (require human approval) on a write-down.
+      write_down_action: DENY
+```
+
+Key behaviors:
+
+- **Off by default.** With no `confidential_files`, the base access policy is
+  unchanged.
+- **Read-triggered.** Containment engages only after the session reads a
+  confidential file _by id_. The rule does not restrict reads.
+- **Not a write grant.** Listing a file in `confidential_files` does not make it
+  writable — writing to a confidential file still requires it to be created this
+  session or listed in `write_files`.
+- **`write_down_action`.** `"DENY"` (default) hard-blocks a write-down; `"ASK"`
+  routes it to human approval. It is ignored when `confidential_files` is empty.
+
+Because the confidential set is declared explicitly rather than inferred from a
+per-document classification label, the rule works on any Google Drive tenant.
 
 ## Cost Control
 

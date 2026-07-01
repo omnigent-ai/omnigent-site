@@ -81,10 +81,6 @@ const SECTIONS = [
             href: "/docs/policies/builtin#cost-control",
             label: "Cost Control",
           },
-          {
-            href: "/docs/policies/builtin#context-management",
-            label: "Context Management",
-          },
         ],
       },
       {

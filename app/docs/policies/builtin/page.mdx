@@ -11,8 +11,8 @@ export const metadata = pageMeta(
 
 # Builtin Policies
 
-Omnigent ships with policies for common guardrails, organized into three categories:
-**Safety**, **Cost Control**, and **Context Management**. Your Omnigent can apply any of
+Omnigent ships with policies for common guardrails, organized into two categories:
+**Safety** and **Cost Control**. Your Omnigent can apply any of
 these by name when you [ask it to add a policy](/docs/policies/overview#adding-a-policy), or you
 can reference them in YAML by their full path in the `handler` field.
 
@@ -41,6 +41,7 @@ All builtin policies live under `omnigent.policies.builtins`.
 | Policy                            | What it does                                                                                                 | Parameters                                                                |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
 | `cost_budget`                     | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit. | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`       |
+| `detect_task_switch`              | Uses the server-level LLM to detect when a user starts a new unrelated task and nudges starting a fresh session. | `min_turns` (int), `history_window` (int), `action` (`"ASK"` or `"DENY"`, default `"ASK"`), `classification_prompt` (string) |
 | `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                  | `expensive_models` (string[], required), `classification_prompt` (string) |
 | `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                      | `max_cost_usd` (required), `ask_thresholds_usd`                           |
 
@@ -101,17 +102,13 @@ omnigent server -c config.yaml
 The daily cap exists to surface sessions that are genuinely off the rails,
 not to penalize productive use.
 
-## Context Management
+### `detect_task_switch`
 
-These policies help agents keep their working context lean. The goal isn't fewer
+This policy helps agents keep their working context lean. The goal isn't fewer
 tokens _used_ but fewer tokens _wasted_ — a session whose context is filled with
 stale tool results from a previous, unrelated task degrades quality without adding
 value. The recommended response is to start a fresh session for the new task
 rather than compacting or summarizing in place.
-
-| Policy               | What it does                                                                                                                                                                                                                                | Parameters                                                                                                                                        |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `detect_task_switch` | Uses the server-level LLM to classify each user message as a continuation of the current task or the start of a new, unrelated one. On a detected task switch, recommends starting a fresh session rather than accumulating stale context. | `min_turns` (int), `history_window` (int), `action` (`"ASK"` or `"DENY"`, default `"ASK"`), `classification_prompt` (string) |
 
 The policy fires on user `request` events. It keeps a rolling window of recent
 user messages in session state and, once enough prior messages have accumulated

@@ -1,0 +1,79 @@
+name: PR Autoformat
+
+# Safety net so PR branches never fail the fmt:check gate on pure style drift.
+# Runs `bun run fmt` (prettier --write) on the PR branch and, if anything
+# changed, commits the result back to the branch. This mainly serves the
+# doc-sync bot, which writes `.mdx` docs (e.g. re-aligned Markdown tables) it
+# doesn't run through Prettier — but it fixes any contributor's style drift too.
+#
+# The push uses a short-lived omnigent-ci App token, not the workflow's own
+# GITHUB_TOKEN: pushes made with GITHUB_TOKEN do NOT re-trigger workflows, so
+# ci.yml would never re-run on the fix. The App token (same App as
+# sync-openapi-to-site.yml, installed on this repo with contents +
+# pull-requests write) does re-trigger it, turning the failing check green.
+#
+# Scoped to same-repo PRs: fork PRs can't read the App secret and the workflow
+# can't push to a fork, so they skip cleanly and the fork author sees the
+# fmt:check failure and runs `bun run fmt` themselves.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# One autoformat run per PR; a newer push supersedes an in-flight run. The
+# commit this workflow pushes re-triggers it once more, but that follow-up run
+# finds nothing to format and exits — so it converges, no loop.
+concurrency:
+  group: pr-autoformat-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  autoformat:
+    name: Autoformat
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Same-repo PRs only, and skip cleanly where the App isn't configured
+    # (e.g. downstream forks of this repo) rather than failing the token step.
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      vars.OMNIGENT_BOT_APP_ID != ''
+    steps:
+      - name: Mint App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.OMNIGENT_BOT_APP_ID }}
+          private-key: ${{ secrets.OMNIGENT_BOT_APP_KEY }}
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v5
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Format
+        run: bun run fmt
+
+      - name: Commit and push if changed
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Already formatted — nothing to do."
+            exit 0
+          fi
+          git config user.name "omnigent-ci[bot]"
+          git config user.email "294685417+omnigent-ci[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "style: apply prettier (bun run fmt)"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"

@@ -38,12 +38,12 @@ All builtin policies live under `omnigent.policies.builtins`.
 
 ## Cost Control
 
-| Policy                            | What it does                                                                                                 | Parameters                                                                |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| `cost_budget`                     | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit. | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`       |
+| Policy                            | What it does                                                                                                     | Parameters                                                                                                                   |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `cost_budget`                     | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit.     | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                                          |
 | `detect_task_switch`              | Uses the server-level LLM to detect when a user starts a new unrelated task and nudges starting a fresh session. | `min_turns` (int), `history_window` (int), `action` (`"ASK"` or `"DENY"`, default `"ASK"`), `classification_prompt` (string) |
-| `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                  | `expensive_models` (string[], required), `classification_prompt` (string) |
-| `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                      | `max_cost_usd` (required), `ask_thresholds_usd`                           |
+| `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                      | `expensive_models` (string[], required), `classification_prompt` (string)                                                    |
+| `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                          | `max_cost_usd` (required), `ask_thresholds_usd`                                                                              |
 
 ### Usage examples
 

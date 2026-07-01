@@ -38,11 +38,12 @@ All builtin policies live under `omnigent.policies.builtins`.
 
 ## Cost Control
 
-| Policy                            | What it does                                                                                                 | Parameters                                                                |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| `cost_budget`                     | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit. | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`       |
-| `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                  | `expensive_models` (string[], required), `classification_prompt` (string) |
-| `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                      | `max_cost_usd` (required), `ask_thresholds_usd`                           |
+| Policy                            | What it does                                                                                                     | Parameters                                                                                                                   |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `cost_budget`                     | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit.     | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                                          |
+| `detect_task_switch`              | Uses the server-level LLM to detect when a user starts a new unrelated task and nudges starting a fresh session. | `min_turns` (int), `history_window` (int), `action` (`"ASK"` or `"DENY"`, default `"ASK"`), `classification_prompt` (string) |
+| `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                      | `expensive_models` (string[], required), `classification_prompt` (string)                                                    |
+| `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                          | `max_cost_usd` (required), `ask_thresholds_usd`                                                                              |
 
 ### Usage examples
 
@@ -100,3 +101,23 @@ omnigent server -c config.yaml
 
 The daily cap exists to surface sessions that are genuinely off the rails,
 not to penalize productive use.
+
+### `detect_task_switch`
+
+Use this policy to keep sessions focused and avoid wasting tokens on stale context.
+On each user `request`, it classifies whether the latest message continues the
+current task or starts a new one, and returns the configured `action` when it
+detects a task switch. It requires a server `llm:` config and fails open if no
+LLM client is available.
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  keep_context_lean:
+    type: function
+    handler: omnigent.policies.builtins.context.detect_task_switch
+    factory_params:
+      min_turns: 2
+      history_window: 4
+      action: ASK
+```

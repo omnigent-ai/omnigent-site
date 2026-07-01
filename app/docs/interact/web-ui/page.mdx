@@ -51,6 +51,28 @@ omni host           # (separate terminal) register this machine as a host
 After that, open **http://localhost:6767** and drive the agent entirely from
 the browser; no further terminal interaction needed.
 
+## Install as an app
+
+The web UI is an installable [Progressive Web App (PWA)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps).
+From a supported browser you can install Omnigent to your desktop or phone home
+screen and launch it in its own standalone window—no separate download or app
+store required. Look for your browser's install control (for example, the
+install icon in Chrome's address bar, or **Add to Home Screen** on mobile).
+
+Installing is optional: the web UI works exactly the same in a normal browser
+tab. Because Omnigent is a cloud app with no offline mode, the installed app
+still requires a connection to your server—it does not cache pages for offline
+use.
+
+### Update prompt
+
+When a new build of the web UI is deployed, the installed (or open) app detects
+it in the background and shows a **A new version of Omnigent is available**
+banner with a **Reload** button. Click **Reload** to switch to the new version,
+or **Dismiss** to keep working on the current one. Your in-flight session is
+never swapped out from under you—the update only applies when you choose to
+reload.
+
 ## File editor
 
 A full markdown editor with syntax highlighting for browsing and editing every file your

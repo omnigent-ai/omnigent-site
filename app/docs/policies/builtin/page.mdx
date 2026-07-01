@@ -11,8 +11,8 @@ export const metadata = pageMeta(
 
 # Builtin Policies
 
-Omnigent ships with policies for common guardrails, organized into two categories:
-**Safety** and **Cost Control**. Your Omnigent can apply any of
+Omnigent ships with policies for common guardrails, organized into three categories:
+**Safety**, **Cost Control**, and **Context Management**. Your Omnigent can apply any of
 these by name when you [ask it to add a policy](/docs/policies/overview#adding-a-policy), or you
 can reference them in YAML by their full path in the `handler` field.
 
@@ -100,3 +100,56 @@ omnigent server -c config.yaml
 
 The daily cap exists to surface sessions that are genuinely off the rails,
 not to penalize productive use.
+
+## Context Management
+
+These policies help agents keep their working context lean. The goal isn't fewer
+tokens _used_ but fewer tokens _wasted_ — a session whose context is filled with
+stale tool results from a previous, unrelated task degrades quality without adding
+value. The recommended response is to start a fresh session for the new task
+rather than compacting or summarizing in place.
+
+| Policy               | What it does                                                                                                                                                                                                                                | Parameters                                                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `detect_task_switch` | Uses the server-level LLM to classify each user message as a continuation of the current task or the start of a new, unrelated one. On a detected task switch, recommends starting a fresh session rather than accumulating stale context. | `min_turns` (int), `history_window` (int), `action` (`"ASK"` or `"DENY"`, default `"ASK"`), `classification_prompt` (string) |
+
+The policy fires on user `request` events. It keeps a rolling window of recent
+user messages in session state and, once enough prior messages have accumulated
+(`min_turns`), asks the server-level LLM to classify the latest message. On a
+`TASK_SWITCH` verdict it returns `action` with a message recommending a fresh
+session; on a `CONTINUATION` verdict it records the message and lets the request
+through.
+
+- **`min_turns`** — number of prior user messages to accumulate before the
+  classifier starts firing. Set to `0` to classify from the very first message.
+- **`history_window`** — maximum number of recent user messages kept as prior
+  context for the classifier; older messages are dropped as the window slides.
+- **`action`** — response when a task switch is detected. `"ASK"` (default)
+  escalates to the user; `"DENY"` blocks the request outright. `"ASK"` is the
+  default because a false-positive task-switch classification is more harmful
+  than a false negative.
+- **`classification_prompt`** — system prompt for the classifier. It must instruct
+  the model to return `{"verdict": "CONTINUATION"|"TASK_SWITCH"}`; the output
+  schema is enforced via structured output regardless.
+
+This policy requires the server to have an `llm:` config block. When no LLM client
+is available it abstains (fail-open), letting the request through.
+
+<div className="note">
+
+**Note:** `action: "DENY"` is a context-hygiene nudge, not a security control.
+User messages are interpolated into the classifier prompt, so a determined user
+can craft a message that forces a `CONTINUATION` verdict. Use this policy for
+context hygiene, not access control.
+
+</div>
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  keep_context_lean:
+    type: function
+    handler: omnigent.policies.builtins.context.detect_task_switch
+    factory_params:
+      action: ASK
+```

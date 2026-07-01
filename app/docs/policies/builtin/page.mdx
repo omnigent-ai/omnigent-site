@@ -32,6 +32,7 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `gdrive_policy`              | Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to agent-created files by default.                                                                                               | `read_all`, `allow_create`, `write_files`                                                                                                                                                         |
 | `github_policy`              | Controls GitHub read/write access across MCP tools and shell commands.                                                                                                                                     | `read_all`, `write_repos`, `write_branches`                                                                                                                                                       |
 | `gmail_policy`               | Controls Gmail. Defaults to read + draft, no send.                                                                                                                                                         | `allow_read`, `allow_send`, `allow_drafts`                                                                                                                                                        |
+| `intent_gate`                | Records the user's first message as the session's authoritative intent, then gates every subsequent tool call against it using the server-level LLM. Denies tool calls that can't plausibly serve the original task. Requires a server `llm:` config; fails open when no LLM client is available.                                        | None                                                                                                                                                                                              |
 | `max_tool_calls_per_session` | DENYs after a total tool-call limit is reached.                                                                                                                                                            | `limit` (int, default `100`)                                                                                                                                                                      |
 | `prompt_policy`              | Evaluate policy decisions using an LLM. The policy sends the event context to a model and interprets the response as ALLOW/ASK/DENY. Useful for nuanced decisions that can't be expressed as static rules. | `prompt` (system instructions for the evaluator model)                                                                                                                                            |
 | `risk_score_policy`          | Accumulate a risk score from tool calls and sensitive data labels. Escalates guarded tools to ASK or DENY once the score exceeds a threshold.                                                              | `threshold` (int), `tool_points` (object mapping tool names to points), `sensitive_labels` (object mapping labels to points), `guarded_tools` (string[]), `escalate_action` (`"ASK"` or `"DENY"`) |
@@ -121,3 +122,39 @@ policies:
       history_window: 4
       action: ASK
 ```
+
+### `intent_gate`
+
+Use this policy to keep an agent scoped to the task it was originally asked to
+do. It works in two phases:
+
+1. **Intent capture** — the first user `request` in the session is recorded in
+   `session_state` as the authoritative intent. It is immutable once set;
+   later messages don't change it.
+2. **Intent check** — every `tool_call` is classified against the stored intent
+   using the server-level LLM. Tool calls that have no plausible connection to
+   the original task are denied before they run, with a reason that quotes the
+   original request.
+
+Verdicts (`ON_TASK` / `OFF_TASK`) are cached in `session_state`, keyed by a hash
+of the intent, tool name, and serialized arguments, so identical tool calls pay
+for only one classifier round-trip. The policy requires a server `llm:` config
+and fails open (abstains) when no LLM client is available. It takes no required
+parameters.
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  intent_gate:
+    type: function
+    function:
+      path: omnigent.policies.builtins.routing.intent_gate
+```
+
+<div className="note">
+
+**Best-effort, not a guarantee.** Intent checking is an LLM-based classifier —
+a sophisticated adversary can craft inputs that convince it a call is on-task.
+Combine it with other policies for defence-in-depth.
+
+</div>

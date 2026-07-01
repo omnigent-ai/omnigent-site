@@ -72,9 +72,8 @@ Start the server with that file:
 omnigent server -c config.yaml
 ```
 
-The `-c` flag is short for `--config`. Without it, local servers look for
-`~/.omnigent/config.yaml`, and Docker deployments look for `/data/config.yaml`.
-This makes your custom policies discoverable alongside the builtins. See
+The `-c` flag is short for `--config`. This makes your custom policies
+discoverable alongside the builtins. See
 [Custom Policies](/docs/policies/custom) for how to write and register them.
 
 ### Three levels
@@ -141,8 +140,8 @@ Policies without parameters use just `handler`. Configurable policies add
 
 ### Server-wide level: server config
 
-Server-wide policies apply to every session on your deployed server. Add them to your server
-config YAML (`~/.omnigent/config.yaml` on a laptop, `/data/config.yaml` in Docker):
+Server-wide policies apply to every session on your deployed server. Add them
+to a config file and pass it with `-c` (`--config` is the long form):
 
 ```
 policies:
@@ -162,10 +161,12 @@ policies:
         max_cost_usd: 50.0
 ```
 
+```
+omnigent server -c config.yaml
+```
+
 Server-wide policies use the `function: {path, arguments}` format (not
-`handler` / `factory_params`). Pass an explicit server config with
-`omnigent server -c config.yaml` (`--config` is the long form), or place it at
-the default server config path. Restart the server after editing.
+`handler` / `factory_params`). Restart the server after editing.
 
 Server-wide policies can also be managed at runtime via the REST API:
 

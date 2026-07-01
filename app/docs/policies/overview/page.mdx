@@ -141,8 +141,8 @@ Policies without parameters use just `handler`. Configurable policies add
 
 ### Server-wide level: server config
 
-Server-wide policies apply to every session on your deployed server. Add them to your server
-config YAML (`~/.omnigent/config.yaml` on a laptop, `/data/config.yaml` in Docker):
+Server-wide policies apply to every session on your deployed server. Add them
+to a config file and pass it with `-c` (`--config` is the long form):
 
 ```
 policies:
@@ -162,10 +162,12 @@ policies:
         max_cost_usd: 50.0
 ```
 
+```
+omnigent server -c config.yaml
+```
+
 Server-wide policies use the `function: {path, arguments}` format (not
-`handler` / `factory_params`). Pass an explicit server config with
-`omnigent server -c config.yaml` (`--config` is the long form), or place it at
-the default server config path. Restart the server after editing.
+`handler` / `factory_params`). Restart the server after editing.
 
 Server-wide policies can also be managed at runtime via the REST API:
 

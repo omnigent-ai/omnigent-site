@@ -83,7 +83,7 @@ at $25, a soft check at $50. Engineers can still use any model for any
 task — they just get asked before spending more than $25 in a day.
 
 ```yaml
-# server config (~/.omnigent/config.yaml or /data/config.yaml)
+# config.yaml
 policies:
   daily_budget:
     type: function
@@ -92,6 +92,10 @@ policies:
       arguments:
         ask_thresholds_usd: [25.0, 50.0]
         max_cost_usd: 100.0
+```
+
+```
+omnigent server -c config.yaml
 ```
 
 The daily cap exists to surface sessions that are genuinely off the rails,

@@ -1,0 +1,41 @@
+---
+description: Before opening a PR, run `bun run fmt` so edited/generated files pass the Prettier CI gate.
+name: prettier-format-rule
+alwaysApply: true
+---
+
+# Prettier Formatting
+
+CI runs `prettier --check .` (the `fmt:check` script) on every PR and blocks
+the build on any style drift. Prettier checks **`.mdx` docs too** — despite an
+outdated comment in `ci.yml`, `.mdx` is not in `.prettierignore`, and Markdown
+tables in particular are re-aligned by Prettier. Editing a table cell without
+re-padding the column will fail the gate.
+
+This bites automated doc edits especially: an agent that rewrites a table cell
+but leaves the old column padding, or reflows a paragraph, produces a file that
+`fmt:check` rejects.
+
+## Before Creating Any PR
+
+1. **Always** run the formatter over the whole repo first:
+
+   ```bash
+   bun run fmt   # prettier --write .
+   ```
+
+2. Stage the formatted result along with your other changes.
+3. Optionally verify it is clean (this is exactly what CI runs):
+
+   ```bash
+   bun run fmt:check   # prettier --check .
+   ```
+
+## Rules
+
+- **Never open a PR without running `bun run fmt` first.**
+- Treat `.mdx` like any other formatted file — it is gated. Do not hand-align
+  Markdown tables; let Prettier do it.
+- A committed pre-commit hook at [`.githooks/pre-commit`](../../.githooks/pre-commit)
+  can run this automatically (activate once with `bun run setup-hooks`), but the
+  hook is a safety net, not a replacement for running `fmt` before the PR.

@@ -1,6 +1,8 @@
 export const GITHUB_URL = "https://github.com/omnigent-ai/omnigent";
 export const DISCORD_URL = "https://discord.gg/omnigent";
-// Rewritten to the .dmg on Vercel Blob storage in next.config.mjs.
-export const MACOS_DOWNLOAD_URL = "/download/mac/v0.1.1";
+// "Latest" alias — redirected to the current .dmg on Vercel Blob storage in
+// next.config.mjs. Always point download UI at this bare path (not a versioned
+// permalink like /download/mac/v0.3.0) so it tracks the latest release.
+export const MACOS_DOWNLOAD_URL = "/download/mac";
 export const DATABRICKS_URL = "https://www.databricks.com";
 export const NEON_URL = "https://neon.tech";

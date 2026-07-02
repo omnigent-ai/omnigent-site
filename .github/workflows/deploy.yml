@@ -1,0 +1,69 @@
+name: Deploy (manual)
+
+# Manual, button-triggered production deploy to Vercel.
+#
+# Vercel's automatic Git deploys for the production branch (main) are turned
+# OFF in vercel.json ({ git.deploymentEnabled.main: false }); preview deploys
+# for PRs/other branches still run automatically. Production ships only when
+# someone clicks "Run workflow" here (Actions tab → Deploy (manual) → Run
+# workflow), so releases are a deliberate step rather than a side effect of
+# merging.
+#
+# Requires three repo secrets (Settings → Secrets and variables → Actions):
+#   VERCEL_TOKEN       — a Vercel access token (Account → Settings → Tokens)
+#   VERCEL_ORG_ID      — from `.vercel/project.json` after `vercel link`
+#   VERCEL_PROJECT_ID  — from `.vercel/project.json` after `vercel link`
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Vercel target environment"
+        type: choice
+        default: production
+        options:
+          - production
+          - preview
+
+# Never run two deploys of the same target at once; let an in-flight deploy
+# finish rather than cancelling it (cancelling mid-deploy can leave a broken
+# alias), so new runs queue instead.
+concurrency:
+  group: deploy-${{ github.ref }}-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # The Vercel CLI drives pull/build/deploy. Pinned to a major to avoid
+      # surprise breakage from CLI releases.
+      - name: Install Vercel CLI
+        run: bun add -g vercel@latest
+
+      # Pull the project's Vercel settings + env vars for the chosen target so
+      # the local build matches what Vercel would produce.
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      # Build with Vercel's build pipeline (runs the project's `build` script,
+      # i.e. OG manifest → next build → search index) and produce .vercel/output.
+      - name: Build
+        run: vercel build ${{ inputs.environment == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      # Deploy the prebuilt output. --prod promotes to the production domain;
+      # otherwise it publishes a preview URL (printed in the logs).
+      - name: Deploy
+        run: vercel deploy --prebuilt ${{ inputs.environment == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}

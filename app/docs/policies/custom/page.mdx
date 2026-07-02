@@ -50,6 +50,14 @@ def block_domains(blocked_domains: list[str]) -> callable:
     return evaluate
 ```
 
+### Errors fail closed
+
+If your policy function raises an exception, Omnigent **fails closed**: the
+action is denied with a reason like `policy '<name>' failed: <error>`. A
+broken or partial policy never lets an action through. For cases your policy
+doesn't have an opinion on, return `None` rather than relying on an exception —
+`None` passes to the next policy, whereas a raised exception denies the action.
+
 ## 2. Register on the server
 
 To make your policy discoverable by your Omnigent and visible in the UI, do two things:

@@ -10,8 +10,58 @@ export const metadata = pageMeta("MCP & Tools", "Give your agent capabilities be
 Tools give your agent capabilities beyond conversation. They are declared under the
 `tools` key in your agent YAML, each identified by a name you choose.
 
-Omnigent supports four tool types: MCP servers, Python functions, sub-agents, and inherited
-tools.
+Omnigent supports MCP servers, Python functions, sub-agents, inherited tools, and a set of
+built-in tools that ship with Omnigent.
+
+## Built-in tools
+
+Built-in tools ship with Omnigent. Declare them under `tools.builtins`, either by name or as
+a map when the tool takes config:
+
+```
+tools:
+  builtins:
+    - web_search
+```
+
+### `web_search`
+
+Search the web from your agent. How it runs depends on the model and the `search_provider`
+you name:
+
+- **OpenAI models** — passthrough to OpenAI's native server-side web search. No config
+  needed; it uses the LLM API key.
+- **Other models** — you must name a `search_provider`. There is no default and no env-var
+  fallback, so the engine that runs is always explicit. If `search_provider` is unset (or set
+  to an unknown value), `web_search` returns an error listing the options instead of picking
+  an engine for you.
+
+| `search_provider` | Credentials | Notes |
+| --- | --- | --- |
+| `duckduckgo` | None (keyless) | Zero-setup. Best-effort — the public HTML endpoint can rate-limit — so prefer a keyed backend for high-volume search. |
+| `google` | `api_key` + `engine_id` | |
+| `perplexity` | `api_key` | |
+| `nimble` | `api_key` | |
+| `tavily` | `api_key` | |
+
+Use the keyless `duckduckgo` backend to search with no credentials:
+
+```
+tools:
+  builtins:
+    - name: web_search
+      search_provider: duckduckgo
+```
+
+For a sturdier, higher-rate backend, name a keyed provider and pass its credentials:
+
+```
+tools:
+  builtins:
+    - name: web_search
+      search_provider: perplexity
+      api_key: ${PERPLEXITY_API_KEY}
+```
 
 ## MCP servers
 

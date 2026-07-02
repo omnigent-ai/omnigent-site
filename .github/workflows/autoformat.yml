@@ -1,10 +1,11 @@
 name: PR Autoformat
 
-# Safety net so PR branches never fail the fmt:check gate on pure style drift.
-# Runs `bun run fmt` (prettier --write) on the PR branch and, if anything
-# changed, commits the result back to the branch. This mainly serves the
-# doc-sync bot, which writes `.mdx` docs (e.g. re-aligned Markdown tables) it
-# doesn't run through Prettier — but it fixes any contributor's style drift too.
+# On-demand PR hygiene: add the `autoformat` label to a PR to run
+# `bun run fmt` (prettier --write) on its branch and commit the result back.
+# Runs ONLY when the label is added -- never automatically on every push -- so
+# contributors and reviewers opt in explicitly (e.g. to fix a doc-sync bot PR
+# that failed fmt:check). The label is removed after each run, so re-applying
+# it triggers another pass.
 #
 # The push uses a short-lived omnigent-ci App token, not the workflow's own
 # GITHUB_TOKEN: pushes made with GITHUB_TOKEN do NOT re-trigger workflows, so
@@ -13,16 +14,14 @@ name: PR Autoformat
 # pull-requests write) does re-trigger it, turning the failing check green.
 #
 # Scoped to same-repo PRs: fork PRs can't read the App secret and the workflow
-# can't push to a fork, so they skip cleanly and the fork author sees the
-# fmt:check failure and runs `bun run fmt` themselves.
+# can't push to a fork, so they skip cleanly. Labels can only be applied by
+# users with write/triage access, so the trigger is inherently trusted.
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [labeled]
 
-# One autoformat run per PR; a newer push supersedes an in-flight run. The
-# commit this workflow pushes re-triggers it once more, but that follow-up run
-# finds nothing to format and exits — so it converges, no loop.
+# One autoformat run per PR; a newer label event supersedes an in-flight run.
 concurrency:
   group: pr-autoformat-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -35,9 +34,11 @@ jobs:
     name: Autoformat
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Same-repo PRs only, and skip cleanly where the App isn't configured
-    # (e.g. downstream forks of this repo) rather than failing the token step.
+    # Only the `autoformat` label, same-repo PRs only, and skip cleanly where
+    # the App isn't configured (e.g. downstream forks) rather than failing the
+    # token step.
     if: >-
+      github.event.label.name == 'autoformat' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       vars.OMNIGENT_BOT_APP_ID != ''
     steps:
@@ -47,6 +48,17 @@ jobs:
         with:
           app-id: ${{ vars.OMNIGENT_BOT_APP_ID }}
           private-key: ${{ secrets.OMNIGENT_BOT_APP_KEY }}
+
+      # Clear the label up front so the run isn't left in a "labeled" state if
+      # a later step fails, and so re-applying it always triggers a fresh run.
+      # (The resulting `unlabeled` event does not re-trigger this workflow.)
+      - name: Remove the autoformat label
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          gh pr edit "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}" \
+            --remove-label autoformat || true
 
       - name: Checkout PR branch
         uses: actions/checkout@v5
@@ -69,7 +81,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain)" ]; then
-            echo "Already formatted — nothing to do."
+            echo "Already formatted -- nothing to do."
             exit 0
           fi
           git config user.name "omnigent-ci[bot]"

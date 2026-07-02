@@ -1,0 +1,60 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "VS Code",
+  "The Omnigent VS Code extension opens your running local Omnigent server inside the editor, in an editor-beside pane.",
+  {
+    eyebrow: "Interact",
+    path: "/docs/interact/vscode",
+  },
+);
+
+# VS Code
+
+The Omnigent VS Code extension opens your **running local Omnigent server**
+inside the editor, in an editor-beside pane that frames the same
+[web UI](/docs/interact/web-ui) you see at `http://127.0.0.1:6767`. It is a thin
+client of the local server's HTTP API — there is nothing new to run on the
+server side.
+
+This is a deliberately small, iframe-only first release: localhost discovery, the
+editor iframe pane, and the activity-bar / editor-title icons. Sessions, diffs,
+send-selection, and remote/embedded rendering are not yet supported.
+
+## Prerequisites
+
+- **A running local server.** The extension connects to a server on your own
+  machine; start one with `omni server start`. Remote servers are not supported
+  in this build.
+
+## Install
+
+The extension ships as a `.vsix` package (id `omnigent-ai.omnigent-vscode`).
+Install it from the Extensions view → **"Install from VSIX…"** and select the
+`.vsix` file. It requires VS Code `1.74.0` or later.
+
+## How it works
+
+- On activation the extension discovers a locally running server by reading
+  `~/.omnigent/local_server.pid` and probing the server's `/health` endpoint. If
+  you set `omnigent.serverUrl` to a localhost URL, that override is used instead.
+- Open the Omnigent view from the activity bar and click **Open Omnigent**, or run
+  the **Omnigent: Open** command (`omnigent.open`) from the command palette or the
+  editor title bar. Any of these opens an editor-beside pane that frames the
+  running server.
+- The iframe path is used for **local** servers only. A local server is loopback
+  and needs no auth, so no token ever appears in the iframe URL.
+
+## Settings
+
+| Setting | Default | Purpose |
+| --- | --- | --- |
+| `omnigent.serverUrl` | `""` | Manual **localhost** server URL override (e.g. `http://127.0.0.1:6767`). Leave empty to auto-discover a locally running server. Non-localhost URLs are not supported in this build. |
+
+## Known limitation
+
+On macOS, VS Code does not deliver `Cmd+A/C/V` keystrokes into a cross-origin
+iframe inside a webview, so keyboard paste into the framed app's inputs does not
+work there. This is an upstream VS Code limitation, not something the extension
+can fix for the iframe render path. The on-page copy buttons and
+`navigator.clipboard` paths still work.

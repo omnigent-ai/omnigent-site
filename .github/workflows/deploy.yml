@@ -1,0 +1,74 @@
+name: Deploy (manual)
+
+# Manual, button-triggered production deploy to Vercel.
+#
+# Vercel's automatic Git deploys for the production branch (main) are turned
+# OFF in vercel.json ({ git.deploymentEnabled.main: false }); preview deploys
+# for PRs/other branches still run automatically. Production ships only when
+# someone clicks "Run workflow" here (Actions tab → Deploy (manual) → Run
+# workflow), so releases are a deliberate step rather than a side effect of
+# merging.
+#
+# Requires three repo secrets (Settings → Secrets and variables → Actions):
+#   VERCEL_TOKEN       — a Vercel access token (Account → Settings → Tokens)
+#   VERCEL_ORG_ID      — from `.vercel/project.json` after `vercel link`
+#   VERCEL_PROJECT_ID  — from `.vercel/project.json` after `vercel link`
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Vercel target environment"
+        type: choice
+        default: production
+        options:
+          - production
+          - preview
+
+# Never run two deploys of the same target at once; let an in-flight deploy
+# finish rather than cancelling it (cancelling mid-deploy can leave a broken
+# alias), so new runs queue instead.
+concurrency:
+  group: deploy-${{ github.ref }}-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      # Third-party actions are pinned to a full commit SHA (not a moving tag)
+      # so a compromised or retagged release can't silently run in this
+      # token-bearing job. The trailing comment records the human-readable
+      # version the SHA corresponds to.
+      - name: Checkout
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+
+      # The Vercel CLI drives pull/build/deploy. Pinned to an exact version so
+      # a compromised npm release can't land automatically in a job that holds
+      # the deploy token. Bump deliberately.
+      - name: Install Vercel CLI
+        run: bun add -g vercel@54.17.1
+
+      # Pull the project's Vercel settings + env vars for the chosen target so
+      # the local build matches what Vercel would produce.
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      # Build with Vercel's build pipeline (runs the project's `build` script,
+      # i.e. OG manifest → next build → search index) and produce .vercel/output.
+      - name: Build
+        run: vercel build ${{ inputs.environment == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      # Deploy the prebuilt output. --prod promotes to the production domain;
+      # otherwise it publishes a preview URL (printed in the logs).
+      - name: Deploy
+        run: vercel deploy --prebuilt ${{ inputs.environment == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}

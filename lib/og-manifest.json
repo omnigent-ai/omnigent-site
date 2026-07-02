@@ -119,6 +119,11 @@
     "description": "Answers to common questions about Omnigent: what it is, how it works, and how to get started.",
     "eyebrow": "Help"
   },
+  "/privacy": {
+    "title": "Privacy Notice",
+    "description": "How Omnigent collects and processes personal information.",
+    "eyebrow": "Legal"
+  },
   "/quickstart/coding-agent": {
     "title": "Tutorial: Coding Agent",
     "description": "Tutorial: see what Omnigent adds on top of Claude Code or Codex, including a web UI, mobile access, session sharing, and mid-conversation agent switching.",

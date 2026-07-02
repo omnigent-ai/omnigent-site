@@ -20,6 +20,7 @@ export default function Footer() {
         <span className="spacer" />
         <Link href="/quickstart/install">Get Started</Link>
         <Link href="/docs/use/coding-agents">Docs</Link>
+        <Link href="/privacy">Privacy</Link>
         <a href={GITHUB_URL} target="_blank" rel="noreferrer">
           <span
             style={{

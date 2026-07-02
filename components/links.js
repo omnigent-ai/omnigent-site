@@ -5,8 +5,15 @@ export const DISCORD_URL = "https://discord.gg/omnigent";
 // permalink like /download/mac/v0.3.0) so it tracks the latest release.
 export const MACOS_DOWNLOAD_URL = "/download/mac";
 export const DATABRICKS_URL = "https://www.databricks.com";
+// Shared privacy notice (applies to both Free Edition and Databricks).
 export const DATABRICKS_PRIVACY_URL =
   "https://www.databricks.com/legal/privacynotice";
-export const DATABRICKS_AUP_URL =
-  "https://www.databricks.com/legal/acceptable-use-policy";
+// Databricks (paid) legal terms.
+export const DATABRICKS_TERMS_URL = "https://www.databricks.com/legal/mcsa";
+export const DATABRICKS_AUP_URL = "https://www.databricks.com/legal/aup";
+// Databricks Free Edition legal terms.
+export const DATABRICKS_FE_TERMS_URL =
+  "https://www.databricks.com/legal/databricks-free-edition";
+export const DATABRICKS_FE_AUP_URL =
+  "https://www.databricks.com/legal/acceptable-use-policy-fe";
 export const NEON_URL = "https://neon.tech";

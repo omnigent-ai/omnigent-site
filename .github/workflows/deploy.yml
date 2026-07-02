@@ -40,18 +40,23 @@ jobs:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
+      # Third-party actions are pinned to a full commit SHA (not a moving tag)
+      # so a compromised or retagged release can't silently run in this
+      # token-bearing job. The trailing comment records the human-readable
+      # version the SHA corresponds to.
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: latest
 
-      # The Vercel CLI drives pull/build/deploy. Pinned to a major to avoid
-      # surprise breakage from CLI releases.
+      # The Vercel CLI drives pull/build/deploy. Pinned to an exact version so
+      # a compromised npm release can't land automatically in a job that holds
+      # the deploy token. Bump deliberately.
       - name: Install Vercel CLI
-        run: bun add -g vercel@latest
+        run: bun add -g vercel@54.17.1
 
       # Pull the project's Vercel settings + env vars for the chosen target so
       # the local build matches what Vercel would produce.

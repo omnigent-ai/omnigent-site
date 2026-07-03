@@ -1,7 +1,7 @@
 {
   "/docs/build/harnesses": {
     "title": "Harnesses",
-    "description": "The harness is the runtime that executes your agent loop. Swap one line of YAML to switch between Claude, Codex, and other runtimes.",
+    "description": "The harness is the runtime that executes your agent loop. Swap one line of YAML to switch between Claude, Codex, Cursor, and more — or ship your own as a community plugin.",
     "eyebrow": "Build"
   },
   "/docs/build/models": {

@@ -53,11 +53,19 @@ export default function Page() {
                   Terms
                 </a>
                 ,{" "}
-                <a href={DATABRICKS_PRIVACY_URL} target="_blank" rel="noreferrer">
+                <a
+                  href={DATABRICKS_PRIVACY_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Privacy Notice
                 </a>
                 ,{" "}
-                <a href={DATABRICKS_FE_AUP_URL} target="_blank" rel="noreferrer">
+                <a
+                  href={DATABRICKS_FE_AUP_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Acceptable Use Policy
                 </a>
               </li>
@@ -67,7 +75,11 @@ export default function Page() {
                   Terms
                 </a>
                 ,{" "}
-                <a href={DATABRICKS_PRIVACY_URL} target="_blank" rel="noreferrer">
+                <a
+                  href={DATABRICKS_PRIVACY_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Privacy Notice
                 </a>
                 ,{" "}

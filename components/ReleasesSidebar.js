@@ -12,13 +12,19 @@ export default function ReleasesSidebar({ releases }) {
       <h4>Releases</h4>
       <ul>
         <li>
-          <Link href="/releases" className={path === "/releases" ? "active" : ""}>
+          <Link
+            href="/releases"
+            className={path === "/releases" ? "active" : ""}
+          >
             All releases
           </Link>
         </li>
         {releases.map((release) => (
           <li key={release.version}>
-            <Link href={release.href} className={path === release.href ? "active" : ""}>
+            <Link
+              href={release.href}
+              className={path === release.href ? "active" : ""}
+            >
               v{release.version}
             </Link>
           </li>

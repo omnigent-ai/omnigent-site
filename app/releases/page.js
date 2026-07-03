@@ -13,8 +13,8 @@ export default function ReleasesIndex() {
     <>
       <h1>Releases</h1>
       <p>
-        Highlights for each version of Omnigent. For the granular,
-        per-change log see{" "}
+        Highlights for each version of Omnigent. For the granular, per-change
+        log see{" "}
         <a href="https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md">
           CHANGELOG.md
         </a>

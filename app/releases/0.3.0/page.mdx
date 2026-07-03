@@ -6,27 +6,28 @@ _Released 2026-06-27_
 
 ### Major new features
 
-* 🤖 **Seven new agent harnesses:** Hermes (SDK + native TUI), GitHub Copilot (SDK), OpenCode, Goose, Qwen Code, Kiro, and Kimi Code; plus Antigravity promoted to a full SDK + native agy CLI harness ([#1132](https://github.com/omnigent-ai/omnigent/pull/1132), [#330](https://github.com/omnigent-ai/omnigent/pull/330), [#576](https://github.com/omnigent-ai/omnigent/pull/576), [#955](https://github.com/omnigent-ai/omnigent/pull/955), [#1020](https://github.com/omnigent-ai/omnigent/pull/1020), [#899](https://github.com/omnigent-ai/omnigent/pull/899), [#521](https://github.com/omnigent-ai/omnigent/pull/521), [#892](https://github.com/omnigent-ai/omnigent/pull/892))
-* 🪢  **Native-harness parity across the fleet:** compaction, cost/token tracking, resume, true fork with history, in-session model switching, and tool-approval / AskQuestion web cards, for cursor, codex, qwen, pi, hermes, goose, and opencode ([#1303](https://github.com/omnigent-ai/omnigent/pull/1303), [#1331](https://github.com/omnigent-ai/omnigent/pull/1331), [#1271](https://github.com/omnigent-ai/omnigent/pull/1271), [#1260](https://github.com/omnigent-ai/omnigent/pull/1260))
-* 🖥️  **Omnigent Desktop:** now manages the server + runner automatically ([#1437](https://github.com/omnigent-ai/omnigent/pull/1437), [#1445](https://github.com/omnigent-ai/omnigent/pull/1445))
-* 🗂️  **Projects workspace:** group sessions into Projects and drag between them, plus a Settings surface and per-harness run-mode memory ([#1341](https://github.com/omnigent-ai/omnigent/pull/1341), [#1432](https://github.com/omnigent-ai/omnigent/pull/1432), [#1110](https://github.com/omnigent-ai/omnigent/pull/1110))
-* 📦 **More deploy & sandbox targets:** host on Databricks Apps + Lakebase Postgres ([#956](https://github.com/omnigent-ai/omnigent/pull/956)), AWS Bedrock provider ([#901](https://github.com/omnigent-ai/omnigent/pull/901)), on-demand Kubernetes runner Pod sandbox ([#881](https://github.com/omnigent-ai/omnigent/pull/881)), and a boxlite managed host ([#102](https://github.com/omnigent-ai/omnigent/pull/102))
-* 🪟 **Native Windows support** (only core features) ([#1236](https://github.com/omnigent-ai/omnigent/pull/1236))
-* 🕵️ **Custom Agent Creation UI** ([#1098](https://github.com/omnigent-ai/omnigent/pull/1098))
-* 🔌 In-app MCP management from Agent Info ([#1093](https://github.com/omnigent-ai/omnigent/pull/1093)), sys_session_share agent-facing session sharing ([#985](https://github.com/omnigent-ai/omnigent/pull/985)), and web UX polish — shortcuts overlay, pinned-session hotkeys, image lightbox ([#833](https://github.com/omnigent-ai/omnigent/pull/833), [#967](https://github.com/omnigent-ai/omnigent/pull/967), [#1334](https://github.com/omnigent-ai/omnigent/pull/1334))
+- 🤖 **Seven new agent harnesses:** Hermes (SDK + native TUI), GitHub Copilot (SDK), OpenCode, Goose, Qwen Code, Kiro, and Kimi Code; plus Antigravity promoted to a full SDK + native agy CLI harness ([#1132](https://github.com/omnigent-ai/omnigent/pull/1132), [#330](https://github.com/omnigent-ai/omnigent/pull/330), [#576](https://github.com/omnigent-ai/omnigent/pull/576), [#955](https://github.com/omnigent-ai/omnigent/pull/955), [#1020](https://github.com/omnigent-ai/omnigent/pull/1020), [#899](https://github.com/omnigent-ai/omnigent/pull/899), [#521](https://github.com/omnigent-ai/omnigent/pull/521), [#892](https://github.com/omnigent-ai/omnigent/pull/892))
+- 🪢 **Native-harness parity across the fleet:** compaction, cost/token tracking, resume, true fork with history, in-session model switching, and tool-approval / AskQuestion web cards, for cursor, codex, qwen, pi, hermes, goose, and opencode ([#1303](https://github.com/omnigent-ai/omnigent/pull/1303), [#1331](https://github.com/omnigent-ai/omnigent/pull/1331), [#1271](https://github.com/omnigent-ai/omnigent/pull/1271), [#1260](https://github.com/omnigent-ai/omnigent/pull/1260))
+- 🖥️ **Omnigent Desktop:** now manages the server + runner automatically ([#1437](https://github.com/omnigent-ai/omnigent/pull/1437), [#1445](https://github.com/omnigent-ai/omnigent/pull/1445))
+- 🗂️ **Projects workspace:** group sessions into Projects and drag between them, plus a Settings surface and per-harness run-mode memory ([#1341](https://github.com/omnigent-ai/omnigent/pull/1341), [#1432](https://github.com/omnigent-ai/omnigent/pull/1432), [#1110](https://github.com/omnigent-ai/omnigent/pull/1110))
+- 📦 **More deploy & sandbox targets:** host on Databricks Apps + Lakebase Postgres ([#956](https://github.com/omnigent-ai/omnigent/pull/956)), AWS Bedrock provider ([#901](https://github.com/omnigent-ai/omnigent/pull/901)), on-demand Kubernetes runner Pod sandbox ([#881](https://github.com/omnigent-ai/omnigent/pull/881)), and a boxlite managed host ([#102](https://github.com/omnigent-ai/omnigent/pull/102))
+- 🪟 **Native Windows support** (only core features) ([#1236](https://github.com/omnigent-ai/omnigent/pull/1236))
+- 🕵️ **Custom Agent Creation UI** ([#1098](https://github.com/omnigent-ai/omnigent/pull/1098))
+- 🔌 In-app MCP management from Agent Info ([#1093](https://github.com/omnigent-ai/omnigent/pull/1093)), sys_session_share agent-facing session sharing ([#985](https://github.com/omnigent-ai/omnigent/pull/985)), and web UX polish — shortcuts overlay, pinned-session hotkeys, image lightbox ([#833](https://github.com/omnigent-ai/omnigent/pull/833), [#967](https://github.com/omnigent-ai/omnigent/pull/967), [#1334](https://github.com/omnigent-ai/omnigent/pull/1334))
 
 ### Bug fixes & hardening
 
-* Authoritative context-window resolution + compaction-failure surfacing + /context meter; compaction ownership moved runner→harness, ending compact-every-message ([#1121](https://github.com/omnigent-ai/omnigent/pull/1121), [#1169](https://github.com/omnigent-ai/omnigent/pull/1169), [#1082](https://github.com/omnigent-ai/omnigent/pull/1082)).
-* Native harnesses no longer fail silently — codex/antigravity surface real turn/model/auth errors instead of empty/false success ([#1108](https://github.com/omnigent-ai/omnigent/pull/1108), [#1172](https://github.com/omnigent-ai/omnigent/pull/1172)).
-* Policy checks fail closed when turn context is missing ([#1078](https://github.com/omnigent-ai/omnigent/pull/1078)).
-* Parallel sub-agents — serialized continuation turn-starts fix the 204 race ([#996](https://github.com/omnigent-ai/omnigent/pull/996)).
-* claude-native stability — tmux server survives inner-CLI exit ([#849](https://github.com/omnigent-ai/omnigent/pull/849)).
-...and more!
+- Authoritative context-window resolution + compaction-failure surfacing + /context meter; compaction ownership moved runner→harness, ending compact-every-message ([#1121](https://github.com/omnigent-ai/omnigent/pull/1121), [#1169](https://github.com/omnigent-ai/omnigent/pull/1169), [#1082](https://github.com/omnigent-ai/omnigent/pull/1082)).
+- Native harnesses no longer fail silently — codex/antigravity surface real turn/model/auth errors instead of empty/false success ([#1108](https://github.com/omnigent-ai/omnigent/pull/1108), [#1172](https://github.com/omnigent-ai/omnigent/pull/1172)).
+- Policy checks fail closed when turn context is missing ([#1078](https://github.com/omnigent-ai/omnigent/pull/1078)).
+- Parallel sub-agents — serialized continuation turn-starts fix the 204 race ([#996](https://github.com/omnigent-ai/omnigent/pull/996)).
+- claude-native stability — tmux server survives inner-CLI exit ([#849](https://github.com/omnigent-ai/omnigent/pull/849)).
+  ...and more!
 
 Full Changelog: https://github.com/omnigent-ai/omnigent/compare/v0.2.0...v0.3.0rc1
 
 ---
+
 ### :purple_heart: Thanks to our community
 
 This release was shaped by the people who filed issues, opened PRs, and talked through feature requests with us on our Discord! Thank you for building omnigent with us, keep the bug reports, ideas and contributions coming :)

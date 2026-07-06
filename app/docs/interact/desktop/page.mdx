@@ -30,12 +30,23 @@ showing how many sessions are waiting, and multiple independent windows.
 
 ## Why use it over the browser?
 
-- **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing.
+- **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing. A finished turn is held for a short settle window before it notifies, so a step-by-step agent that keeps working notifies **once when it's actually done**, not once per step. On macOS you can also have each notification play a sound (see [Notification sound](#notification-sound)).
 - **Dock badge.** See at a glance how many sessions need your attention, without switching to the app.
 - **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
 
 Everything else (sessions, file editor, inline comments, collaboration) works exactly the
 same as the web UI.
+
+## Notification sound
+
+On macOS, the app can play a sound with each notification. It's **off by default** — a fresh install stays silent until you opt in — and is controlled from the **Notifications** menu:
+
+- **Notifications › Play Notification Sound** toggles the sound on or off.
+- **Notifications › Sound** picks which macOS system sound to play (Glass, Ping, Hero, and the rest of the built-in set). Glass is the default. Choosing a sound previews it immediately — even while the sound is toggled off — so you can hear each one before settling on it.
+
+Your choice persists between launches and applies to the next notification, no relaunch needed. Because macOS mutes a notification's own sound when its app is frontmost, the app plays the chosen sound itself, so the alert is audible whether Omnigent is in the background or in front.
+
+The **Notifications** menu is macOS-only. On Windows and Linux the OS plays its default notification sound, gated by the same on/off switch.
 
 ## Prerequisites
 

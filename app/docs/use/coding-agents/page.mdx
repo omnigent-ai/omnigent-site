@@ -19,7 +19,14 @@ persistent sessions, team collaboration, mobile access, and
 ```
 omni claude    # Claude Code
 omni codex     # Codex
+omni goose     # Goose
+omni hermes    # Hermes
 ```
+
+Each command launches a built-in agent — no registration step required. Goose
+and Hermes boot their own native terminal UI in a pane, wrapped with Omnigent's
+web UI, collaboration, and policy layer. See [Harnesses](/docs/build/harnesses)
+for the full list of coding agents and their harness ids.
 
 Under the hood, each coding agent runs as a **harness**: the runtime that
 executes your agent loop. Omnigent wraps it with a common interface and adds

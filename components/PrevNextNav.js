@@ -76,28 +76,28 @@ const ALL_PAGES = [
   { href: "/docs/interact/mobile", label: "Mobile", section: "Interact" },
   { href: "/docs/interact/desktop", label: "Desktop App", section: "Interact" },
   {
+    href: "/docs/deploy/overview",
+    label: "Shared Server",
+    section: "Deployment",
+  },
+  {
+    href: "/docs/deploy/database",
+    label: "Database",
+    section: "Deployment",
+  },
+  {
+    href: "/docs/deploy/cloud-sandbox-host",
+    label: "Cloud Sandbox Host",
+    section: "Deployment",
+  },
+  {
     href: "/docs/collaborate",
     label: "Pair Programming",
     section: "Collaboration",
   },
   {
-    href: "/docs/deploy/overview",
-    label: "Shared Server",
-    section: "Collaboration",
-  },
-  {
     href: "/docs/collaborate/auth",
     label: "Auth & SSO",
-    section: "Collaboration",
-  },
-  {
-    href: "/docs/deploy/database",
-    label: "Database",
-    section: "Collaboration",
-  },
-  {
-    href: "/docs/deploy/cloud-sandbox-host",
-    label: "Cloud Sandbox Host",
     section: "Collaboration",
   },
   {
@@ -116,9 +116,9 @@ const ALL_PAGES = [
     section: "Contextual Policies",
   },
   {
-    href: "/docs/policies/os-sandbox",
-    label: "Omnibox",
-    section: "Contextual Policies",
+    href: "/docs/omnibox/os-sandbox",
+    label: "OS Sandbox Config",
+    section: "Omnibox",
   },
 ];
 

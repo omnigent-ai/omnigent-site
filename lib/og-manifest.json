@@ -64,6 +64,11 @@
     "description": "The Omnigent web UI starts automatically with every session; open the printed URL in any browser to work with your agent.",
     "eyebrow": "Interact"
   },
+  "/docs/omnibox/os-sandbox": {
+    "title": "Omnibox (OS Sandbox)",
+    "description": "Omnibox is Omnigent's secure OS sandbox: restrict filesystem and network access and hide credentials for unattended, locked-down agents.",
+    "eyebrow": "Policies"
+  },
   "/docs/omnibox": {
     "title": "Omnibox",
     "description": "Omnibox is Omnigent's secure OS-level sandbox that wraps any agent to run it unattended without exposing your credentials, files, or network.",
@@ -77,11 +82,6 @@
   "/docs/policies/custom": {
     "title": "Custom Policies",
     "description": "When built-in policies aren't enough, write your own in Python, register them on the server, and use them like builtins.",
-    "eyebrow": "Policies"
-  },
-  "/docs/policies/os-sandbox": {
-    "title": "Omnibox (OS Sandbox)",
-    "description": "Omnibox is Omnigent's secure OS sandbox: restrict filesystem and network access and hide credentials for unattended, locked-down agents.",
     "eyebrow": "Policies"
   },
   "/docs/policies/overview": {

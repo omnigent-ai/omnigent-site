@@ -1,0 +1,40 @@
+{/* Auto-generated from the GitHub Release for v0.2.0. Edit the GitHub Release, not this file. */}
+
+# v0.2.0
+
+_Released 2026-06-19_
+
+### Install
+
+```bash
+uv tool install --force "omnigent==0.2.0"
+```
+
+0.2.0 turns omnigent into a multi-vendor agent platform with pluggable agent SDKs, a much wider fleet of sandbox & deploy targets, and hardened security underneath.
+
+### Major new features
+
+- **🤖 More agent harnesses & SDKs**
+  - run agents on Google Antigravity (Gemini 3 Pro, also Claude/GPT-OSS) ([#194](https://github.com/omnigent-ai/omnigent/pull/194))
+  - Cursor via a first-party Python SDK _and_ a native `cursor-agent` (ACP) harness with cost tracking ([#203](https://github.com/omnigent-ai/omnigent/pull/203), [#551](https://github.com/omnigent-ai/omnigent/pull/551), [#635](https://github.com/omnigent-ai/omnigent/pull/635))
+  - Native `/compact` for Codex and Pi login folded into `omnigent setup` ([#285](https://github.com/omnigent-ai/omnigent/pull/285), [#207](https://github.com/omnigent-ai/omnigent/pull/207))
+- **📦 More sandboxes & deploy targets**
+  - new sandbox providers NVIDIA OpenShell, E2B, CoreWeave, and Podman ([#227](https://github.com/omnigent-ai/omnigent/pull/227), [#565](https://github.com/omnigent-ai/omnigent/pull/565), [#302](https://github.com/omnigent-ai/omnigent/pull/302), [#401](https://github.com/omnigent-ai/omnigent/pull/401))
+  - deploy to Cloudflare Containers (D1 + R2) with an S3 artifact store, plus a UBI9 image for RHEL/OpenShift ([#651](https://github.com/omnigent-ai/omnigent/pull/651), [#167](https://github.com/omnigent-ai/omnigent/pull/167))
+- **⬆️ `omni upgrade`**: self-upgrade the CLI to the latest release, with an out-of-date notice on startup ([#188](https://github.com/omnigent-ai/omnigent/pull/188)).
+- **🔒 Secretless sandbox egress**: `credential_proxy` injects bearer/basic auth for allow-listed hosts so secrets never enter the sandbox ([#236](https://github.com/omnigent-ai/omnigent/pull/236))
+- **📊 MLflow tracing** end-to-end through `omnigent run` ([#638](https://github.com/omnigent-ai/omnigent/pull/638))
+
+### Bug fixes
+
+- **`omni upgrade` is version-aware** — upgrades to the right release instead of looping against a stale version ([#726](https://github.com/omnigent-ai/omnigent/pull/726)).
+- **`omnigent run` exits cleanly on an INPUT-phase policy denial** instead of hanging ([#599](https://github.com/omnigent-ai/omnigent/pull/599)).
+- **The REPL no longer crashes** when the daemon returns a non-JSON status response ([#660](https://github.com/omnigent-ai/omnigent/pull/660)).
+
+**Full changelog:** https://github.com/omnigent-ai/omnigent/compare/v0.1.1...v0.2.0
+
+---
+
+### 💜 Thanks to our community
+
+This release was shaped by the people who filed issues, opened PRs, and talked through feature requests with us on our discord! Thank you for building Omnigent with us, keep the bug reports, ideas and contributions coming :)

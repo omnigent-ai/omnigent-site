@@ -28,6 +28,19 @@ Most coding agents can run in one of two modes:
   mirrors it back. You get the exact native experience, wrapped with Omnigent's
   collaboration and policy layer. These ids end in `-native`.
 
+<div className="note">
+
+**Streaming in the web UI:** Native TUI harnesses differ in how their replies
+reach the web UI. `claude-native`, `codex-native`, and `antigravity-native`
+forward token-level deltas, so their responses stream in live. The other native
+harnesses — `pi-native`, `cursor-native`, `kiro-native`, `goose-native`,
+`qwen-native`, `kimi-native`, and `hermes-native` — mirror the transcript one
+complete message at a time, so each reply appears all at once when it finishes
+rather than streaming token by token. This affects only how updates render in
+the web UI; the underlying agent behavior is unchanged.
+
+</div>
+
 ## Supported harnesses
 
 | Agent | Direct | Native TUI |

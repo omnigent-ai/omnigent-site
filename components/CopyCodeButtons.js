@@ -18,7 +18,9 @@ export default function CopyCodeButtons() {
         const text = code ? code.textContent : pre.textContent;
         navigator.clipboard.writeText(text).then(() => {
           btn.textContent = "copied";
-          setTimeout(() => { btn.textContent = "copy"; }, 1500);
+          setTimeout(() => {
+            btn.textContent = "copy";
+          }, 1500);
         });
       });
       pre.appendChild(btn);

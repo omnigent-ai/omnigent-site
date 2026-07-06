@@ -1,0 +1,105 @@
+import { pageMeta } from "@/lib/og";
+import ContentTabs from "@/components/ContentTabs";
+
+export const metadata = pageMeta(
+  "Tutorial: Polly (Multi-AI Coding)",
+  "Tutorial: see Polly in practice, a multi-agent coding orchestrator that delegates sub-tasks across AI agents with built-in cross-vendor review.",
+  {
+    eyebrow: "Quickstart",
+    path: "/quickstart/polly",
+  },
+);
+
+# Tutorial: Polly (Multi-AI Coding)
+
+Polly is a multi-agent coding orchestrator. It breaks your task into
+sub-tasks and delegates each one to a different AI agent, with
+cross-vendor code review built in. This tutorial shows you how it
+looks in practice.
+
+**Time:** 5 minutes. **Everything runs locally.**
+
+## 1. Run Polly
+
+```
+omni polly
+```
+
+This starts Polly and opens a web UI at `http://localhost:6767`
+(`omni` will start Polly too).
+
+<figure>
+  {/* eslint-disable-next-line @next/next/no-img-element */}
+  <img
+    src="/images/docs/polly-default-launch.gif"
+    alt="Running omni from the terminal launches Polly"
+    style={{ width: "100%", borderRadius: "8px" }}
+  />
+  <figcaption>
+    Start Polly with <code>omni polly</code>, or just <code>omni</code>.
+  </figcaption>
+</figure>
+
+## 2. Give it a task
+
+```
+Refactor the authentication module into separate files for OAuth, JWT, and session handling. Add tests for each.
+```
+
+Polly breaks this into sub-tasks and delegates each one to a different
+AI agent. Claude Code implements one piece, Codex implements another in
+parallel, and a different agent reviews each PR.
+
+## 3. Watch it in the web UI or desktop app
+
+<ContentTabs labels={["Web UI", "Desktop App"]}>
+  <div>
+
+Open `http://localhost:6767` in your browser. It shows the same session
+as your terminal, updating in real time.
+
+  </div>
+  <div>
+
+Launch the [desktop app](/docs/interact/desktop) and connect it to
+`http://localhost:6767`. It shows the same session as your terminal, and
+adds OS notifications and a dock badge when Polly or a sub-agent needs
+your attention, which is useful while sub-agents work in parallel.
+
+  </div>
+</ContentTabs>
+
+The right panel has four tabs: **Files**, **Agents**, **Shells**, and
+**Todos**.
+
+Click the **Agents** tab to see every sub-agent Polly dispatches, with
+live status (working, idle, finished).
+
+- Click any sub-agent to switch to its view and see its conversation, files, and terminal output.
+- Switch to the **Shells** tab to see all running shells side by side.
+- Intervene at any point: send a message to a sub-agent, or switch back to Polly to see the orchestrator's view.
+
+<figure>
+  {/* eslint-disable-next-line @next/next/no-img-element */}
+  <img
+    src="/images/docs/polly-agent-switch.gif"
+    alt="Switching from Polly to sub-agents in the Agents panel"
+    style={{ width: "100%", borderRadius: "8px" }}
+  />
+  <figcaption>
+    The Agents panel shows Polly and its sub-agents, so you can inspect or steer
+    each delegated worker directly.
+  </figcaption>
+</figure>
+
+This is where multi-AI orchestration becomes tangible: you can watch
+Claude Code and Codex working on different parts of the same task
+simultaneously, each in its own git worktree.
+
+See [Polly reference](/docs/use/builtin-agents/polly) for the full details
+on skills like `/fanout`, `/cross-review`, and `/investigate`.
+
+## What's next
+
+- [Collaborate from anywhere](/quickstart/collaborate) to deploy a server and share sessions with teammates.
+- [Build a custom agent](/docs/use/custom-agents) with your own multi-agent orchestration in YAML.

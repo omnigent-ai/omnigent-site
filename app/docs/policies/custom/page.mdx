@@ -1,0 +1,119 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Custom Policies",
+  "When built-in policies aren't enough, write your own in Python, register them on the server, and use them like builtins.",
+  {
+    eyebrow: "Policies",
+    path: "/docs/policies/custom",
+  },
+);
+
+# Custom Policies
+
+When the [builtin policies](/docs/policies/builtin) don't cover your
+use case, you can write your own in Python, register them on the server, and your Omnigent
+can use them just like builtins.
+
+## 1. Write a policy function
+
+A policy is a Python function that receives an event and returns `ALLOW`,
+`ASK`, `DENY`, or `None` (no opinion):
+
+```
+from omnigent.policies.schema import PolicyEvent, PolicyResponse
+
+def my_policy(event: PolicyEvent) -> PolicyResponse | None:
+    if event["type"] != "tool_call":
+        return None
+    if event["data"]["name"] == "dangerous_tool":
+        return {"result": "DENY", "reason": "Blocked."}
+    return {"result": "ALLOW"}
+```
+
+If your policy needs parameters, use the factory pattern. The function takes config and
+returns the evaluator:
+
+```
+def block_domains(blocked_domains: list[str]) -> callable:
+    blocked = frozenset(d.lower() for d in blocked_domains)
+
+    def evaluate(event: PolicyEvent) -> PolicyResponse | None:
+        if event["type"] != "tool_call":
+            return None
+        url = event["data"]["arguments"].get("url", "")
+        for domain in blocked:
+            if domain in url.lower():
+                return {"result": "DENY", "reason": f"Domain {domain} blocked."}
+        return {"result": "ALLOW"}
+
+    return evaluate
+```
+
+## 2. Register on the server
+
+To make your policy discoverable by your Omnigent and visible in the UI, do two things:
+
+**Export a `POLICY_REGISTRY`** from your module:
+
+```
+# myorg/policies.py
+
+POLICY_REGISTRY = [
+    {
+        "handler": "myorg.policies.block_domains",
+        "kind": "factory",
+        "name": "Block Domains",
+        "description": "Block web access to specific domains.",
+        "params_schema": {
+            "type": "object",
+            "properties": {
+                "blocked_domains": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Domains to block"
+                }
+            },
+            "required": ["blocked_domains"]
+        }
+    }
+]
+```
+
+**Add the module to your server config:**
+
+```
+# config.yaml
+policy_modules:
+  - myorg.policies
+```
+
+Then start the server with that config:
+
+```
+omnigent server -c config.yaml
+```
+
+The `-c` flag is short for `--config`.
+
+Once registered, your custom policies appear alongside the builtins. Your Omnigent can
+select them when you ask it to add a policy in chat, and they show up in the UI settings
+panel.
+
+## 3. Use it
+
+Once registered, your custom policy works the same as any builtin. See
+[Adding a policy](/docs/policies/overview#adding-a-policy) for all the
+ways to apply it (chat, Omnigent YAML, or server config).
+
+## Reference: PolicyEvent
+
+Every policy receives a `PolicyEvent` dict. Use the `type` field to
+filter which events you care about:
+
+| Event type    | When it fires                                  | Key data fields     |
+| ------------- | ---------------------------------------------- | ------------------- |
+| `tool_call`   | Omnigent is about to call a tool               | `name`, `arguments` |
+| `llm_request` | Omnigent is about to send a message to the LLM | `messages`, `model` |
+
+Return `None` for event types you don't handle.

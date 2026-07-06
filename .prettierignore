@@ -1,0 +1,18 @@
+# Build output and dependencies
+node_modules
+.next
+out
+build
+.vercel
+
+# Generated artifacts (written by scripts/CLIs, not hand-edited)
+public/pagefind
+# OpenAPI spec — generated in the omnigent repo (sort_keys JSON) and
+# synced here by CI; Prettier would reformat it and break the sync diff.
+public/openapi.json
+public/llms.txt
+public/llms-full.txt
+public/sitemap.xml
+lib/og-manifest.json
+bun.lock
+package-lock.json

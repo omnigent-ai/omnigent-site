@@ -1,0 +1,60 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Omnibox",
+  "Omnibox is Omnigent's secure OS-level sandbox that wraps any agent to run it unattended without exposing your credentials, files, or network.",
+  {
+    eyebrow: "Security",
+    path: "/docs/omnibox",
+  },
+);
+
+# Omnibox
+
+Omnibox is Omnigent's secure OS-level sandbox. It wraps any agent (Claude Code, Codex,
+or a custom agent) so you can run it unattended, in YOLO mode, without handing it your real
+credentials, file system, or network.
+
+The kernel enforces the rules, not the agent or its prompt: `bubblewrap` and
+`seccomp` on Linux, Seatbelt (`sandbox-exec`) on macOS. Every process
+the agent spawns inherits the boundary, so a prompt-injected or misbehaving agent can't
+opt out.
+
+Omnibox combines three protections:
+
+- Filesystem isolation
+- Network isolation
+- Credential injection
+
+## Filesystem isolation
+
+The agent sees only the paths you grant; everything else doesn't exist from inside the
+sandbox. Even `cwd` is read-only until you opt directories back in, so a runaway
+agent can't read your SSH keys or write outside the workspace.
+
+Broad read grants stay safe: granting `~` doesn't expose `~/.ssh` or
+`~/.aws/credentials`, because dotfiles are masked unless you allow them.
+
+## Network isolation
+
+All HTTP(S) traffic goes through a default-deny proxy with an explicit allow-list of
+methods, hosts, and paths. Data can't leave except to hosts you chose, which shuts down
+exfiltration even if the agent is prompt-injected.
+
+Private IPs and cloud metadata endpoints are blocked by default, so the agent can't
+reach your internal services.
+
+## Credential injection
+
+The agent holds a fake placeholder token instead of the real secret. When a request
+matching your allow-list leaves the sandbox, the proxy swaps in the real credential. The
+agent can use a credential but never read it.
+
+Only the placeholder appears in logs, transcripts, and model context. A leaked token is
+worthless, since it only works through the proxy, against allowed hosts.
+
+## Related
+
+- [OS sandbox configuration](/docs/policies/os-sandbox): the full reference, covering filesystem grants, egress rules, environment passthrough, and the `bubblewrap`/Seatbelt backends.
+- [Cloud sandbox host](/docs/deploy/cloud-sandbox-host): controls _where_ the runner executes. Omnibox controls _what it can access_. They compose.
+- [Contextual policies](/docs/policies/overview): govern behavior at the tool-call level. Omnibox is the hard boundary underneath.

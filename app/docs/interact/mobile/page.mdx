@@ -1,0 +1,61 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Mobile",
+  "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.",
+  {
+    eyebrow: "Interact",
+    path: "/docs/interact/mobile",
+  },
+);
+
+# Mobile
+
+The same session is accessible on terminal, browser, and phone simultaneously. Start on your
+laptop, continue on your phone.
+
+{/* eslint-disable-next-line @next/next/no-img-element */}
+
+<img
+  src="/images/docs/mobile-demo.gif"
+  alt="Omnigent running on a mobile browser"
+  style={{
+    display: "block",
+    maxWidth: "320px",
+    width: "100%",
+    height: "auto",
+    borderRadius: "8px",
+    margin: "1rem 0",
+  }}
+/>
+
+## The use case
+
+Long-running agents don't need you at your desk. Start a coding task, head to lunch,
+check progress from your phone. Your Omnigent hits a question. Answer it from the coffee
+line. Want to review what it produced? Browse the files right there.
+
+Everything syncs in real time across devices.
+
+## How to access
+
+`localhost:6767` is only reachable from the machine running the server. To access
+from your phone:
+
+**Same network.** Use your machine's local IP instead of localhost (e.g.,
+`http://192.168.x.x:6767`). Your phone needs to be on the same Wi-Fi network.
+
+**From anywhere.** Deploy the Omnigent server beyond localhost. See
+[the deployment docs](/docs/deploy/overview) for options.
+
+Just open the URL in your mobile browser. If you want a
+more app-like experience, the web UI is an installable PWA: use your browser's
+**Add to Home Screen** option to launch Omnigent in its own standalone window.
+See [Install as an app](/docs/interact/web-ui#install-as-an-app) for details.
+
+## What works on mobile
+
+The full Web UI, touch-optimized: chat, monitor sub-agents, browse files, view code changes,
+and leave inline comments.
+
+{/* TODO: Add screenshot of mobile file browser view */}

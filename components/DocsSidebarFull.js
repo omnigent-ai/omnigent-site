@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDocsSidebar } from "./DocsSidebarContext";
 
 const SECTIONS = [
   {
@@ -10,7 +11,7 @@ const SECTIONS = [
     pages: [
       { href: "/quickstart/install", label: "Install Omnigent" },
       { href: "/quickstart/coding-agent", label: "Tutorial: Coding Agent" },
-      { href: "/quickstart/polly", label: "Tutorial: Polly" },
+      { href: "/quickstart/polly", label: "Tutorial: Polly (Multi-AI Coding)" },
       { href: "/quickstart/collaborate", label: "Tutorial: Collaborate" },
       { href: "/quickstart/policies", label: "Tutorial: Contextual Policies" },
     ],
@@ -68,9 +69,7 @@ const SECTIONS = [
   },
   {
     title: "Contextual Policies",
-    pages: [
-      { href: "/docs/policies/overview", label: "Overview" },
-    ],
+    pages: [{ href: "/docs/policies/overview", label: "Overview" }],
     subsections: [
       {
         title: "Builtin Policies",
@@ -78,7 +77,10 @@ const SECTIONS = [
         href: "/docs/policies/builtin",
         pages: [
           { href: "/docs/policies/builtin#safety", label: "Safety" },
-          { href: "/docs/policies/builtin#cost-control", label: "Cost Control" },
+          {
+            href: "/docs/policies/builtin#cost-control",
+            label: "Cost Control",
+          },
         ],
       },
       {
@@ -96,6 +98,10 @@ const SECTIONS = [
       { href: "/docs/policies/os-sandbox", label: "OS Sandbox Config" },
     ],
   },
+  {
+    title: "Reference",
+    pages: [{ href: "/reference", label: "REST API" }],
+  },
 ];
 
 function allHrefs(section) {
@@ -111,12 +117,17 @@ function allHrefs(section) {
 
 export default function DocsSidebarFull() {
   const path = usePathname();
+  const { open: drawerOpen, close: closeDrawer } = useDocsSidebar();
+
+  useEffect(() => {
+    closeDrawer();
+  }, [path, closeDrawer]);
 
   const [sectionOpen, setSectionOpen] = useState(() =>
     SECTIONS.reduce((acc, s, i) => {
       acc[i] = true;
       return acc;
-    }, {})
+    }, {}),
   );
 
   const [subOpen, setSubOpen] = useState(() => {
@@ -125,7 +136,8 @@ export default function DocsSidebarFull() {
       if (s.subsections) {
         s.subsections.forEach((sub, ci) => {
           const key = `${si}-${ci}`;
-          const hasActivePage = sub.pages.some((p) => p.href === path) || sub.href === path;
+          const hasActivePage =
+            sub.pages.some((p) => p.href === path) || sub.href === path;
           state[key] = !sub.collapsed || hasActivePage;
         });
       }
@@ -133,92 +145,196 @@ export default function DocsSidebarFull() {
     return state;
   });
 
+  // Expand the section + subsection containing the active page on every route
+  // change. The sidebar persists across client-side navigation (it lives in the
+  // layout and never remounts), so the useState initializers above only run on
+  // first mount. Without this, navigating into a collapsed subsection — via a
+  // search result, an in-content link, or prev/next nav — leaves it closed and
+  // hides where you are. Only force-opens the matching entries, never collapses.
+  useEffect(() => {
+    SECTIONS.forEach((s, si) => {
+      const inSectionPages = s.pages.some((p) => p.href === path);
+      if (inSectionPages) {
+        setSectionOpen((o) => (o[si] ? o : { ...o, [si]: true }));
+      }
+      s.subsections?.forEach((sub, ci) => {
+        const isActive =
+          sub.href === path || sub.pages.some((p) => p.href === path);
+        if (isActive) {
+          setSectionOpen((o) => (o[si] ? o : { ...o, [si]: true }));
+          const key = `${si}-${ci}`;
+          setSubOpen((o) => (o[key] ? o : { ...o, [key]: true }));
+        }
+      });
+    });
+  }, [path]);
+
   return (
-    <aside className="docs-side">
-      {SECTIONS.map((section, si) => {
-        const isOpen = sectionOpen[si];
+    <>
+      {drawerOpen && (
+        <div className="docs-sidebar-backdrop" onClick={closeDrawer} />
+      )}
+      <aside className={`docs-side ${drawerOpen ? "docs-side-open" : ""}`}>
+        {SECTIONS.map((section, si) => {
+          const isOpen = sectionOpen[si];
 
-        return (
-          <div key={section.title}>
-            <h4
-              onClick={() => setSectionOpen((o) => ({ ...o, [si]: !o[si] }))}
-              style={{ cursor: "pointer", userSelect: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}
-            >
-              {section.title}
-              <span style={{ fontSize: "0.55rem", opacity: 0.4, transition: "transform 0.15s", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>
-                ▶
-              </span>
-            </h4>
+          return (
+            <div key={section.title}>
+              <h4
+                onClick={() => setSectionOpen((o) => ({ ...o, [si]: !o[si] }))}
+                style={{
+                  cursor: "pointer",
+                  userSelect: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                {section.title}
+                <span
+                  style={{
+                    fontSize: "0.55rem",
+                    opacity: 0.4,
+                    transition: "transform 0.15s",
+                    transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
+                  }}
+                >
+                  ▶
+                </span>
+              </h4>
 
-            {isOpen && (
-              <ul>
-                {section.pages.map((p) => (
-                  <li key={p.href}>
-                    <Link href={p.href} className={path === p.href ? "active" : ""}>
-                      {p.label}
-                    </Link>
-                  </li>
-                ))}
+              {isOpen && (
+                <ul>
+                  {section.pages.map((p) => (
+                    <li key={p.href}>
+                      <Link
+                        href={p.href}
+                        className={path === p.href ? "active" : ""}
+                      >
+                        {p.label}
+                      </Link>
+                    </li>
+                  ))}
 
-                {section.subsections && section.subsections.map((sub, ci) => {
-                  const subKey = `${si}-${ci}`;
-                  const subIsOpen = subOpen[subKey];
-                  const subIsActive = sub.href === path;
+                  {section.subsections &&
+                    section.subsections.map((sub, ci) => {
+                      const subKey = `${si}-${ci}`;
+                      const subIsOpen = subOpen[subKey];
+                      const subIsActive = sub.href === path;
 
-                  return (
-                    <li key={sub.title} style={{ listStyle: "none" }}>
-                      {sub.href ? (
-                        <span style={{ display: "flex", alignItems: "center", gap: 0 }}>
-                          <Link
-                            href={sub.href}
-                            className={subIsActive ? "active" : ""}
-                            style={{ flex: 1, display: "block", padding: "0.25rem 0.6rem 0.25rem 1.2rem", borderRadius: "7px", fontSize: "0.9rem" }}
-                          >
-                            {sub.title}
-                          </Link>
-                          {sub.pages.length > 0 && (
+                      return (
+                        <li key={sub.title} style={{ listStyle: "none" }}>
+                          {sub.href ? (
                             <span
-                              onClick={() => setSubOpen((o) => ({ ...o, [subKey]: !o[subKey] }))}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 0,
+                              }}
+                            >
+                              <Link
+                                href={sub.href}
+                                className={subIsActive ? "active" : ""}
+                                style={{
+                                  flex: 1,
+                                  display: "block",
+                                  padding: "0.25rem 0.6rem 0.25rem 1.2rem",
+                                  borderRadius: "7px",
+                                  fontSize: "0.9rem",
+                                }}
+                              >
+                                {sub.title}
+                              </Link>
+                              {sub.pages.length > 0 && (
+                                <span
+                                  onClick={() =>
+                                    setSubOpen((o) => ({
+                                      ...o,
+                                      [subKey]: !o[subKey],
+                                    }))
+                                  }
+                                  role="button"
+                                  tabIndex={0}
+                                  style={{
+                                    cursor: "pointer",
+                                    padding: "0.25rem 0.5rem",
+                                    fontSize: "0.5rem",
+                                    opacity: 0.4,
+                                    transition: "transform 0.15s",
+                                    transform: subIsOpen
+                                      ? "rotate(90deg)"
+                                      : "rotate(0deg)",
+                                  }}
+                                >
+                                  ▶
+                                </span>
+                              )}
+                            </span>
+                          ) : (
+                            <span
+                              onClick={() =>
+                                setSubOpen((o) => ({
+                                  ...o,
+                                  [subKey]: !o[subKey],
+                                }))
+                              }
                               role="button"
                               tabIndex={0}
-                              style={{ cursor: "pointer", padding: "0.25rem 0.5rem", fontSize: "0.5rem", opacity: 0.4, transition: "transform 0.15s", transform: subIsOpen ? "rotate(90deg)" : "rotate(0deg)" }}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                cursor: "pointer",
+                                padding: "0.25rem 0.6rem",
+                                borderRadius: "7px",
+                                fontSize: "0.9rem",
+                                color: "var(--fg-soft)",
+                              }}
                             >
-                              ▶
+                              {sub.title}
+                              <span
+                                style={{
+                                  fontSize: "0.5rem",
+                                  opacity: 0.4,
+                                  transition: "transform 0.15s",
+                                  transform: subIsOpen
+                                    ? "rotate(90deg)"
+                                    : "rotate(0deg)",
+                                }}
+                              >
+                                ▶
+                              </span>
                             </span>
                           )}
-                        </span>
-                      ) : (
-                        <span
-                          onClick={() => setSubOpen((o) => ({ ...o, [subKey]: !o[subKey] }))}
-                          role="button"
-                          tabIndex={0}
-                          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", padding: "0.25rem 0.6rem", borderRadius: "7px", fontSize: "0.9rem", color: "var(--fg-soft)" }}
-                        >
-                          {sub.title}
-                          <span style={{ fontSize: "0.5rem", opacity: 0.4, transition: "transform 0.15s", transform: subIsOpen ? "rotate(90deg)" : "rotate(0deg)" }}>
-                            ▶
-                          </span>
-                        </span>
-                      )}
-                      {subIsOpen && sub.pages.length > 0 && (
-                        <ul style={{ paddingLeft: "0.6rem", marginBottom: "0.3rem" }}>
-                          {sub.pages.map((p) => (
-                            <li key={p.href}>
-                              <Link href={p.href} className={path === p.href ? "active" : ""} style={{ paddingLeft: "0.9rem" }}>
-                                {p.label}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        );
-      })}
-    </aside>
+                          {subIsOpen && sub.pages.length > 0 && (
+                            <ul
+                              style={{
+                                paddingLeft: "0.6rem",
+                                marginBottom: "0.3rem",
+                              }}
+                            >
+                              {sub.pages.map((p) => (
+                                <li key={p.href}>
+                                  <Link
+                                    href={p.href}
+                                    className={path === p.href ? "active" : ""}
+                                    style={{ paddingLeft: "0.9rem" }}
+                                  >
+                                    {p.label}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </li>
+                      );
+                    })}
+                </ul>
+              )}
+            </div>
+          );
+        })}
+      </aside>
+    </>
   );
 }

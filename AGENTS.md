@@ -14,6 +14,7 @@ All rules in `.agents/rules/` are part of the working agreement and must be foll
 
 - [`.agents/rules/branching-rule.mdc`](.agents/rules/branching-rule.mdc) — **Branching workflow.** All work must happen on a dedicated feature branch; never commit directly to `main`. Before making any change, check the current branch and, if on `main`, create a new branch (`feat/`, `fix/`, `chore/`, `refactor/`, or `test/` prefix) using `git checkout -b`. Offer the user a suggested branch name and the option to provide their own.
 - [`.agents/rules/bun-clean-lock-rule.mdc`](.agents/rules/bun-clean-lock-rule.mdc) — **bun.lock proxy stripping.** Before opening any PR, clear private npm registry proxy URLs from the resolution field of `bun.lock` (reset to `""`). Run `bun run strip-lock-proxy` to clean and `bun run strip-lock-proxy:check` to verify. A committed pre-commit hook at `.githooks/pre-commit` (activate via `bun run setup-hooks`) automates this whenever `bun.lock` is staged.
+- [`.agents/rules/prettier-format-rule.mdc`](.agents/rules/prettier-format-rule.mdc) — **Prettier formatting.** Before opening any PR, run `bun run fmt` so edited/generated files pass the `prettier --check .` CI gate. Prettier checks `.mdx` too (it is not in `.prettierignore`), and it re-aligns Markdown tables — editing a table cell without re-padding the column fails the gate.
 
 When new rules are added to `.agents/rules/`, treat them as always-on guidance and add a reference here.
 
@@ -21,8 +22,8 @@ When new rules are added to `.agents/rules/`, treat them as always-on guidance a
 
 Reusable, task-specific playbooks live in `.agents/skills/`. Load the relevant skill when a task matches its description.
 
-| Skill | Use when |
-|-------|----------|
+| Skill                                                              | Use when                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [`site-link-analyzer`](.agents/skills/site-link-analyzer/SKILL.md) | Auditing and fixing links across the site — broken internal routes, missing public assets, relative/external targets. Runs the deterministic checker (`bun run lint:links`, backed by `scripts/check-links.mjs`), then applies the confident fixes and reports the rest. |
 
 When you add or change a skill in `.agents/skills/`, update this table.

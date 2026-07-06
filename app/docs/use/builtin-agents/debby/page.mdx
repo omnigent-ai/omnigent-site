@@ -1,0 +1,49 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Debby",
+  "Debby asks two models the same question and runs a multi-round debate where each critiques and refines the other's answer.",
+  {
+    eyebrow: "Use Cases",
+    path: "/docs/use/builtin-agents/debby",
+  },
+);
+
+# Debby
+
+<p className="lede-block">
+  Multi-model brainstorming partner. Debby sends every question to both Claude
+  and GPT simultaneously, then lets them debate and refine each other's answers.
+</p>
+
+```
+omni debby
+```
+
+## How it works
+
+Ask a question and both models respond independently. You see both perspectives
+side by side. Then use the `/debate` skill to start a multi-round critique where
+each model reviews the other's answer, challenges weak points, and refines its
+own response.
+
+| Sub-agent | Role                                                |
+| --------- | --------------------------------------------------- |
+| `claude`  | Responds and debates with an Anthropic Claude model |
+| `gpt`     | Responds and debates with an OpenAI GPT model       |
+
+## The /debate skill
+
+Type `/debate` after getting initial answers to trigger multi-round critique.
+Each model reviews the other's answer, points out weaknesses, and improves its
+own. The debate converges toward a stronger synthesis than either model would
+produce alone.
+
+## When to use
+
+- Architectural decisions where you want genuinely independent perspectives.
+- Comparing approaches before committing to one.
+- Stress-testing an idea by having two models challenge each other.
+- Catching blind spots a single model might miss.
+
+[Source on GitHub](https://github.com/omnigent-ai/omnigent/tree/main/examples/debby)

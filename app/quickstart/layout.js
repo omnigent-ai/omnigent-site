@@ -4,21 +4,25 @@ import DocsSidebarFull from "@/components/DocsSidebarFull";
 import CopyCodeButtons from "@/components/CopyCodeButtons";
 import HeadingAnchors from "@/components/HeadingAnchors";
 import PrevNextNav from "@/components/PrevNextNav";
+import { DocsSidebarProvider } from "@/components/DocsSidebarContext";
+import DocsSidebarToggle from "@/components/DocsSidebarToggle";
+import TableOfContents from "@/components/TableOfContents";
 
 export default function DocsLayout({ children }) {
   return (
-    <>
-      <Nav />
+    <DocsSidebarProvider>
+      <Nav menuToggle={<DocsSidebarToggle />} />
       <div className="docs">
         <DocsSidebarFull />
-        <article className="docs-main">
+        <article className="docs-main" data-pagefind-body>
           {children}
           <PrevNextNav />
           <CopyCodeButtons />
           <HeadingAnchors />
         </article>
+        <TableOfContents />
       </div>
       <Footer />
-    </>
+    </DocsSidebarProvider>
   );
 }

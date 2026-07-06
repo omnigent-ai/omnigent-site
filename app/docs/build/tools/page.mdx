@@ -1,0 +1,191 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("MCP & Tools", "Give your agent capabilities beyond conversation. Declare tools and MCP servers in your agent YAML, each with a name you choose.", {
+  eyebrow: "Build",
+  path: "/docs/build/tools",
+});
+
+# MCP & Tools
+
+Tools give your agent capabilities beyond conversation. They are declared under the
+`tools` key in your agent YAML, each identified by a name you choose.
+
+Omnigent supports four tool types: MCP servers, Python functions, sub-agents, and inherited
+tools.
+
+## MCP servers
+
+MCP (Model Context Protocol) servers expose tools over a standard protocol.
+
+### Bundled servers
+
+The following MCP servers are available out of the box. No setup or configuration needed:
+
+| Server | What it connects to |
+| --- | --- |
+| Google | Drive, Docs, Sheets, Slides, Gmail, Calendar |
+| GitHub | Issues, PRs, repos, code search |
+| Slack | Channels, messages, threads |
+| Jira | Issues, projects, search |
+| Confluence | Pages, spaces, search |
+| Glean | Enterprise search |
+| PagerDuty | Incidents, on-call |
+
+To restrict which tools from a bundled server your agent can access, use the
+`tools` filter or configure [policies](/docs/policies/overview).
+
+### Custom servers
+
+For MCP servers not in the bundled set, declare them in your agent YAML. Transport is
+inferred: use `command` for local stdio servers, `url` for remote HTTP/SSE servers.
+
+**Local command (stdio):**
+
+```
+tools:
+  my-server:
+    type: mcp
+    command: node
+    args: [dist/server.js]
+    env:
+      API_KEY: ${MY_API_KEY}          # env vars expanded at runtime
+```
+
+**Remote URL (HTTP/SSE):**
+
+```
+tools:
+  docs-api:
+    type: mcp
+    url: https://example.com/mcp
+    headers:
+      Authorization: "Bearer ${API_TOKEN}"   # env vars expanded at runtime
+```
+
+The optional `tools` list filters which MCP tools are exposed to the agent. Omit
+it to expose everything the server provides.
+
+### Authentication
+
+As shown in the examples above, custom MCP servers accept credentials through:
+
+- **`env`**: environment variables passed to stdio server processes (e.g., `API_KEY: ${MY_API_KEY}`)
+- **`headers`**: HTTP headers for remote servers, with `${...}` env var expansion (e.g., `Authorization: "Bearer ${API_TOKEN}"`)
+- **`profile`** (under `auth:`): resolves an OAuth token from your `~/.databrickscfg`:
+
+```
+tools:
+  internal-api:
+    type: mcp
+    url: https://my-workspace.databricks.com/mcp
+    auth:
+      profile: my-profile
+```
+
+## Python function tools
+
+Expose any Python callable as a tool. The function is referenced by its fully qualified
+import path:
+
+```
+tools:
+  summarize_file:
+    type: function
+    description: Summarize a local text file.
+    callable: my_package.tools.summarize_file
+    parameters:
+      type: object
+      properties:
+        path:
+          type: string
+      required: [path]
+```
+
+The JSON Schema under `parameters` is optional. If you omit it, Omnigent
+auto-generates the schema from the function's type annotations and signature.
+
+## Sub-agent tools
+
+Declare agents as tools so a supervisor agent can delegate work to them. You can define a
+sub-agent inline or reference an external config file.
+
+### Inline definition
+
+Define the sub-agent's full spec directly in the `tools` block:
+
+```
+tools:
+  reviewer:
+    type: agent
+    description: Review proposed code changes.
+    prompt: |
+      You are a careful code reviewer. Focus on correctness,
+      tests, security, and maintainability.
+    executor:
+      harness: claude-sdk
+      model: claude-sonnet-4-6
+    os_env: inherit
+    pass_history: true
+    max_sessions: 2
+```
+
+### External config file
+
+Point to a separate YAML file containing the sub-agent's spec. This is useful when the
+sub-agent is complex, shared across multiple parents, or maintained independently:
+
+```
+tools:
+  reviewer:
+    type: agent
+    description: Review proposed code changes.
+    config: agents/reviewer.yaml
+```
+
+The `config` path resolves relative to the parent agent's YAML directory.
+The referenced file is a standard agent config that can define its own tools, skills,
+harness, and policies.
+
+A sub-agent tool can have its own [harness](/docs/build/harnesses), model, tools, and
+[policies](/docs/policies/overview). The `pass_history` flag controls whether the
+parent's conversation history is forwarded, and `max_sessions` limits concurrent
+invocations.
+
+## Tool inheritance
+
+Use `inherit` to pass one of the parent's tools down to a sub-agent:
+
+```
+tools:
+  researcher:
+    type: agent
+    prompt: Research and summarize.
+    tools:
+      word_count: inherit    # gets word_count from parent
+```
+
+The sub-agent receives the same tool definition the parent has, with no duplication.
+
+Use `spec: self` for a sub-agent that clones the entire parent spec. It gets the
+same tools, prompt, and configuration as the parent agent.
+
+## Combine tool types
+
+A single agent can mix all tool types. The `tools` block is a flat map of names
+to definitions:
+
+```
+tools:
+  github:
+    type: mcp
+    command: uv
+    args: [run, python, -m, my_package.github_mcp]
+
+  summarize_file:
+    type: function
+    callable: my_package.tools.summarize_file
+
+  reviewer:
+    type: agent
+    config: agents/reviewer.yaml
+```

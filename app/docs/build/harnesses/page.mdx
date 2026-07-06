@@ -1,0 +1,127 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Harnesses", "The harness is the runtime that executes your agent loop. Swap one line of YAML to switch between Claude, Codex, Cursor, and more — or ship your own as a community plugin.", {
+  eyebrow: "Build",
+  path: "/docs/build/harnesses",
+});
+
+# Harnesses
+
+The harness is the runtime that executes your agent loop. Swap one line to switch runtimes.
+
+```
+executor:
+  harness: claude-sdk
+```
+
+Tools, policies, prompts, and models stay the same across harnesses — only the
+runtime underneath changes.
+
+## Two ways to run a harness
+
+Most coding agents can run in one of two modes:
+
+- **Direct** — Omnigent drives the agent's model and tools itself. You get the
+  full platform: web UI, streaming, [contextual policies](/docs/policies/overview),
+  persistent sessions, and mobile.
+- **Native TUI** — Omnigent boots the vendor's own terminal UI in a pane and
+  mirrors it back. You get the exact native experience, wrapped with Omnigent's
+  collaboration and policy layer. These ids end in `-native`.
+
+## Supported harnesses
+
+| Agent | Direct | Native TUI |
+| --- | --- | --- |
+| Claude Code | `claude-sdk` (alias `claude`) | `claude-native` |
+| Codex | `codex` | `codex-native` |
+| Cursor | `cursor` | `cursor-native` |
+| Antigravity | `antigravity` | `antigravity-native` |
+| Goose | `goose` | `goose-native` |
+| Qwen Code | `qwen` (alias `qwen-code`) | `qwen-native` |
+| Kimi | `kimi` (alias `kimi-code`) | `kimi-native` |
+| Hermes | `hermes` | `hermes-native` |
+| Pi | `pi` | `pi-native` |
+| OpenCode | — | `opencode-native` (alias `opencode`) |
+| Kiro | — | `kiro-native` |
+| Copilot | `copilot` | — |
+| OpenAI Agents SDK | `openai-agents` (alias `openai-agents-sdk`) | — |
+
+Pi is a headless multi-model worker that runs on any gateway model — ideal for
+review, exploration, and read-heavy tasks delegated by a supervisor agent.
+
+## Swap harnesses
+
+Tools, policies, and other config stay the same across harnesses. Just change the
+`harness` value in your YAML, or override it at runtime:
+
+```
+omni run agent.yaml --harness codex
+```
+
+See [Models & Credentials](/docs/build/models) for how to set up API keys and choose models.
+
+## Community harnesses
+
+The built-in harnesses above ship with `pip install omnigent`. Beyond those,
+Omnigent discovers additional harnesses at startup through a plugin registry, so
+the community can add support for a new runtime as a **separate package** —
+without changing the core `omnigent` package.
+
+```
+pip install omnigent          # core harnesses only
+pip install omnigent-foo      # adds the `foo` harness to the same omni CLI
+```
+
+An installed plugin's harness shows up everywhere a built-in one does: it's
+accepted in agent YAML, honored by `--harness`, and merged into the harness
+picker in the web UI.
+
+### Build a plugin
+
+A harness plugin is a Python package that declares an entry point in the
+`omnigent.community.harness` group and exports a `get_contribution()` function.
+Implementation modules live under the `omnigent.community.harness.*` namespace.
+
+```toml
+# pyproject.toml
+[project]
+name = "omnigent-foo"
+dependencies = ["omnigent"]
+
+[project.entry-points."omnigent.community.harness"]
+foo = "omnigent.community.harness.foo.plugin:get_contribution"
+```
+
+```python
+# omnigent/community/harness/foo/plugin.py
+from omnigent.harness_plugins import HarnessContribution
+from omnigent.harness_install_spec import HarnessInstallSpec
+
+
+def get_contribution() -> HarnessContribution:
+    return HarnessContribution(
+        name="omnigent-foo",
+        valid_harnesses=frozenset({"foo"}),
+        harness_modules={
+            "foo": "omnigent.community.harness.foo.harness",
+        },
+        aliases={"foo-code": "foo"},
+        harness_labels={"foo": "Foo"},
+    )
+```
+
+Each harness module exports `create_app() -> FastAPI`; the runner imports it to
+launch the harness. Keep top-level imports in `plugin.py` light — entry-point
+discovery runs early, so put heavy imports inside the callables that need them.
+
+<div className="note">
+
+**Note:** Core rejects plugins that register flat package paths or try to
+override a built-in harness name. Community native-TUI harnesses aren't
+pluggable yet — the plugin interface covers direct and headless harnesses.
+
+</div>
+
+See the [harness plugin interface](https://github.com/omnigent-ai/omnigent/blob/main/designs/harness-plugin-interface.md)
+design doc for the full plugin contract, including install/auth metadata,
+model-override env vars, and per-spawn environment builders.

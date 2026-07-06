@@ -1,15 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 const PILLARS = [
   {
     id: "composition",
     label: "Composition",
     title: "Composition",
-    body:
-      "Combine multiple models, harnesses, and techniques without rewriting code. Switch between Claude Code, Codex, Pi, and your own agents with one-line changes.",
+    body: "Combine multiple models, harnesses, and techniques without rewriting code. Switch between Claude Code, Codex, Pi, and your own agents with one-line changes.",
     icon: {
       src: "/images/composability-icon.png",
       alt: "Omnigent starfish mascots stacked in layers to illustrate composability.",
@@ -29,8 +34,7 @@ const PILLARS = [
     id: "control",
     label: "Control",
     title: "Control",
-    body:
-      "Stateful, data-centric policies that track agent actions and enforce guardrails like cost budgets and access controls at the meta-harness layer, not via prompts.",
+    body: "Stateful, data-centric policies that track agent actions and enforce guardrails like cost budgets and access controls at the meta-harness layer, not via prompts.",
     icon: {
       src: "/images/sandbox.png",
       alt: "Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent.",
@@ -50,8 +54,7 @@ const PILLARS = [
     id: "collaboration",
     label: "Collaboration",
     title: "Collaboration",
-    body:
-      "Share live agent sessions via URL with full history, so teammates can review, comment, and steer together in real time.",
+    body: "Share live agent sessions via URL with full history, so teammates can review, comment, and steer together in real time.",
     icon: {
       src: "/images/high-five.png",
       alt: "Two Omnigent mascots high-fiving to celebrate collaboration.",
@@ -71,7 +74,11 @@ const PILLARS = [
 
 export default function PillarsTabs() {
   const [active, setActive] = useState("composition");
-  const [indicator, setIndicator] = useState({ left: 0, width: 0, ready: false });
+  const [indicator, setIndicator] = useState({
+    left: 0,
+    width: 0,
+    ready: false,
+  });
   const [expandedVisual, setExpandedVisual] = useState(null);
   const tablistRef = useRef(null);
   const tabRefs = useRef({});
@@ -134,7 +141,9 @@ export default function PillarsTabs() {
       >
         <span
           className={
-            indicator.ready ? "pillar-tab-indicator is-ready" : "pillar-tab-indicator"
+            indicator.ready
+              ? "pillar-tab-indicator is-ready"
+              : "pillar-tab-indicator"
           }
           aria-hidden="true"
           style={{
@@ -153,7 +162,9 @@ export default function PillarsTabs() {
             id={`pillar-tab-${pillar.id}`}
             aria-selected={active === pillar.id}
             aria-controls={`pillar-panel-${pillar.id}`}
-            className={active === pillar.id ? "pillar-tab is-active" : "pillar-tab"}
+            className={
+              active === pillar.id ? "pillar-tab is-active" : "pillar-tab"
+            }
             onClick={() => selectTab(pillar.id)}
           >
             {pillar.label}

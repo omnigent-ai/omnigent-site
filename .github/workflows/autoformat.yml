@@ -1,0 +1,91 @@
+name: PR Autoformat
+
+# On-demand PR hygiene: add the `autoformat` label to a PR to run
+# `bun run fmt` (prettier --write) on its branch and commit the result back.
+# Runs ONLY when the label is added -- never automatically on every push -- so
+# contributors and reviewers opt in explicitly (e.g. to fix a doc-sync bot PR
+# that failed fmt:check). The label is removed after each run, so re-applying
+# it triggers another pass.
+#
+# The push uses a short-lived omnigent-ci App token, not the workflow's own
+# GITHUB_TOKEN: pushes made with GITHUB_TOKEN do NOT re-trigger workflows, so
+# ci.yml would never re-run on the fix. The App token (same App as
+# sync-openapi-to-site.yml, installed on this repo with contents +
+# pull-requests write) does re-trigger it, turning the failing check green.
+#
+# Scoped to same-repo PRs: fork PRs can't read the App secret and the workflow
+# can't push to a fork, so they skip cleanly. Labels can only be applied by
+# users with write/triage access, so the trigger is inherently trusted.
+
+on:
+  pull_request:
+    types: [labeled]
+
+# One autoformat run per PR; a newer label event supersedes an in-flight run.
+concurrency:
+  group: pr-autoformat-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  autoformat:
+    name: Autoformat
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Only the `autoformat` label, same-repo PRs only, and skip cleanly where
+    # the App isn't configured (e.g. downstream forks) rather than failing the
+    # token step.
+    if: >-
+      github.event.label.name == 'autoformat' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      vars.OMNIGENT_BOT_APP_ID != ''
+    steps:
+      - name: Mint App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.OMNIGENT_BOT_APP_ID }}
+          private-key: ${{ secrets.OMNIGENT_BOT_APP_KEY }}
+
+      # Clear the label up front so the run isn't left in a "labeled" state if
+      # a later step fails, and so re-applying it always triggers a fresh run.
+      # (The resulting `unlabeled` event does not re-trigger this workflow.)
+      - name: Remove the autoformat label
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          gh pr edit "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}" \
+            --remove-label autoformat || true
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v5
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Format
+        run: bun run fmt
+
+      - name: Commit and push if changed
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Already formatted -- nothing to do."
+            exit 0
+          fi
+          git config user.name "omnigent-ci[bot]"
+          git config user.email "294685417+omnigent-ci[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "style: apply prettier (bun run fmt)"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"

@@ -1,0 +1,57 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Polly",
+  "Polly is a supervisor that delegates sub-tasks to sub-agents on separate harnesses and worktrees, with cross-agent review and human-decided merges.",
+  {
+    eyebrow: "Use Cases",
+    path: "/docs/use/builtin-agents/polly",
+  },
+);
+
+# Polly
+
+<p className="lede-block">
+  Multi-agent coding orchestrator. Polly breaks your task into sub-tasks and
+  delegates each one to a different AI agent, with cross-vendor code review
+  built in.
+</p>
+
+```
+omni polly
+omni          # also launches Polly (it's the default)
+```
+
+## How it works
+
+Polly is a supervisor that never writes code itself. It decomposes your goal
+into sub-tasks and delegates each one to a sub-agent running on its own harness
+and git worktree. One agent implements, a different agent reviews. Each
+implementer opens its own PR. Polly never merges. The human decides.
+
+| Sub-agent     | Harness           | Role                             |
+| ------------- | ----------------- | -------------------------------- |
+| `claude_code` | `claude-native`   | Claude Code                      |
+| `codex`       | `codex-native`    | Codex                            |
+| `opencode`    | `opencode-native` | OpenCode                         |
+| `pi`          | `pi`              | Pi (headless, any gateway model) |
+
+`claude_code`, `codex`, and `opencode` are the primary implementers, each
+running as a real CLI coding harness in its own terminal you can open in the
+UI's Subagents panel to watch or take over. `pi` runs headless as the
+review/explore specialist. Four distinct vendors means any implementer's diff
+can be reviewed by a different one — the cross-vendor check is the point.
+
+## Skills
+
+- **`/fanout`** runs independent tasks in parallel. Each gets its own git worktree and sub-agent. Each opens its own PR.
+- **`/cross-review`** sends an implementer's diff to a different-vendor reviewer. Blocking issues loop back as fixes until clean.
+- **`/investigate`** delegates read-only work (debugging, audits, code understanding) to sub-agents and synthesizes findings.
+
+## When to use
+
+- Large refactors that benefit from parallel work.
+- Cross-vendor code review where one agent writes and another reviews.
+- Specialized sub-tasks routed to the harness best suited for them.
+
+[Source on GitHub](https://github.com/omnigent-ai/omnigent/tree/main/examples/polly)

@@ -1,0 +1,2623 @@
+# Omnigent Full Documentation
+
+> Expanded LLM context for Omnigent. This file contains the homepage summary and cleaned Markdown content for the primary quickstart and documentation pages listed in /llms.txt.
+
+Source: https://omnigent.ai
+Generated from: https://github.com/omnigent-ai/omnigent-site
+
+---
+
+## https://omnigent.ai/
+
+# Omnigent
+
+Omnigent is a common layer over Claude Code, Codex, Pi, and custom agents. It lets teams swap or combine harnesses without rewriting agents, govern them with policies and OS sandboxing, and collaborate in real time on the same live session from terminal, web, desktop, mobile, or API interfaces.
+
+Core capabilities:
+
+- Built-in multi-AI agents, including Polly for coding orchestration and Debby for model debate.
+- Custom agents written in YAML with configurable harnesses, models, prompts, skills, tools, and policies.
+- Contextual policies for safety, spend caps, model routing, and risk-based escalation.
+- OS sandboxing for filesystem, network, environment, and credential boundaries.
+- Shared sessions, comments, forks, and multi-device collaboration.
+- Deployable shared server with database, authentication, and cloud sandbox host options.
+
+---
+
+## https://omnigent.ai/quickstart/install
+
+# Install
+
+Get Omnigent running in a few minutes. Install the CLI, set up your
+credentials, and launch your first agent. Once it's running you can
+add the native macOS app for a full UI — it's the last step of this
+same flow.
+
+## Requirements
+
+- **Python 3.12+**
+- **Node.js 22 LTS** and npm
+- **tmux**
+
+## Install Omnigent
+
+```sh
+curl -fsSL https://omnigent.ai/install.sh | sh
+# or
+uv tool install omnigent
+# or
+pip install omnigent
+# or
+brew install omnigent-ai/tap/omnigent
+```
+
+Run the same command to upgrade an existing installation.
+
+## Set up credentials
+
+```
+omni setup
+```
+
+The wizard detects credentials in your environment and prompts for
+any that are missing. See [Models & Credentials](/docs/build/models#credentials)
+for the full reference.
+
+## Launch Debby
+
+Try your install with Debby, a built-in multi-AI agent that sends every
+question to both Claude and GPT and lets them debate.
+
+```
+omni debby
+```
+
+This launches a web UI and prints the server URL and port. Ask something
+like `What came first, the chicken or the egg?` and watch the models
+challenge each other. See the [Debby reference](/docs/use/builtin-agents/debby)
+for more.
+
+## Add the macOS app
+
+Prefer a native experience? The macOS app gives you a full UI, session
+history, and the ability to connect to a local or remote server — on top
+of the install you just set up. It's optional; everything above already
+works from the terminal.
+
+[Download macOS App](https://omnigent.ai/download/mac/v0.1.1)
+
+Open the downloaded app — it will ask for a server URL. The `omni debby`
+command above prints that URL when it launches the web UI. By default it is
+`http://localhost:6767`. If port 6767 is already taken, the server uses the
+next available port, so check the web UI for the actual URL (e.g.
+`http://localhost:6768`). Paste that into the desktop app to connect.
+
+Now your desktop app is ready to use. Pick **Debby** from the agent picker
+in the UI (along with the other agents we ship) and ask it anything.
+
+This also works with a remote server. See [Shared Server](/docs/deploy/overview)
+to learn how to deploy your own server.
+
+---
+
+## https://omnigent.ai/quickstart/coding-agent
+
+# Tutorial: Coding Agent
+
+Already using Claude Code or Codex? This tutorial shows you what Omnigent
+adds on top: a web UI with file editing and inline comments, mobile access,
+session sharing, and the ability to fork or switch agents mid-conversation.
+None of this is possible with a native coding agent alone.
+
+**Time:** 5 minutes. **Everything runs locally.**
+
+## 1. Start your coding agent
+
+```
+omni claude    # Claude Code
+omni codex     # Codex
+```
+
+Pick whichever you already use. Either command launches the coding agent
+in your terminal and opens a web UI at `http://localhost:6767`. Both are
+connected to the same session and stream output in real time.
+
+## 2. Give it a task
+
+Ask it to do something in your project. For example:
+
+```
+Write a Python function that reads a CSV file and returns the top 5 rows sorted by the second column.
+```
+
+Watch it work in the terminal. Then follow along in the web UI or the
+desktop app. Terminal, browser, and desktop app are three views of the
+same session: type in one, and the others update in real time.
+
+  
+
+Open `http://localhost:6767` in your browser. The web UI shows your
+conversation on the left and a right panel with four tabs: **Files**
+(browse and edit files the agent created), **Agents** (sub-agents if any),
+**Shells** (running terminals), and **Todos**. Everything syncs with the
+terminal in real time.
+
+![Omnigent web UI running a coding agent session](/images/docs/single-harness-demo.gif)
+
+  
+  
+
+Launch the [desktop app](/docs/interact/desktop) and connect it to
+`http://localhost:6767`. You get the same session and the same panels as
+the web UI, plus OS notifications and a dock badge when the agent finishes
+or needs your input, which is handy when you switch away while it works.
+
+![Omnigent desktop app showing an agent conversation alongside the session workspace](/images/docs/desktop-conversation.png)
+
+  
+
+## 3. Try native Omnigent features
+
+Now that your agent has produced some output, try these features in
+the web UI:
+
+### Comment on the agent's work
+
+Click on a specific part of the agent's output and leave an inline
+comment like "make this more concise" or "use pandas instead".
+The agent sees exactly what you're referring to and revises it.
+No need to describe the location in chat.
+
+![Addressing an inline comment on agent output](/images/docs/address-comment.png)
+
+### Edit files directly
+
+Open any file the agent created in the built-in editor. Make changes
+yourself with syntax highlighting. The agent can see your edits and
+continue from there.
+
+![Editing a file in the Omnigent web UI](/images/docs/file-editor.gif)
+
+### Paste an image
+
+Drag a screenshot, mockup, or diagram into the chat. The agent sees it
+alongside your text. Try pasting a screenshot of a UI bug or a design spec.
+
+### Fork a session and switch agents
+
+Fork your current session to try a different approach without affecting
+the original. The fork copies the full conversation history up to that
+point, so you can experiment freely.
+
+Sessions in Omnigent belong to you, not to a specific agent, so a fork
+doesn't have to continue with the agent it started with.
+**Started in Claude Code? Fork the session and continue the fork with
+Codex (or vice versa).** The new agent picks up the full conversation
+history and keeps going, so you can compare how each one tackles the same
+problem from the same starting point.
+
+## 4. Add a policy in plain language
+
+Type this into the chat:
+
+```
+Don't send any PII like emails or credit card numbers to the model. Ask me first if a message contains some.
+```
+
+The agent attaches Omnigent's built-in PII policy to the session. From
+now on, every outgoing model request is scanned, and anything containing
+PII is held for your approval before it leaves your machine. Try it: paste
+a log file with a fake email address and watch the policy step in. This
+is enforcement at the platform layer, something no coding agent can do
+on its own. Cost budgets, access controls, and more work the same way.
+See [Contextual Policies](/docs/policies/overview).
+
+## What's next
+
+- [Try Polly](/quickstart/polly) to see multi-agent coding orchestration in action.
+- [Collaborate from anywhere](/quickstart/collaborate) to deploy a server and share sessions with teammates.
+- [Build a custom agent](/docs/use/custom-agents) with your own tools, prompts, and policies.
+
+---
+
+## https://omnigent.ai/quickstart/polly
+
+# Tutorial: Polly (Multi-AI Coding)
+
+Polly is a multi-agent coding orchestrator. It breaks your task into
+sub-tasks and delegates each one to a different AI agent, with
+cross-vendor code review built in. This tutorial shows you how it
+looks in practice.
+
+**Time:** 5 minutes. **Everything runs locally.**
+
+## 1. Run Polly
+
+```
+omni polly
+```
+
+This starts Polly and opens a web UI at `http://localhost:6767`
+(`omni` will start Polly too).
+
+  
+  ![Running omni from the terminal launches Polly](/images/docs/polly-default-launch.gif)
+  
+    Start Polly with omni polly, or just omni.
+  
+
+## 2. Give it a task
+
+```
+Refactor the authentication module into separate files for OAuth, JWT, and session handling. Add tests for each.
+```
+
+Polly breaks this into sub-tasks and delegates each one to a different
+AI agent. Claude Code implements one piece, Codex implements another in
+parallel, and a different agent reviews each PR.
+
+## 3. Watch it in the web UI or desktop app
+
+  
+
+Open `http://localhost:6767` in your browser. It shows the same session
+as your terminal, updating in real time.
+
+  
+  
+
+Launch the [desktop app](/docs/interact/desktop) and connect it to
+`http://localhost:6767`. It shows the same session as your terminal, and
+adds OS notifications and a dock badge when Polly or a sub-agent needs
+your attention, which is useful while sub-agents work in parallel.
+
+  
+
+The right panel has four tabs: **Files**, **Agents**, **Shells**, and
+**Todos**.
+
+Click the **Agents** tab to see every sub-agent Polly dispatches, with
+live status (working, idle, finished).
+
+- Click any sub-agent to switch to its view and see its conversation, files, and terminal output.
+- Switch to the **Shells** tab to see all running shells side by side.
+- Intervene at any point: send a message to a sub-agent, or switch back to Polly to see the orchestrator's view.
+
+  
+  ![Switching from Polly to sub-agents in the Agents panel](/images/docs/polly-agent-switch.gif)
+  
+    The Agents panel shows Polly and its sub-agents, so you can inspect or steer
+    each delegated worker directly.
+  
+
+This is where multi-AI orchestration becomes tangible: you can watch
+Claude Code and Codex working on different parts of the same task
+simultaneously, each in its own git worktree.
+
+See [Polly reference](/docs/use/builtin-agents/polly) for the full details
+on skills like `/fanout`, `/cross-review`, and `/investigate`.
+
+## What's next
+
+- [Collaborate from anywhere](/quickstart/collaborate) to deploy a server and share sessions with teammates.
+- [Build a custom agent](/docs/use/custom-agents) with your own multi-agent orchestration in YAML.
+
+---
+
+## https://omnigent.ai/quickstart/collaborate
+
+# Tutorial: Collaborate from Anywhere
+
+So far everything runs on your laptop. This tutorial takes you beyond
+that: deploy a server so you can access your agents from your phone,
+share live sessions with teammates, and run agents on cloud sandbox
+hosts that keep working after you close your laptop.
+
+**Time:** 15 minutes. **Requires a Railway account (free tier works).**
+
+## 1. Deploy to Railway
+
+Railway is the quickest way to get a multi-user Omnigent server running.
+
+1. Go to [railway.app](https://railway.app) and import the [Omnigent repo](https://github.com/omnigent-ai/omnigent) from GitHub.
+2. Railway detects the Dockerfile and deploys automatically with a managed Postgres database.
+3. Once deployed, note your server URL (something like `https://omnigent-production-xxxx.up.railway.app`).
+
+## 2. Connect your laptop
+
+```
+omni login https://your-server.up.railway.app
+omni host https://your-server.up.railway.app
+```
+
+`login` authenticates you. `host` registers your machine so the server
+can dispatch agent work to it. You're now running agents through the
+deployed server.
+
+## 3. Access from your phone
+
+Open `https://your-server.up.railway.app` on your phone's browser (the
+same URL from step 1). You see the same web UI with the same sessions.
+Start a task on your laptop, check progress from your phone over lunch,
+answer an approval prompt from the coffee line.
+
+## 4. Share a session with a teammate
+
+In the web UI, click **Share** on any session. Send the link to a
+teammate. They open it in their browser and join in real time.
+
+Now both of you can:
+
+- Watch the agent's output as it streams.
+- Send messages to the agent.
+- Comment on the agent's work.
+- Fork the session to try a different direction without affecting the original.
+
+**Only share EDIT with people you trust to run arbitrary code on your machine.**
+A teammate with EDIT can drive the agent, which runs code on whatever
+machine hosts the session. Share read-only when you can. See
+[Co-driving grants code execution on the host](/docs/collaborate#code-execution-risk)
+for details.
+
+## 5. Run a cloud sandbox host
+
+Want the agent to keep working after you close your laptop? Launch a
+cloud sandbox host from the web UI. The agent runs in a remote container
+and you check results whenever you're ready.
+
+Set it up by adding a `sandbox` section to your server config. See
+[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host) for the full setup guide.
+
+## What's next
+
+- [Set up SSO](/docs/collaborate/auth) with Google, GitHub, or Okta for your team.
+- [Explore other deployment options](/docs/deploy/overview): Docker, Render, Fly.io.
+- [Build a custom agent](/docs/use/custom-agents) that your whole team can use.
+
+---
+
+## https://omnigent.ai/quickstart/policies
+
+# Tutorial: Contextual Policies
+
+Omnigent ships with a set of context-aware policies you can attach to any
+live session, no code required. They watch what your agent is doing and
+step in when it matters: warning you about spend, pausing for approval, or
+blocking a risky action outright. This tutorial walks you through setting
+one up on a running session.
+
+**Time:** 5 minutes. **Everything runs locally.**
+
+## 1. Start a new session
+
+Open the web UI and start a new session with whichever agent you like.
+We'll use a Claude Code session for this walkthrough, but policies work
+the same across every agent type.
+
+![Starting a new Claude Code session in the Omnigent web UI](/images/docs/policy-new-session.png)
+
+## 2. Add a policy to the session
+
+Click the info button `(i)` at the top of the page to open the session
+panel. You'll see the current session cost and a **Policies** section.
+Hit the `+` button, then pick a policy from the list. There are plenty to
+choose from; for this tutorial we'll use **Session Cost Budget**, which
+keeps an eye on how much the session is spending on the model.
+
+The clip below walks through the whole flow: opening the panel, choosing
+the policy, and filling in its settings.
+
+![Opening the session info panel, choosing Session Cost Budget, and configuring its limits](/images/docs/policy-add-policy.gif)
+
+As you can see in the clip, the cost policy gives you two kinds of guardrails:
+
+- **Soft limits**: a list of spend thresholds that act as gentle warnings. When the session cost crosses one, you get a heads-up on the next tool call and can decide whether to keep going. For the demo we'll set a soft limit of `0.01`.
+- **Hard limit**: a ceiling paired with a list of **expensive models**. Once spend passes the hard limit, the session blocks any of those pricey models until you downgrade to a cheaper one. We'll set the hard limit to `0.2` and keep the default expensive-model list (Opus, GPT-5.5).
+
+Once you fill in the values and click **Add**, the policy goes live on the
+session right away: you'll see it listed under **Policies** in the panel.
+
+## 3. Watch the policy in action
+
+Keep an eye on the running cost in the info panel `(i)` as you chat. Now
+let's trip each guardrail.
+
+### Cross the soft limit
+
+Once spend passes your soft limit, ask the agent to run any tool. Instead
+of charging ahead, it pauses and asks whether you want to continue.
+Approve to keep going, or reject to stop the call.
+
+![Approval prompt shown after the session cost crosses the soft limit](/images/docs/policy-soft-limit-approval.gif)
+
+### Hit the hard limit
+
+When spend reaches the hard limit, the policy blocks every following tool
+call that would use an expensive model. The agent tells you what happened
+and waits. Switch to a cheaper model and you're free to continue.
+
+![Expensive models blocked after the session hits the hard cost limit, then unblocked by downgrading](/images/docs/policy-hard-limit-blocked.gif)
+
+That's the whole loop: warn, ask, block. The same pattern applies to every
+built-in policy, so you can mix and match them to fit how you want a
+session to behave.
+
+## What's next
+
+- [Contextual Policies overview](/docs/policies/overview): all the ways to apply policies (chat, Omnigent YAML, or server config).
+- [Builtin Policies](/docs/policies/builtin): the full catalog of policies you can add out of the box.
+- [Custom Policies](/docs/policies/custom): write your own in Python when the builtins don't cover your use case.
+
+---
+
+## https://omnigent.ai/docs/use/coding-agents
+
+# Coding Agents
+
+Run Claude Code or Codex through Omnigent with a single command. No YAML needed.
+You get the full platform on top of the coding agent you already use: web UI,
+persistent sessions, team collaboration, mobile access, and
+[contextual policies](/docs/policies/overview).
+
+```
+omni claude    # Claude Code
+omni codex     # Codex
+```
+
+Under the hood, each coding agent runs as a **harness**: the runtime that
+executes your agent loop. Omnigent wraps it with a common interface and adds
+everything a single harness can't provide on its own.
+
+**[Follow the Coding Agent tutorial](/quickstart/coding-agent)** to get started
+in under a minute.
+
+---
+
+## https://omnigent.ai/docs/use/builtin-agents
+
+# Built-in Multi-AI Agents
+
+Omnigent ships with multi-agent orchestrators that combine different AI agents
+in a single workflow. Both are ready to run out of the box, with more coming.
+
+## [Polly](/docs/use/builtin-agents/polly)
+
+Multi-agent coding orchestrator. Breaks tasks into sub-tasks, delegates to
+Claude Code, Codex, and Pi sub-agents in separate git worktrees, and enforces
+cross-vendor review. Run `omni` (Polly is the default agent).
+
+## [Debby](/docs/use/builtin-agents/debby)
+
+Multi-model brainstorming partner. Sends every question to both Claude and GPT,
+with a `/debate` skill for multi-round critique. Run `omni examples/debby/` from
+a git checkout.
+
+---
+
+Polly and Debby are just YAML configs. You can build your own multi-agent
+orchestrator the same way. See [Custom Agents](/docs/use/custom-agents) to
+learn how.
+
+---
+
+## https://omnigent.ai/docs/use/builtin-agents/polly
+
+# Polly
+
+  Multi-agent coding orchestrator. Polly breaks your task into sub-tasks and
+  delegates each one to a different AI agent, with cross-vendor code review
+  built in.
+
+```
+omni polly
+omni          # also launches Polly (it's the default)
+```
+
+## How it works
+
+Polly is a supervisor that never writes code itself. It decomposes your goal
+into sub-tasks and delegates each one to a sub-agent running on its own harness
+and git worktree. One agent implements, a different agent reviews. Each
+implementer opens its own PR. Polly never merges. The human decides.
+
+| Sub-agent     | Harness         | Role                             |
+| ------------- | --------------- | -------------------------------- |
+| `claude_code` | `claude-native` | Claude Code                      |
+| `codex`       | `codex-native`  | Codex                            |
+| `pi`          | `pi`            | Pi (headless, any gateway model) |
+
+## Skills
+
+- **`/fanout`** runs independent tasks in parallel. Each gets its own git worktree and sub-agent. Each opens its own PR.
+- **`/cross-review`** sends an implementer's diff to a different-vendor reviewer. Blocking issues loop back as fixes until clean.
+- **`/investigate`** delegates read-only work (debugging, audits, code understanding) to sub-agents and synthesizes findings.
+
+## When to use
+
+- Large refactors that benefit from parallel work.
+- Cross-vendor code review where one agent writes and another reviews.
+- Specialized sub-tasks routed to the harness best suited for them.
+
+[Source on GitHub](https://github.com/omnigent-ai/omnigent/tree/main/examples/polly)
+
+---
+
+## https://omnigent.ai/docs/use/builtin-agents/debby
+
+# Debby
+
+  Multi-model brainstorming partner. Debby sends every question to both Claude
+  and GPT simultaneously, then lets them debate and refine each other's answers.
+
+```
+omni debby
+```
+
+## How it works
+
+Ask a question and both models respond independently. You see both perspectives
+side by side. Then use the `/debate` skill to start a multi-round critique where
+each model reviews the other's answer, challenges weak points, and refines its
+own response.
+
+| Sub-agent | Role                                                |
+| --------- | --------------------------------------------------- |
+| `claude`  | Responds and debates with an Anthropic Claude model |
+| `gpt`     | Responds and debates with an OpenAI GPT model       |
+
+## The /debate skill
+
+Type `/debate` after getting initial answers to trigger multi-round critique.
+Each model reviews the other's answer, points out weaknesses, and improves its
+own. The debate converges toward a stronger synthesis than either model would
+produce alone.
+
+## When to use
+
+- Architectural decisions where you want genuinely independent perspectives.
+- Comparing approaches before committing to one.
+- Stress-testing an idea by having two models challenge each other.
+- Catching blind spots a single model might miss.
+
+[Source on GitHub](https://github.com/omnigent-ai/omnigent/tree/main/examples/debby)
+
+---
+
+## https://omnigent.ai/docs/use/custom-agents
+
+# Custom Agents
+
+A custom agent is defined in a short YAML file. No imperative code, no
+framework subclassing. The YAML file **is** the agent. You get the entire
+Omnigent platform for free: web UI, persistent sessions, team collaboration,
+deployment infrastructure, and [contextual policies](/docs/policies/overview).
+
+## Create it with your coding agent
+
+The recommended way to create a custom agent is to ask your coding agent to
+build it for you in natural language:
+
+```
+You: Build me a documentation reviewer agent. It should use Claude as
+     the model, have access to the file system and GitHub, and follow
+     our style guide at docs/STYLE.md.
+
+Agent: Created "docs-reviewer" agent. Opening a new session with it now.
+       You can select it from the session dropdown anytime.
+```
+
+The agent writes the YAML behind the scenes and registers it so you can
+reuse it. If you want to tweak the config later, the YAML file is there
+to edit directly.
+
+## The config file
+
+Every custom agent lives in its own directory with a `config.yaml` at the
+root. You can place the directory anywhere on disk. Run it with:
+
+```
+omni run ./my-agent/              # directory containing config.yaml
+```
+
+## What you can configure
+
+The config file supports these sections:
+
+### [Harnesses](/docs/build/harnesses)
+
+The harness is the runtime that executes your agent loop. Swap one line
+to switch runtimes.
+
+```
+executor:
+  type: omnigent
+  config:
+    harness: claude
+```
+
+### [Models & Credentials](/docs/build/models)
+
+Pick the LLM that powers your harness.
+
+```
+executor:
+  type: omnigent
+  config:
+    harness: claude
+  model: claude-sonnet-4-6
+```
+
+### [Prompts & Skills](/docs/build/prompts)
+
+Set the system prompt inline, or point at a file.
+
+```
+prompt: You are a concise coding assistant.
+
+# Or from a file:
+instructions: AGENTS.md
+```
+
+### [MCP & Tools](/docs/build/tools)
+
+Wire in MCP servers, Python functions, or sub-agents.
+
+```
+tools:
+  github:
+    type: mcp
+    command: uv
+    args: [run, python, -m, github_mcp]
+  summarize:
+    type: function
+    callable: my_package.tools.summarize_file
+```
+
+### [Policies](/docs/policies/overview)
+
+Declarative guardrails in YAML.
+
+```
+policies:
+  rate_limit:
+    type: function
+    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+    factory_params:
+      limit: 50
+```
+
+## Putting it all together
+
+```
+spec_version: 1
+name: coding_agent
+prompt: |
+  You are a coding agent. Inspect files before editing, run targeted tests,
+  and summarize changes with validation results.
+
+executor:
+  type: omnigent
+  config:
+    harness: claude
+  model: claude-sonnet-4-6
+
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    write_paths: [.]
+    allow_network: true
+
+tools:
+  repo_search:
+    type: function
+    callable: my_package.tools.repo_search
+
+policies:
+  rate_limit:
+    type: function
+    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+    factory_params:
+      limit: 50
+```
+
+---
+
+## https://omnigent.ai/docs/build/harnesses
+
+# Harnesses
+
+The harness is the runtime that executes your agent loop. Swap one line to switch runtimes.
+
+```
+executor:
+  harness: claude
+```
+
+## Supported harnesses
+
+| Harness | Runtime | Best for |
+| --- | --- | --- |
+| `claude` | Claude Code | Claude Code out of the box. Add tools, policies, and prompts to customize. |
+| `codex` | Codex | Codex out of the box. Add tools, policies, and prompts to customize. |
+| `pi` | Pi | Headless multi-model worker that runs on any gateway model. Ideal for review, exploration, and read-heavy tasks delegated by a supervisor agent. |
+
+More harness integrations are on the way.
+
+## Swap harnesses
+
+Tools, policies, and other config stay the same across harnesses. Just change the
+`harness` value in your YAML, or override it at runtime:
+
+```
+omni run agent.yaml --harness codex
+```
+
+See [Models & Credentials](/docs/build/models) for how to set up API keys and choose models.
+
+---
+
+## https://omnigent.ai/docs/build/models
+
+# Models & Credentials
+
+Every harness needs a model to run and credentials to reach it. You declare the model in
+your agent YAML, and Omnigent manages the credentials that authenticate to each provider.
+
+## Choose a model
+
+Declare the model in your agent YAML:
+
+```
+executor:
+  harness: claude-sdk
+  model: claude-sonnet-4-6
+```
+
+Override it at runtime without editing the file:
+
+```
+omni run agent.yaml --model claude-sonnet-4-6
+```
+
+### Switch models mid-session
+
+Use the `/model` command inside any running session to switch models on the fly.
+The agent keeps its conversation history and tool state – only the underlying model changes.
+
+## Credentials
+
+Omnigent needs credentials to talk to a model provider.
+
+```
+omni setup
+```
+
+The setup wizard walks you through adding a credential, setting a default, or removing one.
+It also auto-detects credentials already on your machine (API keys in environment variables,
+logged-in CLIs, and local servers) so you can confirm them with one tap.
+
+## Credential types
+
+| Type | What it is |
+| --- | --- |
+| **API key** | A first-party provider key (Anthropic, OpenAI, OpenRouter, and more) |
+| **Subscription** | A Claude Pro/Max or ChatGPT Plus/Pro plan, via the official `claude` / `codex` CLIs |
+| **Gateway** | Bring your own proxy or local model. Just paste a base URL and key. |
+| **Databricks** | A Databricks workspace profile, routing through the [Foundation Model API](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/) |
+
+### API key
+
+Get a key from your provider's dashboard and add it via `omni setup`.
+Supported providers:
+
+Provider credentials can be configured for supported model providers using API keys, subscriptions, gateways, or Databricks profiles.
+
+### Subscription
+
+If you have a **Claude Pro/Max** or **ChatGPT Plus/Pro** plan,
+Omnigent can use your existing CLI login. No API key needed. Just make sure you're
+logged in:
+
+```
+claude auth login    # for Claude Pro/Max
+codex login          # for ChatGPT
+```
+
+`omni setup` auto-detects an active CLI login and offers it as a one-tap option.
+
+### Gateway
+
+Omnigent works with any **OpenAI-compatible** or **Anthropic-compatible** gateway:
+
+Supported OpenAI- or Anthropic-compatible gateways include OpenRouter, LiteLLM, Ollama, Azure, vLLM, and similar providers.
+
+`omni setup` asks for a **base URL** and a **key**. The base URL differs depending on the agent:
+
+| Provider | For | Base URL | Key |
+| --- | --- | --- | --- |
+| **OpenRouter** | Claude Code | `https://openrouter.ai/api` | your OpenRouter key (`sk-or-...`) |
+| **OpenRouter** | Codex / OpenAI agents | `https://openrouter.ai/api/v1` | your OpenRouter key (`sk-or-...`) |
+| **Ollama** (local) | Codex / OpenAI agents | `http://localhost:11434/v1` | any value (Ollama ignores it) |
+
+**Note:** For Claude Code, point at OpenRouter's Anthropic-compatible
+endpoint (`.../api`, **not** `.../api/v1`); for Codex
+and the OpenAI-agents harness, use the OpenAI-compatible `.../api/v1`.
+
+### Databricks
+
+Route models through your Databricks workspace using the
+[Foundation Model API](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/).
+Omnigent resolves credentials from your `~/.databrickscfg` profile.
+
+```
+executor:
+  harness: claude-sdk
+  model: databricks-claude-sonnet-4-6
+  auth:
+    type: databricks
+    profile: 
+```
+
+Model names are prefixed with `databricks-` so Omnigent routes them through your
+workspace automatically. See the
+[Databricks Foundation Model API docs](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/supported-models)
+for the full list of available models.
+
+---
+
+## https://omnigent.ai/docs/build/prompts
+
+# Prompts & Skills
+
+An agent's behavior starts with its system prompt. Skills extend that by providing
+reusable instruction sets the agent can load on demand.
+
+## System prompt
+
+Set your agent's system prompt with either `prompt` or `instructions`. Both take
+inline text; `instructions` also accepts a file path.
+
+```
+# Inline text (either field):
+prompt: You are a concise coding assistant.
+
+# Or equivalently:
+instructions: You are a concise coding assistant.
+
+# From a file (instructions only):
+instructions: prompts/system.md
+```
+
+`instructions` also accepts file paths (resolved relative to the agent YAML's
+directory). If you set both fields, `instructions` wins.
+
+### Auto-discovery
+
+When neither `prompt` nor `instructions` is set, Omnigent scans the agent
+directory for context files in this order:
+
+1. `AGENTS.md`
+2. `CLAUDE.md`
+3. `.cursorrules`
+
+The first file found becomes the system prompt. No merge, first wins.
+
+## Skills
+
+Skills are reusable instruction bundles that your agent can load at runtime via the
+`/skill-name` slash command or the built-in `load_skill` tool. Each skill is a
+markdown file with structured instructions. Think of it as a recipe the agent
+follows for a specific task.
+
+### How skills are discovered
+
+Omnigent discovers skills from two sources:
+
+**1. Bundled skills**, shipped with the agent itself:
+
+```
+my-agent/
+  config.yaml
+  skills/
+    code-review/
+      SKILL.md
+    deploy/
+      SKILL.md
+```
+
+Skills in the agent's `skills/` directory are always available. The agent can
+invoke each skill by its slash command, such as `/code-review`, or load it with
+`load_skill`.
+
+**2. Project and user skills**, discovered from the filesystem:
+
+Omnigent walks up the directory tree from the agent's working directory, looking for
+skills in `.agents/skills/` and `.claude/skills/` at each level, plus your home
+directory for global skills:
+
+- `/.agents/skills/`: available to any agent run from this project
+- `/.claude/skills/`: same, Claude Code convention
+- `~/.agents/skills/`: available to every agent on your machine
+- `~/.claude/skills/`: same, Claude Code convention
+
+This works like `.gitignore`. Drop a skill folder in your project and every agent
+picks it up automatically.
+
+### Existing Claude Code skills
+
+If you already have skills in `.claude/skills/`, they work alongside Omnigent
+bundled skills automatically. Omnigent discovers them during its directory walk.
+
+One caveat: Omnigent's skill loader only reads `name` and `description` from
+SKILL.md frontmatter. Claude Code's additional frontmatter fields are handled
+differently depending on your harness:
+
+| Frontmatter field | Omnigent skill loader | `claude-native` harness |
+| --- | --- | --- |
+| `name` | Parsed | Parsed |
+| `description` | Parsed | Parsed |
+| `disable-model-invocation` | Ignored | Honored |
+| `allowed-tools` | Ignored | Honored |
+
+If you need `disable-model-invocation` or `allowed-tools` behavior, use the
+`claude-native` harness and place those skills in `.claude/skills/`.
+
+### SKILL.md format
+
+Each skill lives in its own folder and must have a `SKILL.md` file with YAML
+frontmatter:
+
+```
+skills/
+  my-skill/
+    SKILL.md
+    references/      # optional resource files
+      style-guide.md
+    scripts/         # optional scripts
+    assets/          # optional assets
+```
+
+The `SKILL.md` file has two parts: YAML frontmatter and markdown content.
+
+```
+---
+name: code-review
+description: >-
+  Review code changes for correctness, tests, security, and
+  maintainability. Use when asked to review a PR or diff.
+---
+
+# Code review
+
+## Procedure
+1. Read the diff carefully.
+2. Check for correctness and edge cases.
+3. Verify tests cover the changes.
+4. Flag security concerns.
+5. Summarize findings as blocking / non-blocking / suggestions.
+
+## What to look for
+- Off-by-one errors
+- Missing error handling
+- Untested branches
+...
+```
+
+**Required frontmatter fields:**
+
+| Field | Description |
+| --- | --- |
+| `name` | Unique skill identifier. Used in slash commands (`/code-review`) and `load_skill` calls. |
+| `description` | One-line description. Shown to the agent so it knows when to use the skill. |
+
+The markdown body after the frontmatter is the full instruction set. It can be as long and
+detailed as needed.
+
+### Resource files
+
+Skills can bundle reference materials in `references/`, `scripts/`, and `assets/`
+subdirectories. When a skill is loaded, the agent sees a listing of available files
+and can read them with the `read_skill_file` tool:
+
+```
+skills/
+  deploy/
+    SKILL.md
+    references/
+      runbook.md
+      checklist.md
+    scripts/
+      validate.sh
+```
+
+### Example: Polly's skills
+
+The [Polly orchestrator](https://github.com/omnigent-ai/omnigent/tree/main/examples/polly)
+bundles three skills that define its workflows:
+
+```
+examples/polly/
+  config.yaml
+  skills/
+    investigate/
+      SKILL.md      # read-only investigation workflow
+    fanout/
+      SKILL.md      # parallel task dispatch
+    cross-review/
+      SKILL.md      # cross-vendor PR review
+```
+
+Each skill defines a step-by-step procedure the orchestrator follows. For example, the
+`investigate` skill instructs Polly to decompose a question into bounded tasks,
+dispatch sub-agents, and synthesize their reports.
+
+### Filter discovered skills
+
+By default, all project and user skills are loaded (`skills: all`). You can
+restrict this in your agent YAML:
+
+```
+# Load all discovered skills (default):
+skills: all
+
+# Load no discovered skills (hermetic):
+skills: none
+
+# Load only specific discovered skills by name:
+skills:
+  - code-review
+  - deploy
+```
+
+This only affects discovered skills (from `.agents/skills/` and `.claude/skills/`).
+Bundled skills in the agent's own `skills/` directory are always available regardless.
+
+---
+
+## https://omnigent.ai/docs/build/tools
+
+# MCP & Tools
+
+Tools give your agent capabilities beyond conversation. They are declared under the
+`tools` key in your agent YAML, each identified by a name you choose.
+
+Omnigent supports four tool types: MCP servers, Python functions, sub-agents, and inherited
+tools.
+
+## MCP servers
+
+MCP (Model Context Protocol) servers expose tools over a standard protocol.
+
+### Bundled servers
+
+The following MCP servers are available out of the box. No setup or configuration needed:
+
+| Server | What it connects to |
+| --- | --- |
+| Google | Drive, Docs, Sheets, Slides, Gmail, Calendar |
+| GitHub | Issues, PRs, repos, code search |
+| Slack | Channels, messages, threads |
+| Jira | Issues, projects, search |
+| Confluence | Pages, spaces, search |
+| Glean | Enterprise search |
+| PagerDuty | Incidents, on-call |
+
+To restrict which tools from a bundled server your agent can access, use the
+`tools` filter or configure [policies](/docs/policies/overview).
+
+### Custom servers
+
+For MCP servers not in the bundled set, declare them in your agent YAML. Transport is
+inferred: use `command` for local stdio servers, `url` for remote HTTP/SSE servers.
+
+**Local command (stdio):**
+
+```
+tools:
+  my-server:
+    type: mcp
+    command: node
+    args: [dist/server.js]
+    env:
+      API_KEY: ${MY_API_KEY}          # env vars expanded at runtime
+```
+
+**Remote URL (HTTP/SSE):**
+
+```
+tools:
+  docs-api:
+    type: mcp
+    url: https://example.com/mcp
+    headers:
+      Authorization: "Bearer ${API_TOKEN}"   # env vars expanded at runtime
+```
+
+The optional `tools` list filters which MCP tools are exposed to the agent. Omit
+it to expose everything the server provides.
+
+### Authentication
+
+As shown in the examples above, custom MCP servers accept credentials through:
+
+- **`env`**: environment variables passed to stdio server processes (e.g., `API_KEY: ${MY_API_KEY}`)
+- **`headers`**: HTTP headers for remote servers, with `${...}` env var expansion (e.g., `Authorization: "Bearer ${API_TOKEN}"`)
+- **`profile`** (under `auth:`): resolves an OAuth token from your `~/.databrickscfg`:
+
+```
+tools:
+  internal-api:
+    type: mcp
+    url: https://my-workspace.databricks.com/mcp
+    auth:
+      profile: my-profile
+```
+
+## Python function tools
+
+Expose any Python callable as a tool. The function is referenced by its fully qualified
+
+```
+tools:
+  summarize_file:
+    type: function
+    description: Summarize a local text file.
+    callable: my_package.tools.summarize_file
+    parameters:
+      type: object
+      properties:
+        path:
+          type: string
+      required: [path]
+```
+
+The JSON Schema under `parameters` is optional. If you omit it, Omnigent
+auto-generates the schema from the function's type annotations and signature.
+
+## Sub-agent tools
+
+Declare agents as tools so a supervisor agent can delegate work to them. You can define a
+sub-agent inline or reference an external config file.
+
+### Inline definition
+
+Define the sub-agent's full spec directly in the `tools` block:
+
+```
+tools:
+  reviewer:
+    type: agent
+    description: Review proposed code changes.
+    prompt: |
+      You are a careful code reviewer. Focus on correctness,
+      tests, security, and maintainability.
+    executor:
+      harness: claude-sdk
+      model: claude-sonnet-4-6
+    os_env: inherit
+    pass_history: true
+    max_sessions: 2
+```
+
+### External config file
+
+Point to a separate YAML file containing the sub-agent's spec. This is useful when the
+sub-agent is complex, shared across multiple parents, or maintained independently:
+
+```
+tools:
+  reviewer:
+    type: agent
+    description: Review proposed code changes.
+    config: agents/reviewer.yaml
+```
+
+The `config` path resolves relative to the parent agent's YAML directory.
+The referenced file is a standard agent config that can define its own tools, skills,
+harness, and policies.
+
+A sub-agent tool can have its own [harness](/docs/build/harnesses), model, tools, and
+[policies](/docs/policies/overview). The `pass_history` flag controls whether the
+parent's conversation history is forwarded, and `max_sessions` limits concurrent
+invocations.
+
+## Tool inheritance
+
+Use `inherit` to pass one of the parent's tools down to a sub-agent:
+
+```
+tools:
+  researcher:
+    type: agent
+    prompt: Research and summarize.
+    tools:
+      word_count: inherit    # gets word_count from parent
+```
+
+The sub-agent receives the same tool definition the parent has, with no duplication.
+
+Use `spec: self` for a sub-agent that clones the entire parent spec. It gets the
+same tools, prompt, and configuration as the parent agent.
+
+## Combine tool types
+
+A single agent can mix all tool types. The `tools` block is a flat map of names
+to definitions:
+
+```
+tools:
+  github:
+    type: mcp
+    command: uv
+    args: [run, python, -m, my_package.github_mcp]
+
+  summarize_file:
+    type: function
+    callable: my_package.tools.summarize_file
+
+  reviewer:
+    type: agent
+    config: agents/reviewer.yaml
+```
+
+---
+
+## https://omnigent.ai/docs/interact/terminal
+
+# Terminal
+
+The terminal is Omnigent's default interface: keyboard-first, with streaming output and
+real-time tool execution. If you already live in a terminal, this is the fastest way to work
+with your agent.
+
+Every interface (terminal, web UI, mobile, and desktop) connects to the same persistent,
+shareable session, so you can start work in one place and keep going anywhere.
+
+![Omnigent terminal session](/images/docs/terminal.png)
+
+## Start a session
+
+The terminal interface requires `tmux`, so install it first if you don't have it:
+
+```
+# macOS
+brew install tmux
+
+# Debian / Ubuntu
+apt install tmux
+```
+
+Then launch an agent:
+
+```
+omni claude                          # Claude Code
+omni codex                           # Codex
+omni run agent.yaml                  # custom omnigent
+omni run ./my-agent/                 # directory with config.yaml
+```
+
+`omni claude` and `omni codex` launch an existing coding agent with
+Omnigent's UI. No YAML needed. See the
+[Coding Agent tutorial](/quickstart/coding-agent).
+
+`omni run` starts a custom omnigent from a YAML config. See
+[Custom Agents](/docs/use/custom-agents) for how to write one.
+
+### CLI overrides
+
+Override executor values at runtime without editing the YAML:
+
+```
+omni run agent.yaml --harness codex --model gpt-4.1-mini
+```
+
+The `--harness` and `--model` flags map directly to the `executor` block. This lets
+you reuse the same config across different LLM backends.
+
+From here, the agent streams its output as it thinks and acts. Tool calls run in real time,
+so you watch file writes, shell commands, and API calls land as they happen. The session also
+stays in sync with the [Web UI](/docs/interact/web-ui) both ways: run the
+agent in your terminal and glance at the browser whenever you want file diffs or inline
+comments.
+
+## Sessions and conversations
+
+A session is a conversation. Every message, tool call, and file change lives in one
+continuous thread. Sessions are the core unit of work in Omnigent, and three properties make
+them useful:
+
+- **Agent-independent.** A session belongs to you, not to a specific agent. Switch agents mid-conversation: start with a planner, switch to a coder, bring in a reviewer. The full history carries forward.
+- **Persistent.** Every session has a conversation ID and lives beyond the current terminal window. Close your laptop, come back tomorrow, resume where you left off: `omni resume `
+- **Shared.** Any omnigent can read the history of other sessions you have access to. When you spin up a new task, the agent already has context from previous work.
+
+## When to use the terminal
+
+The terminal shines when you want to stay close to the command line:
+
+- **Fast iteration.** Keyboard-first, no context switching to a browser.
+- **SSH environments.** Works over SSH where a browser isn't available.
+- **Low-bandwidth connections.** Text-only, minimal overhead.
+- **Scripting and automation.** Composable with other CLI tools.
+
+---
+
+## https://omnigent.ai/docs/interact/web-ui
+
+# Web UI
+
+The web UI starts automatically with every session. When the server launches, the URL is
+printed in your terminal. Open it in any browser to get started.
+
+![Omnigent web UI](/images/docs/single-harness-demo.gif)
+
+## Session management
+
+See all your sessions in one place. Resume any previous conversation, start new ones, switch
+between them. Switch agents mid-conversation directly from the UI.
+
+Sessions persist across browser refreshes and server restarts.
+
+### Browser-first mode
+
+If you prefer to work in the browser rather than the terminal UI, start the server and host
+daemon once from the command line:
+
+```
+omni server start   # start the local server + web UI in the background
+omni host           # (separate terminal) register this machine as a host
+```
+
+After that, open **http://localhost:6767** and drive the agent entirely from
+the browser; no further terminal interaction needed.
+
+## File editor
+
+A full markdown editor with syntax highlighting for browsing and editing every file your
+Omnigent touches.
+
+Your Omnigent drafts a documentation page. You open it in the editor, read it properly
+formatted, and make direct edits. Your Omnigent generates a config file. You review it with
+full syntax highlighting.
+
+Use cases: updating documentation sites, reviewing Omnigent-generated plans, editing configs.
+
+## Code viewer and diffs
+
+Review what your Omnigent changed before accepting. Syntax-highlighted diffs show exactly
+what was added, modified, or removed.
+
+![Omnigent file editor](/images/docs/file-editor.gif)
+
+## Inline comments and addressing
+
+Instead of typing in chat "change the third paragraph to be more concise," you click
+on that paragraph and leave a comment: "too verbose, tighten this up." The Omnigent
+sees exactly what you're referring to and revises it.
+
+**Addressing** closes the loop: resolve a comment and the Omnigent acts on the
+feedback. The workflow is: Omnigent proposes, you annotate, Omnigent revises.
+
+Where this matters most:
+
+- **Reviewing plans before execution.** Annotate the steps you want changed before the Omnigent starts building.
+- **Editing drafted docs.** Leave line-level feedback instead of rewriting in chat.
+- **Iterating on configs.** Flag the fields that need adjustment.
+
+![Addressing an inline comment](/images/docs/address-comment.png)
+
+## Multi-modal input
+
+Paste images, screenshots, diagrams, and mockups directly into the conversation. The
+Omnigent sees them alongside your text. Useful for frontend work where describing a layout
+issue in words is slower than screenshotting it.
+
+## Collaboration
+
+Share your session with teammates for real-time co-driving. Multiple people see the same
+conversation, leave comments, and interact with the Omnigent simultaneously.
+
+See [Pair Programming](/docs/collaborate) for details on sharing,
+permissions, and multi-user workflows.
+
+---
+
+## https://omnigent.ai/docs/interact/mobile
+
+# Mobile
+
+The same session is accessible on terminal, browser, and phone simultaneously. Start on your
+laptop, continue on your phone.
+
+![Omnigent running on a mobile browser](/images/docs/mobile-demo.gif)
+
+## The use case
+
+Long-running agents don't need you at your desk. Start a coding task, head to lunch,
+check progress from your phone. Your Omnigent hits a question. Answer it from the coffee
+line. Want to review what it produced? Browse the files right there.
+
+Everything syncs in real time across devices.
+
+## How to access
+
+`localhost:6767` is only reachable from the machine running the server. To access
+from your phone:
+
+**Same network.** Use your machine's local IP instead of localhost (e.g.,
+`http://192.168.x.x:6767`). Your phone needs to be on the same Wi-Fi network.
+
+**From anywhere.** Deploy the Omnigent server beyond localhost. See
+[the deployment docs](/docs/deploy/overview) for options.
+
+No app to install. Just open the URL in your mobile browser.
+
+## What works on mobile
+
+The full Web UI, touch-optimized: chat, monitor sub-agents, browse files, view code changes,
+and leave inline comments.
+
+---
+
+## https://omnigent.ai/docs/interact/desktop
+
+# Desktop App
+
+The Omnigent desktop app gives you the full
+[web UI](/docs/interact/web-ui) in a native window, plus OS-level features
+a browser can't provide: notifications when your agent needs attention, a dock badge
+showing how many sessions are waiting, and multiple independent windows.
+
+[Download macOS App](https://omnigent.ai/download/mac/v0.1.1)
+
+![Omnigent native desktop app showing the session chat and file workspace](/images/docs/desktop-app.png)
+
+## Why use it over the browser?
+
+- **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing.
+- **Dock badge.** See at a glance how many sessions need your attention, without switching to the app.
+- **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
+
+Everything else (sessions, file editor, inline comments, collaboration) works exactly the
+same as the web UI.
+
+## Prerequisites
+
+- **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.
+- **At least one runner.** A [runner](/docs/deploy/overview) is the process that actually executes your agent. If you have [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host) set up, you'll be able to launch them from the app. Otherwise, register your machine by running `omni host` from your CLI.
+
+## Install
+
+  
+    
+      Platform
+      Format
+      Status
+    
+  
+  
+    
+      macOS
+      
+        .dmg
+      
+      
+        Download
+      
+    
+    
+      Linux
+      
+        .AppImage or .deb
+      
+      Coming soon
+    
+    
+      Windows
+      
+        Installer (.exe)
+      
+      Coming soon
+    
+  
+
+## Get started
+
+![Omnigent desktop app first-launch setup screen](/images/docs/desktop-start.png)
+
+1. **Launch the app.** On first launch, you'll see a setup screen.
+2. **Enter your server URL.** `http://localhost:6767` if running locally, or your deployed server URL (e.g. `https://your-app.onrender.com`).
+3. **Start working.** The app connects and shows the same UI you'd see in a browser.
+
+![Omnigent desktop app showing an agent conversation alongside the session workspace](/images/docs/desktop-conversation.png)
+
+The app remembers your server URL for future launches. To change it later, go to
+**Server > Change Server**.
+
+## Work with multiple servers
+
+Each window connects to one server. To work with multiple servers at the same time:
+
+1. Go to **Server > New Window on Different Server**
+2. Enter the URL of the second server
+
+Notifications and badge counts are combined across all connected servers.
+
+![Omnigent desktop app setup screen prompting for the server URL to connect to](/images/docs/desktop-connect.png)
+
+---
+
+## https://omnigent.ai/docs/collaborate
+
+# Pair Programming
+
+Omnigent is multi-user. Once your server is reachable by your team (see
+[Shared Server](/docs/deploy/overview)), you can share a live
+session with a link, let a teammate co-drive your Omnigent, or fork a conversation so someone
+can continue independently. The same session works across
+[terminal](/docs/interact/terminal), [web UI](/docs/interact/web-ui), and
+[mobile](/docs/interact/mobile) simultaneously.
+
+## Co-drive
+
+A teammate attaches to your running session and their messages execute on your machine.
+Great for pairing or handing the keyboard to a domain expert mid-investigation.
+
+  
+    In the [web UI](/docs/interact/web-ui), hit 
+    Share and send the link to your teammate.
+    
+      
+        Share grants one of two permission levels: VIEW 
+        (read-only, teammates watch the session stream) or EDIT 
+        (teammates can co-drive and send messages).
+      
+    
+  
+  
+    From the terminal, run:
+    
+      {"omni attach "}
+    
+  
+
+Teammates see everything in real time: messages, tool calls, and file changes stream to every
+connected viewer.
+
+Co-driving grants code execution on the host
+
+Only share **EDIT** with people you trust to run arbitrary code on your machine.
+A session runs commands in a non-sandboxed process on whatever machine hosts it, so a teammate
+with EDIT can drive the agent and gets the same access to your filesystem, credentials, and
+network.
+
+To collaborate more safely, share read-only instead, or host the session on a
+[cloud sandbox host](/docs/deploy/cloud-sandbox-host) so the agent runs in
+an isolated remote container rather than on your personal machine. To constrain what the
+agent can touch even on a trusted host, apply an
+[OS sandbox](/docs/policies/os-sandbox) policy.
+
+## Fork
+
+Clone a conversation and continue independently from the fork point. The original session is
+unaffected.
+
+In the [web UI](/docs/interact/web-ui), click **Clone Session**.
+
+From the terminal:
+
+```
+omni run --fork 
+```
+
+Forking copies the full conversation history up to the fork point. From there, each session
+diverges independently.
+
+---
+
+## https://omnigent.ai/docs/collaborate/auth
+
+# Auth & SSO
+
+Omnigent supports three ways to authenticate users. Pick the one that fits your setup:
+
+| Mode                                          | When to use                                                              |
+| --------------------------------------------- | ------------------------------------------------------------------------ |
+| [Built-in accounts](#built-in-accounts)       | Standalone deploy, no external IdP. Username/password with invite links. |
+| [Single sign-on (OIDC)](#single-sign-on-oidc) | Your own IdP: Google, GitHub, Okta, Microsoft.                           |
+| [Header-based auth](#header-based-auth)       | Behind an existing SSO proxy that injects `X-Forwarded-Email`.           |
+
+## Built-in accounts
+
+If you deployed with [Docker](/docs/deploy/overview#docker-compose) or a
+[cloud platform](/docs/deploy/overview#cloud-platforms), auth is already
+enabled by default with built-in accounts.
+
+### Non-Docker deploys
+
+For non-Docker deploys, enable built-in accounts manually:
+
+```
+OMNIGENT_AUTH_ENABLED=1 omni server start
+```
+
+1. Create the first admin.
+   - For better security, the server never auto-generates a password. When no admin is configured, the server will report `needs_setup`.
+   - To configure, open the web UI and create an admin account or run `omni server` in a terminal and answer the username and password prompt.
+   - For headless deploys, preset the password with `--admin-password` or `OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD`.
+2. Invite teammates.
+   - Go to **Admin > Members > Invite** to create a single-use invite link.
+   - No email server needed; just send the link directly. Signup is invite-only.
+
+## Single sign-on (OIDC)
+
+Let your team sign in with Google, GitHub, Okta, or Microsoft. Adding an OIDC issuer flips
+the mode to SSO. No extra flag needed.
+
+Set the following in `deploy/docker/.env`:
+
+```
+OMNIGENT_OIDC_ISSUER=https://accounts.google.com
+OMNIGENT_DOMAIN=agents.yourcompany.com
+OMNIGENT_OIDC_CLIENT_ID=...
+OMNIGENT_OIDC_CLIENT_SECRET=...
+```
+
+```
+docker compose up -d    # restart to apply
+```
+
+The only outside step is creating an app with your provider (e.g. Google Cloud Console, or
+GitHub > Settings > Developer settings) to get the client ID and secret. Set its
+callback URL to `https:///auth/callback`.
+
+## Header-based auth
+
+If your server sits behind an existing SSO proxy (e.g. OAuth2 Proxy, Cloudflare Access) that
+injects a trusted header, Omnigent can read the user identity directly from
+`X-Forwarded-Email`. No additional auth configuration is needed on the Omnigent
+side.
+
+## Access control
+
+Once auth is enabled, control who can sign in and what they can access.
+
+Scope depends on the auth mode. `allowed_domains` applies to OIDC sign-ins
+only; leaving it empty means no domain restriction. Built-in accounts are invite-only, so
+domain allowlists do not apply there, and header-based auth delegates identity entirely to
+your proxy. The `admins` list works in both built-in accounts and OIDC modes.
+
+### Domain allowlist
+
+Restrict sign-ups to specific email domains. In your server config (`/data/config.yaml`):
+
+```
+allowed_domains: [yourcompany.com]
+admins: [you@yourcompany.com]
+```
+
+### Invite outsiders
+
+Need to let in someone outside your domain, like a contractor? Set
+`OMNIGENT_OIDC_ALLOW_INVITES=1` and send them a one-time invite link.
+
+## Migration
+
+Already using one auth mode and want to switch? These commands move your existing users
+across without losing sessions or admin rights.
+
+### From built-in accounts to SSO
+
+If you started with built-in accounts and want to switch to OIDC, one command brings
+everyone across so they keep their sessions and admin rights:
+
+```
+omni debug migrate-accounts-to-oidc  --domain yourcompany.com --commit
+```
+
+Without `--commit` the command is a dry run that reports what would change
+without modifying anything.
+
+---
+
+## https://omnigent.ai/docs/deploy/overview
+
+# Shared Server
+
+Everything in the previous sections runs on your laptop. That's the fastest way to get
+started, but when you want your Omnigent accessible from your phone, shareable with
+teammates, or running while your laptop sleeps, you need to deploy.
+
+This section covers Omnigent's architecture, the options for hosting the server, and the
+options for hosting the runner.
+
+Omnigent has three components: the server, the runner, and the UI.
+
+  
+  ![Omnigent architecture: CLI agents and custom agents run through a runner (on your machine, Modal, or Daytona), then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API.](/images/architecture.svg)
+
+## Server
+
+The **server** is the central coordinator. It manages:
+
+- **Session history.** Every conversation, message, and tool call is persisted in a [database](/docs/deploy/database) (Postgres or SQLite).
+- **Artifacts.** Files, Omnigent bundles, and uploads.
+- **Catalog.** Registered and built-in Omnigent specs.
+- **MCP proxy & policies.** Proxies MCP tool calls with server-side policy enforcement.
+- **Skills.** Skill definitions that Omnigent can load.
+- **Auth & accounts.** User authentication (built-in accounts or OIDC/SSO).
+
+There are a few options for hosting the server on the cloud:
+
+### Docker Compose
+
+Deploy the Omnigent server with Docker Compose. The stack includes the server and a Postgres
+database.
+
+```
+cd deploy/docker
+./bootstrap.sh          # generates DB password + cookie secret into .env
+docker compose up -d    # Omnigent server + Postgres
+```
+
+Key variables in `.env` (See [Auth & SSO](/docs/collaborate/auth) for details on multi-user auth):
+
+| Variable                      | Purpose                                         |
+| ----------------------------- | ----------------------------------------------- |
+| `DATABASE_URL`                | Postgres connection string                      |
+| `OMNIGENT_AUTH_ENABLED`       | Enable multi-user auth (default: `1` in Docker) |
+| `OMNIGENT_OIDC_COOKIE_SECRET` | Session cookie secret                           |
+| `OMNIGENT_OIDC_ISSUER`        | OIDC issuer URL (enables SSO)                   |
+| `OMNIGENT_OIDC_CLIENT_ID`     | OIDC client ID                                  |
+| `OMNIGENT_OIDC_CLIENT_SECRET` | OIDC client secret                              |
+
+No admin password is auto-generated. On first boot the server reports
+`needs_setup`: open the web UI and create the admin account there, or set
+`OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD` in `.env` to preset it for headless deploys.
+
+### Cloud platforms
+
+Deploy the server to a cloud platform with managed infrastructure.
+
+| Platform                | Database           | Deploy method                                                                              |
+| ----------------------- | ------------------ | ------------------------------------------------------------------------------------------ |
+| **Railway**             | Managed Postgres   | Import repo from GitHub                                                                    |
+| **Render**              | Managed Postgres   | [One-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent) |
+| **Fly.io**              | SQLite on volume   | `fly deploy` from CLI                                                                      |
+| **Hugging Face Spaces** | SQLite (ephemeral) | Docker Space                                                                               |
+
+**Railway & Render.** On Railway, import the repo and it handles the
+rest, including managed Postgres; Render provisions the app and managed Postgres over
+HTTPS via [one-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent).
+Both default to built-in `accounts` auth, so multi-user works out of the box.
+
+**Fly.io.** Deploy with `fly deploy` using SQLite on a persistent
+volume. Configuration files are in `deploy/fly/` in the repo.
+
+```
+cd deploy/fly
+fly deploy
+```
+
+The server idles around ~275 MB RSS. Fly's default 256 MB machine will OOM-loop. The
+`fly.toml` in the repo pins a 1 GB machine. If you changed it, run `fly scale memory 1024`.
+
+**Hugging Face Spaces.** Demo-grade Docker Space with SQLite. See
+`deploy/hf-spaces/` in the repo.
+
+**Warning:** On Hugging Face Spaces, disk is ephemeral by default and
+persistent storage is a paid add-on. Data resets on
+every restart. Use this for demos only.
+
+## Runner
+
+The **runner** is the per-session process that executes Omnigent loops. It
+manages the harness (Claude Code, Codex, Claude SDK, etc.), runs tools, and streams events
+back to the server over WebSocket. The server starts runners on a **host**: a
+machine you register with the server.
+
+By default, the host is your laptop. Register it with:
+
+```
+omni login   // if auth is enabled
+omni host 
+```
+
+This is why your local Claude Code or Codex installation "just works." Runners
+started on your laptop have direct access to your machine's tools, files, and
+credentials.
+
+However, moving the runner to a
+[cloud sandbox host](/docs/deploy/cloud-sandbox-host) gives you:
+
+- **No laptop dependency.** Your Omnigent runs even when your machine is off.
+- **Cloud-native tooling.** Your Omnigent can access cloud resources directly.
+- **Isolation.** Each Omnigent runs in its own container, separate from your local environment.
+- **Scalability.** Run many Omnigents in parallel without taxing your machine.
+
+We currently support the [Modal](https://modal.com) and [Daytona](https://www.daytona.io)
+platforms, with more integrations on the way. Check out the
+[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host) page for more detailed setup instructions.
+
+## UI
+
+The [web UI](/docs/interact/web-ui), [terminal UI](/docs/interact/terminal), and
+[mobile UI](/docs/interact/mobile) all talk to the server. They never talk
+to the runner directly. This means:
+
+- If the server is on your laptop, UI access is local only
+- If the server is deployed to the cloud, any device can reach it, including your phone. Notably, cloud-hosted servers also allow you to collaborate with other users on the same server.
+
+## Collaboration
+
+Once the server is cloud-hosted, Omnigent is multi-user: share a live session with a link,
+let a teammate co-drive your Omnigent, or fork a conversation so someone can continue
+independently. This has moved to its own page — see
+[Pair Programming](/docs/collaborate) for co-drive, sharing with VIEW/EDIT
+permissions, and forking.
+
+---
+
+## https://omnigent.ai/docs/deploy/database
+
+# Database
+
+The Omnigent server needs a database to persist session history, user accounts, and
+artifacts. Two backends are supported. Both use the same schema and migrations.
+
+## Postgres (recommended)
+
+Postgres is the production choice. It is required if you run more than one server instance.
+
+- Auto-provisioned on [Render and Railway](/docs/deploy/overview#cloud-platforms).
+- For other platforms, bring your own. The fastest option is [Neon](https://pg.new): create a database and set `DATABASE_URL`.
+- Any `postgres://` or `postgresql://` URL works. The entrypoint normalizes it automatically.
+
+```
+DATABASE_URL=postgresql://user:pass@host:5432/omnigent
+```
+
+## SQLite
+
+SQLite is the zero-dependency option for demos and single-instance deploys.
+
+```
+DATABASE_URL=sqlite:////data/artifacts/chat.db
+```
+
+The `.db` file lives on the platform's persistent disk or volume.
+
+## Comparison
+
+|                 | Postgres                    | SQLite             |
+| --------------- | --------------------------- | ------------------ |
+| Multi-instance  | Yes                         | No                 |
+| Managed backups | Yes (with managed Postgres) | No                 |
+| Setup required  | Database provisioning       | None               |
+| Best for        | Production                  | Demos, single-user |
+
+**Warning:** SQLite stores its `.db` file on local disk, so it
+needs a persistent disk or volume. On platforms with ephemeral disk, such as Hugging Face
+Spaces (persistent storage there is a paid add-on), the database is wiped on every
+restart; use Postgres there. See the
+[deployment overview](/docs/deploy/overview) page for platform specifics.
+
+## First boot
+
+First boot against a remote Postgres runs migrations over the network. This takes
+approximately one minute on services like Neon. Subsequent boots are fast.
+
+Make sure your platform's healthcheck grace period tolerates the initial migration time.
+A 120-second grace period is typically sufficient.
+
+---
+
+## https://omnigent.ai/docs/deploy/cloud-sandbox-host
+
+# Cloud Sandbox Host
+
+A cloud sandbox host moves the Omnigent runner from your laptop to a remote container. Your agent
+keeps working after you close your laptop, in an isolated environment with cloud compute.
+
+Looking to restrict what your agent can access on the filesystem and network instead?
+That's [Omnibox](/docs/omnibox).
+
+|                  | Local runner             | Cloud sandbox host     |
+| ---------------- | ------------------------ | ---------------------- |
+| **Availability** | Stops when laptop closes | Runs independently     |
+| **Compute**      | Your CPU and memory      | Cloud compute          |
+| **Environment**  | Local files              | Isolated, reproducible |
+| **Best for**     | Interactive work         | Long-running tasks     |
+
+Omnigent currently supports [Modal](https://modal.com) and [Daytona](https://www.daytona.io)
+as hosting platforms for cloud sandbox hosts, with more on the way.
+
+|                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) |
+| ------------------------ | ---------------------------------- | --------------------------------- |
+| **Runner lifetime**      | 24 hours (platform cap)            | No cap (runs until deleted)       |
+| **Credential injection** | Named secrets (Modal secret store) | Env vars copied from server       |
+| **Free-tier egress**     | Full egress                        | Allowlisted domains only          |
+
+## Server-managed (recommended)
+
+Configure your server once and anyone on the team can launch a cloud sandbox host from the
+web UI.
+
+### 1. Install
+
+```
+pip install 'omnigent[modal]'       # for Modal
+pip install 'omnigent[daytona]'     # for Daytona
+```
+
+### 2. Set provider credentials
+
+**Modal:** run `modal setup` to authenticate, or set
+`MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET` on the server.
+
+**Daytona:** create an API key in the [Daytona dashboard](https://app.daytona.io)
+(Dashboard > Keys) and set it on the server:
+
+```
+export DAYTONA_API_KEY=dtn_…
+```
+
+### 3. Configure the cloud sandbox host
+
+Add a `sandbox` section to your server config YAML (`~/.omnigent/config.yaml` on a laptop,
+`/data/config.yaml` in Docker). This is the same file where you define
+[server-wide policies](/docs/policies/overview).
+
+Only `provider` and `server_url` are required. The provider block is optional.
+
+**Modal:**
+
+```
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+  modal:
+    image: ghcr.io/omnigent-ai/omnigent-host:latest  # optional, official image by default
+    secrets: [omnigent-llm]                        # Modal secrets with LLM API keys
+```
+
+`secrets` injects [Modal secrets](https://modal.com/docs/guide/secrets)
+(API keys, gateway URLs) into the cloud sandbox host. Values stay in Modal's secret
+store.
+
+**Daytona:**
+
+```
+sandbox:
+  provider: daytona
+  server_url: https://your-server.example.com
+  daytona:
+    image: docker.io/you/omnigent-host:latest      # optional, official image by default
+    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]        # server env vars to copy into sandbox
+```
+
+`env` lists env var names to copy from the server's environment into each
+cloud sandbox host. Values never live in the config file. A listed variable that isn't set fails the
+launch loudly.
+
+**Daytona free-tier egress:** Daytona Tier 1/2 organizations restrict outbound
+traffic to a [fixed allowlist](https://www.daytona.io/docs/en/network-limits).
+Your `server_url` and model endpoints must be reachable from Daytona's
+cloud. **Tier 3+** ($500 usage top-up) lifts the restriction. On free tier,
+use a Cloudflare Worker relay on the allowlisted `*.workers.dev` domain (see
+`deploy/daytona-relay/` in the repo). Modal has full egress on its entry tier.
+
+### 4. Launch from the web UI
+
+Start a new session and select **New Sandbox** in the host picker. The server
+provisions the cloud host, starts the runner, and connects it back automatically. This works
+the same on both hosting platforms.
+
+## CLI
+
+Create and manage cloud sandbox hosts from the command line. The commands are the same across
+hosting platforms, just switch the `--provider` flag.
+
+```
+omni sandbox create --provider modal          # or --provider daytona
+omni sandbox connect --provider modal \
+  --sandbox-id  --server 
+```
+
+---
+
+## https://omnigent.ai/docs/policies/overview
+
+# Contextual Policies
+
+Policies control what your Omnigent can and cannot do. They intercept every
+action (tool calls, LLM requests, file operations) and decide in real time
+whether to **allow**, **ask for approval**, or **deny**.
+
+## Why “contextual”?
+
+Most agent frameworks offer static rules: allow this tool, deny that one.
+Omnigent policies are different. They are **stateful** and **dynamic**: each
+policy maintains its own state across the entire session and makes decisions
+based on what has happened so far.
+
+This is what enables policies that static systems simply cannot express:
+
+- **Cost budgets.** Track cumulative LLM spend across every turn. Warn at $3, block expensive models at $5. The policy remembers what you've spent.
+- **Rate limiting.** Count tool calls over time and deny after a threshold. The count persists across the session, not per-request.
+- **Risk scoring.** Accumulate a risk score from sensitive operations (accessing credentials, modifying production data). Escalate to human approval once the score crosses a threshold.
+- **Model routing.** Classify tasks as trivial or complex and redirect trivial ones away from expensive models, based on conversation context.
+
+Every policy evaluation receives the full session context: cumulative cost,
+tool call history, data classification labels, and custom state you define.
+This makes Omnigent's policy system fundamentally more powerful than the
+static security controls built into individual coding agents.
+
+## What you can enforce
+
+For example: cap spending, require approval before destructive actions,
+restrict access to repos or services, block PII, or route models. See
+[Builtin Policies](/docs/policies/builtin) for the full list.
+
+## How policies work
+
+Each policy returns one of three decisions:
+
+| Decision  | What happens                                             |
+| --------- | -------------------------------------------------------- |
+| **ALLOW** | The action proceeds.                                     |
+| **ASK**   | The action pauses until the user approves or rejects it. |
+| **DENY**  | The action is blocked with an error message.             |
+
+Policies are checked in order. The first policy to return a decision wins. No opinion
+(`None`) passes to the next policy.
+
+### Available policies
+
+Omnigent provides [builtin policies](/docs/policies/builtin) for common guardrails (cost
+budgets, approval gates, access controls, PII blocking, model routing). You can also write
+your own [custom policies](/docs/policies/custom) in Python and register
+them on the server to make them available:
+
+```
+# server config (config.yaml)
+policy_modules:
+  - myorg.policies
+```
+
+Start the server with that file:
+
+```
+omnigent server -c config.yaml
+```
+
+The `-c` flag is short for `--config`. Without it, local servers look for
+`~/.omnigent/config.yaml`, and Docker deployments look for `/data/config.yaml`.
+This makes your custom policies discoverable alongside the builtins. See
+[Custom Policies](/docs/policies/custom) for how to write and register them.
+
+### Three levels
+
+To apply a policy, you pick one (builtin or custom) and add it at one of three levels. Each
+level has a different scope and priority:
+
+| Level               | Who       | Scope                                 | How to add                                      | Priority |
+| ------------------- | --------- | ------------------------------------- | ----------------------------------------------- | -------- |
+| **Session**         | End user  | Current session only, not persistent  | Ask your Omnigent, or use the UI settings panel | First    |
+| **Omnigent config** | Developer | Every session using this Omnigent     | `policies` block in the Omnigent YAML           | Second   |
+| **Server-wide**     | Admin     | Every agent and session on the server | Server config YAML or REST API                  | Last     |
+
+An admin can set a company-wide cost cap, a developer can restrict which repos the Omnigent
+writes to, and an end user can add extra approval gates. All three levels are enforced
+simultaneously.
+
+## Adding a policy
+
+### Session level: ask your Omnigent (recommended)
+
+The easiest way to add a policy is to ask your Omnigent directly. Describe what you want in
+plain language:
+
+```
+You: Add a policy that asks me before running any shell commands.
+
+You: Limit this session to $5 of LLM spend.
+
+You: Block access to all GitHub repos except myorg/frontend.
+```
+
+Your Omnigent picks the right policy from the available registry (both
+[builtin](/docs/policies/builtin) and any [custom policies](/docs/policies/custom) registered
+on the server), configures the parameters, and asks for your approval. Once you approve, the
+policy takes effect immediately on the next turn of the current session.
+
+You can also browse and toggle policies from the **settings panel** in the web
+UI without typing anything in chat.
+
+### Omnigent config level: declare in YAML
+
+For policies that should always apply, declare them in the `policies` block of
+your Omnigent config. These take effect every time the Omnigent starts.
+
+```
+policies:
+  approve_file_ops:
+    type: function
+    handler: omnigent.policies.builtins.safety.ask_on_os_tools
+  rate_limit:
+    type: function
+    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+    factory_params:
+      limit: 50
+```
+
+Here `rate_limit` caps the total number of tool calls a single session can make
+(50 in this example), a guard against runaway agent loops and surprise cost. Once the cap
+is reached, further tool calls are denied for the rest of the session.
+
+Policies without parameters use just `handler`. Configurable policies add
+`factory_params`. Multiple policies are evaluated in the order declared.
+
+### Server-wide level: server config
+
+Server-wide policies apply to every session on your deployed server. Add them to your server
+config YAML (`~/.omnigent/config.yaml` on a laptop, `/data/config.yaml` in Docker):
+
+```
+policies:
+  session_cost_guard:
+    type: function
+    function:
+      path: omnigent.policies.builtins.cost.cost_budget
+      arguments:
+        ask_thresholds_usd: [1.0]
+        max_cost_usd: 5.0
+  user_daily_cost_guard:
+    type: function
+    function:
+      path: omnigent.policies.builtins.cost.user_daily_cost_budget
+      arguments:
+        ask_thresholds_usd: [10.0, 25.0]
+        max_cost_usd: 50.0
+```
+
+Server-wide policies use the `function: {path, arguments}` format (not
+`handler` / `factory_params`). Pass an explicit server config with
+`omnigent server -c config.yaml` (`--config` is the long form), or place it at
+the default server config path. Restart the server after editing.
+
+Server-wide policies can also be managed at runtime via the REST API:
+
+| Method   | Endpoint            | Description       |
+| -------- | ------------------- | ----------------- |
+| `POST`   | `/v1/policies`      | Create a policy   |
+| `GET`    | `/v1/policies`      | List all policies |
+| `PATCH`  | `/v1/policies/{id}` | Update a policy   |
+| `DELETE` | `/v1/policies/{id}` | Remove a policy   |
+
+---
+
+## https://omnigent.ai/docs/policies/builtin
+
+# Builtin Policies
+
+Omnigent ships with policies for common guardrails, organized into two categories:
+**Safety** and **Cost Control**. Your Omnigent can apply any of
+these by name when you [ask it to add a policy](/docs/policies/overview#adding-a-policy), or you
+can reference them in YAML by their full path in the `handler` field.
+
+All builtin policies live under `omnigent.policies.builtins`.
+
+## Safety
+
+| Policy                       | What it does                                                                                                                                                                                               | Parameters                                                                                                                                                                                        |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ask_on_os_tools`            | ASKs before any file or shell operation.                                                                                                                                                                   | None                                                                                                                                                                                              |
+| `block_skills`               | Prevents specific skills from loading.                                                                                                                                                                     | `blocked` (string[], required)                                                                                                                                                                    |
+| `block_working_dir_changes`  | Blocks shell commands that change the working directory.                                                                                                                                                   | `block_cd` (bool), `block_worktree` (bool), `allowed_dirs` (string[]), `action` (`"deny"` or `"ask"`)                                                                                             |
+| `cel_policy`                 | Write custom policy logic using CEL (Common Expression Language), a safe, non-Turing-complete expression language.                                                                                         | `expression` (CEL expression string), `reason` (deny message)                                                                                                                                     |
+| `deny_pii_in_llm_request`    | Scans outgoing messages for PII and blocks or flags them.                                                                                                                                                  | `pii_types` (string[]), `action` (`"DENY"` or `"ASK"`)                                                                                                                                            |
+| `enforce_sandbox`            | Forces a sandbox configuration on agent start.                                                                                                                                                             | `sandbox_type`, `allow_network`, `write_paths`, `read_paths`                                                                                                                                      |
+| `gcalendar_policy`           | Controls Google Calendar. Defaults to read-only.                                                                                                                                                           | None                                                                                                                                                                                              |
+| `gdrive_policy`              | Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to agent-created files by default.                                                                                               | `read_all`, `allow_create`, `write_files`                                                                                                                                                         |
+| `github_policy`              | Controls GitHub read/write access across MCP tools and shell commands.                                                                                                                                     | `read_all`, `write_repos`, `write_branches`                                                                                                                                                       |
+| `gmail_policy`               | Controls Gmail. Defaults to read + draft, no send.                                                                                                                                                         | `allow_read`, `allow_send`, `allow_drafts`                                                                                                                                                        |
+| `max_tool_calls_per_session` | DENYs after a total tool-call limit is reached.                                                                                                                                                            | `limit` (int, default `100`)                                                                                                                                                                      |
+| `prompt_policy`              | Evaluate policy decisions using an LLM. The policy sends the event context to a model and interprets the response as ALLOW/ASK/DENY. Useful for nuanced decisions that can't be expressed as static rules. | `prompt` (system instructions for the evaluator model)                                                                                                                                            |
+| `risk_score_policy`          | Accumulate a risk score from tool calls and sensitive data labels. Escalates guarded tools to ASK or DENY once the score exceeds a threshold.                                                              | `threshold` (int), `tool_points` (object mapping tool names to points), `sensitive_labels` (object mapping labels to points), `guarded_tools` (string[]), `escalate_action` (`"ASK"` or `"DENY"`) |
+
+## Cost Control
+
+| Policy                            | What it does                                                                                                 | Parameters                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `cost_budget`                     | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit. | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models` |
+| `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                  | None                                                                |
+| `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                      | `max_cost_usd` (required), `ask_thresholds_usd`                     |
+
+---
+
+## https://omnigent.ai/docs/policies/custom
+
+# Custom Policies
+
+When the [builtin policies](/docs/policies/builtin) don't cover your
+use case, you can write your own in Python, register them on the server, and your Omnigent
+can use them just like builtins.
+
+## 1. Write a policy function
+
+A policy is a Python function that receives an event and returns `ALLOW`,
+`ASK`, `DENY`, or `None` (no opinion):
+
+```
+from omnigent.policies.schema import PolicyEvent, PolicyResponse
+
+def my_policy(event: PolicyEvent) -> PolicyResponse | None:
+    if event["type"] != "tool_call":
+        return None
+    if event["data"]["name"] == "dangerous_tool":
+        return {"result": "DENY", "reason": "Blocked."}
+    return {"result": "ALLOW"}
+```
+
+If your policy needs parameters, use the factory pattern. The function takes config and
+returns the evaluator:
+
+```
+def block_domains(blocked_domains: list[str]) -> callable:
+    blocked = frozenset(d.lower() for d in blocked_domains)
+
+    def evaluate(event: PolicyEvent) -> PolicyResponse | None:
+        if event["type"] != "tool_call":
+            return None
+        url = event["data"]["arguments"].get("url", "")
+        for domain in blocked:
+            if domain in url.lower():
+                return {"result": "DENY", "reason": f"Domain {domain} blocked."}
+        return {"result": "ALLOW"}
+
+    return evaluate
+```
+
+## 2. Register on the server
+
+To make your policy discoverable by your Omnigent and visible in the UI, do two things:
+
+**Export a `POLICY_REGISTRY`** from your module:
+
+```
+# myorg/policies.py
+
+POLICY_REGISTRY = [
+    {
+        "handler": "myorg.policies.block_domains",
+        "kind": "factory",
+        "name": "Block Domains",
+        "description": "Block web access to specific domains.",
+        "params_schema": {
+            "type": "object",
+            "properties": {
+                "blocked_domains": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Domains to block"
+                }
+            },
+            "required": ["blocked_domains"]
+        }
+    }
+]
+```
+
+**Add the module to your server config:**
+
+```
+# config.yaml
+policy_modules:
+  - myorg.policies
+```
+
+Then start the server with that config:
+
+```
+omnigent server -c config.yaml
+```
+
+The `-c` flag is short for `--config`. If you omit it, a local server reads
+`~/.omnigent/config.yaml` when present; Docker deployments read
+`/data/config.yaml`.
+
+Once registered, your custom policies appear alongside the builtins. Your Omnigent can
+select them when you ask it to add a policy in chat, and they show up in the UI settings
+panel.
+
+## 3. Use it
+
+Once registered, your custom policy works the same as any builtin. See
+[Adding a policy](/docs/policies/overview#adding-a-policy) for all the
+ways to apply it (chat, Omnigent YAML, or server config).
+
+## Reference: PolicyEvent
+
+Every policy receives a `PolicyEvent` dict. Use the `type` field to
+filter which events you care about:
+
+| Event type    | When it fires                                  | Key data fields     |
+| ------------- | ---------------------------------------------- | ------------------- |
+| `tool_call`   | Omnigent is about to call a tool               | `name`, `arguments` |
+| `llm_request` | Omnigent is about to send a message to the LLM | `messages`, `model` |
+
+Return `None` for event types you don't handle.
+
+---
+
+## https://omnigent.ai/docs/policies/os-sandbox
+
+# Omnibox: OS Sandbox
+
+Omnibox is Omnigent's secure OS sandbox for any agent. It restricts filesystem and
+network access at the OS level, and it hides credentials from the agent and brokers
+access to them. Run agents with minimal permissions, or lock them down for unattended
+YOLO-mode execution.
+
+The OS sandbox restricts what commands and file operations your agent can perform. It
+controls which files the agent can read and write, whether it can access the network, and
+which environment variables it sees.
+
+This is different from the [cloud sandbox host](/docs/deploy/cloud-sandbox-host),
+which controls _where_ the runner executes. The OS sandbox controls
+_what the agent can access_, regardless of where it runs.
+
+The OS sandbox applies to the built-in OS tools (`sys_os_read`, `sys_os_write`,
+`sys_os_edit`, `sys_os_shell`) and any terminals you declare in the agent config.
+
+**Requirements:** Linux: install bubblewrap (`apt install bubblewrap` or
+`dnf install bubblewrap`). macOS: `sandbox-exec` ships with stock macOS. If you ask for a
+sandbox and the backend isn't available, Omnigent errors rather than running unsandboxed.
+
+## Minimal config
+
+The smallest useful OS sandbox. Make the working directory writable and let Omnigent pick
+the backend for your platform:
+
+```
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    write_paths: [.]          # cwd is read-only by default; opt it back in
+    allow_network: true
+```
+
+On Linux, Omnigent uses bubblewrap (`bwrap`). On macOS, it uses Seatbelt
+(`sandbox-exec`). Omit `type` to auto-detect.
+
+| Platform | Backend           | Mechanism                        |
+| -------- | ----------------- | -------------------------------- |
+| Linux    | `linux_bwrap`     | Bubblewrap namespaces + seccomp  |
+| macOS    | `darwin_seatbelt` | `sandbox-exec` SBPL profiles     |
+| Other    | `none`            | No sandboxing (explicit opt-out) |
+
+## What you can restrict
+
+### Filesystem
+
+By default, `cwd` is read-only on hardened backends. You opt in to writes explicitly.
+
+```
+sandbox:
+  read_paths: [~/.gitconfig, ~/.ssh]        # read-only access outside cwd
+  write_paths: [.]                          # writable directories
+  write_files: [~/.ssh/known_hosts]         # individual writable files
+  cwd_allow_hidden: [.venv, .git, .env]     # dotfiles to allow (rest are masked)
+```
+
+Dotfiles under `cwd` and `read_paths` are hidden by default unless
+listed in `cwd_allow_hidden`. This makes broad read grants safe: granting
+`~` doesn't expose `~/.aws/credentials` or `~/.ssh/id_rsa`. On macOS, `~/Library` is also
+denied by default.
+
+### Network
+
+```
+sandbox:
+  allow_network: true                       # basic on/off
+  egress_rules:                             # optional HTTP(S) allow-list
+    - "GET api.github.com/repos/myorg/**"   # GET only, one org
+    - "* pypi.org/**"                       # any method
+    - "* *.github.com/**"                   # wildcard subdomain
+```
+
+When `egress_rules` is set, all HTTP(S) traffic goes through a MITM proxy with
+default-deny. Only requests matching a rule are allowed. Requires a hardened backend
+(`linux_bwrap` or `darwin_seatbelt`).
+
+Each rule is `"METHODS host/path-glob"`: comma-separated HTTP verbs (or
+`*` for any), a hostname (or `*.domain` for subdomains), and a path
+glob where `**` matches any depth.
+
+By default, the proxy also blocks connections to private IPs (RFC1918, loopback, cloud
+metadata like `169.254.169.254`). Set
+`egress_allow_private_destinations: true` if your agent needs to reach internal services.
+
+### Environment
+
+```
+sandbox:
+  env_passthrough: [GH_TOKEN, AWS_PROFILE]  # only these vars reach the agent
+```
+
+The sandbox strips environment variables to a minimal default set (`PATH`, `HOME`, `USER`,
+`LANG`, etc.). Secrets only reach the agent if you name them explicitly.
+
+## Sharing a policy
+
+Declare the sandbox once and reuse it with a YAML anchor:
+
+```
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox: &shared
+    write_paths: [.]
+    read_paths: [~/.gitconfig, ~/.ssh]
+    allow_network: true
+
+terminals:
+  zsh:
+    command: zsh
+    os_env:
+      type: caller_process
+      cwd: .
+      sandbox: *shared              # same policy as sys_os_* tools
+```
+
+Or use `os_env: inherit` on a terminal or sub-agent to inherit the parent's
+full environment including its sandbox.
+
+In a multi-harness setup, each sub-agent defines its own sandbox in its own
+`config.yaml` file in the `agents/` subdirectory. Agent entries
+in `tools.agents` are just names (strings), not inline config blocks.
+
+```
+# Parent config.yaml
+tools:
+  agents:
+    - researcher
+    - coder
+
+# agents/researcher/config.yaml
+os_env:
+  sandbox:
+    write_paths: [./research]
+    allow_network: true
+
+# agents/coder/config.yaml
+os_env:
+  sandbox:
+    write_paths: [./src]
+    allow_network: false
+```
+
+## What is and isn't sandboxed
+
+The OS sandbox applies to `sys_os_*` tool calls and terminals that reference the
+policy. It does **not** apply to:
+
+- **MCP servers.** The runner spawns MCP subprocesses outside the sandbox. Constrain an MCP server at its own configuration site.
+- **The Omnigent supervisor process.** It runs the model loop and dispatches tools. Only the commands it issues through OS tools run inside the sandbox.
+
+If you ask for a sandbox (explicitly or via the default) and it can't be provided,
+Omnigent errors instead of quietly running unsandboxed. The only opt-out is
+`sandbox.type: none`.
+
+## Field reference
+
+### `os_env`
+
+| Field              | Type   | Default          | Description                                                                                                 |
+| ------------------ | ------ | ---------------- | ----------------------------------------------------------------------------------------------------------- |
+| `type`             | string | `caller_process` | OS environment backend                                                                                      |
+| `cwd`              | string | `.`              | Working directory                                                                                           |
+| `sandbox`          | block  | platform default | Sandbox policy (see below)                                                                                  |
+| `start_in_scratch` | bool   | `false`          | Start in a writable scratch tmpdir instead of `cwd`. Workspace bound read-only. Requires an active sandbox. |
+
+### `os_env.sandbox`
+
+| Field                               | Type     | Default     | Description                                          |
+| ----------------------------------- | -------- | ----------- | ---------------------------------------------------- |
+| `type`                              | string   | auto-detect | `linux_bwrap`, `darwin_seatbelt`, or `none`          |
+| `write_paths`                       | string[] | `[]`        | Writable directories. `cwd` is read-only by default. |
+| `write_files`                       | string[] | `[]`        | Individual writable files                            |
+| `read_paths`                        | string[] | none        | Read-only grants outside `cwd`                       |
+| `allow_network`                     | bool     | `true`      | Network access on/off                                |
+| `cwd_allow_hidden`                  | string[] | `[".venv"]` | Dotfile basenames to allow                           |
+| `cwd_hidden_scan_max_entries`       | int      | `50000`     | Max entries for dotfile mask walk                    |
+| `cwd_hidden_scan_overflow`          | string   | `warn`      | `error`, `warn`, or `unlimited`                      |
+| `env_passthrough`                   | string[] | minimal set | Env vars the agent can see                           |
+| `egress_rules`                      | string[] | none        | HTTP(S) allow-list. Default-deny when set.           |
+| `egress_allow_private_destinations` | bool     | `false`     | Allow connections to private/metadata IPs            |
+
+---
+
+## https://omnigent.ai/docs/omnibox
+
+# Omnibox
+
+Omnibox is Omnigent's secure OS-level sandbox. It wraps any agent (Claude Code, Codex,
+or a custom agent) so you can run it unattended, in YOLO mode, without handing it your real
+credentials, file system, or network.
+
+The kernel enforces the rules, not the agent or its prompt: `bubblewrap` and
+`seccomp` on Linux, Seatbelt (`sandbox-exec`) on macOS. Every process
+the agent spawns inherits the boundary, so a prompt-injected or misbehaving agent can't
+opt out.
+
+Omnibox combines three protections:
+
+- Filesystem isolation
+- Network isolation
+- Credential injection
+
+## Filesystem isolation
+
+The agent sees only the paths you grant; everything else doesn't exist from inside the
+sandbox. Even `cwd` is read-only until you opt directories back in, so a runaway
+agent can't read your SSH keys or write outside the workspace.
+
+Broad read grants stay safe: granting `~` doesn't expose `~/.ssh` or
+`~/.aws/credentials`, because dotfiles are masked unless you allow them.
+
+## Network isolation
+
+All HTTP(S) traffic goes through a default-deny proxy with an explicit allow-list of
+methods, hosts, and paths. Data can't leave except to hosts you chose, which shuts down
+exfiltration even if the agent is prompt-injected.
+
+Private IPs and cloud metadata endpoints are blocked by default, so the agent can't
+reach your internal services.
+
+## Credential injection
+
+The agent holds a fake placeholder token instead of the real secret. When a request
+matching your allow-list leaves the sandbox, the proxy swaps in the real credential. The
+agent can use a credential but never read it.
+
+Only the placeholder appears in logs, transcripts, and model context. A leaked token is
+worthless, since it only works through the proxy, against allowed hosts.
+
+## Related
+
+- [OS sandbox configuration](/docs/policies/os-sandbox): the full reference, covering filesystem grants, egress rules, environment passthrough, and the `bubblewrap`/Seatbelt backends.
+- [Cloud sandbox host](/docs/deploy/cloud-sandbox-host): controls _where_ the runner executes. Omnibox controls _what it can access_. They compose.
+- [Contextual policies](/docs/policies/overview): govern behavior at the tool-call level. Omnibox is the hard boundary underneath.
+
+---
+
+## https://omnigent.ai/faq
+
+# FAQ
+
+## What is Omnigent?
+
+Omnigent is a framework that runs AI agents behind one interface. It wraps Claude Code, Codex, and Pi, plus custom agents written in YAML, and gives each one a server, UI, sandboxing, and policies.
+
+## Which models can I use?
+
+Bring your own API key, Claude or ChatGPT plan, OpenAI- or Anthropic-compatible gateway such as OpenRouter, LiteLLM, Ollama, Azure, or vLLM, or a Databricks workspace.
+
+## How do I run my own agent?
+
+Write a YAML file with a prompt and harness, then run `omni run` on it. See the custom agent guide.
+
+## Is it safe to let an agent run on my machine?
+
+Every command runs in an OS-level sandbox, and policies can pause, block, or cap what an agent does.
+
+## Do I need Databricks?
+
+No. Omnigent is open source and runs on your own machine and models. Databricks is one supported model provider.
+
+## Is it ready for production?
+
+No. Omnigent is alpha.

@@ -1,8 +1,16 @@
+import { pageMeta } from "@/lib/og";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 
-export const metadata = { title: "FAQ" };
+export const metadata = pageMeta(
+  "FAQ",
+  "Answers to common questions about Omnigent: what it is, how it works, and how to get started.",
+  {
+    eyebrow: "Help",
+    path: "/faq",
+  },
+);
 
 export default function Page() {
   return (
@@ -23,9 +31,9 @@ export default function Page() {
 
             <h3>Which models can I use?</h3>
             <p className="muted">
-              Bring your own: an API key, a Claude or ChatGPT plan, an OpenAI- or
-              Anthropic-compatible gateway (OpenRouter, LiteLLM, Ollama, Azure,
-              vLLM), or a Databricks workspace.
+              Bring your own: an API key, a Claude or ChatGPT plan, an OpenAI-
+              or Anthropic-compatible gateway (OpenRouter, LiteLLM, Ollama,
+              Azure, vLLM), or a Databricks workspace.
             </p>
 
             <h3>How do I run my own agent?</h3>
@@ -37,8 +45,9 @@ export default function Page() {
 
             <h3>Is it safe to let an agent run on my machine?</h3>
             <p className="muted">
-              Every command runs in an OS-level sandbox (bwrap on Linux, seatbelt
-              on macOS), and policies can pause, block, or cap what an agent does.
+              Every command runs in an OS-level sandbox (bwrap on Linux,
+              seatbelt on macOS), and policies can pause, block, or cap what an
+              agent does.
             </p>
 
             <h3>Do I need Databricks?</h3>
@@ -50,8 +59,8 @@ export default function Page() {
 
             <h3>Is it ready for production?</h3>
             <p className="muted">
-              No. It is alpha. Expect rough edges, and tell us where it breaks on
-              Discord.
+              No. It is alpha. Expect rough edges, and tell us where it breaks
+              on Discord.
             </p>
           </section>
         </div>

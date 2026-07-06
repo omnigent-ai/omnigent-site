@@ -8,23 +8,42 @@ export default function Footer() {
       <div className="wrap-wide footer-inner">
         <span>
           Built by the{" "}
-          <a href={DATABRICKS_URL} target="_blank" rel="noreferrer">Databricks AI team</a>{" "}
-          and <a href={NEON_URL} target="_blank" rel="noreferrer">Neon</a>.
+          <a href={DATABRICKS_URL} target="_blank" rel="noreferrer">
+            Databricks AI team
+          </a>{" "}
+          and{" "}
+          <a href={NEON_URL} target="_blank" rel="noreferrer">
+            Neon
+          </a>
+          .
         </span>
         <span className="spacer" />
         <Link href="/quickstart/install">Get Started</Link>
         <Link href="/docs/use/coding-agents">Docs</Link>
-        <a href={DISCORD_URL} target="_blank" rel="noreferrer">
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
-            <DiscordIcon size={15} /> Discord
-          </span>
-        </a>
+        <Link href="/privacy">Privacy</Link>
         <a href={GITHUB_URL} target="_blank" rel="noreferrer">
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.35rem",
+            }}
+          >
             <GitHubIcon size={15} /> GitHub
           </span>
         </a>
-        <span className="muted">Apache 2.0 · Alpha</span>
+        <a href={DISCORD_URL} target="_blank" rel="noreferrer">
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.35rem",
+            }}
+          >
+            <DiscordIcon size={15} /> Discord
+          </span>
+        </a>
+        <span className="muted">Apache 2.0</span>
       </div>
     </footer>
   );

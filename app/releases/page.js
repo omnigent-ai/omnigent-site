@@ -25,15 +25,12 @@ export default function ReleasesIndex() {
       ) : (
         <ul className="releases-list">
           {releases.map((release) => (
-            <li key={release.version} style={{ marginBottom: "1rem" }}>
+            <li key={release.version} style={{ marginBottom: "0.5rem" }}>
               <Link href={release.href}>
                 <strong>v{release.version}</strong>
               </Link>
               {release.date ? (
                 <span style={{ opacity: 0.6 }}> — {release.date}</span>
-              ) : null}
-              {release.blurb ? (
-                <div style={{ opacity: 0.8 }}>{release.blurb}</div>
               ) : null}
             </li>
           ))}

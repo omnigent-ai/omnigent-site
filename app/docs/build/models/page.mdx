@@ -33,6 +33,23 @@ omni run agent.yaml --model claude-sonnet-4-6
 Use the `/model` command inside any running session to switch models on the fly.
 The agent keeps its conversation history and tool state – only the underlying model changes.
 
+### Claude model picker
+
+When you run Claude Code (the `claude-sdk` or `claude-native` harness), the model
+picker offers a curated set of Claude models, ordered by capability:
+
+| Picker entry | Model id |
+| --- | --- |
+| **Fable** | `claude-fable-5` |
+| **Opus** | `claude-opus-4-8` |
+| **Sonnet 4.6** | `claude-sonnet-4-6` |
+| **Sonnet 5** | `claude-sonnet-5` |
+| **Haiku** | `claude-haiku-4-5` |
+
+The **Sonnet 4.6** entry stays pinned to the existing default Sonnet, so nothing
+changes if you keep picking it. **Sonnet 5** is offered as a separate, opt-in
+choice alongside it — select it explicitly to move to the newer generation.
+
 ## Credentials
 
 Omnigent needs credentials to talk to a model provider.

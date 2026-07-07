@@ -44,10 +44,14 @@ Most coding agents can run in one of two modes:
 | OpenCode | — | `opencode-native` (alias `opencode`) |
 | Kiro | — | `kiro-native` |
 | Copilot | `copilot` | — |
-| OpenAI Agents SDK | `openai-agents` (alias `openai-agents-sdk`) | — |
+| OpenAI Agents SDK | `openai-agents` (alias `openai-agents-sdk`) † | — |
 
 Pi is a headless multi-model worker that runs on any gateway model — ideal for
 review, exploration, and read-heavy tasks delegated by a supervisor agent.
+
+† `openai-agents` is **YAML-only**: it stays a fully valid harness in agent
+specs and via `--harness`, but is no longer offered as a pick in the web UI
+harness picker.
 
 ## Swap harnesses
 

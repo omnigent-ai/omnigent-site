@@ -30,12 +30,21 @@ export async function POST(request) {
 
   const resend = new Resend(process.env.RESEND_API_KEY);
 
-  const { error } = await resend.emails.send({
-    from: "Omnigent <hello@omnigent.ai>",
-    to: email,
-    subject: "You're on the Omnigent waitlist",
-    html: `<p>Thanks for your interest in Omnigent! We'll email you as soon as your spot is ready.</p>`,
-  });
+  let error;
+  try {
+    ({ error } = await resend.emails.send({
+      from: "Omnigent <hello@omnigent.ai>",
+      to: email,
+      subject: "You're on the Omnigent waitlist",
+      html: `<p>Thanks for your interest in Omnigent! We'll email you as soon as your spot is ready.</p>`,
+    }));
+  } catch (err) {
+    console.error("Resend send threw:", err);
+    return Response.json(
+      { error: "Couldn't add you to the waitlist. Please try again." },
+      { status: 502 },
+    );
+  }
 
   if (error) {
     console.error("Resend send failed:", error);

@@ -12,6 +12,21 @@ bun install
 bun run dev      # http://localhost:3000
 ```
 
+### Environment variables
+
+Copy `.env.example` to `.env.local` and fill in the values:
+
+```bash
+cp .env.example .env.local
+```
+
+- `RESEND_API_KEY` — used by `app/api/waitlist/route.js` to send waitlist
+  confirmation emails via [Resend](https://resend.com). Create a key in the
+  Resend dashboard, verify the sending domain (`omnigent.ai`) under
+  **Domains**, then add the key in the Vercel dashboard (Project Settings →
+  Environment Variables) for each deployment environment. No `.env` file is
+  committed — env vars are managed entirely through Vercel.
+
 ## Build
 
 ```bash
@@ -35,6 +50,8 @@ bun run lint:links
 - `app/quickstart/*` — six quickstart pages: installing, coding, custom-agent, policies,
   sandboxes, deploying.
 - `components/` — nav, footer, copyable command, quickstart sidebar, icons, links.
+- `app/api/waitlist/route.js` — waitlist signup endpoint (sends a confirmation
+  email via Resend).
 - `public/images/` — `architecture.png`, `sandbox.png`, `logo.png`, `hero.png`.
 
 Edit the GitHub / Discord / package links in `components/links.js`.

@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import InstallTabs from "@/components/InstallTabs";
 import CtaButtons from "@/components/CtaButtons";
 import PillarsTabs from "@/components/PillarsTabs";
+import WaitlistForm from "@/components/WaitlistForm";
 import { DiscordIcon } from "@/components/icons";
 import { DISCORD_URL } from "@/components/links";
 
@@ -141,6 +142,14 @@ export default function Home() {
                 <DiscordIcon /> Join the Discord
               </a>
             </div>
+
+            <p
+              className="muted"
+              style={{ maxWidth: "38rem", margin: "1.8rem auto 0.8rem" }}
+            >
+              Want updates on new releases? Join the waitlist.
+            </p>
+            <WaitlistForm />
           </section>
         </div>
       </main>

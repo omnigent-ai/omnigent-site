@@ -70,19 +70,6 @@ On a multi-user server the sidebar splits your session list across two tabs:
   [shared with you](/docs/collaborate). When you have none, the tab shows
   `No sessions shared with you`.
 
-A few things follow from the split:
-
-- **New session** always creates a session you own, so the button stays visible
-  on both tabs; using it snaps you back to **My sessions**.
-- **Projects are owner-only.** A shared session can't be filed into one of your
-  projects, so the **Shared with me** tab shows no project folders and shared
-  rows have no `Move session` affordance.
-- **Pins work on both tabs.** Pinning is per-viewer, so a pinned shared session
-  floats into its own `Pinned` section on the **Shared with me** tab.
-
-On a single-user (local, loopback-only) server there's no one to share with, so
-the tabs are hidden and the sidebar shows only your own sessions.
-
 ### Browser-first mode
 
 If you prefer to work in the browser rather than the terminal UI, start the server and host

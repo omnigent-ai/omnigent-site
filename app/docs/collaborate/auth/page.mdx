@@ -79,6 +79,25 @@ only; leaving it empty means no domain restriction. Built-in accounts are invite
 domain allowlists do not apply there, and header-based auth delegates identity entirely to
 your proxy. The `admins` list works in both built-in accounts and OIDC modes.
 
+### Admins and the management surface
+
+Admins are the identities in the `admins` list (above), plus anyone you add to
+the runtime-editable `<data_dir>/admins` file (reloaded without a restart).
+Listed identities are promoted to admin on their next sign-in.
+
+Admins get two management sections in the web UI under **Settings**, in both
+built-in accounts and OIDC modes:
+
+- **Settings > Members** — the user roster (username, role, last login).
+- **Settings > Policies** — server-wide [contextual policies](/docs/policies/overview).
+
+In built-in accounts mode, **Members** also carries the management actions
+(`Invite member`, per-user `Reset` password, and `Remove`); under OIDC it is a
+read-only roster, since identities are owned by your IdP and provisioned on
+first sign-in. Separately, every signed-in account (built-in or OIDC) gets a
+**Settings > Account** section showing who they're signed in as, with a sign-out
+control and, in built-in accounts mode only, `Change password`.
+
 ### Domain allowlist
 
 Restrict sign-ups to specific email domains. In your server config (`/data/config.yaml`):

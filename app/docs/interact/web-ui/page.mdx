@@ -99,17 +99,14 @@ queue instead of interrupting the turn. Queued messages appear in a docked strip
 above the composer, and drain automatically — one at a time, in order — as soon as
 the session goes idle.
 
+![Steering and queuing a message](/images/docs/steer-and-queue-msg.gif)
+
 Each queued row has inline actions:
 
 - **Steer** — send the message now, mid-turn, instead of waiting for the queue to
-  flush. On an SDK harness the server live-injects it into the running turn, so the
-  agent picks it up without finishing first.
+  flush.
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
-
-The **Steer** action is available only where the harness supports mid-turn
-injection. Native terminal sessions buffer and drain queued messages rather than
-inject them, so they don't show a steer button.
 
 ## Collaboration
 

@@ -80,8 +80,6 @@ Use cases: updating documentation sites, reviewing Omnigent-generated plans, edi
 Review what your Omnigent changed before accepting. Syntax-highlighted diffs show exactly
 what was added, modified, or removed.
 
-{/* TODO(doc-drafter): file-editor.gif predates the "Attach to agent" selection
-    button and the "@"-mention browser — consider re-recording to show them. */}
 ![Omnigent file editor](/images/docs/file-editor.gif)
 
 ### Attach a selection to the agent
@@ -97,36 +95,12 @@ the referenced file themselves.
 
 ## Mentioning workspace files
 
-In a coding-agent session, type `@` in the composer to open a file and folder
-browser scoped to the session's workspace. Start typing to filter the current
-directory; folders are listed first. The text after `@` doubles as a path — the
-part up to the last `/` is the directory being browsed and the rest filters its
-entries (for example `@src/fo` browses `src` and filters by `fo`).
+In a coding-agent session, type `@` in the composer to browse and attach
+workspace files and folders. Attached paths appear as chips above the input and
+can be removed individually; the agent reads each one directly from disk at send
+time.
 
-- **Open a folder** to drill into it and reach nested files.
-- **Attach a file** to tag it as a chip on the composer.
-- **Attach a whole folder** with the folder row's `+ folder` button.
-
-Keyboard navigation:
-
-- `↑` / `↓` — move between rows.
-- `↵` (Enter) — open the highlighted folder, or attach the highlighted file.
-- `⇥` (Tab) — attach the highlighted row as a unit (a file, or a whole folder
-  without drilling in).
-- `Esc` — dismiss the menu.
-
-Tagged paths appear as chips above the input and can be removed individually.
-Each tagged file or folder is delivered to the agent at send time as a path
-reference rather than an upload — the agent reads the file or directory directly
-from its workspace on disk. Folders are sent with a trailing `/`.
-
-`@`-mentions are available only for native coding-agent sessions (the Claude
-Code, Codex, and other native harnesses), which run inside the workspace;
-in-process SDK sessions don't show the menu. Codex receives the reference using
-its own attachment wording, the other harnesses use a shared form — either way
-the agent reads the same on-disk file. The same browser is available in the new-chat
-launcher when starting a native terminal agent on a local host with a workspace,
-so you can attach files to your very first message.
+![Tagging workspace files](/images/docs/tag_workspace_files.gif)
 
 ## Inline comments and addressing
 

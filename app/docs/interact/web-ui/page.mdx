@@ -23,6 +23,27 @@ between them. Switch agents mid-conversation directly from the UI.
 
 Sessions persist across browser refreshes and server restarts.
 
+### Command palette
+
+Press `⌘K` (`Ctrl+K` on Windows and Linux) from anywhere in the UI to open the
+command palette. It's a single search box (`Search commands and sessions…`) with
+two groups:
+
+- **Actions** — quick app commands: `New chat`, `Go to Inbox`, `Go to Settings`,
+  `Toggle conversations sidebar`, and `Toggle workspace sidebar`. These filter as
+  you type.
+- **Sessions** — jump to any session. The palette searches the server (the same
+  source as the sidebar search), so it finds sessions beyond the ones currently
+  loaded in the list; each result shows the session title and its agent type.
+  Selecting one navigates straight to it.
+
+The hotkey works from any route, even while the composer is focused. When focus
+is inside a terminal or the code editor — which claim `⌘K` themselves — the
+keystroke passes through to them instead. The palette is not available in
+embedded mode, where `⌘K` belongs to the host page.
+
+You can also find this shortcut in the keyboard-shortcuts reference (`⌘/`).
+
 ### Projects
 
 Organize related sessions into a named `Project`. Each project is a collapsible

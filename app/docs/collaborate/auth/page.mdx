@@ -91,15 +91,12 @@ built-in accounts and OIDC modes:
 - **Settings > Members** — the user roster (username, role, last login).
 - **Settings > Policies** — server-wide [contextual policies](/docs/policies/overview).
 
-In built-in accounts mode, **Members** also carries the management actions:
-`Invite member`, per-user `Reset` (password), and `Remove`. Under OIDC these
-actions are absent — identities are owned by your IdP and provisioned
-automatically on first sign-in, so **Members** is a read-only roster.
-
-Every account with a sign-in session (built-in accounts or OIDC) also gets a
+In built-in accounts mode, **Members** also carries the management actions
+(`Invite member`, per-user `Reset` password, and `Remove`); under OIDC it is a
+read-only roster, since identities are owned by your IdP and provisioned on
+first sign-in. Separately, every signed-in account (built-in or OIDC) gets a
 **Settings > Account** section showing who they're signed in as, with a sign-out
-control. `Change password` appears in built-in accounts mode only; an OIDC
-identity's password lives with the IdP.
+control and, in built-in accounts mode only, `Change password`.
 
 ### Domain allowlist
 

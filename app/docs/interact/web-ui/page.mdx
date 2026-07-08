@@ -123,6 +123,22 @@ Paste images, screenshots, diagrams, and mockups directly into the conversation.
 Omnigent sees them alongside your text. Useful for frontend work where describing a layout
 issue in words is slower than screenshotting it.
 
+## Message queue and steering
+
+Type a follow-up while the agent is still working and it's held in a client-side
+queue instead of interrupting the turn. Queued messages appear in a docked strip
+above the composer, and drain automatically — one at a time, in order — as soon as
+the session goes idle.
+
+![Steering and queuing a message](/images/docs/steer-and-queue-msg.gif)
+
+Each queued row has inline actions:
+
+- **Steer** — send the message now, mid-turn, instead of waiting for the queue to
+  flush.
+- **Edit** — pull the message back into the composer to revise it.
+- **Delete** — drop the message from the queue.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

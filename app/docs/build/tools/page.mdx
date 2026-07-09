@@ -17,23 +17,6 @@ tools.
 
 MCP (Model Context Protocol) servers expose tools over a standard protocol.
 
-### Bundled servers
-
-The following MCP servers are available out of the box. No setup or configuration needed:
-
-| Server | What it connects to |
-| --- | --- |
-| Google | Drive, Docs, Sheets, Slides, Gmail, Calendar |
-| GitHub | Issues, PRs, repos, code search |
-| Slack | Channels, messages, threads |
-| Jira | Issues, projects, search |
-| Confluence | Pages, spaces, search |
-| Glean | Enterprise search |
-| PagerDuty | Incidents, on-call |
-
-To restrict which tools from a bundled server your agent can access, use the
-`tools` filter or configure [policies](/docs/policies/overview).
-
 ### Custom servers
 
 For MCP servers not in the bundled set, declare them in your agent YAML. Transport is

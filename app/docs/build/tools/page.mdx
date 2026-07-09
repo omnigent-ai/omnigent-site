@@ -137,6 +137,71 @@ tools:
       # max_results: 5            # 1-20 (default 5)
 ```
 
+### Hindsight long-term memory
+
+Three built-in tools give an agent memory that survives across runs and sessions,
+backed by [Hindsight](https://github.com/vectorize-io/hindsight), an open-source
+agent-memory system. Unlike conversation history — which is lost between sessions —
+anything an agent retains stays available in every future run.
+
+| Tool | What it does |
+| --- | --- |
+| `hindsight_retain` | Persist a durable fact, preference, or decision to memory. Takes a `content` string. |
+| `hindsight_recall` | Search memory for relevant facts before answering. Takes a `query` string. |
+| `hindsight_reflect` | Synthesize a reasoned summary from memory, rather than returning raw facts. Takes a `query` string. |
+
+The Hindsight client SDK is an optional dependency. Install the `hindsight` extra
+and provide an API key:
+
+```
+pip install 'omnigent[hindsight]'
+export HINDSIGHT_API_KEY=hsk_...    # https://ui.hindsight.vectorize.io
+```
+
+Enable the tools by name under `tools.builtins`:
+
+```
+tools:
+  builtins:
+    - name: hindsight_recall
+      api_key: ${HINDSIGHT_API_KEY}
+    - name: hindsight_retain
+      api_key: ${HINDSIGHT_API_KEY}
+    - name: hindsight_reflect
+      api_key: ${HINDSIGHT_API_KEY}
+```
+
+#### Config keys
+
+`api_key` is required; every other key is optional:
+
+| Key | Purpose |
+| --- | --- |
+| `api_key` | Hindsight API key (typically `${HINDSIGHT_API_KEY}`). |
+| `api_url` | API base URL. Defaults to `https://api.hindsight.vectorize.io`. |
+| `bank_id` | Memory bank to read/write. Defaults to the agent id, then the conversation id. |
+| `budget` | Recall/reflect budget level — `low`, `mid` (default), or `high`. |
+| `max_tokens` | Max tokens for recall results (default `4096`). |
+| `tags` | Comma-separated tags applied on `hindsight_retain`. |
+| `recall_tags` | Comma-separated tags to filter `hindsight_recall`. |
+| `recall_tags_match` | How `recall_tags` are matched — `any` (default), `all`, `any_strict`, or `all_strict`. |
+
+Memory is scoped by the resolved bank. With no `bank_id`, the bank defaults to
+the agent id, so each agent gets an isolated memory bank out of the box. Pin a
+fixed `bank_id` to share one human-readable bank across runs (or several agents):
+
+```
+tools:
+  builtins:
+    - name: hindsight_retain
+      api_key: ${HINDSIGHT_API_KEY}
+      bank_id: remy          # stable, easy to inspect in Hindsight
+```
+
+Because these tools only persist and recall when the model actually calls them,
+prompt the agent to recall before answering and to retain durable facts as it
+learns them — see the `remy` example agent for a worked prompt.
+
 ## Python function tools
 
 Expose any Python callable as a tool. The function is referenced by its fully qualified

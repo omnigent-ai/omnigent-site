@@ -59,6 +59,23 @@ You can set or change a session's project from two places:
 Each project folder has a shortcut to start a new session already filed there.
 Removing a session from a project moves the session back to `Chats` section, and deleting a project archives all its sessions.
 
+### Worktree branches
+
+When you start a session, the new-chat composer lets you name a branch to run the
+agent in its own git worktree. Naming a new branch reveals a **base branch**
+field — the branch the new worktree is cut from. Leave it blank and the worktree
+branches off the workspace's current branch.
+
+To avoid retyping the same base every time, set a default under **Settings › Git**.
+The **Default base branch** field there (e.g. `main`) is remembered per browser:
+when set, the composer auto-fills the base-branch field as soon as you name a new
+worktree branch. Leave the setting blank to turn auto-fill off.
+
+The auto-filled value is only a starting point — once you edit the base-branch
+field (including clearing it), your choice stands, even if you reopen the branch
+dropdown. Clearing the branch name and naming a new one re-arms auto-fill, so the
+next branch seeds from the current default again.
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:

@@ -49,6 +49,61 @@ Most coding agents can run in one of two modes:
 Pi is a headless multi-model worker that runs on any gateway model — ideal for
 review, exploration, and read-heavy tasks delegated by a supervisor agent.
 
+## Custom ACP agents
+
+Beyond the agents above, the generic `acp` harness drives *any* agent that
+speaks the [Agent Client Protocol](https://agentclientprotocol.com) — the open,
+editor-agnostic protocol used by Gemini CLI, Qwen Code, Goose, Zed's Claude Code
+bridge, and in-house agents. You point Omnigent at a launch command and it
+speaks ACP against whatever that command starts.
+
+Each ACP agent brings **its own auth** — Omnigent stores no credential, so log
+into the agent through its own CLI first. Register agents with `omnigent setup`
+→ *configure harnesses* → **Custom ACP agent** → *Add*, providing a name, a
+launch command, and an optional model. Some paste-ready commands:
+
+| Agent | Command |
+| --- | --- |
+| Gemini CLI | `gemini --experimental-acp` |
+| Qwen Code | `qwen --acp` |
+| Goose | `goose acp` |
+| Claude Code | `npx -y @zed-industries/claude-code-acp` |
+
+Each registered agent is stored in a top-level `acp:` block of
+`~/.omnigent/config.yaml` and gets a stable slug derived from its name. It then
+surfaces as its own harness id, `acp:<slug>`, in the web picker and in agent
+YAML:
+
+```yaml
+acp:
+  agents:
+    - { name: Gemini CLI,  command: gemini --experimental-acp }
+    - { name: Claude Code, command: npx -y @zed-industries/claude-code-acp }
+    - { name: Goose,       command: goose acp, model: gpt-5.3 }
+```
+
+```yaml
+executor:
+  harness: acp:gemini-cli
+```
+
+The agent runs its own agent loop, tools, and context window; Omnigent renders
+its streaming output, reasoning, and tool cards, routes its permission requests
+through your [contextual policies](/docs/policies/overview) as web elicitation
+cards, and honors interrupts. Omnigent also exposes its own builtin tools
+(session, sub-agent, skill, and policy tools) to the agent alongside the agent's
+native tools; set `OMNIGENT_ACP_MCP=0` to disable that bridge.
+
+<div className="note">
+
+**Note:** The generic ACP harness has no fixed binary — each agent owns its own
+install and login, so a missing binary is a hint, not a hard gate. A sandboxed
+generic ACP agent gets read access to its binary directory, the cwd, and write
+access to `/tmp`; an agent that must write its own config directory needs
+`sandbox: none` (the default) for now.
+
+</div>
+
 ## Swap harnesses
 
 Tools, policies, and other config stay the same across harnesses. Just change the

@@ -3905,6 +3905,18 @@
             "description": "Strict runner liveness \u2014 `True` iff a runner tunnel is currently registered for this session. Matches `GET /health`'s `runner_online` value. Strict: a dead runner on a live host reads `False` here (no host-relaunch optimism folded in), unlike the legacy conflated value. `None` when the server has no runner liveness lookup wired.",
             "title": "Runner Online"
           },
+          "search_snippet": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Excerpt of the chat content that matched the request's `search_query`, centered on the match with `\u2026` marking elided ends, so the search UI can show *where* a session matched in its body. Present whenever the query hit an item body (even if the title also matched); `None` on non-search reads and when only the title matched.",
+            "title": "Search Snippet"
+          },
           "status": {
             "description": "Derived session lifecycle status.",
             "enum": [

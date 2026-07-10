@@ -10,13 +10,12 @@ _Released 2026-07-03_
 uv tool install --force "omnigent==0.4.0"
 ```
 
-0.4.0 turns harnesses into a real plugin platform — bring your own coding agent as an installable package — makes the intelligent model router actually pick for you, and matures the whole native-harness fleet with parity, cost, and polish across the board.
+0.4.0 turns harnesses into a real plugin platform — bring your own coding agent as an installable package — and matures the whole native-harness fleet with parity, cost, and polish across the board.
 
 ### Major new features
 
 - 🤹 **Polly multi-agent orchestration:** the polly example orchestrator now fans work out across more coding sub-agents — cursor, hermes, and opencode join the roster — so a single run can delegate to the right agent for each task ([#1844](https://github.com/omnigent-ai/omnigent/pull/1844), [#1776](https://github.com/omnigent-ai/omnigent/pull/1776))
 - 🔌 **Harness plugin SDK:** bring your own coding agent — any harness can now ship as an installable Python package (via the `omnigent.community.harness` entry point), no fork or core changes required. A declarative capability model + a `/v1/harnesses` catalog let the server and UI discover what each harness supports ([#1756](https://github.com/omnigent-ai/omnigent/pull/1756), [#1847](https://github.com/omnigent-ai/omnigent/pull/1847), [#1894](https://github.com/omnigent-ai/omnigent/pull/1894))
-- 🧠 **Intelligent model routing, now automatic:** the model router (introduced in v0.3.0) now picks the best harness _and_ model for each turn via a server-side judge, reading a live per-runner model catalog — plus an orchestrator-facing `sys_advise_models` tool for sizing fan-out ([#1663](https://github.com/omnigent-ai/omnigent/pull/1663), [#1765](https://github.com/omnigent-ai/omnigent/pull/1765), [#1683](https://github.com/omnigent-ai/omnigent/pull/1683))
 - 🪢 **Native-harness maturity across the fleet:**
   - **kiro-native** reaches full parity: Omnigent tools inside kiro sessions, a launch-time model picker, TUI approvals surfaced as chat cards, working interrupt / Stop, and credit usage tracked as session cost ([#1709](https://github.com/omnigent-ai/omnigent/pull/1709), [#1706](https://github.com/omnigent-ai/omnigent/pull/1706), [#1715](https://github.com/omnigent-ai/omnigent/pull/1715), [#1293](https://github.com/omnigent-ai/omnigent/pull/1293), [#1531](https://github.com/omnigent-ai/omnigent/pull/1531), [#1699](https://github.com/omnigent-ai/omnigent/pull/1699))
   - **claude-native** renders live tool-call cards in the web chat, shows background-shell status, and takes a pluggable launch command ([#1499](https://github.com/omnigent-ai/omnigent/pull/1499), [#1578](https://github.com/omnigent-ai/omnigent/pull/1578), [#1476](https://github.com/omnigent-ai/omnigent/pull/1476))

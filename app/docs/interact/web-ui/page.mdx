@@ -94,6 +94,19 @@ omni host           # (separate terminal) register this machine as a host
 After that, open **http://localhost:6767** and drive the agent entirely from
 the browser; no further terminal interaction needed.
 
+## Install as an app
+
+The web UI is an installable [Progressive Web App (PWA)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps).
+From a supported browser you can install Omnigent to your desktop or phone home
+screen and launch it in its own standalone window—no separate download or app
+store required. Look for your browser's install control (for example, the
+install icon in Chrome's address bar, or **Add to Home Screen** on mobile).
+
+Installing is optional: the web UI works exactly the same in a normal browser
+tab. Because Omnigent is a cloud app with no offline mode, the installed app
+still requires a connection to your server—it does not cache pages for offline
+use.
+
 ## File editor
 
 A full markdown editor with syntax highlighting for browsing and editing every file your
@@ -111,6 +124,26 @@ Review what your Omnigent changed before accepting. Syntax-highlighted diffs sho
 what was added, modified, or removed.
 
 ![Omnigent file editor](/images/docs/file-editor.gif)
+
+### Attach a selection to the agent
+
+In a coding-agent session, select lines in the code viewer or a diff and an
+`Attach to agent` button appears next to `Add comment`. Clicking it drops the
+selected line span into the composer as a chip (shown as `@path:start-end`),
+so you can ask the agent about an exact range without copy-pasting it into chat.
+The chip is delivered to the agent at send time as a path reference — the agent
+reads the on-disk file directly (no upload). This button shows only for native
+coding-agent sessions, since those harnesses run in the workspace and resolve
+the referenced file themselves.
+
+## Mentioning workspace files
+
+In a coding-agent session, type `@` in the composer to browse and attach
+workspace files and folders. Attached paths appear as chips above the input and
+can be removed individually; the agent reads each one directly from disk at send
+time.
+
+![Tagging workspace files](/images/docs/tag_workspace_files.gif)
 
 ## Appearance settings
 

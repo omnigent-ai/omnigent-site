@@ -14,6 +14,7 @@ _Released 2026-07-10_
 - ☸️ **Kubernetes deployment** — a new official `omnigent-server-kubernetes` image ships the sandbox provider SDK (no custom build), and runner Pods can now schedule on arm64 via `node_selector` ([#2124](https://github.com/omnigent-ai/omnigent/pull/2124), [#2123](https://github.com/omnigent-ai/omnigent/pull/2123))
 - 🌿 **Start sessions in git worktrees** — pick an existing worktree or generate a fresh branch name right from the new-session composer, see the branch in the sidebar, and delete the worktree + branch on session delete; set a default base branch in Settings › Git ([#2088](https://github.com/omnigent-ai/omnigent/pull/2088), [#2094](https://github.com/omnigent-ai/omnigent/pull/2094), [#2098](https://github.com/omnigent-ai/omnigent/pull/2098), [#2267](https://github.com/omnigent-ai/omnigent/pull/2267))
 - 🌐 **Embedded browser** — the Omnigent desktop app now ships a built-in browser pane your agent can drive with framework-owned tools (`browser_navigate`, `browser_click`, `browser_type`, `browser_snapshot`, `browser_screenshot`) — it opens a page, reads it, and acts on it without leaving the workspace ([#2248](https://github.com/omnigent-ai/omnigent/pull/2248))
+- 🖥️ **Better web terminal** — tmux control-mode (CC) is now the default transport, so the browser owns scrollback and text selection natively in the terminal view (no more fighting tmux for the viewport or mouse), with output coalesced into fewer WebSocket frames for a snappier feel ([#1970](https://github.com/omnigent-ai/omnigent/pull/1970), [#1972](https://github.com/omnigent-ai/omnigent/pull/1972))
 
 ## Bug fixes
 
@@ -22,5 +23,9 @@ _Released 2026-07-10_
 - 🚀 **Launch & gateway auth** — harness workers now start when Omnigent is launched from a macOS/Linux GUI client (stripped PATH), and managed claude-native sessions against an Anthropic-compatible gateway pass through the model instead of stalling on the API-key menu ([#1935](https://github.com/omnigent-ai/omnigent/pull/1935), [#2371](https://github.com/omnigent-ai/omnigent/pull/2371))
 - ✅ **Approvals & policies** — inbox approvals now resume the gated tool call, and default policies created via the API now take effect on sessions ([#2142](https://github.com/omnigent-ai/omnigent/pull/2142), [#2333](https://github.com/omnigent-ai/omnigent/pull/2333))
 - ⏱️ **Idle-session stability** — messaging a long-idle session no longer risks the new turn being killed mid-flight by the idle reaper ([#1834](https://github.com/omnigent-ai/omnigent/pull/1834))
+
+### 💜 Thanks to our community
+
+This release was shaped by the people who filed issues, opened PRs, and talked through feature requests with us on our Discord! Thank you for building omnigent with us, keep the bug reports, ideas and contributions coming :)
 
 Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md

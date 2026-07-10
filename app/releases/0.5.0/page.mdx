@@ -1,0 +1,25 @@
+{/* Auto-generated from the GitHub Release for v0.5.0. Edit the GitHub Release, not this file. */}
+
+# v0.5.0
+
+_Released 2026-07-10_
+
+## Major new features
+
+- 📱 **Omnigent for iOS — now on the App Store** — the native iOS app is live on the [App Store](https://apps.apple.com/us/app/omnigent/id6783102694); Android is coming soon ([#2262](https://github.com/omnigent-ai/omnigent/pull/2262), [#2263](https://github.com/omnigent-ai/omnigent/pull/2263), [#2282](https://github.com/omnigent-ai/omnigent/pull/2282), [#2179](https://github.com/omnigent-ai/omnigent/pull/2179))
+- 🧩 **Generic ACP harness** — connect Omnigent to any ACP-compatible agent, bridged to Omnigent's own tools over an MCP relay ([#2152](https://github.com/omnigent-ai/omnigent/pull/2152))
+- 🔎 **Command palette & richer search** — a global ⌘/Ctrl+K palette (also wired to the sidebar "Search") jumps across sessions, and session search now shows a highlighted matched-content preview so you can see why a session matched ([#1386](https://github.com/omnigent-ai/omnigent/pull/1386), [#2086](https://github.com/omnigent-ai/omnigent/pull/2086), [#2162](https://github.com/omnigent-ai/omnigent/pull/2162))
+- 🎨 **Appearance & customization settings** — pick a color theme (Omnigent, Dracula, GitHub, Catppuccin, Gruvbox), a terminal theme, and independent UI and code editor/terminal font size + family ([#2225](https://github.com/omnigent-ai/omnigent/pull/2225), [#2147](https://github.com/omnigent-ai/omnigent/pull/2147), [#2154](https://github.com/omnigent-ai/omnigent/pull/2154), [#2135](https://github.com/omnigent-ai/omnigent/pull/2135), [#2040](https://github.com/omnigent-ai/omnigent/pull/2040), [#2047](https://github.com/omnigent-ai/omnigent/pull/2047))
+- 💬 **Message steering & queuing** — line up several messages while a turn runs, then edit, reorder, delete, or steer them; queued messages auto-flush on idle, in the background, and across sessions (with attachments) ([#2008](https://github.com/omnigent-ai/omnigent/pull/2008), [#2010](https://github.com/omnigent-ai/omnigent/pull/2010), [#2019](https://github.com/omnigent-ai/omnigent/pull/2019), [#2022](https://github.com/omnigent-ai/omnigent/pull/2022), [#2025](https://github.com/omnigent-ai/omnigent/pull/2025), [#2029](https://github.com/omnigent-ai/omnigent/pull/2029), [#2078](https://github.com/omnigent-ai/omnigent/pull/2078))
+- ☸️ **Kubernetes deployment** — a new official `omnigent-server-kubernetes` image ships the sandbox provider SDK (no custom build), and runner Pods can now schedule on arm64 via `node_selector` ([#2124](https://github.com/omnigent-ai/omnigent/pull/2124), [#2123](https://github.com/omnigent-ai/omnigent/pull/2123))
+- 🌿 **Start sessions in git worktrees** — pick an existing worktree or generate a fresh branch name right from the new-session composer, see the branch in the sidebar, and delete the worktree + branch on session delete; set a default base branch in Settings › Git ([#2088](https://github.com/omnigent-ai/omnigent/pull/2088), [#2094](https://github.com/omnigent-ai/omnigent/pull/2094), [#2098](https://github.com/omnigent-ai/omnigent/pull/2098), [#2267](https://github.com/omnigent-ai/omnigent/pull/2267))
+
+## Bug fixes
+
+- 🖥️ **claude-native reliability** — resumed sessions no longer crash on compaction or `TaskOutput` history, in-pane `/model` switches no longer stick on "Stop", and mid-turn messages no longer raise a false "terminal did not become ready" error ([#1957](https://github.com/omnigent-ai/omnigent/pull/1957), [#2293](https://github.com/omnigent-ai/omnigent/pull/2293), [#2082](https://github.com/omnigent-ai/omnigent/pull/2082), [#2001](https://github.com/omnigent-ai/omnigent/pull/2001), [#2089](https://github.com/omnigent-ai/omnigent/pull/2089))
+- 🧭 **Smart routing & compaction** — intelligent routing now correctly routes Claude sessions and overrides an orchestrator-specified model when the parent toggle is on, and `/compact` on a pinned Anthropic model no longer 500s ([#2136](https://github.com/omnigent-ai/omnigent/pull/2136), [#2291](https://github.com/omnigent-ai/omnigent/pull/2291), [#2043](https://github.com/omnigent-ai/omnigent/pull/2043))
+- 🚀 **Launch & gateway auth** — harness workers now start when Omnigent is launched from a macOS/Linux GUI client (stripped PATH), and managed claude-native sessions against an Anthropic-compatible gateway pass through the model instead of stalling on the API-key menu ([#1935](https://github.com/omnigent-ai/omnigent/pull/1935), [#2371](https://github.com/omnigent-ai/omnigent/pull/2371))
+- ✅ **Approvals & policies** — inbox approvals now resume the gated tool call, and default policies created via the API now take effect on sessions ([#2142](https://github.com/omnigent-ai/omnigent/pull/2142), [#2333](https://github.com/omnigent-ai/omnigent/pull/2333))
+- ⏱️ **Idle-session stability** — messaging a long-idle session no longer risks the new turn being killed mid-flight by the idle reaper ([#1834](https://github.com/omnigent-ai/omnigent/pull/1834))
+
+Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md

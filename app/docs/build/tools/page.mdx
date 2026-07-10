@@ -10,7 +10,7 @@ export const metadata = pageMeta("MCP & Tools", "Give your agent capabilities be
 Tools give your agent capabilities beyond conversation. They are declared under the
 `tools` key in your agent YAML, each identified by a name you choose.
 
-Omnigent supports four tool types: MCP servers, Python functions, sub-agents, and inherited
+Omnigent supports MCP servers, built-in tools, Python functions, sub-agents, and inherited
 tools.
 
 ## MCP servers
@@ -76,6 +76,126 @@ tools:
     auth:
       profile: my-profile
 ```
+
+## Built-in tools
+
+Omnigent ships a set of built-in tools you can enable by name under `tools.builtins`,
+without writing any code.
+
+### `web_search`
+
+A unified web search tool whose backend is determined by your agent spec:
+
+- **OpenAI models** — passes through to OpenAI's native `web_search_preview`
+  (server-side, using the LLM API key). No `search_provider` needed.
+- **Other models** (Anthropic, Llama, Databricks-hosted, etc.) — set
+  `search_provider` to name the engine explicitly. There is no default and no
+  env var fallback, so the engine that runs is always explicit; with no
+  `search_provider` set, the tool returns an error naming the options.
+
+Supported backends:
+
+| `search_provider` | API key | Notes |
+| --- | --- | --- |
+| `duckduckgo` | Keyless | No `api_key` required |
+| `keenable` | Optional | Keyless by default; supply `api_key` to lift rate limits |
+| `google` | Required | Also requires `engine_id` |
+| `perplexity` | Required | |
+| `nimble` | Required | |
+| `tavily` | Required | |
+
+Keyless backends run out of the box; keyed backends need credentials for a
+sturdier, higher-rate service.
+
+```
+tools:
+  builtins:
+    - name: web_search
+      search_provider: duckduckgo   # a keyless backend, as an example
+      # api_key: ${PERPLEXITY_API_KEY}   # required for keyed backends
+```
+
+#### Keenable
+
+Keenable is keyless by default. With no `api_key` in the spec it calls the
+keyless public endpoint and runs out of the box; supplying an `api_key`
+switches to the authenticated endpoint and lifts rate limits. Set the optional
+`max_results` to control how many results are returned (1–20, default 5):
+
+```
+tools:
+  builtins:
+    - name: web_search
+      search_provider: keenable
+      # api_key is optional — omit it to use the keyless free tier:
+      # api_key: ${KEENABLE_API_KEY}
+      # max_results: 5            # 1-20 (default 5)
+```
+
+### Hindsight long-term memory
+
+Three built-in tools give an agent memory that survives across runs and sessions,
+backed by [Hindsight](https://github.com/vectorize-io/hindsight), an open-source
+agent-memory system. Unlike conversation history — which is lost between sessions —
+anything an agent retains stays available in every future run.
+
+| Tool | What it does |
+| --- | --- |
+| `hindsight_retain` | Persist a durable fact, preference, or decision to memory. Takes a `content` string. |
+| `hindsight_recall` | Search memory for relevant facts before answering. Takes a `query` string. |
+| `hindsight_reflect` | Synthesize a reasoned summary from memory, rather than returning raw facts. Takes a `query` string. |
+
+The Hindsight client SDK is an optional dependency. Install the `memory` extra
+and provide an API key:
+
+```
+pip install 'omnigent[memory]'
+export HINDSIGHT_API_KEY=hsk_...    # https://ui.hindsight.vectorize.io
+```
+
+Enable the tools by name under `tools.builtins`:
+
+```
+tools:
+  builtins:
+    - name: hindsight_recall
+      api_key: ${HINDSIGHT_API_KEY}
+    - name: hindsight_retain
+      api_key: ${HINDSIGHT_API_KEY}
+    - name: hindsight_reflect
+      api_key: ${HINDSIGHT_API_KEY}
+```
+
+#### Config keys
+
+`api_key` is required; every other key is optional:
+
+| Key | Purpose |
+| --- | --- |
+| `api_key` | Hindsight API key (typically `${HINDSIGHT_API_KEY}`). |
+| `api_url` | API base URL. Defaults to `https://api.hindsight.vectorize.io`. |
+| `bank_id` | Memory bank to read/write. Defaults to the agent id, then the conversation id. |
+| `budget` | Recall/reflect budget level — `low`, `mid` (default), or `high`. |
+| `max_tokens` | Max tokens for recall results (default `4096`). |
+| `tags` | Comma-separated tags applied on `hindsight_retain`. |
+| `recall_tags` | Comma-separated tags to filter `hindsight_recall`. |
+| `recall_tags_match` | How `recall_tags` are matched — `any` (default), `all`, `any_strict`, or `all_strict`. |
+
+Memory is scoped by the resolved bank. With no `bank_id`, the bank defaults to
+the agent id, so each agent gets an isolated memory bank out of the box. Pin a
+fixed `bank_id` to share one human-readable bank across runs (or several agents):
+
+```
+tools:
+  builtins:
+    - name: hindsight_retain
+      api_key: ${HINDSIGHT_API_KEY}
+      bank_id: remy          # stable, easy to inspect in Hindsight
+```
+
+Because these tools only persist and recall when the model actually calls them,
+prompt the agent to recall before answering and to retain durable facts as it
+learns them — see the `remy` example agent for a worked prompt.
 
 ## Python function tools
 

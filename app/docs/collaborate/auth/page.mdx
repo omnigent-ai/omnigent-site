@@ -63,6 +63,28 @@ The only outside step is creating an app with your provider (e.g. Google Cloud C
 GitHub > Settings > Developer settings) to get the client ID and secret. Set its
 callback URL to `https://<your-domain>/auth/callback`.
 
+### Skipping the email-verified check
+
+By default, Omnigent requires the `id_token` to carry a truthy `email_verified`
+claim before it will trust the email as the user's identity — a signed token
+proves the IdP issued it, not that the mailbox was verified. An absent or false
+`email_verified` claim is a hard reject that surfaces as **"Could not determine
+user email"** at login.
+
+Some IdPs omit the claim for directory-provisioned users even though the
+directory is authoritative for the address — for example Okta without custom API
+Access Management. To admit those users, set:
+
+```
+OMNIGENT_OIDC_SKIP_EMAIL_VERIFICATION=1
+```
+
+This is **off by default**. When enabled, Omnigent accepts any signed email
+claim from the issuer as the user's identity, and logs a warning at startup.
+Only enable it when the issuer is a trusted enterprise directory. It affects the
+generic-OIDC path only — the GitHub sign-in path always requires a verified
+primary email.
+
 ## Header-based auth
 
 If your server sits behind an existing SSO proxy (e.g. OAuth2 Proxy, Cloudflare Access) that

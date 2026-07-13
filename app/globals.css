@@ -234,6 +234,37 @@ hr {
   overflow: visible;
 }
 
+/* ---- waitlist form ---- */
+.waitlist-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+.waitlist-input {
+  flex: 1 0 16rem;
+  max-width: 20rem;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--fg);
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  outline: none;
+}
+.waitlist-input:focus {
+  border-color: var(--accent);
+}
+.waitlist-message {
+  margin-top: 0.7rem;
+  font-size: 0.9rem;
+  color: var(--fg-soft);
+}
+.waitlist-message-error {
+  color: var(--accent-text);
+}
+
 /* ---- hero ---- */
 .hero {
   /* fill the first viewport, accounting for the sticky nav */

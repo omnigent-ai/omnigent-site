@@ -44,6 +44,28 @@ can open in the UI's Subagents panel to watch or take over. `pi` runs headless
 as the review/explore specialist. Six distinct vendors means any implementer's
 diff can be reviewed by a different one — the cross-vendor check is the point.
 
+## Tool approvals in headless workers
+
+Polly's native workers launch in a headless pane where no human is watching to
+answer a tool-approval prompt, so an `Edit`/`Write`/`Bash` that would prompt
+stalls the worker. Each worker's bundle therefore declares a full-bypass stance
+so it can edit and run unattended:
+
+| Worker        | Harness         | Bypass config          | Effect                                             |
+| ------------- | --------------- | ---------------------- | -------------------------------------------------- |
+| `claude_code` | `claude-native` | `permission_mode: auto` | passed through as `--permission-mode auto`         |
+| `codex`       | `codex-native`  | `yolo: true`           | `--dangerously-bypass-approvals-and-sandbox`       |
+| `cursor`      | `cursor-native` | `yolo: true`           | `--yolo` (cursor-agent's don't-ask / full bypass)  |
+
+Set `executor.config.yolo: false` on a worker to keep it prompting — useful for
+a read-only or must-approve sub-agent (its gated calls then surface as approval
+cards). For the Cursor worker, `executor.config.permission_mode: auto` (or
+`exec_mode: auto` / `auto-review`) selects Smart Auto (`--auto-review`) instead
+of full `--yolo`, matching Claude's `permission_mode: auto` ergonomics.
+
+Bypass only skips the interactive per-tool prompt — Omnigent's `blast_radius`
+policy still `DENY`s the catastrophic set.
+
 ## Skills
 
 - **`/fanout`** runs independent tasks in parallel. Each gets its own git worktree and sub-agent. Each opens its own PR.

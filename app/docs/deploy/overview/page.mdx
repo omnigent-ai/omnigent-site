@@ -136,6 +136,29 @@ service is not available in your region, or when you need something it does
 not expose yet — custom YAML policies, bring-your-own provider API keys, or
 custom egress controls.
 
+### Kubernetes
+
+Deploy the Omnigent server to a Kubernetes cluster with the kustomize manifests
+in `deploy/kubernetes/` in the repo. The `overlays/sandbox-runners/` overlay
+additionally turns on the **`kubernetes`** managed sandbox provider
+(`sandbox.provider: kubernetes`): a `host_type: managed` session spawns a
+dedicated runner Pod that runs `omnigent host` and dials back to the server.
+
+That provider imports a Kubernetes client the base server image omits, so the
+overlay pulls the official `ghcr.io/omnigent-ai/omnigent-server-kubernetes`
+image variant — the standard server image plus the `kubernetes` client extra
+(`OMNIGENT_EXTRAS=kubernetes`). No self-built image is required; the overlay's
+`images:` block already points at it.
+
+```
+kubectl apply -k deploy/kubernetes/overlays/sandbox-runners
+# then create the omnigent-creds harness Secret (see the overlay README)
+```
+
+See `deploy/kubernetes/README.md` and
+`deploy/kubernetes/overlays/sandbox-runners/README.md` in the repo for the full
+guide.
+
 ## Runner
 
 The **runner** is the per-session process that executes Omnigent loops. It

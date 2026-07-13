@@ -1,0 +1,96 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Usage Telemetry",
+  "What anonymous usage telemetry the Omnigent server collects, and every way to turn it off.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/telemetry",
+  },
+);
+
+# Usage Telemetry
+
+The Omnigent server emits anonymous, fire-and-forget usage telemetry to help us
+understand how Omnigent is used and where to invest. It is best-effort: telemetry
+never blocks, delays, or disrupts your server, and any error while collecting or
+sending it is silently ignored.
+
+Telemetry runs only on the **server** process. It is easy to turn off, and it
+never captures prompts, message content, tool arguments, file contents, or
+credentials.
+
+## What is collected
+
+The server emits three session-lifecycle events:
+
+| Event                 | When it fires                          |
+| --------------------- | -------------------------------------- |
+| `SessionCreatedEvent` | Once when a session is created         |
+| `SessionStoppedEvent` | After a session is stopped             |
+| `SessionDeletedEvent` | After a session row is deleted         |
+
+Every event includes environment context: the Omnigent version, Python version,
+operating system, a timestamp, and a persistent **installation ID**. Individual
+events add:
+
+- **`SessionCreatedEvent`** — the agent ID, harness kind (e.g. `claude-native`,
+  `pi`), client surface (`web`, `desktop`, `ios`, `android`, `cli`, or
+  `unknown`), and whether the session is a fork or a sub-agent.
+- **`SessionDeletedEvent`** — the session's wall-clock duration and its
+  cumulative input tokens, output tokens, and cost.
+
+Sessions are not tied to a real user. When a user is associated with a session,
+Omnigent sends only an **anonymous user ID**: the first 16 hex characters of a
+SHA-256 hash of the installation ID and the user ID. The raw user ID never
+leaves your server.
+
+The **installation ID** is a random UUID generated on first run and stored at
+`~/.omnigent/telemetry.json` (or under `OMNIGENT_DATA_DIR` if set). Delete that
+file to reset it.
+
+## Turning telemetry off
+
+Telemetry is disabled automatically in CI (for example when `CI`,
+`GITHUB_ACTIONS`, or other common CI environment variables are set). Outside CI,
+any one of the following opts you out:
+
+| Method                                              | Effect                        |
+| --------------------------------------------------- | ----------------------------- |
+| `OMNIGENT_TELEMETRY=0`                              | Disables telemetry            |
+| `DISABLE_TELEMETRY=true`                            | Disables telemetry            |
+| `OMNIGENT_DISABLE_TELEMETRY=true`                   | Disables telemetry            |
+| `DO_NOT_TRACK=1`                                    | Honors the `DO_NOT_TRACK` standard |
+| `telemetry: false` in `~/.omnigent/config.yaml`     | Disables telemetry            |
+
+For example, to run a server with telemetry off:
+
+```
+OMNIGENT_TELEMETRY=0 omnigent server
+```
+
+Or set it once in your config file:
+
+```yaml
+# ~/.omnigent/config.yaml
+telemetry: false
+```
+
+<div className="note">
+
+When a **host** or **runner** has opted out, it advertises that in the hello
+frame it sends to the server, and the server honors it on a best-effort basis by
+skipping telemetry for that host's or runner's sessions. Set your opt-out on the
+machine running the server to disable collection outright.
+
+</div>
+
+## How it works
+
+Telemetry is initialised when the server starts and runs on a background thread.
+On startup the client fetches a remote configuration that carries the ingestion
+endpoint and a set of kill-switches (a global disable, a per-event disable list,
+an operating-system exclusion list, and a rollout percentage). If that config
+cannot be fetched, or it signals that telemetry is disabled, the client stops
+itself and drops any pending events — so Omnigent can turn collection off
+remotely without a new release.

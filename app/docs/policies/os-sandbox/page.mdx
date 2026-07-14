@@ -77,6 +77,38 @@ listed in `cwd_allow_hidden`. This makes broad read grants safe: granting
 `~` doesn't expose `~/.aws/credentials` or `~/.ssh/id_rsa`. On macOS, `~/Library` is also
 denied by default.
 
+A **write** grant (`write_paths` / `write_files`) also permits reads of that
+path — a writable path is readable, so `sys_os_edit` works there. A **read**
+grant (`read_paths`) never confers write. Grant paths may be relative to `cwd`;
+`~` is expanded, but `$VAR` is intentionally **not** expanded.
+
+### File-tool reach
+
+The built-in file tools (`sys_os_read`, `sys_os_write`, `sys_os_edit`) are always
+confined to `cwd` plus the paths you grant — on every backend, including
+`sandbox.type: none`. With no grants declared, they can only touch files under
+`cwd`. `read_paths` extends read reach outside `cwd`; `write_paths` /
+`write_files` extend both read and write reach. Symlinks and `..` are resolved
+before the check, so a path whose real target leaves `cwd` and every grant is
+rejected.
+
+Under `sandbox.type: none` the agent's shell (`sys_os_shell`) runs unconfined, so
+these grants can't _restrict_ anything — but `read_paths` / `write_paths` /
+`write_files` are still honoured as reach grants that let the file tools read or
+write declared paths outside the workspace root:
+
+```
+os_env:
+  type: caller_process
+  cwd: ./repo
+  sandbox:
+    type: none
+    write_paths: [../sibling]     # let the file tools edit a sibling checkout
+```
+
+`allow_network: false` remains rejected under `sandbox.type: none`, since there
+is no confinement to enforce it.
+
 ### Network
 
 ```

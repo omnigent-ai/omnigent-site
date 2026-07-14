@@ -33,6 +33,20 @@ omni run agent.yaml --model claude-sonnet-4-6
 Use the `/model` command inside any running session to switch models on the fly.
 The agent keeps its conversation history and tool state – only the underlying model changes.
 
+### xAI / Grok models
+
+xAI's API is OpenAI-compatible, so Grok models run on the `openai-agents` harness.
+Declare them with the `xai/` provider prefix so Omnigent routes them correctly:
+
+```
+executor:
+  harness: openai-agents
+  model: xai/grok-4
+```
+
+The prefix is required — a bare `grok-…` model string is treated as an OpenAI
+model and won't route to xAI.
+
 ## Credentials
 
 Omnigent needs credentials to talk to a model provider.

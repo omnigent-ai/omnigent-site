@@ -104,6 +104,36 @@ access to `/tmp`; an agent that must write its own config directory needs
 
 </div>
 
+## Optional & community harnesses
+
+`pip install omnigent` ships the built-in harnesses above. Additional harnesses
+are distributed as optional packages that plug into the **same** `omni` CLI and
+server — no separate binary or process. For example:
+
+```
+pip install omnigent-kimi
+```
+
+adds its harness ids to spec validation, the harness picker, and readiness
+checks the moment it's installed.
+
+Under the hood, an optional package registers a contribution in the
+`omnigent.community.harnesses` entry point group. Omnigent discovers installed
+plugins at startup and merges their harness ids, aliases, install metadata, and
+picker labels with the core set.
+
+If you reference a harness that isn't installed, validation reports the accepted
+harnesses. For a known optional harness, the error also tells you which package
+to install:
+
+```
+executor.config.harness: must be one of [...], got 'kimi'; install `omnigent-kimi` to add this harness
+```
+
+The server exposes the currently installed harnesses at `GET /v1/harnesses`, and
+the web UI's harness pickers read from it so newly installed harnesses appear
+automatically.
+
 ## Swap harnesses
 
 Tools, policies, and other config stay the same across harnesses. Just change the

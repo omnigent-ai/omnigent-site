@@ -33,6 +33,14 @@ omni run agent.yaml --model claude-sonnet-4-6
 Use the `/model` command inside any running session to switch models on the fly.
 The agent keeps its conversation history and tool state – only the underlying model changes.
 
+In native-TUI sessions you can also switch from the web UI model picker in the
+composer, without touching the terminal. The pick applies live to the running
+session, and a `/model` switch made inside the TUI mirrors back so the picker
+always reflects the active model. The `pi-native` harness supports this too: its
+picker populates from the models Pi actually loaded for the session, so it works
+whether you authenticated through an Omnigent-configured provider or Pi's own
+`/login`.
+
 ## Credentials
 
 Omnigent needs credentials to talk to a model provider.

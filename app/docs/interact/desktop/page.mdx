@@ -39,8 +39,9 @@ same as the web UI.
 
 ## Prerequisites
 
-- **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.
-- **At least one runner.** A [runner](/docs/deploy/overview) is the process that actually executes your agent. If you have [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host) set up, you'll be able to launch them from the app. Otherwise, register your machine by running `omni host` from your CLI.
+- **A server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to. The app can **start one on this machine for you** (see [Run a server on this machine](#run-a-server-on-this-machine)), or you can point it at a deployed URL.
+- **A runner.** A [runner](/docs/deploy/overview) is the process that actually executes your agent. If you have [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host) set up, you can launch them from the app. You can also connect **this machine** as a runner directly from the app's host menu (see [Run an agent on this machine](#run-an-agent-on-this-machine)) — no need to run `omni host` in a terminal first.
+- **The Omnigent CLI** (only for the two local options above). Starting a local server or connecting this machine as a runner drives the local `omnigent` binary. Connecting to a remote server never needs it. If the CLI isn't found, the setup screen shows the install one-liner and a field to point the app at an existing binary.
 
 ## Install
 
@@ -82,6 +83,7 @@ same as the web UI.
 ## Get started
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
+{/* TODO(doc-drafter): screenshot may be stale — the setup screen now leads with a prominent "Start locally" button above the "or connect to a server" form, plus a CLI-not-found panel. */}
 
 <img
   src="/images/docs/desktop-start.png"
@@ -89,9 +91,61 @@ same as the web UI.
   style={{ width: "100%", borderRadius: "8px" }}
 />
 
-1. **Launch the app.** On first launch, you'll see a setup screen.
-2. **Enter your server URL.** `http://localhost:6767` if running locally, or your deployed server URL (e.g. `https://your-app.onrender.com`).
+On first launch you'll see a setup screen. You can either start a server on this
+machine or connect to one that's already running:
+
+1. **Launch the app.**
+2. **Start a server, or connect to one.** Click **Start locally** to run a server
+   on this machine, or enter a server URL under **or connect to a server**
+   (`http://localhost:6767` if a server is already running locally, or your
+   deployed server URL, e.g. `https://your-app.onrender.com`).
 3. **Start working.** The app connects and shows the same UI you'd see in a browser.
+
+## Run a server on this machine
+
+The setup screen leads with **Start locally**, which runs an Omnigent server on
+this machine and connects this window to it — you don't have to start one in a
+terminal first. It's idempotent: if a healthy local server is already running,
+the app reuses it.
+
+Starting a local server needs the [Omnigent CLI](/docs/interact/terminal). The
+setup screen detects it automatically. If it isn't found, the **Start locally**
+button is disabled and a panel appears with:
+
+- the install one-liner you can copy:
+
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/install_oss.sh | sh
+  ```
+
+- a field to point the app at an existing `omnigent` binary (type a path or use
+  **Browse…**). The path is saved only once it validates as a runnable
+  `omnigent`.
+
+Connecting to a **remote** server never needs the CLI — only **Start locally**
+and connecting this machine as a runner do.
+
+## Run an agent on this machine
+
+A server needs a runner to execute agent work. Besides [cloud sandbox
+hosts](/docs/deploy/cloud-sandbox-host), you can connect **this machine** as a
+runner straight from the app:
+
+1. Start a chat. In the **host menu**, this machine is tagged **this machine**.
+2. Select it ("Run on this machine" / "select to connect"). The app connects this
+   machine as a host for the current server and selects it for the session.
+
+Because connecting a runner executes agent code on your machine, it is **opt-in
+and explicit** — the app never connects this machine as a runner on its own, and
+there's no connect-time toggle. The first time a server asks to manage hosting on
+this machine, a native confirmation dialog appears (**Don't Allow** / **Allow
+Once** / **Always Allow**); **Always Allow** remembers that server so later
+connects skip the prompt.
+
+The desktop app **owns the host processes it starts**: quitting the app
+disconnects this machine (and stops a local server the app started). A daemon you
+started yourself in a terminal is left running. Hosting is not restored on the
+next launch — reconnect this machine from the host menu when you want it.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
@@ -114,6 +168,7 @@ Each window connects to one server. To work with multiple servers at the same ti
 Notifications and badge counts are combined across all connected servers.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
+{/* TODO(doc-drafter): screenshot may be stale — the setup screen's connect form now sits below a "Start locally" action and an "or connect to a server" divider. */}
 
 <img
   src="/images/docs/desktop-connect.png"

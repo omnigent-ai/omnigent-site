@@ -33,9 +33,54 @@ showing how many sessions are waiting, and multiple independent windows.
 - **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing.
 - **Dock badge.** See at a glance how many sessions need your attention, without switching to the app.
 - **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
+- **Embedded browser.** Drive a real Chromium page from inside the app — see [Embedded browser](#embedded-browser) below.
 
 Everything else (sessions, file editor, inline comments, collaboration) works exactly the
 same as the web UI.
+
+## Embedded browser
+
+The desktop app adds a **Browser** tab to the right-hand Workspace rail
+(the last tab, after Files, Agents, Shells, and Tasks). It hosts a real Chromium
+page you can drive directly — not a sandboxed `iframe`. Because it relies on the
+native desktop shell, the tab appears **only in the desktop app**; it is hidden
+in a plain browser tab.
+
+Each conversation gets its own browser page. Switching to a different
+conversation leaves the previous page running in the background, so you can come
+back to it without reloading.
+
+### Toolbar
+
+When a page is open, the pane shows a toolbar above it:
+
+- **Back**, **Forward**, and **Reload** buttons.
+- A **DevTools** toggle that opens Chromium's developer tools docked at the
+  bottom of the page.
+- An editable **URL bar**. Press <kbd>Enter</kbd> to navigate. What you type is
+  normalized to add a scheme automatically — a dotless host like `localhost`
+  becomes `http://localhost`, and everything else defaults to `https://`. The
+  bar tracks the real URL as the page redirects, follows links, or is navigated
+  for you, but never overwrites what you're actively typing.
+
+### Design mode (point-and-prompt)
+
+A toolbar toggle next to DevTools turns on **design mode**. With it on:
+
+1. Hovering over the page highlights the element under your cursor, with an
+   overlay and a component/tag label.
+2. Clicking an element opens a popup anchored to it with a text input and a
+   **Send** button.
+3. On **Send**, Omnigent builds a `[Design Mode — …]` prompt, attaches a cropped
+   screenshot of the element, and sends it through the normal chat path to the
+   conversation's own agent. The popup then paints green/red feedback showing
+   whether the message was sent.
+
+Design mode is a way to point at something on the page and ask your agent about
+it directly, without describing where it is.
+
+The embedded browser is always available in the desktop app — there is no flag
+to enable it.
 
 ## Prerequisites
 

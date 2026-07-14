@@ -100,7 +100,10 @@ const SECTIONS = [
   },
   {
     title: "Reference",
-    pages: [{ href: "/reference", label: "REST API" }],
+    pages: [
+      { href: "/reference", label: "REST API" },
+      { href: "/docs/deploy/telemetry", label: "Usage Telemetry" },
+    ],
   },
 ];
 

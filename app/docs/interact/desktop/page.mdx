@@ -104,6 +104,41 @@ same as the web UI.
 The app remembers your server URL for future launches. To change it later, go to
 **Server > Change Server**.
 
+## Sign in to connected services
+
+When you connect an OAuth service from the workspace — an MCP service, or a
+Catalog Explorer connection — the provider's sign-in popup opens as a hardened
+window **inside the app** rather than in your external browser. This lets the
+provider hand the authorization code back to the workspace directly, so the
+connection completes without leaving Omnigent.
+
+Sign-in works in-app automatically for the well-known providers behind managed
+connections:
+
+- GitHub
+- Google (Drive, Gmail, Calendar, Analytics, Ads)
+- Slack
+- Atlassian (Jira, Confluence, and Atlassian MCP)
+- Microsoft (SharePoint, OneDrive, Power BI, Azure SQL)
+- Salesforce (production and sandbox orgs)
+
+The in-app sign-in window is deliberately restricted: it always shows the
+current host in its title bar, can't open further popups, and gets no access to
+the app's own APIs.
+
+### Custom sign-in domains
+
+A custom provider whose sign-in lives on some other domain falls back to your
+external browser. To let it complete sign-in in-app instead, add its
+authorization origin to `popup_allowed_origins` in the app's `settings.json`:
+
+```json
+{ "popup_allowed_origins": ["https://sso.my-git-host.example.com"] }
+```
+
+Only `https` origins are honored, and only when the sign-in is launched from the
+server you're connected to.
+
 ## Work with multiple servers
 
 Each window connects to one server. To work with multiple servers at the same time:

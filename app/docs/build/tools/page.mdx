@@ -66,7 +66,7 @@ As shown in the examples above, custom MCP servers accept credentials through:
 
 - **`env`**: environment variables passed to stdio server processes (e.g., `API_KEY: ${MY_API_KEY}`)
 - **`headers`**: HTTP headers for remote servers, with `${...}` env var expansion (e.g., `Authorization: "Bearer ${API_TOKEN}"`)
-- **`auth:` with `type: databricks`**: resolves an OAuth token from a profile in your `~/.databrickscfg`. Both `type` and `profile` are required — without `type: databricks` the profile is ignored:
+- **`auth:` with `type: databricks`**: resolves an OAuth token from a profile in your `~/.databrickscfg`. `databricks` is the only supported `auth` type; inside it, `profile` is required. Other servers don't use `auth:` — they authenticate via `env` or `headers` above:
 
 ```
 tools:

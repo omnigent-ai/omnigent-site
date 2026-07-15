@@ -25,7 +25,7 @@ Any one of the following opts you out:
 
 | Method                                          | Scope          |
 | ----------------------------------------------- | -------------- |
-| `OMNIGENT_TELEMETRY=0`                          | Server process |
+| `OMNIGENT_ANALYTICS=0`                          | Server process |
 | `DISABLE_TELEMETRY=true`                        | Server process |
 | `OMNIGENT_DISABLE_TELEMETRY=true`               | Server process |
 | `DO_NOT_TRACK=1`                                | Server process |
@@ -34,7 +34,7 @@ Any one of the following opts you out:
 For example, to run a server with telemetry off:
 
 ```
-OMNIGENT_TELEMETRY=0 omnigent server
+OMNIGENT_ANALYTICS=0 omnigent server
 ```
 
 Or set it once in your config file:

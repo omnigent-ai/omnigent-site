@@ -30,6 +30,48 @@ same flow.
 
 Run the same command to upgrade an existing installation.
 
+## Uninstall
+
+`omni uninstall` removes Omnigent while preserving your data by default. With
+no destructive flag it runs in **dry-run preview** mode, printing exactly what
+it would do without changing anything:
+
+```
+omni uninstall
+```
+
+To actually remove the CLI and the installer-managed PATH entries — while
+keeping your local history, credentials, and projects — add `--yes`:
+
+```
+omni uninstall --yes
+```
+
+To also delete Omnigent state under `~/.omnigent`, add `--purge`. Omnigent
+archives that state to a backup outside the target (under
+`~/.omnigent-backups/`) and prints a restore command before deleting; pass
+`--no-backup` to skip the archive. Your `~/omnigent` workspace is kept unless
+you also pass `--purge-workspace`:
+
+```
+omni uninstall --purge --yes
+```
+
+You can scope the run to one or more targets — `cli`, `state`, `desktop-data`,
+or `all` — and other flags cover less common cases: `--dry-run` to force a
+preview, `--json` for machine-readable output, `--force` to stop stubborn
+processes and override tamper refusals, and `--modify-external-config` to allow
+marker-scoped edits to third-party config files.
+
+### Standalone fallback
+
+If the installed wheel is broken or `omni` is not on your `PATH`, run the
+standalone script instead. Add `--yes` to perform the previewed cleanup:
+
+```
+curl -fsSL https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/uninstall_oss.sh | sh
+```
+
 ## Set up credentials
 
 ```

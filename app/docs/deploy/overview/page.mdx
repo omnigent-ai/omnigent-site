@@ -154,6 +154,25 @@ This is why your local Claude Code or Codex installation "just works." Runners
 started on your laptop have direct access to your machine's tools, files, and
 credentials.
 
+To check on a registered host, inspect its daemon:
+
+```
+omni host status                 # this machine's host
+omni host status --all           # every known daemon target
+omni host status --server <url>  # only this server target
+```
+
+Add `--sessions` to include the table of sessions currently connected to the
+host, and `--json` for machine-readable output:
+
+```
+omni host status --sessions
+omni host status --json --sessions
+```
+
+The session table is opt-in — without `--sessions`, `omni host status` reports
+only the host's own state.
+
 However, moving the runner to a
 [cloud sandbox host](/docs/deploy/cloud-sandbox-host) gives you:
 

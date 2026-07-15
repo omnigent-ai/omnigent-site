@@ -1,0 +1,89 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Slack",
+  "Drive Omnigent sessions from Slack. A Socket Mode bot maps each Slack thread to one Omnigent session, so mentioning the bot starts a session and thread replies continue it.",
+  {
+    eyebrow: "Interact",
+    path: "/docs/interact/slack",
+  },
+);
+
+# Slack
+
+The Slack bot lets you drive Omnigent from a Slack workspace. It runs in
+[Socket Mode](https://api.slack.com/apis/socket-mode) and maps **one Slack thread to one
+Omnigent session**: mention the bot to start a session, and every reply in that thread
+continues the same session.
+
+The bot lives in the Omnigent repo at `integrations/slack/`. It's a standalone
+[`uv`](https://docs.astral.sh/uv/) project that talks to a running Omnigent server over its
+REST API.
+
+## Set up the Slack app
+
+1. Create a Slack app with **Socket Mode** enabled.
+2. Add the bot scopes `app_mentions:read`, `chat:write`, and the history scopes needed for
+   the channel types where the bot will run.
+3. Install the app into your workspace.
+
+You'll need two tokens: a bot token (`xoxb-…`) and an app-level token (`xapp-…`).
+
+## Configure and run
+
+From `integrations/slack/`, copy the example environment file and fill in your Slack and
+Omnigent values:
+
+```bash
+cp .env.example .env
+```
+
+Then run the bot:
+
+```bash
+UV_CACHE_DIR=.uv-cache uv run omnigent-slack
+```
+
+On startup the bot checks that the Omnigent server is reachable and resolves
+`OMNIGENT_AGENT_NAME` to an agent id, aborting if the server is down or the agent name isn't
+found. Set `LOG_LEVEL=DEBUG` in `.env` when diagnosing why Slack events aren't producing
+replies.
+
+### Configuration
+
+All configuration is read from environment variables (or `.env`).
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `SLACK_BOT_TOKEN` | _(required)_ | Slack bot token (`xoxb-…`). |
+| `SLACK_APP_TOKEN` | _(required)_ | Slack app-level token (`xapp-…`) for Socket Mode. |
+| `OMNIGENT_AGENT_NAME` | _(required)_ | Name of the Omnigent agent to run sessions with. |
+| `OMNIGENT_BASE_URL` | `http://127.0.0.1:6767` | Base URL of the Omnigent server. |
+| `OMNIGENT_AUTH_EMAIL` | _(unset)_ | Email to send for authenticated servers. |
+| `OMNIGENT_AUTH_HEADER_NAME` | `X-Forwarded-Email` | Header used to carry `OMNIGENT_AUTH_EMAIL`. |
+| `OMNIGENT_SESSION_COOKIE` | _(unset)_ | Session cookie value; wrapped as `ap_session=…` when no `=` is present. |
+| `OMNIGENT_RUNNER_WORKSPACE` | current working directory | Absolute workspace path used when auto-launching a runner. |
+| `OMNIGENT_RUNNER_HOST_ID` | _(unset)_ | Launch runners on a specific host instead of a random online one. |
+| `OMNIGENT_RUNNER_LAUNCH_TIMEOUT_SECONDS` | `60` | Seconds to wait for a launched runner to come online. |
+| `OMNIGENT_SLACK_DATABASE_PATH` | `data/omnigent_slack.sqlite3` | SQLite file mapping Slack threads to sessions. |
+| `SLACK_UPDATE_INTERVAL_SECONDS` | `1.0` | Minimum interval between streaming edits to a Slack reply. |
+| `LOG_LEVEL` | `INFO` | Python log level. |
+
+### Runners
+
+When you mention the bot, it creates an Omnigent session and binds it to a runner. If no
+online runner exists, the bot launches one on an online host, using the current working
+directory as the workspace. Set `OMNIGENT_RUNNER_WORKSPACE` to an absolute path when the host
+needs a different workspace, and `OMNIGENT_RUNNER_HOST_ID` to pin launches to a specific host.
+
+## Use the bot
+
+Mention the bot with a message to start a session:
+
+```text
+@your-bot help me inspect this failure
+```
+
+The bot posts a reply in that thread and streams the agent's output into it as the turn runs.
+Replies in the same Slack thread continue the same Omnigent session — you don't need to
+mention the bot again after the first message.

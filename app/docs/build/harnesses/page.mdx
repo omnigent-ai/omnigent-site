@@ -58,6 +58,27 @@ Tools, policies, and other config stay the same across harnesses. Just change th
 omni run agent.yaml --harness codex
 ```
 
+The same overrides work for native TUI harnesses (the `-native` ids). A
+top-level `--model` is forwarded to each vendor's terminal UI in the shape that
+wrapper expects:
+
+```
+omni run agent.yaml --harness codex-native --model <model>
+```
+
+Harnesses that manage their own model configuration — Goose, Qwen Code, and
+Hermes — receive `--model` only when you pass it explicitly on the command line.
+A model loaded from config is not pushed onto them, so their own configured
+default wins unless you override it at runtime.
+
+Native TUI harnesses own their turn loop, so REPL-only flags (`--system-prompt`,
+`--tools`, and most others) are rejected. Kiro is the one exception that also
+accepts an initial prompt:
+
+```
+omni run agent.yaml --harness kiro-native -p "review this repo"
+```
+
 See [Models & Credentials](/docs/build/models) for how to set up API keys and choose models.
 
 ## Community harnesses

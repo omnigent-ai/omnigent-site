@@ -146,6 +146,20 @@ A sub-agent tool can have its own [harness](/docs/build/harnesses), model, tools
 parent's conversation history is forwarded, and `max_sessions` limits concurrent
 invocations.
 
+### Override the model per invocation
+
+The `executor.model` above is the sub-agent's default. A supervisor can override it
+when it launches a child session by passing an optional `model` argument to the
+spawn tool — no config edit required. This sets the harness model at session
+creation, so the same sub-agent can run on different models across invocations
+(for example a cheaper model for routine work, a stronger one for hard tasks):
+
+```
+model: databricks-glm-5-2          # e.g. or databricks-claude-opus-4-8
+```
+
+Omit `model` to keep the sub-agent's declared default.
+
 ## Tool inheritance
 
 Use `inherit` to pass one of the parent's tools down to a sub-agent:

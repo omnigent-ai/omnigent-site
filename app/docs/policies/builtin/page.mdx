@@ -11,8 +11,8 @@ export const metadata = pageMeta(
 
 # Builtin Policies
 
-Omnigent ships with policies for common guardrails, organized into two categories:
-**Safety** and **Cost Control**. Your Omnigent can apply any of
+Omnigent ships with policies for common guardrails, organized into three categories:
+**Safety**, **Cost Control**, and **Orchestration**. Your Omnigent can apply any of
 these by name when you [ask it to add a policy](/docs/policies/overview#adding-a-policy), or you
 can reference them in YAML by their full path in the `handler` field.
 
@@ -39,12 +39,13 @@ All builtin policies live under `omnigent.policies.builtins`.
 
 ## Cost Control
 
-| Policy                            | What it does                                                                                                     | Parameters                                                                                                                   |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `cost_budget`                     | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit.     | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                                          |
-| `detect_task_switch`              | Uses the server-level LLM to detect when a user starts a new unrelated task and nudges starting a fresh session. | `min_turns` (int), `history_window` (int), `action` (`"ASK"` or `"DENY"`, default `"ASK"`), `classification_prompt` (string) |
-| `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                      | `expensive_models` (string[], required), `classification_prompt` (string)                                                    |
-| `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                          | `max_cost_usd` (required), `ask_thresholds_usd`                                                                              |
+| Policy                            | What it does                                                                                                                                                                           | Parameters                                                                                                                   |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `cost_budget`                     | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit.                                                                           | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                                          |
+| `detect_task_switch`              | Uses the server-level LLM to detect when a user starts a new unrelated task and nudges starting a fresh session.                                                                       | `min_turns` (int), `history_window` (int), `action` (`"ASK"` or `"DENY"`, default `"ASK"`), `classification_prompt` (string) |
+| `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                                                                                            | `expensive_models` (string[], required), `classification_prompt` (string)                                                    |
+| `subagent_cost_budget`            | Gates a sub-agent on its own subtree LLM spend. Blocks expensive models at the hard limit, ASKs at soft thresholds. Attach to a child via `sys_session_send`'s `cost_budget` argument. | `max_cost_usd`, `ask_thresholds_usd`, `expensive_models`                                                                     |
+| `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                                                                                                | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                                          |
 
 ### Usage examples
 
@@ -122,3 +123,18 @@ policies:
       history_window: 4
       action: ASK
 ```
+
+## Orchestration
+
+Guardrails for supervisor agents that dispatch sub-agents (like
+[Polly](/docs/use/builtin-agents/polly)) — they keep fan-out bounded, writes
+contained, and dangerous shell commands in check. They live under
+`omnigent.policies.builtins.orchestration`.
+
+| Policy                            | What it does                                                                                                                                         | Parameters                                                     |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `blast_radius`                    | Classifies shell commands (`sys_os_shell`, native Bash, Pi native bash) as safe, risky (ASK), or catastrophic (DENY), e.g. `rm -rf /` or force-push. | `gate_pushes` (bool, default `true`), `deny_reason`            |
+| `spawn_bounds`                    | Limits the number of sub-agent dispatches per turn to prevent runaway fan-out.                                                                       | `max_dispatches_per_turn` (int, default `5`), `dispatch_tools` |
+| `headless_subagent_purpose_guard` | Requires every sub-agent dispatch to declare a `purpose` (`implement`, `review`, `explore`, `search`).                                               | `allowed_purposes` (string[]), `deny_reason`                   |
+| `worktree_guard`                  | Blocks file writes outside the worker's git worktree to prevent cross-branch contamination.                                                          | `allowed_root` (string, default `.worktrees`), `deny_reason`   |
+| `read_only_os`                    | Denies every file-mutating tool so a report-only agent can read and run shell but never change code.                                                 | `deny_reason`                                                  |

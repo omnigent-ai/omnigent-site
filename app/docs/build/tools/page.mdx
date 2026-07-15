@@ -66,7 +66,7 @@ As shown in the examples above, custom MCP servers accept credentials through:
 
 - **`env`**: environment variables passed to stdio server processes (e.g., `API_KEY: ${MY_API_KEY}`)
 - **`headers`**: HTTP headers for remote servers, with `${...}` env var expansion (e.g., `Authorization: "Bearer ${API_TOKEN}"`)
-- **`profile`** (under `auth:`): resolves an OAuth token from your `~/.databrickscfg`:
+- **`auth:` with `type: databricks`**: resolves an OAuth token from a profile in your `~/.databrickscfg`. `databricks` is the only supported `auth` type; inside it, `profile` is required. Other servers don't use `auth:` — they authenticate via `env` or `headers` above:
 
 ```
 tools:
@@ -74,6 +74,7 @@ tools:
     type: mcp
     url: https://my-workspace.databricks.com/mcp
     auth:
+      type: databricks
       profile: my-profile
 ```
 
@@ -222,7 +223,7 @@ auto-generates the schema from the function's type annotations and signature.
 ## Sub-agent tools
 
 Declare agents as tools so a supervisor agent can delegate work to them. You can define a
-sub-agent inline or reference an external config file.
+sub-agent inline, or keep it in its own directory and reference it by name.
 
 ### Inline definition
 
@@ -244,27 +245,42 @@ tools:
     max_sessions: 2
 ```
 
-### External config file
+### External directory
 
-Point to a separate YAML file containing the sub-agent's spec. This is useful when the
-sub-agent is complex, shared across multiple parents, or maintained independently:
+For a sub-agent that is complex, shared across parents, or maintained
+independently, give it its own directory under the parent's `agents/`
+folder and list it by name under `tools.agents`. Omnigent discovers every
+`agents/<name>/config.yaml` at load time:
 
 ```
+# Parent config.yaml
 tools:
-  reviewer:
-    type: agent
-    description: Review proposed code changes.
-    config: agents/reviewer.yaml
+  agents:
+    - reviewer
+
+# agents/reviewer/config.yaml — a standard agent config
+spec_version: 1
+name: reviewer
+description: Review proposed code changes.
+prompt: |
+  You are a careful code reviewer. Focus on correctness,
+  tests, security, and maintainability.
+executor:
+  type: omnigent
+  config:
+    harness: claude-sdk
+  model: claude-sonnet-4-6
 ```
 
-The `config` path resolves relative to the parent agent's YAML directory.
-The referenced file is a standard agent config that can define its own tools, skills,
-harness, and policies.
+Entries under `tools.agents` are just names (strings) matching a
+subdirectory of `agents/`. Each referenced file is a full agent config that
+can define its own tools, skills, harness, and policies.
 
-A sub-agent tool can have its own [harness](/docs/build/harnesses), model, tools, and
-[policies](/docs/policies/overview). The `pass_history` flag controls whether the
-parent's conversation history is forwarded, and `max_sessions` limits concurrent
-invocations.
+A sub-agent (inline or external) can have its own
+[harness](/docs/build/harnesses), model, tools, and
+[policies](/docs/policies/overview). On an inline sub-agent the
+`pass_history` flag controls whether the parent's conversation history is
+forwarded, and `max_sessions` limits concurrent invocations.
 
 ## Tool inheritance
 

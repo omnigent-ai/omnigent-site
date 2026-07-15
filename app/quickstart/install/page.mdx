@@ -30,6 +30,32 @@ same flow.
 
 Run the same command to upgrade an existing installation.
 
+## Optional integrations
+
+The base install covers everyday use. Optional integrations ship as
+**extras** you opt into at install time. Pass one or more to the installer
+script with `--extra` (comma-separate to add several):
+
+```
+curl -fsSL https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/install_oss.sh | sh -s -- --extra databricks
+curl -fsSL https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/install_oss.sh | sh -s -- --extra modal,e2b
+```
+
+Available user-facing extras include:
+
+- **Model providers:** `databricks`, `bedrock`, `vertex`
+- **Sandbox providers:** `modal`, `daytona`, `boxlite`, `cwsandbox`, `e2b`,
+  `openshell`, `kubernetes`
+- **SDK harnesses:** `antigravity`, `copilot`, `cursor`, `agents-sdk`
+- **Storage and memory:** `s3`, `hindsight`
+
+Manual installs use the same extras, expressed with the standard
+`package[extra,...]` syntax:
+
+```
+uv tool install "omnigent[databricks,modal]"
+```
+
 ## Uninstall
 
 `omni uninstall` removes Omnigent while preserving your data by default. With

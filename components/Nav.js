@@ -1,9 +1,29 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { GitHubIcon, DiscordIcon } from "./icons";
 import { GITHUB_URL, DISCORD_URL } from "./links";
 import DocSearch from "./DocSearch";
 
 export default function Nav({ menuToggle }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Close the mobile menu on route change.
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Close the mobile menu when the viewport grows past the breakpoint.
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 821px)");
+    const onChange = () => setMobileOpen(false);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
   return (
     <header className="nav">
       <div className="nav-inner">
@@ -57,9 +77,87 @@ export default function Nav({ menuToggle }) {
           >
             <DiscordIcon size={20} />
           </a>
-          <DocSearch />
         </nav>
+        <div className="nav-right">
+          <DocSearch />
+          <button
+            type="button"
+            className="nav-mobile-toggle"
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? (
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="6" y1="18" x2="18" y2="6" />
+              </svg>
+            ) : (
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
+      {mobileOpen && (
+        <div className="nav-mobile-menu">
+          <Link href="/quickstart/install" className="nav-mobile-link">
+            Get Started
+          </Link>
+          <Link href="/docs/use/coding-agents" className="nav-mobile-link">
+            Docs
+          </Link>
+          <Link href="/reference" className="nav-mobile-link">
+            API
+          </Link>
+          <Link href="/releases" className="nav-mobile-link">
+            Releases
+          </Link>
+          <Link href="/faq" className="nav-mobile-link">
+            FAQ
+          </Link>
+          <div className="nav-mobile-divider" />
+          <div className="nav-mobile-icons">
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="nav-mobile-icon"
+            >
+              <GitHubIcon size={20} /> GitHub
+            </a>
+            <a
+              href={DISCORD_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="nav-mobile-icon"
+            >
+              <DiscordIcon size={20} /> Discord
+            </a>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

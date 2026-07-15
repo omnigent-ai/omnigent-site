@@ -33,6 +33,12 @@ omni run agent.yaml --model claude-sonnet-4-6
 Use the `/model` command inside any running session to switch models on the fly.
 The agent keeps its conversation history and tool state – only the underlying model changes.
 
+For [native TUI harnesses](/docs/build/harnesses) the picker lists the harness's
+own catalog. OpenCode (`opencode-native`) surfaces its logged-in, refreshed
+model list — the same catalog you see in the OpenCode TUI — so bare `/model`
+opens a populated picker in the web UI. Picking a model is applied on the
+harness's next turn.
+
 ## Credentials
 
 Omnigent needs credentials to talk to a model provider.

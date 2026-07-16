@@ -59,3 +59,39 @@ The full Web UI, touch-optimized: chat, monitor sub-agents, browse files, view c
 and leave inline comments.
 
 {/* TODO: Add screenshot of mobile file browser view */}
+
+## Deep links
+
+On the native iOS app, an `omnigent://` link opens a specific session on a
+specific server directly in the app:
+
+```
+omnigent://<hostname>/c/<session_id>
+```
+
+The link names a server by **host** (with a port if it isn't the default) and a
+conversation by its `/c/<session_id>` route. It carries no `http`/`https` — the
+scheme is inferred the same way as the setup page: `http` for loopback hosts
+(`localhost`, `127.0.0.1`, `::1`) and `https` for any remote host, so a deep
+link and a pasted URL never disagree. For a Databricks workspace, the workspace
+mount (`/ml/omnigents`) is **not** part of the link; the app discovers it
+automatically after connecting.
+
+```
+omnigent://localhost:8000/c/conv_abc               → http://localhost:8000/c/conv_abc
+omnigent://my-workspace.cloud.databricks.com/c/x   → https://…/ml/omnigents/c/x
+```
+
+This first version accepts only conversation links (`/c/<session_id>`).
+
+### How a link is handled
+
+- **Already on that server.** The app navigates to the conversation in place —
+  no reload.
+- **A server you've connected to before** (your saved server or one in recents)
+  that the app isn't currently on. The app switches to it and opens the
+  conversation directly, with no prompt.
+- **A server you've never connected to.** The app asks you to confirm before
+  opening. Connecting to a new server grants it privileges (notifications, app
+  badge, microphone), so a clicked link never silently connects you to an
+  untrusted server. Only open links from a server you trust.

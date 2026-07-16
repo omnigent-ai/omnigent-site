@@ -2,7 +2,7 @@ import { pageMeta } from "@/lib/og";
 
 export const metadata = pageMeta(
   "Mobile",
-  "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.",
+  "Use Omnigent on your phone: the native iOS app from the App Store, or the mobile web UI in any phone browser. Start a session on your laptop, continue it on your phone.",
   {
     eyebrow: "Interact",
     path: "/docs/interact/mobile",
@@ -12,7 +12,12 @@ export const metadata = pageMeta(
 # Mobile
 
 The same session is accessible on terminal, browser, and phone simultaneously. Start on your
-laptop, continue on your phone.
+laptop, continue on your phone. Everything syncs in real time across devices.
+
+You have two ways to use Omnigent on a phone:
+
+- **iOS app.** A native app from the App Store that connects to any Omnigent server you point it at.
+- **Mobile web UI.** The full web UI in any phone browser—on Android, or on iOS if you prefer not to install the app.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
@@ -35,12 +40,42 @@ Long-running agents don't need you at your desk. Start a coding task, head to lu
 check progress from your phone. Your Omnigent hits a question. Answer it from the coffee
 line. Want to review what it produced? Browse the files right there.
 
-Everything syncs in real time across devices.
+## iOS app
 
-## How to access
+The Omnigent iOS app is available on the
+[App Store](https://apps.apple.com/us/app/omnigent/id6783102694). Like the
+[desktop app](/docs/interact/desktop), it's a thin native shell around the
+server-served web UI—it connects to an Omnigent server you run or deploy rather
+than hosting sessions itself.
 
-`localhost:6767` is only reachable from the machine running the server. To access
-from your phone:
+### Get started
+
+1. **Install the app** from the [App Store](https://apps.apple.com/us/app/omnigent/id6783102694).
+2. **Enter your server URL.** On first launch, the app asks for the URL of the
+   Omnigent server to connect to. Enter your deployed server URL, or a Databricks
+   workspace URL if you're using Omnigent on Databricks. The app remembers recent
+   servers so you can switch between them.
+3. **Start working.** The app connects and shows the same UI you'd see in a browser.
+
+### Requirements
+
+- **A reachable server.** The app connects to an Omnigent [server](/docs/deploy/overview)—it
+  doesn't run one on the device. The server must be reachable from your phone's network.
+- **HTTPS.** The app requires `https://` server URLs. A plain `http://` address (such as a
+  bare `localhost`) is rejected, so a local dev server needs to be reachable over HTTPS or
+  deployed. See [Deploy](/docs/deploy/overview) for options.
+
+The app shows foreground notifications and updates the app badge while it's open. It does not
+do background polling, so notifications arrive when the app is in the foreground.
+
+## Mobile web UI
+
+No install required—open your Omnigent server's URL in any phone browser (Android or iOS)
+and you get the full web UI, touch-optimized: chat, monitor sub-agents, browse files, view
+code changes, and leave inline comments.
+
+`localhost:6767` is only reachable from the machine running the server. To reach it from your
+phone:
 
 **Same network.** Use your machine's local IP instead of localhost (e.g.,
 `http://192.168.x.x:6767`). Your phone needs to be on the same Wi-Fi network.
@@ -48,10 +83,9 @@ from your phone:
 **From anywhere.** Deploy the Omnigent server beyond localhost. See
 [the deployment docs](/docs/deploy/overview) for options.
 
-Just open the URL in your mobile browser. If you want a
-more app-like experience, the web UI is an installable PWA: use your browser's
-**Add to Home Screen** option to launch Omnigent in its own standalone window.
-See [Install as an app](/docs/interact/web-ui#install-as-an-app) for details.
+If you want a more app-like experience without the App Store, the web UI is an installable
+PWA: use your browser's **Add to Home Screen** option to launch Omnigent in its own standalone
+window. See [Install as an app](/docs/interact/web-ui#install-as-an-app) for details.
 
 ## What works on mobile
 

@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import InstallTabs from "@/components/InstallTabs";
 import CtaButtons from "@/components/CtaButtons";
 import PillarsTabs from "@/components/PillarsTabs";
+import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { DiscordIcon } from "@/components/icons";
 import { DISCORD_URL } from "@/components/links";
 
@@ -45,14 +46,10 @@ export default function Home() {
 
         <section className="hero-demo" aria-label="Product demo">
           <div className="wrap-wide">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="hero-demo-img"
-              src="/images/hero-demo.webp"
-              alt="Omnigent web UI running two sub-agents in parallel on a shared session"
-              width={3046}
-              height={2198}
-              style={{ maxWidth: 725 }}
+            <YouTubeEmbed
+              id="Gh7wD2u1LDI"
+              title="Omnigent demo"
+              poster="/images/hero-demo.webp"
             />
           </div>
         </section>

@@ -104,6 +104,68 @@ same as the web UI.
 The app remembers your server URL for future launches. To change it later, go to
 **Server > Change Server**.
 
+## Automatic updates
+
+The desktop app keeps itself up to date. This is a desktop-only feature — it has
+no effect when you open the same UI in a browser.
+
+When a new version is available, a banner appears at the top of the window:
+
+- **Update now** downloads the update.
+- **Later** dismisses the banner until the next check.
+- **Skip this version** hides that specific version until a newer one ships.
+
+Downloads are never automatic — nothing is fetched until you choose **Update
+now**. Once a download finishes, the banner offers **Restart to update** to
+apply it immediately, or **Later** to install it on the next quit. Every
+privileged action (downloading, installing, or changing update settings)
+re-confirms with a native **Allow Once** / **Don't Allow** dialog, so a cached
+grant can never silently trigger an update.
+
+You can also drive updates from the **Updates** menu: **Check for Updates…**
+runs a check on demand, and **Restart to Update** installs an already-downloaded
+version.
+
+### Update preferences
+
+Open **Settings > Updates** to control how the app checks for updates:
+
+<table>
+  <thead>
+    <tr>
+      <th>Update mode</th>
+      <th>Behaviour</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Automatic</td>
+      <td>Check periodically (every 6 hours) and ask before installing. This is the default.</td>
+    </tr>
+    <tr>
+      <td>Check when Omnigent starts</td>
+      <td>Check once each time the app launches.</td>
+    </tr>
+    <tr>
+      <td>Manual only</td>
+      <td>Never check on your behalf; use <strong>Check for updates now</strong> or the <strong>Updates</strong> menu.</td>
+    </tr>
+    <tr>
+      <td>Off</td>
+      <td>Disable update checks entirely.</td>
+    </tr>
+  </tbody>
+</table>
+
+The **Install downloaded updates on next quit** toggle controls whether an
+already-downloaded update is applied automatically when you next quit the app.
+It applies only after you've chosen to download an update. **Check for updates
+now** runs an immediate check, and any failure (including a signature or
+integrity problem) is shown inline.
+
+Automatic updates only run in installed builds; they're unavailable in
+development builds.
+
 ## Work with multiple servers
 
 Each window connects to one server. To work with multiple servers at the same time:

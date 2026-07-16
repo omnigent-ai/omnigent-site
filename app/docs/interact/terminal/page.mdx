@@ -75,6 +75,29 @@ them useful:
 - **Persistent.** Every session has a conversation ID and lives beyond the current terminal window. Close your laptop, come back tomorrow, resume where you left off: `omni resume <conversation_id>`
 - **Shared.** Any omnigent can read the history of other sessions you have access to. When you spin up a new task, the agent already has context from previous work.
 
+## Import an existing coding session
+
+Already have a Claude Code or Codex chat you started outside Omnigent? Import its
+local transcript into Omnigent as a normal session, then resume, share, or
+inspect it like any other:
+
+```
+omnigent import --harness claude --session <session-id>
+omnigent import --harness codex --session <session-id>
+```
+
+`--harness` selects which local coding harness owns the source chat (`claude` or
+`codex`), and `--session` is the harness-native session ID. Omnigent reads the
+harness's own local history — Claude Code transcripts under `~/.claude` and Codex
+rollouts under `~/.codex` — converts the messages and tool history into ordinary
+Omnigent items, and stores them as a new session. On success it prints the number
+of items imported and the new conversation ID.
+
+A given source session can only be imported once; re-running the command for the
+same chat reports that it has already been imported. Pass `--server` to target a
+specific Omnigent server; by default the command uses your configured server, an
+existing local server, or a newly started local one.
+
 ## When to use the terminal
 
 The terminal shines when you want to stay close to the command line:

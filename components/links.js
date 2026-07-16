@@ -17,3 +17,4 @@ export const DATABRICKS_FE_TERMS_URL =
 export const DATABRICKS_FE_AUP_URL =
   "https://www.databricks.com/legal/acceptable-use-policy-fe";
 export const NEON_URL = "https://neon.tech";
+export const LINKEDIN_URL = "https://www.linkedin.com/company/omnigent-ai/";

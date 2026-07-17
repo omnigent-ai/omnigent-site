@@ -11,14 +11,6 @@ export default function ReleasesSidebar({ releases }) {
     <aside className="docs-side">
       <h4>Releases</h4>
       <ul>
-        <li>
-          <Link
-            href="/releases"
-            className={path === "/releases" ? "active" : ""}
-          >
-            All releases
-          </Link>
-        </li>
         {releases.map((release) => (
           <li key={release.version}>
             <Link

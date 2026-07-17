@@ -176,3 +176,37 @@ Server-wide policies can also be managed at runtime via the REST API:
 | `GET`    | `/v1/policies`      | List all policies |
 | `PATCH`  | `/v1/policies/{id}` | Update a policy   |
 | `DELETE` | `/v1/policies/{id}` | Remove a policy   |
+
+Policies created this way are stored in the database and can be toggled or
+removed at runtime. Policies declared in the config YAML `policies` block are
+applied server-wide but not stored in the database, so they behave differently
+in the list.
+
+#### Config vs. database policies in the list
+
+`GET /v1/policies` returns both database-managed policies and the
+function policies declared in your config YAML. Config-file entries are
+**read-only** and carry a `"source": "config"` field:
+
+```
+{
+  "id": null,
+  "object": "default_policy",
+  "source": "config",
+  "name": "session_cost_guard",
+  "type": "python",
+  "handler": "omnigent.policies.builtins.cost.cost_budget",
+  "factory_params": { "max_cost_usd": 5.0 },
+  "enabled": true,
+  "created_at": null,
+  "updated_at": null,
+  "created_by": null
+}
+```
+
+Because they come from the config file, these entries have a `null` `id` and
+cannot be updated or deleted via the API — edit the config YAML and restart the
+server to change them. Database-managed policies (created via `POST`) have a
+real `id` and remain fully editable. In the web UI settings panel, config
+policies show a **Config** badge and hide the enable/disable toggle and delete
+controls to signal that they can only be changed in the server config.

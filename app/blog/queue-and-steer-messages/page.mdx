@@ -1,0 +1,48 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Queue up your next messages and steer an agent while it's still working",
+  "Line up your next few messages while a turn is running, then reorder, edit, delete, or send one now instead of waiting for each turn to finish.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/queue-and-steer-messages",
+  },
+);
+
+export const meta = {
+  title:
+    "Queue up your next messages and steer an agent while it's still working",
+  date: "2026-07-10",
+  category: "Web UI",
+  author: "omnigent",
+  heroArt: "",
+};
+
+# Queue up your next messages and steer an agent while it's still working
+
+If you drive long agent runs in the web UI, you can now line up your next few
+messages instead of waiting for each turn to finish. Type a follow-up while the
+agent is still working and it is held in a queue rather than interrupting the
+turn.
+
+Before this, a busy session meant you either sat and waited for the turn to end
+or lost your train of thought. Now the messages you type while the agent works
+show up in a docked strip above the composer, and they drain one at a time, in
+order, the moment the session goes idle. You stay a step ahead of the agent
+instead of babysitting it, and because the queue lives in the browser it keeps
+flushing even for a session you have navigated away from, so a run you set up in
+one session keeps moving while you work in another.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: type two follow-ups while a turn runs, show them in the docked strip, reorder and edit one, then click Steer to send it mid-turn. */}
+
+Each queued row has inline actions in the strip above the composer. Drag a row
+by its grip to reorder the queue, edit a message to pull it back into the
+composer, or delete it to drop it. Click Steer to send a message right now,
+mid-turn, instead of waiting for the queue to flush: the agent folds it into its
+current work if it can. Steering works with any agent you run in Omnigent. See
+[Message queue and steering](/docs/interact/web-ui#message-queue-and-steering)
+for the full walkthrough.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [download the latest release](https://omnigent.ai/download).

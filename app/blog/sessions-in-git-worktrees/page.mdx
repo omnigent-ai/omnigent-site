@@ -1,0 +1,41 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Spin up each session on its own git worktree without leaving the composer",
+  "Start a session directly in a git worktree — pick an existing one or generate a fresh branch — right from the new-session composer.",
+  {
+    eyebrow: "Workflow",
+    path: "/blog/sessions-in-git-worktrees",
+  },
+);
+
+// Blog post metadata. `author` defaults to "omnigent"; a human may overwrite it
+// during review. `heroArt` is intentionally left blank for a human to fill in.
+export const post = {
+  date: "2026-07-10",
+  category: "Workflow",
+  author: "omnigent",
+  heroArt: "",
+};
+
+# Spin up each session on its own git worktree without leaving the composer
+
+_For anyone running several agent sessions against one repo who wants each on its own branch, isolated from the others._
+
+## The problem it solves
+
+Running more than one agent against a single checkout means they trip over each other's uncommitted changes and branch switches. Now you keep each session on its own git worktree so its work stays isolated — and you set it up right where you start the session, in the new-session composer, instead of prepping branches by hand first. Omnigent orchestrates the sessions; the worktree keeps each one's changes clean.
+
+<!-- DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: in the new-session composer, pick an existing worktree from the field, then generate a fresh branch name and start a session — and show the branch label in the sidebar. -->
+
+## How to use
+
+From the **new-session composer**:
+
+- Pick an **existing worktree** from the worktree field to start the session directly in it.
+- Or type a branch name — or hit the shuffle button to **generate a unique name** (e.g. `worktree-1a2b3c4d`) — to cut a fresh worktree for a new branch.
+- Naming a branch reveals a **base branch** field (the ref the worktree is cut from). Set a **Default base branch** under **Settings › Git** to auto-fill it every time; leave it blank to branch off the workspace's current branch.
+
+Sessions started in a worktree show the branch in the sidebar, and the session delete dialog can remove the worktree + branch along with the session.
+
+See [Worktree branches in the Web UI docs](/docs/interact/web-ui#worktree-branches) for the full walkthrough.

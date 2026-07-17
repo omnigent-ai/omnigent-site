@@ -1673,6 +1673,61 @@ figcaption {
   font-size: 1.05rem;
 }
 
+/* Individual post header: category chip, title, then a byline row with the
+   author avatar, author name, publish date, and estimated reading time. */
+.blog-post-header {
+  margin-bottom: 2rem;
+}
+.blog-post-header .blog-card-cat {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 0.82rem;
+}
+.blog-post-header h1 {
+  margin: 0 0 1.1rem;
+  font-size: 2.2rem;
+  line-height: 1.15;
+}
+.blog-post-byline {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.blog-post-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.blog-post-avatar-monogram {
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+.blog-post-byline-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  line-height: 1.3;
+}
+.blog-post-author {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.blog-post-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--fg-soft);
+}
+
 /* Shared thumbnail — real hero art, or a category placeholder tile. */
 .blog-thumb {
   display: block;

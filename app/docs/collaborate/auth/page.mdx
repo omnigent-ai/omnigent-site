@@ -63,6 +63,26 @@ The only outside step is creating an app with your provider (e.g. Google Cloud C
 GitHub > Settings > Developer settings) to get the client ID and secret. Set its
 callback URL to `https://<your-domain>/auth/callback`.
 
+### Custom email claim
+
+Omnigent reads the user's identity from the `email` claim of the IdP's
+`id_token` by default. Some providers omit that claim — Microsoft Entra ID
+commonly issues only `preferred_username` (the UPN) — which fails login with
+`Could not determine user email`. Point Omnigent at the claim that carries the
+identity instead:
+
+```
+OMNIGENT_OIDC_EMAIL_CLAIM=preferred_username
+OMNIGENT_OIDC_SKIP_EMAIL_VERIFICATION=1
+```
+
+`email_verified` describes the `email` claim only, so a custom claim carries no
+verified marker. Logins are rejected unless you also set
+`OMNIGENT_OIDC_SKIP_EMAIL_VERIFICATION=1` to waive that gate — only enable this
+for an IdP you trust to vouch for the claim. When set, the claim value is
+trimmed and normalized like an email address. This applies to the generic-OIDC
+path only; GitHub always requires a verified primary email.
+
 ## Header-based auth
 
 If your server sits behind an existing SSO proxy (e.g. OAuth2 Proxy, Cloudflare Access) that

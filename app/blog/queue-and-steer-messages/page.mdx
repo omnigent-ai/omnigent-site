@@ -1,0 +1,32 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Queue up your next moves while an agent is working",
+  "Line up your next few messages while an agent is still working in the web UI, then reorder, edit, or send any of them right away.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/queue-and-steer-messages",
+  },
+);
+
+export const meta = {
+  title: "Queue up your next moves while an agent is working",
+  date: "2026-07-10",
+  category: "Web UI",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="queue-and-steer-messages" />
+
+If you drive long agent runs in the web UI, you can now line up your next few messages instead of waiting for each turn to finish. Type a follow-up while the agent is still working and it waits in a strip just above the composer, ready to go.
+
+Until now a message you typed mid-turn either had to wait in your head or interrupt the run. Queued messages sit in that strip and send themselves in order the moment the session goes idle, so you can keep planning ahead while the agent keeps working. Everything stays with the session you composed it in, so a message you lined up in one session never leaks into another.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: type two follow-ups while an agent is mid-turn, reorder them by dragging, edit one, then click Steer to send it right away. */}
+
+Each queued row has its own controls. Drag rows to reorder them, edit one to pull it back into the composer, or delete it. Click Steer to send a message right away instead of waiting for the idle flush: with any SDK-based agent the server folds it into the running turn, and for other agents it lands at the agent's next natural breakpoint. Steer sends now, it does not cancel the turn in flight. This works with the agents you run in Omnigent's web UI; see the [Web UI docs](/docs/interact/web-ui) for the surrounding session controls.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [download the latest release](https://omnigent.ai/download).

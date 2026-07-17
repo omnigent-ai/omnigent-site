@@ -1,0 +1,45 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Line up your next moves while an agent is still working",
+  "Type follow-ups while the agent is busy and hold them in a client-side queue you can edit, delete, reorder, or steer in mid-turn — instead of interrupting the run.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/queue-edit-steer-messages-mid-turn",
+  },
+);
+
+export const meta = {
+  title: "Line up your next moves while an agent is still working",
+  date: "2026-07-10",
+  category: "Web UI",
+  author: "omnigent",
+  heroArt: "",
+};
+
+# Line up your next moves while an agent is still working
+
+**Who it's for:** anyone driving a long-running agent turn in the Omnigent web UI who wants to line up follow-ups without breaking the agent's flow.
+
+## The problem it solves
+
+You often know your next instruction before the agent finishes the current one — but sending it used to POST immediately, so a follow-up typed in a hurry was already committed with no way to take it back. Now that message is held in a **client-side queue** before it's sent: you keep steering the run without interrupting it, and you stay in control of exactly what reaches the agent and when. That's the orchestration layer doing its job — the same queue works whether the session runs an SDK or a native terminal harness.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: type two follow-ups while an agent turn is running, reorder them in the docked strip, edit one, then steer the head so it lands mid-turn. */}
+
+## How to use
+
+While the agent is busy, type a follow-up and press send — it lands in a docked strip above the composer marked **Queued** instead of interrupting the turn. Queued messages drain automatically, one at a time in order, as soon as the session goes idle. Each row has inline actions:
+
+- **Steer** — send the message now, mid-turn, instead of waiting for the queue to flush.
+- **Edit** — pull the message back into the composer to revise it.
+- **Delete** — drop the message from the queue.
+- **Reorder** — drag rows by the grip handle to change the order they'll send.
+
+The queue is per-session and survives a hard refresh, and it flushes in the background even when you've navigated to another session.
+
+See the [Web UI docs](/docs/interact/web-ui#message-queue-and-steering) for details.
+
+## What's next
+
+Deterministic mid-turn steering is verified today for `claude-sdk`, `codex-sdk`, `pi-sdk`, `codex-native`, and `claude-native`; steering is enabled across the remaining native harnesses, with live folding-in behavior still being verified per harness.

@@ -1,0 +1,45 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Plug any ACP agent into Omnigent with your tools bridged straight in",
+  "The generic acp harness drives any agent that speaks the Agent Client Protocol — Gemini CLI, Qwen Code, Goose, Zed's Claude Code bridge, or your in-house agent — and bridges Omnigent's own tools into it.",
+  { eyebrow: "Multi-harness", path: "/blog/generic-acp-harness-tool-bridge" },
+);
+
+export const date = "2026-07-10";
+export const category = "Multi-harness";
+export const author = "omnigent";
+export const heroArt = "";
+
+# Plug any ACP agent into Omnigent with your tools bridged straight in
+
+_For teams running an agent Omnigent doesn't ship a built-in for — a third-party CLI or your own in-house agent — as long as it speaks ACP._
+
+## The problem it solves
+
+You've standardized on an agent Omnigent doesn't have a dedicated harness for, so it's stuck outside your orchestration, session, and policy layer. The new generic `acp` harness drives **any** agent that speaks the [Agent Client Protocol](https://agentclientprotocol.com) — Gemini CLI, Qwen Code, Goose, Zed's Claude Code bridge, or an in-house agent. You point Omnigent at a launch command; it runs the agent's own loop, tools, and context window, while rendering its streaming output, reasoning, and tool cards, and routing the agent's permission requests through your contextual policies. Omnigent also bridges its own builtin tools (session, sub-agent, skill, and policy tools) into the agent over an MCP relay, so a third-party agent picks up first-class Omnigent capabilities alongside its native tools.
+
+<!-- DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: register a Gemini CLI ACP agent via `omnigent setup`, then run a turn in the web UI showing its streaming tool cards plus an Omnigent sys_session_* tool call bridged in. -->
+
+## How to use
+
+Each ACP agent brings its own auth — Omnigent stores no credential, so log into the agent through its own CLI first. Register agents with `omnigent setup` → *configure harnesses* → **Custom ACP agent** → *Add*, giving a name, a launch command, and an optional model. Some paste-ready launch commands:
+
+```bash
+# Gemini CLI
+gemini --experimental-acp
+# Qwen Code
+qwen --acp
+# Goose
+goose acp
+# Zed's Claude Code bridge
+npx -y @zed-industries/claude-code-acp
+```
+
+Each registered agent lands in a top-level `acp:` block of `~/.omnigent/config.yaml` with a stable slug, then surfaces as its own harness id, `acp:<slug>`, in the web picker, in agent YAML, and on the CLI:
+
+```bash
+omni run --harness acp:gemini-cli
+```
+
+The Omnigent-tool bridge is on by default; set `OMNIGENT_ACP_MCP=0` to disable it. Full setup and config details are in the [Harnesses docs](/docs/build/harnesses).

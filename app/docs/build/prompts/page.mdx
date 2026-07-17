@@ -86,14 +86,15 @@ picks it up automatically.
 If you already have skills in `.claude/skills/`, they work alongside Omnigent
 bundled skills automatically. Omnigent discovers them during its directory walk.
 
-One caveat: Omnigent's skill loader only reads `name` and `description` from
-SKILL.md frontmatter. Claude Code's additional frontmatter fields are handled
-differently depending on your harness:
+One caveat: Omnigent's skill loader reads only `name`, `description`, and
+`user-invocable` from SKILL.md frontmatter. Claude Code's additional frontmatter
+fields are handled differently depending on your harness:
 
 | Frontmatter field | Omnigent skill loader | `claude-native` harness |
 | --- | --- | --- |
 | `name` | Parsed | Parsed |
 | `description` | Parsed | Parsed |
+| `user-invocable` | Parsed | Parsed |
 | `disable-model-invocation` | Ignored | Honored |
 | `allowed-tools` | Ignored | Honored |
 

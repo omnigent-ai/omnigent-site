@@ -17,12 +17,11 @@ export default function DocsSidebarToggle() {
         viewBox="0 0 20 20"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.8"
         strokeLinecap="round"
       >
-        <line x1="3" y1="5" x2="17" y2="5" />
-        <line x1="3" y1="10" x2="17" y2="10" />
-        <line x1="3" y1="15" x2="17" y2="15" />
+        <rect x="3" y="4" width="14" height="12" rx="1.5" />
+        <line x1="7.5" y1="4" x2="7.5" y2="16" />
       </svg>
     </button>
   );

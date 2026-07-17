@@ -1,0 +1,176 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Slack",
+  "Run the @omnigent Slack bot: mention it in a thread to start an Omnigent session, with each Slack user authenticating as their own Omnigent identity.",
+  {
+    eyebrow: "Interact",
+    path: "/docs/interact/slack",
+  },
+);
+
+# Slack
+
+The Omnigent Slack bot is a Socket Mode app that maps one Slack thread to one
+Omnigent session. Mention it in a channel or DM it, and it starts (and
+continues) a session on your Omnigent server. Each Slack user authenticates as
+their own Omnigent identity — no Omnigent credential ever passes through Slack.
+
+The bot talks to **one** Omnigent server, fixed by the operator via
+`OMNIGENT_SERVER_URL`. Slack users never enter a URL.
+
+## Install
+
+The bot ships as a separate `omnigent-slack` package (its `slack_bolt` /
+`aiohttp` dependencies are kept out of the baseline install). Install it
+alongside `omni` with the `slack` extra so the CLI can find it:
+
+```
+uv pip install "omnigent[slack]"     # or, from a source checkout: uv sync --extra slack
+```
+
+The `omni integration slack …` commands shell out to `python -m omnigent_slack`,
+so the package must be importable in the same environment as `omni`. If it
+isn't installed, the command prints an install hint instead of launching.
+
+## Create the Slack app
+
+1. Create a Slack app with **Socket Mode** and **Interactivity** enabled
+   (Socket Mode delivers the interactive button/modal payloads — no request URL
+   needed).
+2. Add bot scopes: `app_mentions:read`, `chat:write`, `im:write` (to DM users
+   the setup button), `commands` (for the `/omnigent` slash command),
+   `team:read` (to label the login request with the workspace name), and the
+   history scopes for the channel types where the bot will run.
+3. Add a slash command `/omnigent` (**Features → Slash Commands**). In Socket
+   Mode the request URL is ignored, so any placeholder works.
+4. Install the app into the workspace.
+
+## Configure
+
+The bot reads all configuration from the environment and a `.env` file. The
+required values are the two Slack tokens and your server URL:
+
+| Variable                             | Purpose                                                        |
+| ------------------------------------ | -------------------------------------------------------------- |
+| `OMNIGENT_SLACK_BOT_TOKEN`           | Slack bot token (`xoxb-…`).                                     |
+| `OMNIGENT_SLACK_APP_TOKEN`           | Slack app-level token (`xapp-…`).                              |
+| `OMNIGENT_SERVER_URL`                | The Omnigent server the bot connects to (fixed by the operator). |
+
+Optional values:
+
+| Variable                              | Purpose                                                                                                                                              |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OMNIGENT_DEVICE_CLIENT_SECRET`       | Shared secret matching the server's `OMNIGENT_DEVICE_CLIENT_SECRET`, so the server only accepts this bot as an authorized device-grant client. Only meaningful in accounts mode. |
+| `OMNIGENT_SLACK_TOKEN_ENCRYPTION_KEY` | Fernet key that encrypts each user's delegated token at rest. If unset, tokens are kept in memory only and lost on restart (users re-authenticate).  |
+| `OMNIGENT_SLACK_DATABASE_PATH`        | Where the bot's SQLite store lives. Defaults to `$OMNIGENT_DATA_DIR/omnigent_slack.sqlite3` (or `~/.omnigent/omnigent_slack.sqlite3`).                 |
+| `LOG_LEVEL`                           | Set to `DEBUG` when diagnosing why Slack events aren't producing replies.                                                                            |
+
+Generate a token-encryption key with:
+
+```
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+## Run the bot
+
+The bot is managed through the `omni integration slack` CLI:
+
+```
+omni integration slack           # run in the foreground (Ctrl-C to stop)
+omni integration slack start     # run in the background (detached)
+omni integration slack status    # is the background bot running?
+omni integration slack stop      # stop the background bot
+omni integration slack logs      # print the background bot's log path
+omni integration slack logs -f   # follow the log (like tail -f)
+```
+
+`start` spawns a detached daemon and returns immediately; running it again
+while the bot is already up is a no-op that reports the existing process. The
+CLI only launches the bot — all configuration comes from the environment and
+the `.env` file.
+
+## Per-user setup
+
+The first time a user mentions the bot (or DMs it) without having configured,
+the bot DMs them a **Set up Omnigent** button. The button opens a modal that
+connects to the operator-configured server (no URL to enter):
+
+1. The bot validates connectivity to `OMNIGENT_SERVER_URL`. If the server has
+   authentication enabled, the modal shows a login link; once the user approves
+   it in their browser, the same modal advances automatically (see
+   [Authentication](#authentication)).
+2. The user picks the **agent** and **host** (both required) and sets the
+   **workspace path** — an absolute directory on the host where each session's
+   runner starts. It defaults to the selected host's home directory.
+
+The choice is saved per `(Slack workspace, user)`. Run `/omnigent` (or
+`/omnigent config`) any time to reopen the modal and change your agent, host, or
+workspace.
+
+Each new session launches a fresh runner on the chosen host rooted at the
+configured workspace — the server keeps no standing runners.
+
+## Authentication
+
+For Omnigent servers with authentication enabled, each Slack user logs in with
+their own Omnigent identity — no Omnigent credential ever passes through Slack.
+Login happens inside the `/omnigent` configuration modal, not a separate
+command.
+
+The bot **auto-detects the server's auth mode** (an unauthenticated
+`GET /v1/me`, exactly as the `omnigent login` CLI does) and picks the matching
+flow:
+
+- **`accounts` mode → OAuth 2.0 Device Authorization Grant** ([RFC 8628](https://datatracker.ietf.org/doc/html/rfc8628)).
+  The modal shows a verification link and code; the user approves a consent page
+  in their browser. The server issues a short-lived, session-scoped delegated
+  token plus a rotating refresh token, so the bot refreshes silently and the
+  token can't reach admin endpoints. **The Omnigent server must have the device
+  grant enabled** (`OMNIGENT_DEVICE_GRANT_ENABLED=1` — it is **default-off**);
+  otherwise the `/oauth/*` routes are absent and accounts-mode login can't
+  complete. If the server sets `OMNIGENT_DEVICE_CLIENT_SECRET`, set the same
+  value on the bot so only this authorized socket server can drive the device
+  flow.
+- **`oidc` mode → the server's cli-login ticket flow.** The modal shows a login
+  link; the user signs in at your IdP in their browser. The server hands back
+  its session JWT — the same token a browser session gets. There is no device
+  grant and no refresh token: the session lasts its normal TTL (default 8h),
+  after which the user logs in again.
+- **`header` / proxy mode → unsupported.** Identity is asserted by a trusted
+  upstream proxy header (e.g. `X-Forwarded-Email`), so the server mints no token
+  and exposes no per-user login the bot can drive. Run the server in `accounts`
+  or `oidc` mode to use the bot with authentication, or place the bot behind the
+  same identity proxy.
+
+The bot reads no auth-mode config itself; the Omnigent server's own
+`OMNIGENT_OIDC_*` / `OMNIGENT_AUTH_*` env vars decide its mode (see
+[Auth & SSO](/docs/collaborate/auth)).
+
+Tokens are stored **encrypted at rest** when `OMNIGENT_SLACK_TOKEN_ENCRYPTION_KEY`
+is set; without it they are kept in memory only and lost on restart (users
+simply re-authenticate). The integration works either way.
+
+`/omnigent logout` fully resets you: it revokes your delegated token on the
+server and clears all your saved settings (agent, host, workspace, and
+thread→session mappings). Run `/omnigent` afterwards to set up again.
+
+## Usage
+
+Mention the bot with a message to start a session:
+
+```
+@your-bot help me inspect this failure
+```
+
+Replies stream in live and render Markdown. Replies in that Slack thread
+continue the same Omnigent session. A channel thread belongs to whoever started
+it; a follow-up mention from a different user is not added to that session.
+
+If the bot can't reach your server, it replies telling you to run `/omnigent` to
+reconfigure. If no host is online, it replies with the command to start one on
+the machine you want to use:
+
+```
+omni host --server <your-server-url>
+```

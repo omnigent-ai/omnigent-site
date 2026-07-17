@@ -49,6 +49,24 @@ Most coding agents can run in one of two modes:
 Pi is a headless multi-model worker that runs on any gateway model — ideal for
 review, exploration, and read-heavy tasks delegated by a supervisor agent.
 
+### Cursor setup
+
+Cursor's two modes authenticate differently, so `omni setup` groups both under a
+single **Cursor** entry:
+
+- **Cursor CLI** — the `cursor-agent` binary that powers the native
+  `cursor-native` harness. Install it with
+  `curl https://cursor.com/install -fsS | bash`, then sign in with
+  `cursor-agent login`.
+- **Cursor SDK** — the direct `cursor` harness runs through the `cursor-sdk`
+  package and authenticates with a `CURSOR_API_KEY`.
+
+Setup readiness prioritizes the CLI: a stored `CURSOR_API_KEY` never makes a
+missing or logged-out `cursor-agent` look ready. When you launch a
+`cursor-native` agent from the web UI on a host without `cursor-agent`, the
+new-chat picker flags it with an **install & login** badge and shows the same
+install and `cursor-agent login` commands.
+
 ## Swap harnesses
 
 Tools, policies, and other config stay the same across harnesses. Just change the

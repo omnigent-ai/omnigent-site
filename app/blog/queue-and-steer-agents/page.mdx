@@ -1,0 +1,51 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Queue up your next steps and steer an agent mid-task",
+  "Line up follow-ups while a turn is running, then edit, reorder, delete, or steer them — queued messages auto-flush the moment the session goes idle.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/queue-and-steer-agents",
+  },
+);
+
+export const meta = {
+  title:
+    "Queue up your next steps and steer an agent mid-task — no waiting for it to finish",
+  date: "2026-07-10",
+  category: "Workflow",
+  author: "omnigent",
+  heroArt: "",
+};
+
+# Queue up your next steps and steer an agent mid-task — no waiting for it to finish
+
+**Who it's for:** anyone driving an agent in the Omnigent web UI who already
+knows the next few things they want to say and doesn't want to babysit each
+turn.
+
+## The problem it solves
+
+You think faster than an agent runs. Until now, a follow-up typed while a turn
+was in flight either had to wait in your head or interrupt the work. Now the
+composer holds your next messages in a per-session client-side queue and flushes
+them one at a time, in order, the moment the session goes idle — so you can keep
+planning ahead while Omnigent keeps the turns moving, on any device, under the
+same session governance.
+
+<!-- DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: type two follow-ups while a turn is running, show them stacked in the docked strip, reorder one, then hit Steer to send one mid-turn. -->
+
+## How to use
+
+There's nothing to enable — it's live in the web UI composer:
+
+1. While the agent is working, type a follow-up and send it. Instead of
+   interrupting the turn, it's held in a docked strip above the composer.
+2. Stack as many as you like. Queued messages drain automatically, one at a
+   time and in order, as soon as the session goes idle — including in the
+   background and across sessions, with attachments.
+3. Manage any queued row inline: **Steer** sends it now, mid-turn; **Edit**
+   pulls it back into the composer to revise; **Delete** drops it; and drag the
+   grip to **reorder** the queue (it drains in the order you set).
+
+See the [web UI guide](/docs/interact/web-ui) for the full walkthrough.

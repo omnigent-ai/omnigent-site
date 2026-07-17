@@ -53,6 +53,17 @@ more app-like experience, the web UI is an installable PWA: use your browser's
 **Add to Home Screen** option to launch Omnigent in its own standalone window.
 See [Install as an app](/docs/interact/web-ui#install-as-an-app) for details.
 
+## Scan to open in the app
+
+From the web UI, open the **Share** modal and click **Open in mobile app** (next
+to **Copy link**) to show a QR code. Scan it with your phone's camera to jump
+straight into that session in the Omnigent app.
+
+The QR encodes an `omnigent://<host>/c/<session_id>` deep link, where `<host>`
+is the server you're connected to (including its port when non-default, e.g.
+`omnigent://localhost:8000/c/<session_id>`). The phone must be able to reach
+that host — the same-network and deploy-anywhere requirements above apply.
+
 ## What works on mobile
 
 The full Web UI, touch-optimized: chat, monitor sub-agents, browse files, view code changes,

@@ -63,27 +63,25 @@ The only outside step is creating an app with your provider (e.g. Google Cloud C
 GitHub > Settings > Developer settings) to get the client ID and secret. Set its
 callback URL to `https://<your-domain>/auth/callback`.
 
-### Skipping the email-verified check
+### Custom email claim
 
-By default, Omnigent requires the `id_token` to carry a truthy `email_verified`
-claim before it will trust the email as the user's identity — a signed token
-proves the IdP issued it, not that the mailbox was verified. An absent or false
-`email_verified` claim is a hard reject that surfaces as **"Could not determine
-user email"** at login.
-
-Some IdPs omit the claim for directory-provisioned users even though the
-directory is authoritative for the address — for example Okta without custom API
-Access Management. To admit those users, set:
+Omnigent reads the user's identity from the `email` claim of the IdP's
+`id_token` by default. Some providers omit that claim — Microsoft Entra ID
+commonly issues only `preferred_username` (the UPN) — which fails login with
+`Could not determine user email`. Point Omnigent at the claim that carries the
+identity instead:
 
 ```
+OMNIGENT_OIDC_EMAIL_CLAIM=preferred_username
 OMNIGENT_OIDC_SKIP_EMAIL_VERIFICATION=1
 ```
 
-This is **off by default**. When enabled, Omnigent accepts any signed email
-claim from the issuer as the user's identity, and logs a warning at startup.
-Only enable it when the issuer is a trusted enterprise directory. It affects the
-generic-OIDC path only — the GitHub sign-in path always requires a verified
-primary email.
+`email_verified` describes the `email` claim only, so a custom claim carries no
+verified marker. Logins are rejected unless you also set
+`OMNIGENT_OIDC_SKIP_EMAIL_VERIFICATION=1` to waive that gate — only enable this
+for an IdP you trust to vouch for the claim. When set, the claim value is
+trimmed and normalized like an email address. This applies to the generic-OIDC
+path only; GitHub always requires a verified primary email.
 
 ## Header-based auth
 

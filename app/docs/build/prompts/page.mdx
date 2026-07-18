@@ -29,6 +29,12 @@ instructions: prompts/system.md
 `instructions` also accepts file paths (resolved relative to the agent YAML's
 directory). If you set both fields, `instructions` wins.
 
+Whatever you set here is the portable, agent-owned portion of the system prompt.
+At runtime Omnigent may append small framework-owned lifecycle or metadata
+instructions after your agent and per-request instructions — for example, the
+directive that has the agent auto-title a new session on its first turn. These
+additions are not part of your agent config and don't need to be declared in it.
+
 ### Auto-discovery
 
 When neither `prompt` nor `instructions` is set, Omnigent scans the agent

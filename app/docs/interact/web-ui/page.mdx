@@ -23,6 +23,22 @@ between them. Switch agents mid-conversation directly from the UI.
 
 Sessions persist across browser refreshes and server restarts.
 
+### Automatic session titles
+
+Every new session starts titled with your first message verbatim, so it shows up
+in the sidebar immediately. On its first turn the agent replaces that placeholder
+with a short, summary-style title (a few words, action-first) describing what the
+session is about — for example, a prompt of "Could you please help me figure out
+why my React app is re-rendering twice on every state change?" becomes
+"Debug double React re-render".
+
+This happens silently in the background and never blocks your turn: the rename is
+framework metadata, so if it can't run the session simply keeps its first-message
+title. Auto-titling only applies to top-level sessions on their first turn —
+resumed sessions and sub-agent sessions keep their existing titles. If you rename
+a session yourself before the agent's first turn completes, your title is kept and
+the automatic rename is skipped.
+
 ### Projects
 
 Organize related sessions into a named `Project`. Each project is a collapsible

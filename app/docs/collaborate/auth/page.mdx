@@ -104,7 +104,7 @@ control and, in built-in accounts mode only, `Change password`.
 
 Admins set a **server-wide sharing policy** that governs how users can share
 sessions with each other. It applies to every session on the server and changes
-only *new* grants — revoke, listing existing grants, session ownership, and
+only _new_ grants — revoke, listing existing grants, session ownership, and
 grants already in place keep working in every mode. Configure it two ways:
 
 - **At boot**, with the `OMNIGENT_SHARING_MODE` environment variable.
@@ -113,12 +113,12 @@ grants already in place keep working in every mode. Configure it two ways:
 
 The **sharing mode** has four tiers:
 
-| Mode                    | Behavior                                                                                                                                              |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `on`                    | Grants at any level (read / edit / manage) plus public and workspace read. This is the default.                                                     |
-| `read_only`             | New grants are capped at read (view); edit and manage grants are rejected.                                                                          |
-| `restricted_read_only`  | Read-only, and sessions whose working directory is a user home directory or the filesystem root cannot be shared at all — not even read.            |
-| `off`                   | Sharing is disabled. No new grants can be created and the **Share** control is hidden.                                                              |
+| Mode                   | Behavior                                                                                                                                 |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `on`                   | Grants at any level (read / edit / manage) plus public and workspace read. This is the default.                                          |
+| `read_only`            | New grants are capped at read (view); edit and manage grants are rejected.                                                               |
+| `restricted_read_only` | Read-only, and sessions whose working directory is a user home directory or the filesystem root cannot be shared at all — not even read. |
+| `off`                  | Sharing is disabled. No new grants can be created and the **Share** control is hidden.                                                   |
 
 ```
 OMNIGENT_SHARING_MODE=read_only omni server start
@@ -133,7 +133,7 @@ subdirectory of a home (e.g. `/home/alice/proj`) stays shareable.
 #### Public access
 
 Separately from the tiers above, a **public-access** switch controls whether a
-session can be shared with *anyone who has the link* (public read access). It
+session can be shared with _anyone who has the link_ (public read access). It
 is independent of the sharing mode — you can keep normal user-to-user sharing
 on while disabling public links.
 

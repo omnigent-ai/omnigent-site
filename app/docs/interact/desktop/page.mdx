@@ -55,31 +55,49 @@ them in your agent YAML:
       <td>
         <code>browser_navigate</code>
       </td>
-      <td>Opens or navigates the pane to a URL, auto-opening the pane if it isn't open yet.</td>
+      <td>
+        Opens or navigates the pane to a URL, auto-opening the pane if it isn't
+        open yet.
+      </td>
     </tr>
     <tr>
       <td>
         <code>browser_snapshot</code>
       </td>
-      <td>Captures an accessibility-tree snapshot: a <code>snapshot_id</code>, the current URL and title, and a YAML-shaped tree of interactive elements, each tagged with a <code>[ref=N]</code> id.</td>
+      <td>
+        Captures an accessibility-tree snapshot: a <code>snapshot_id</code>, the
+        current URL and title, and a YAML-shaped tree of interactive elements,
+        each tagged with a <code>[ref=N]</code> id.
+      </td>
     </tr>
     <tr>
       <td>
         <code>browser_click</code>
       </td>
-      <td>Clicks an element by <code>ref</code> (preferred) or CSS <code>selector</code>. Pass the <code>snapshot_id</code> alongside a <code>ref</code> so a stale snapshot is rejected with a precise error.</td>
+      <td>
+        Clicks an element by <code>ref</code> (preferred) or CSS{" "}
+        <code>selector</code>. Pass the <code>snapshot_id</code> alongside a{" "}
+        <code>ref</code> so a stale snapshot is rejected with a precise error.
+      </td>
     </tr>
     <tr>
       <td>
         <code>browser_type</code>
       </td>
-      <td>Focuses an input and types <code>text</code> into it, identified by <code>ref</code> or <code>selector</code>.</td>
+      <td>
+        Focuses an input and types <code>text</code> into it, identified by{" "}
+        <code>ref</code> or <code>selector</code>.
+      </td>
     </tr>
     <tr>
       <td>
         <code>browser_screenshot</code>
       </td>
-      <td>Captures a PNG of the pane for visual inspection. Prefer <code>browser_snapshot</code> when picking elements to act on — screenshots carry no refs.</td>
+      <td>
+        Captures a PNG of the pane for visual inspection. Prefer{" "}
+        <code>browser_snapshot</code> when picking elements to act on —
+        screenshots carry no refs.
+      </td>
     </tr>
   </tbody>
 </table>

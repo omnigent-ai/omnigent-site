@@ -51,11 +51,11 @@ answer a tool-approval prompt, so an `Edit`/`Write`/`Bash` that would prompt
 stalls the worker. Each worker's bundle therefore declares a full-bypass stance
 so it can edit and run unattended:
 
-| Worker        | Harness         | Bypass config          | Effect                                             |
-| ------------- | --------------- | ---------------------- | -------------------------------------------------- |
-| `claude_code` | `claude-native` | `permission_mode: auto` | passed through as `--permission-mode auto`         |
-| `codex`       | `codex-native`  | `yolo: true`           | `--dangerously-bypass-approvals-and-sandbox`       |
-| `cursor`      | `cursor-native` | `yolo: true`           | `--yolo` (cursor-agent's don't-ask / full bypass)  |
+| Worker        | Harness         | Bypass config           | Effect                                            |
+| ------------- | --------------- | ----------------------- | ------------------------------------------------- |
+| `claude_code` | `claude-native` | `permission_mode: auto` | passed through as `--permission-mode auto`        |
+| `codex`       | `codex-native`  | `yolo: true`            | `--dangerously-bypass-approvals-and-sandbox`      |
+| `cursor`      | `cursor-native` | `yolo: true`            | `--yolo` (cursor-agent's don't-ask / full bypass) |
 
 Set `executor.config.yolo: false` on a worker to keep it prompting — useful for
 a read-only or must-approve sub-agent (its gated calls then surface as approval

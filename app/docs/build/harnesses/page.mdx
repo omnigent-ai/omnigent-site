@@ -60,6 +60,76 @@ omni run agent.yaml --harness codex
 
 See [Models & Credentials](/docs/build/models) for how to set up API keys and choose models.
 
+## Override the harness binary and launch args
+
+By default each harness launches its vendor CLI from your `PATH` (e.g. `claude`,
+`codex`). You can point a harness at a specific executable, or prepend base
+launch args, from your Omnigent config — `~/.omnigent/config.yaml` (user) or
+`.omnigent/config.yaml` (project, takes precedence). View it with
+`omni config list`; set a value with `omni config set <key>=<value>`.
+
+The top-level `harness:` config key is polymorphic. The legacy scalar form still
+works (and auto-migrates to the mapping form the next time the config is
+written):
+
+```yaml
+# Legacy scalar (deprecated, still honored):
+harness: claude-sdk
+
+# Mapping form — a default plus per-harness startup overrides:
+harness:
+  default: claude-sdk
+  codex-native:
+    command: /usr/local/bin/codex
+    args: [--config, approval_policy=on-request]
+  pi-native:
+    command: /opt/bin/pi
+```
+
+- `default` (optional) — the default harness id for `omni run`.
+- `command` (optional) — overrides the vendor CLI executable for that harness.
+- `args` (optional list) — base launch args; any CLI pass-through args are
+  appended *after* these.
+
+This top-level `harness:` config key selects the CLI default and per-binary
+launch overrides. It's separate from the `executor.harness` value inside an
+agent's own YAML, which pins the harness for that one agent.
+
+<div className="note">
+
+**Note:** A project's per-harness overrides are deep-merged onto your global
+ones — a `.omnigent/config.yaml` entry augments (rather than replaces) the
+matching `~/.omnigent/config.yaml` entry, with the project's fields winning.
+
+</div>
+
+### Binary-path precedence
+
+For a harness's `command`, the first non-empty source wins:
+
+1. The `OMNIGENT_<NAME>_PATH` environment variable.
+2. The config `harness.<id>.command`.
+3. The harness's built-in default executable.
+
+`args` follow the same idea: the config `args` are the base, and CLI
+pass-through args are appended after them.
+
+`<NAME>` is the harness's underlying *binary*, not its id: the `-native` suffix
+is stripped, so `pi` and `pi-native` share `OMNIGENT_PI_PATH`, and the Claude
+harnesses map to `OMNIGENT_CLAUDE_PATH` (so `claude-sdk` and `claude-native`
+share one var).
+
+<div className="note">
+
+**Deprecated:** The older `HARNESS_<NAME>_PATH` env vars (for `codex`, `pi`,
+`kimi`, `goose`, `qwen`, and `hermes`) are still read as a fallback but log a
+warning and will be removed in **v0.8.0** — use `OMNIGENT_<NAME>_PATH` instead.
+The `omni claude --command` flag is likewise deprecated (set
+`OMNIGENT_CLAUDE_PATH` or `harness.claude-native.command` instead) and will be
+removed in a future release. No other native command has a `--command` flag.
+
+</div>
+
 ## Community harnesses
 
 The built-in harnesses above ship with `pip install omnigent`. Beyond those,

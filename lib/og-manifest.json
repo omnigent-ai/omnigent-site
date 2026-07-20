@@ -44,6 +44,11 @@
     "description": "Deploy the Omnigent server so your agents are reachable from your phone, shareable with teammates, and running while your laptop sleeps.",
     "eyebrow": "Deploy"
   },
+  "/docs/deploy/telemetry": {
+    "title": "Usage Telemetry",
+    "description": "What anonymous usage telemetry the Omnigent server collects, and every way to turn it off.",
+    "eyebrow": "Deploy"
+  },
   "/docs/interact/desktop": {
     "title": "Desktop App",
     "description": "The Omnigent desktop app brings the full web UI to a native window, with notifications, a dock badge, and multiple windows.",

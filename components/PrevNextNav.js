@@ -71,6 +71,11 @@ const ALL_PAGES = [
     section: "Use Omnigent",
   },
   { href: "/docs/build/tools", label: "MCP & Tools", section: "Use Omnigent" },
+  {
+    href: "/docs/build/scheduled-tasks",
+    label: "Scheduled Tasks",
+    section: "Use Omnigent",
+  },
   { href: "/docs/interact/terminal", label: "Terminal", section: "Interact" },
   { href: "/docs/interact/web-ui", label: "Web UI", section: "Interact" },
   { href: "/docs/interact/mobile", label: "Mobile", section: "Interact" },

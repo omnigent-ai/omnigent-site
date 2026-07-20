@@ -164,11 +164,10 @@ The sub-agent receives the same tool definition the parent has, with no duplicat
 Use `spec: self` for a sub-agent that clones the entire parent spec. It gets the
 same tools, prompt, and configuration as the parent agent.
 
-## Built-in memory tools (Hindsight)
+## Hindsight integration
 
-Omnigent ships built-in tools that give an agent long-term memory backed by
-[Hindsight](https://github.com/vectorize-io/hindsight), an open-source
-agent-memory system. Three tools are available:
+Omnigent ships [Hindsight](https://github.com/vectorize-io/hindsight) integration
+that gives an agent long-term memory. Three tools are available:
 
 - `hindsight_retain` — persist a durable fact across runs.
 - `hindsight_recall` — retrieve relevant memories before answering.
@@ -181,11 +180,6 @@ key before declaring them:
 pip install 'omnigent[hindsight]'
 export HINDSIGHT_API_KEY=hsk_...        # https://ui.hindsight.vectorize.io
 ```
-
-The Hindsight tools are advertised and instantiable **only when the
-`hindsight-client` SDK is installed** (via the `hindsight` extra above). On a
-base install without the extra they are absent from the built-in tool list, so
-an agent never sees tools it cannot run.
 
 Declare them by their reserved names under `builtins`, passing the API key and
 an optional `bank_id` (omit `bank_id` and the memory bank defaults to the agent

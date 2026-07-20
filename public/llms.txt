@@ -49,7 +49,7 @@ For a single-file expanded context, use [llms-full.txt](https://omnigent.ai/llms
 - [Contextual Policies](https://omnigent.ai/docs/policies/overview): Policy concepts, enforcement targets, levels, and configuration.
 - [Builtin Policies](https://omnigent.ai/docs/policies/builtin): Safety and cost-control policies.
 - [Custom Policies](https://omnigent.ai/docs/policies/custom): Write, register, and use custom policy functions.
-- [OS Sandbox Config](https://omnigent.ai/docs/policies/os-sandbox): Filesystem, network, and environment restrictions for Omnibox sandboxing.
+- [OS Sandbox Config](https://omnigent.ai/docs/omnibox/os-sandbox): Filesystem, network, and environment restrictions for Omnibox sandboxing.
 - [Omnibox](https://omnigent.ai/docs/omnibox): Filesystem isolation, network isolation, and credential injection.
 
 ## Optional

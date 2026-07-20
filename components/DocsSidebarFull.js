@@ -58,13 +58,18 @@ const SECTIONS = [
     ],
   },
   {
+    title: "Deployment",
+    pages: [
+      { href: "/docs/deploy/overview", label: "Shared Server" },
+      { href: "/docs/deploy/database", label: "Database" },
+      { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host" },
+    ],
+  },
+  {
     title: "Collaboration",
     pages: [
       { href: "/docs/collaborate", label: "Pair Programming" },
-      { href: "/docs/deploy/overview", label: "Shared Server" },
       { href: "/docs/collaborate/auth", label: "Auth & SSO" },
-      { href: "/docs/deploy/database", label: "Database" },
-      { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host" },
     ],
   },
   {
@@ -95,7 +100,7 @@ const SECTIONS = [
     title: "Omnibox",
     pages: [
       { href: "/docs/omnibox", label: "Overview" },
-      { href: "/docs/policies/os-sandbox", label: "OS Sandbox Config" },
+      { href: "/docs/omnibox/os-sandbox", label: "OS Sandbox Config" },
     ],
   },
   {

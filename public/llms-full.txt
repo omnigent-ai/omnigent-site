@@ -1595,7 +1595,7 @@ To collaborate more safely, share read-only instead, or host the session on a
 [cloud sandbox host](/docs/deploy/cloud-sandbox-host) so the agent runs in
 an isolated remote container rather than on your personal machine. To constrain what the
 agent can touch even on a trusted host, apply an
-[OS sandbox](/docs/policies/os-sandbox) policy.
+[OS sandbox](/docs/omnibox/os-sandbox) policy.
 
 ## Fork
 
@@ -2351,7 +2351,7 @@ Return `None` for event types you don't handle.
 
 ---
 
-## https://omnigent.ai/docs/policies/os-sandbox
+## https://omnigent.ai/docs/omnibox/os-sandbox
 
 # Omnibox: OS Sandbox
 
@@ -2588,7 +2588,7 @@ worthless, since it only works through the proxy, against allowed hosts.
 
 ## Related
 
-- [OS sandbox configuration](/docs/policies/os-sandbox): the full reference, covering filesystem grants, egress rules, environment passthrough, and the `bubblewrap`/Seatbelt backends.
+- [OS sandbox configuration](/docs/omnibox/os-sandbox): the full reference, covering filesystem grants, egress rules, environment passthrough, and the `bubblewrap`/Seatbelt backends.
 - [Cloud sandbox host](/docs/deploy/cloud-sandbox-host): controls _where_ the runner executes. Omnibox controls _what it can access_. They compose.
 - [Contextual policies](/docs/policies/overview): govern behavior at the tool-call level. Omnibox is the hard boundary underneath.
 

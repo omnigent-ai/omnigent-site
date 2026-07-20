@@ -24,6 +24,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/docs/policies/os-sandbox",
+        destination: "/docs/omnibox/os-sandbox",
+        permanent: true,
+      },
+      {
         source: "/download/mac",
         destination:
           "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.5.0-arm64.dmg",

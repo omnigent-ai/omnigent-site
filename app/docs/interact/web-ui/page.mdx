@@ -23,6 +23,22 @@ between them. Switch agents mid-conversation directly from the UI.
 
 Sessions persist across browser refreshes and server restarts.
 
+### Hide unconfigured harnesses
+
+By default the new-chat picker lists every harness and badges the ones that
+aren't set up on the selected host (for example, a harness that still needs a
+CLI install or sign-in) so you can discover and configure them. If you'd rather
+see only the harnesses that can launch right now, turn on
+**Settings › Appearance › Hide unconfigured harnesses**. With it on, harnesses
+the selected host reports as unconfigured are hidden from the picker instead of
+badged — including the brain-harness override submenu of a bundle agent (though
+the currently selected brain always stays visible).
+
+This is a per-device UI preference, off by default. It changes only what the
+picker shows on this browser — no account or host state is touched — and fails
+open: when no host is connected or readiness information is unavailable, nothing
+is hidden.
+
 ### Projects
 
 Organize related sessions into a named `Project`. Each project is a collapsible

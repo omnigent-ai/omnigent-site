@@ -1103,6 +1103,19 @@ figcaption {
 .docs-side > div:first-child > h4 {
   margin-top: 0;
 }
+.release-month-heading {
+  color: var(--fg-soft);
+  font-weight: 600;
+}
+.releases-group h5 {
+  font-size: 0.73rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-soft);
+  font-weight: 700;
+  margin: 0.9rem 0 0.3rem;
+  padding: 0 0.6rem;
+}
 .docs-side a.nav-overview {
   font-size: 0.73rem;
   text-transform: uppercase;
@@ -1176,6 +1189,21 @@ figcaption {
   font-weight: 550;
 }
 .docs-toc .toc-h3 a {
+  padding-left: 0.9rem;
+}
+.docs-toc .toc-group + .toc-group {
+  margin-top: 0.6rem;
+}
+.docs-toc .toc-group-label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-soft);
+  font-weight: 700;
+  padding: 0.2rem 0;
+}
+.docs-toc .toc-group a {
   padding-left: 0.9rem;
 }
 .docs-main {

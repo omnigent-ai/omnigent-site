@@ -1,4 +1,8 @@
 import { getReleases } from "@/lib/releases";
+import {
+  filterRecentReleases,
+  groupReleasesByMonth,
+} from "@/lib/group-releases";
 
 export const metadata = {
   title: "Releases",
@@ -12,7 +16,9 @@ export const metadata = {
 // dynamically import and stack them. The automation only ever adds a new folder,
 // so this feed picks up new releases with no edits here.
 export default async function ReleasesIndex() {
-  const releases = getReleases();
+  // Cap the feed to the last 6 months (anchored on the newest release). Older
+  // versions stay reachable via the sidebar and their own /releases/<x.y.z> URL.
+  const releases = filterRecentReleases(getReleases());
 
   if (releases.length === 0) {
     return (
@@ -30,14 +36,29 @@ export default async function ReleasesIndex() {
     }),
   );
 
+  // Group the stacked posts under "Month Year" headings (mirroring the sidebar),
+  // keeping the newest-first order. `flatIndex` tracks the running position so a
+  // divider is drawn before every post except the very first across all groups.
+  const groups = groupReleasesByMonth(posts);
+  let flatIndex = 0;
+
   return (
     <>
       <h1>Omnigent Releases</h1>
-      {posts.map(({ version, Body }, i) => (
-        <section key={version} className="release-entry">
-          {i > 0 ? <hr /> : null}
-          <Body />
-        </section>
+      {groups.map((group) => (
+        <div key={group.label} className="release-month">
+          <h2 className="release-month-heading">{group.label}</h2>
+          {group.releases.map(({ version, Body }) => {
+            const showDivider = flatIndex > 0;
+            flatIndex += 1;
+            return (
+              <section key={version} className="release-entry">
+                {showDivider ? <hr /> : null}
+                <Body />
+              </section>
+            );
+          })}
+        </div>
       ))}
     </>
   );

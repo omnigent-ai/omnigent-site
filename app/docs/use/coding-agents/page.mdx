@@ -27,3 +27,33 @@ everything a single harness can't provide on its own.
 
 **[Follow the Coding Agent tutorial](/quickstart/coding-agent)** to get started
 in under a minute.
+
+## Import existing chats
+
+Already have local Claude Code or Codex history? Bring it into Omnigent as a
+normal session with `omnigent import`. The source transcript is converted to
+ordinary Omnigent items and stored as a regular session, so it gains the web UI,
+persistence, collaboration, and everything else. A given source session can only
+be imported once.
+
+Import a single chat by its harness-native session ID:
+
+```
+omnigent import --harness claude --session <session-id>
+omnigent import --harness codex --session <session-id>
+```
+
+Or import a batch of your most recent chats with `--last N`, which imports the
+`N` most recently modified parent sessions (oldest first, up to a maximum of
+50):
+
+```
+omnigent import --harness claude --last 10
+```
+
+Provide exactly one of `--session` or `--last` — they are mutually exclusive.
+
+When importing a batch, sessions that were already imported are skipped and a
+session that fails to import doesn't stop the rest. Omnigent prints a summary of
+how many sessions were imported, already imported, and failed, and exits with a
+non-zero status if any failed.

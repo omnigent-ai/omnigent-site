@@ -20,28 +20,33 @@ export const meta = {
 
 <BlogPostHeader slug="queue-and-steer-messages-while-agents-work" />
 
-If you drive long agent runs in the web UI, you can now line up your next few
-messages instead of waiting for each turn to finish. Type a follow-up while the
-agent is still working and it is held in a client-side queue rather than
-interrupting the running turn.
+During a long agent run, you no longer have to wait for each turn to finish
+before lining up your next move. Type a follow-up while the agent is still
+working and it joins a queue instead of interrupting what the agent is doing.
+Rather than waiting in your head or risking landing in the wrong place, your
+messages sit in a strip above the composer and are sent automatically, one at a
+time and in order, as soon as the agent is free.
 
-Before this, a message typed mid-turn either had to wait in your head or risk
-landing in the wrong place. Now queued messages show in a docked strip above the
-composer and drain automatically, one at a time and in order, the moment the
-session goes idle. Each queued row also has inline actions, so a plan you lined
-up early is not locked in: you can edit a message to revise it, drag to reorder
-the queue, delete one you no longer want, or steer a message to send it now
-instead of waiting for the queue to flush. Steer does not cancel the turn; the
-agent folds the message into its current work at the next natural breakpoint,
-and it works with any agent you run in Omnigent.
+<video
+  src="/images/blog/queue-and-steer-messages-while-agents-work-demo.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Queue two follow-ups mid-turn in the docked strip, reorder them, then steer one so it lands while the agent is still responding"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
 
-{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: queue two or three follow-ups mid-turn in the docked strip, reorder them by dragging, then steer one so it lands while the agent is still responding. */}
+Nothing you line up early is locked in. Hover any queued message to edit its
+wording, reorder it by dragging, delete it, or steer it to send it right away
+without waiting for the queue. Steering does not stop the agent; it works your
+message into what it is already doing at the next natural point. This works with
+any agent you run in Omnigent.
 
-There is nothing to enable. While a turn is running, type into the composer and
-press send: the message drops into the strip above it. Hover a queued row to
-edit, delete, or steer it, and drag rows to change their order. See the
-[Web UI guide](/docs/interact/web-ui#message-queue-and-steering) for the full
-list of queued-row actions.
+This is on by default, with nothing to set up. Just type while the agent is
+working and press send. For the full list of what you can do with a queued
+message, see the
+[Web UI guide](/docs/interact/web-ui#message-queue-and-steering).
 
 ---
 

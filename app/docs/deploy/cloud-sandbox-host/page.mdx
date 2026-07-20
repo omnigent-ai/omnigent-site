@@ -110,6 +110,42 @@ use a Cloudflare Worker relay on the allowlisted `*.workers.dev` domain (see
 
 </div>
 
+### Inject provider config into sandboxes (optional)
+
+An optional top-level `host_config` under `sandbox:` (provider-agnostic — not
+inside a provider block like `modal:` or `daytona:`) holds verbatim in-sandbox
+`~/.omnigent/config.yaml` content that the server installs into each sandbox
+before `omnigent host` starts. The common use is a `providers:` block that
+routes a harness through a self-hosted gateway (for example LiteLLM or vLLM):
+
+```
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+  host_config:
+    providers:
+      litellm:
+        kind: gateway
+        default: [pi]
+        openai:
+          base_url: http://litellm.litellm.svc.cluster.local/v1
+          api_key_ref: env:LITELLM_API_KEY
+          wire_api: chat
+```
+
+The block is **server-managed**: entries injected by a previous launch are
+replaced or removed on the next launch or resume, so each sandbox always
+reflects the current config. Config created inside the sandbox under names the
+server never injects survives untouched.
+
+**Keep secrets out of `host_config`.** Reference credentials with
+`api_key_ref: env:VAR` — the variable is resolved inside the sandbox against its
+own environment (the provider's credential lane, such as Modal secrets or copied
+env vars), never on the server. An inline `api_key` is rejected at server
+startup. The `host_config` block (and its `providers:` shape) is validated when
+the server starts, so a typo fails loudly instead of degrading silently inside
+the sandbox.
+
 ### 4. Launch from the web UI
 
 Start a new session and select **New Sandbox** in the host picker. The server

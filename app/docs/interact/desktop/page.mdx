@@ -120,3 +120,32 @@ Notifications and badge counts are combined across all connected servers.
   alt="Omnigent desktop app setup screen prompting for the server URL to connect to"
   style={{ width: "100%", borderRadius: "8px" }}
 />
+
+## Open a session from a link
+
+The desktop app registers the `omnigent://` URL scheme, so a link can open a
+specific session on a specific server the way a web link opens a page. The link
+names the server by host and the session by its conversation id:
+
+```
+omnigent://localhost:6767/c/conv_abc
+omnigent://my-workspace.cloud.databricks.com/c/conv_xyz
+```
+
+The link carries no `http`/`https` — the app infers it the same way the setup
+screen does: `http` for a loopback host (`localhost`, `127.0.0.1`), `https` for
+a remote host. A Databricks workspace mount is discovered automatically, so you
+don't include it in the link. Only `/c/<session_id>` links are recognized;
+other paths are ignored.
+
+Clicking a link behaves like opening a page for a known site:
+
+- If a window is already connected to that server, the app **reuses it** and
+  navigates to the session in place.
+- If you've connected to that server before but have no window open for it, the
+  app opens it in a **new window**.
+- If you've **never connected** to that server, the app asks you to confirm
+  first, since connecting to a server grants it privileges like notifications
+  and registering this machine as a runner. Cancel is the default; only open
+  links from servers you trust. Once you allow it, the server is remembered so
+  future links open without a prompt.

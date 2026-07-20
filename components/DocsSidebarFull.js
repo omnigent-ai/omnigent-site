@@ -56,6 +56,7 @@ const SECTIONS = [
       { href: "/docs/interact/web-ui", label: "Web UI" },
       { href: "/docs/interact/mobile", label: "Mobile" },
       { href: "/docs/interact/desktop", label: "Desktop App" },
+      { href: "/docs/interact/slack", label: "Slack" },
     ],
   },
   {

@@ -168,5 +168,35 @@
     "title": "Tutorial: Polly (Multi-AI Coding)",
     "description": "Tutorial: see Polly in practice, a multi-agent coding orchestrator that delegates sub-tasks across AI agents with built-in cross-vendor review.",
     "eyebrow": "Quickstart"
+  },
+  "/releases/0.2.0": {
+    "title": "Omnigent v0.2.0",
+    "description": "Omnigent v0.2.0 adds pluggable agent SDKs, broader sandbox and deployment support, and security hardening.",
+    "eyebrow": "Release"
+  },
+  "/releases/0.3.0": {
+    "title": "Omnigent v0.3.0",
+    "description": "Omnigent v0.3.0 adds seven agent harnesses, native-harness parity, desktop workspace management, and more deployment targets.",
+    "eyebrow": "Release"
+  },
+  "/releases/0.4.0": {
+    "title": "Omnigent v0.4.0",
+    "description": "Omnigent v0.4.0 introduces the harness plugin SDK, expands Polly orchestration, and improves native agent UX, security, and deployment.",
+    "eyebrow": "Release"
+  },
+  "/releases/0.5.0": {
+    "title": "Omnigent v0.5.0",
+    "description": "Omnigent v0.5.0 brings iOS, message queuing and steering, Git worktree sessions, an embedded browser, and more.",
+    "eyebrow": "Release"
+  },
+  "/releases/0.6.0": {
+    "title": "Omnigent v0.6.0",
+    "description": "Omnigent v0.6.0 adds richer file previews, custom themes, chat imports, Slack integration, and Windows and Linux desktop apps.",
+    "eyebrow": "Release"
+  },
+  "/releases": {
+    "title": "Releases",
+    "description": "What's new in each version of Omnigent — release highlights, version by version.",
+    "eyebrow": "Releases"
   }
 }

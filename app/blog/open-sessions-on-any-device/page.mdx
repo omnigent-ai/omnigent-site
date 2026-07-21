@@ -1,0 +1,38 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Jump straight into any session on your desktop or phone",
+  "Open any Omnigent session in the desktop or mobile app from a link or a QR code, and pick up right where you left off.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/open-sessions-on-any-device",
+  },
+);
+
+export const meta = {
+  title: "Jump straight into any session on your desktop or phone",
+  date: "2026-07-21",
+  category: "Cross-device",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="open-sessions-on-any-device" />
+
+If you move between your laptop and your phone during a long agent run, you can now jump straight into the exact session you were watching. An `omnigent://` link opens that conversation in the desktop or mobile app, on the right server, without hunting for it in a list.
+
+Sharing a session URL used to drop the other person at the front door. They had to know which server it lived on, open the app, and find the conversation by hand. Now the link carries the server and the conversation together, so a click lands on the session itself. If a window is already open on that server, it navigates in place instead of spawning a duplicate, so a running stream keeps flowing.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: click an omnigent:// link on the desktop and watch it land on the live session, then scan the Share dialog QR code to open the same session on a phone. */}
+
+The link format is `omnigent://<hostname>/c/<session_id>`, and it works whether the session lives on your local machine or a remote host:
+
+```
+omnigent://localhost:8000/c/conv_abc
+```
+
+To move a session to your phone, open the Share dialog and click "Open in mobile app". Omnigent shows a QR code that encodes the session's deep link, so scanning it with your phone opens the same conversation in the mobile app. The first time a link points at a server you have never connected to, the desktop app asks you to confirm before it opens, so a link can never silently pin an unknown server. See the [mobile docs](/docs/interact/mobile) for more on using a session across devices.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

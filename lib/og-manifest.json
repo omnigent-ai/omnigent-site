@@ -1,4 +1,9 @@
 {
+  "/blog/queue-and-steer-messages-while-agents-work": {
+    "title": "Line up your next moves while an agent works — steer or reorder them mid-run",
+    "description": "Type follow-ups while a turn is running: they queue in a strip above the composer and send in order when the agent goes idle, or you can steer, edit, reorder, and delete them.",
+    "eyebrow": "Blog"
+  },
   "/docs/build/harnesses": {
     "title": "Harnesses",
     "description": "The harness is the runtime that executes your agent loop. Swap one line of YAML to switch between Claude, Codex, Cursor, and more — or ship your own as a community plugin.",
@@ -12,6 +17,11 @@
   "/docs/build/prompts": {
     "title": "Prompts & Skills",
     "description": "Shape agent behavior with system prompts, and extend it with skills: reusable instruction sets the agent loads on demand.",
+    "eyebrow": "Build"
+  },
+  "/docs/build/scheduled-tasks": {
+    "title": "Scheduled Tasks",
+    "description": "Run an agent on a recurring schedule. A scheduled task is a saved prompt that fires an agent session on an RRULE cadence until you delete it.",
     "eyebrow": "Build"
   },
   "/docs/build/tools": {
@@ -44,6 +54,11 @@
     "description": "Deploy the Omnigent server so your agents are reachable from your phone, shareable with teammates, and running while your laptop sleeps.",
     "eyebrow": "Deploy"
   },
+  "/docs/deploy/telemetry": {
+    "title": "Usage Telemetry",
+    "description": "What anonymous usage telemetry the Omnigent server collects, and every way to turn it off.",
+    "eyebrow": "Deploy"
+  },
   "/docs/interact/desktop": {
     "title": "Desktop App",
     "description": "The Omnigent desktop app brings the full web UI to a native window, with notifications, a dock badge, and multiple windows.",
@@ -52,6 +67,11 @@
   "/docs/interact/mobile": {
     "title": "Mobile",
     "description": "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.",
+    "eyebrow": "Interact"
+  },
+  "/docs/interact/slack": {
+    "title": "Slack",
+    "description": "Talk to your Omnigent agents from Slack: set up the bot, map threads to sessions, stream replies, and approve tool calls without leaving your workspace.",
     "eyebrow": "Interact"
   },
   "/docs/interact/terminal": {
@@ -148,5 +168,35 @@
     "title": "Tutorial: Polly (Multi-AI Coding)",
     "description": "Tutorial: see Polly in practice, a multi-agent coding orchestrator that delegates sub-tasks across AI agents with built-in cross-vendor review.",
     "eyebrow": "Quickstart"
+  },
+  "/releases/0.2.0": {
+    "title": "Omnigent v0.2.0",
+    "description": "Omnigent v0.2.0 adds pluggable agent SDKs, broader sandbox and deployment support, and security hardening.",
+    "eyebrow": "Release"
+  },
+  "/releases/0.3.0": {
+    "title": "Omnigent v0.3.0",
+    "description": "Omnigent v0.3.0 adds seven agent harnesses, native-harness parity, desktop workspace management, and more deployment targets.",
+    "eyebrow": "Release"
+  },
+  "/releases/0.4.0": {
+    "title": "Omnigent v0.4.0",
+    "description": "Omnigent v0.4.0 introduces the harness plugin SDK, expands Polly orchestration, and improves native agent UX, security, and deployment.",
+    "eyebrow": "Release"
+  },
+  "/releases/0.5.0": {
+    "title": "Omnigent v0.5.0",
+    "description": "Omnigent v0.5.0 brings iOS, message queuing and steering, Git worktree sessions, an embedded browser, and more.",
+    "eyebrow": "Release"
+  },
+  "/releases/0.6.0": {
+    "title": "Omnigent v0.6.0",
+    "description": "Omnigent v0.6.0 adds richer file previews, custom themes, chat imports, Slack integration, and Windows and Linux desktop apps.",
+    "eyebrow": "Release"
+  },
+  "/releases": {
+    "title": "Releases",
+    "description": "What's new in each version of Omnigent — release highlights, version by version.",
+    "eyebrow": "Releases"
   }
 }

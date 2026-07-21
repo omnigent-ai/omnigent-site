@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import ReleasesSidebar from "@/components/ReleasesSidebar";
 import CopyCodeButtons from "@/components/CopyCodeButtons";
 import HeadingAnchors from "@/components/HeadingAnchors";
+import ReleasesToc from "@/components/ReleasesToc";
 import { getReleases } from "@/lib/releases";
 
 // Reuses the docs grid (.docs / .docs-main) for consistent typography, but
@@ -20,6 +21,7 @@ export default function ReleasesLayout({ children }) {
           <CopyCodeButtons />
           <HeadingAnchors />
         </article>
+        <ReleasesToc releases={releases} />
       </div>
       <Footer />
     </>

@@ -85,7 +85,7 @@ level has a different scope and priority:
 | ------------------- | --------- | ------------------------------------- | ----------------------------------------------- | -------- |
 | **Session**         | End user  | Current session only, not persistent  | Ask your Omnigent, or use the UI settings panel | First    |
 | **Omnigent config** | Developer | Every session using this Omnigent     | `policies` block in the Omnigent YAML           | Second   |
-| **Server-wide**     | Admin     | Every agent and session on the server | Server config YAML or REST API                  | Last     |
+| **Server-wide**     | Admin     | Every agent and session on the server | Settings page, server config YAML, or REST API  | Last     |
 
 An admin can set a company-wide cost cap, a developer can restrict which repos the Omnigent
 writes to, and an end user can add extra approval gates. All three levels are enforced
@@ -167,6 +167,10 @@ omnigent server -c config.yaml
 
 Server-wide policies use the `function: {path, arguments}` format (not
 `handler` / `factory_params`). Restart the server after editing.
+
+Admins can also manage server-wide policies without touching config files from
+the **Settings** page at `/settings/policies`. Changes take effect immediately
+without a server restart.
 
 Server-wide policies can also be managed at runtime via the REST API:
 

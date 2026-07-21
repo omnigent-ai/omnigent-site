@@ -1103,6 +1103,19 @@ figcaption {
 .docs-side > div:first-child > h4 {
   margin-top: 0;
 }
+.release-month-heading {
+  color: var(--fg-soft);
+  font-weight: 600;
+}
+.releases-group h5 {
+  font-size: 0.73rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-soft);
+  font-weight: 700;
+  margin: 0.9rem 0 0.3rem;
+  padding: 0 0.6rem;
+}
 .docs-side a.nav-overview {
   font-size: 0.73rem;
   text-transform: uppercase;
@@ -1176,6 +1189,21 @@ figcaption {
   font-weight: 550;
 }
 .docs-toc .toc-h3 a {
+  padding-left: 0.9rem;
+}
+.docs-toc .toc-group + .toc-group {
+  margin-top: 0.6rem;
+}
+.docs-toc .toc-group-label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-soft);
+  font-weight: 700;
+  padding: 0.2rem 0;
+}
+.docs-toc .toc-group a {
   padding-left: 0.9rem;
 }
 .docs-main {
@@ -1647,5 +1675,206 @@ figcaption {
   }
   .docsearch-overlay {
     padding-top: 6vh;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Blog — MLflow-style: a centered column with a featured card on top and a
+   thumbnail card grid below on the index; a centered article for a post.
+   --------------------------------------------------------------------------- */
+.blog-main {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.blog-header {
+  margin-bottom: 2rem;
+}
+.blog-header h1 {
+  margin: 0 0 0.4rem;
+  font-size: 2.2rem;
+}
+.blog-header p {
+  margin: 0;
+  color: var(--fg-soft);
+  font-size: 1.05rem;
+}
+
+/* Individual post header: category chip, title, then a byline row with the
+   author avatar, author name, publish date, and estimated reading time. */
+.blog-post-header {
+  margin-bottom: 2rem;
+}
+.blog-post-header .blog-card-cat {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 0.82rem;
+}
+.blog-post-header h1 {
+  margin: 0 0 1.1rem;
+  font-size: 2.2rem;
+  line-height: 1.15;
+}
+.blog-post-byline {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.blog-post-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.blog-post-avatar-monogram {
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+.blog-post-byline-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  line-height: 1.3;
+}
+.blog-post-author {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.blog-post-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--fg-soft);
+}
+
+/* Shared thumbnail — real hero art, or a category placeholder tile. */
+.blog-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--bg-soft);
+}
+.blog-thumb-empty {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--accent-soft), var(--bg-grey-pink));
+}
+.blog-thumb-empty span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+}
+
+/* Card meta line: category chip + date. */
+.blog-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  color: var(--fg-soft);
+}
+.blog-card-cat {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+}
+
+/* Featured (newest) post — larger, image beside copy on wide screens. */
+.blog-featured {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1.25rem;
+  margin-bottom: 2.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-soft);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+.blog-featured:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+.blog-featured .blog-featured-body h2 {
+  margin: 0.5rem 0;
+  font-size: 1.6rem;
+}
+.blog-featured .blog-featured-body p {
+  margin: 0;
+  color: var(--fg-soft);
+  line-height: 1.55;
+}
+
+/* Card grid for the remaining posts. */
+.blog-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1.5rem;
+}
+.blog-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-soft);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+.blog-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+.blog-card .blog-thumb {
+  border-radius: 0;
+}
+.blog-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.1rem 1.25rem;
+}
+.blog-card-body h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.3;
+}
+.blog-card-body p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--fg-soft);
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .blog-featured {
+    grid-template-columns: 1fr;
   }
 }

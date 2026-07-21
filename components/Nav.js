@@ -59,6 +59,9 @@ export default function Nav({ menuToggle }) {
           <Link href="/releases" className="nav-link">
             Releases
           </Link>
+          <Link href="/blog" className="nav-link">
+            Blog
+          </Link>
           <a
             href={GITHUB_URL}
             className="nav-icon"
@@ -133,6 +136,9 @@ export default function Nav({ menuToggle }) {
           </Link>
           <Link href="/releases" className="nav-mobile-link">
             Releases
+          </Link>
+          <Link href="/blog" className="nav-mobile-link">
+            Blog
           </Link>
           <Link href="/faq" className="nav-mobile-link">
             FAQ

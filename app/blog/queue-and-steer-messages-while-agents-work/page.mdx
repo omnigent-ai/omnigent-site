@@ -1,0 +1,53 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Line up your next moves while an agent works — steer or reorder them mid-run",
+  "Type follow-ups while a turn is running: they queue in a strip above the composer and send in order when the agent goes idle, or you can steer, edit, reorder, and delete them.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/queue-and-steer-messages-while-agents-work",
+  },
+);
+
+export const meta = {
+  title:
+    "Line up your next moves while an agent works — steer or reorder them mid-run",
+  date: "2026-07-10",
+  category: "Web UI",
+  author: "omnigent",
+  heroArt: "/images/blog/queue-and-steer-messages-while-agents-work.png",
+};
+
+<BlogPostHeader slug="queue-and-steer-messages-while-agents-work" />
+
+During a long agent run, you no longer have to wait for each turn to finish
+before lining up your next move. Type a follow-up while the agent is still
+working and it joins a queue instead of interrupting what the agent is doing.
+Rather than waiting in your head or risking landing in the wrong place, your
+messages sit in a strip above the composer and are sent automatically, one at a
+time and in order, as soon as the agent is free.
+
+<video
+  src="/images/blog/queue-and-steer-messages-while-agents-work-demo.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Queue two follow-ups mid-turn in the docked strip, reorder them, then steer one so it lands while the agent is still responding"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+Nothing you line up early is locked in. Hover any queued message to edit its
+wording, reorder it by dragging, delete it, or steer it to send it right away
+without waiting for the queue. Steering does not stop the agent; it works your
+message into what it is already doing at the next natural point. This works with
+any agent you run in Omnigent.
+
+This is on by default, with nothing to set up. Just type while the agent is
+working and press send. For the full list of what you can do with a queued
+message, see the
+[Web UI guide](/docs/interact/web-ui#message-queue-and-steering).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](/releases).

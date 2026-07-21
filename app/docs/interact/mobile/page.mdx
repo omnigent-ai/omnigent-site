@@ -104,7 +104,7 @@ omnigent://<hostname>/c/<session_id>
 ```
 
 The link names a server by **host** (with a port if it isn't the default) and a
-conversation by its `/c/<session_id>` route. It carries no `http`/`https` — the
+conversation by its `/c/<session_id>` route. It carries no `http`/`https`; the
 scheme is inferred the same way as the setup page: `http` for loopback hosts
 (`localhost`, `127.0.0.1`, `::1`) and `https` for any remote host, so a deep
 link and a pasted URL never disagree. For a Databricks workspace, the workspace
@@ -120,8 +120,8 @@ This first version accepts only conversation links (`/c/<session_id>`).
 
 ### How a link is handled
 
-- **Already on that server.** The app navigates to the conversation in place —
-  no reload.
+- **Already on that server.** The app navigates to the conversation in place,
+  with no reload.
 - **A server you've connected to before** (your saved server or one in recents)
   that the app isn't currently on. The app switches to it and opens the
   conversation directly, with no prompt.

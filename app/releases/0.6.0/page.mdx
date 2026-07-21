@@ -1,0 +1,91 @@
+{/* Auto-generated from the GitHub Release for v0.6.0. Edit the GitHub Release, not this file. */}
+
+# v0.6.0
+
+_Released 2026-07-21_ · 3 min read · Omnigent maintainers
+
+Omnigent 0.6.0 is a major release focused on meeting you wherever you work, from bringing your existing chats in and reading files richly to driving sessions from Slack and a desktop app on every platform. It lands a guided theme editor for making the UI your own, first-class Slack control complete with inline approvals, and native desktop apps that now run on Windows and Linux alongside macOS.
+
+## 1. Richer file viewing
+
+<video
+  src="/images/releases/0.6.0/richer-file-viewing.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Preview and review rich files directly in Omnigent"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+Reading files inside Omnigent now covers far more than plain source. You get inline PDF preview with review comments, find-in-file across the editor, and rendered previews for markdown and notebooks — so you can review what the agent produced without leaving the session.
+
+The diff viewer adds a "Wrap lines" toggle for long lines, and the file panel stays browsable even when the runner is offline, as long as the host is still connected, so you are never locked out of your files mid-session.
+
+_Learn more in the [Code viewer and diffs](/docs/interact/web-ui#code-viewer-and-diffs)._
+
+## 2. Custom themes
+
+<video
+  src="/images/releases/0.6.0/custom-themes.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Customize Omnigent colors, contrast, and sidebar translucency in the theme editor"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+You can now shape Omnigent's look with a guided theme editor. Shared accent, tint, and contrast controls plus a sidebar translucency setting let you tune the whole interface, and there is a new Nord palette to start from — or hit the randomize dice to discover a look you like.
+
+The file editor follows your Omnigent theme too, so your chosen palette carries through from the session view into the code you are reading and editing.
+
+_Learn more in the [Appearance settings](/docs/interact/web-ui#appearance-settings)._
+
+## 3. Bring your existing work in
+
+Starting fresh in a new tool usually means leaving your history behind. Now you can import your Claude Code and Codex chats directly with `omni import`, bringing up to 50 conversations in at once. Imported and new sessions also get automatic first-turn titles, so your list stays readable without any manual naming.
+
+_Learn more in the [Import existing chats](/docs/use/coding-agents#import-existing-chats)._
+
+## 4. Navigation bar in transcript
+
+<video
+  src="/images/releases/0.6.0/message-navigation.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Navigate through a long session transcript using the transcript navigation bar"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+Long transcripts are now easy to move through. A navigation bar in the session transcript lets you jump around your history with a click, so you can find an earlier turn or result without endless scrolling.
+
+## 5. Slack integration
+
+![Start and manage an Omnigent session from Slack](/images/releases/0.6.0/slack-integration.png)
+
+You can now kick off and drive Omnigent sessions straight from Slack. Beyond starting work, you can approve tool calls and answer the agent's questions inline in the channel, so you can keep a session moving from wherever your team already talks.
+
+_Learn more in the [Slack](/docs/interact/slack)._
+
+## 6. Omnigent desktop app on Windows and Linux
+
+The Omnigent desktop app is no longer macOS-only. Windows and Linux builds are now available, so you can run the native app on your platform of choice. Download the build for your system from the website.
+
+_Learn more in the [Install](/docs/interact/desktop#install)._
+
+Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
+
+## What's Next
+
+Install or upgrade Omnigent:
+
+```bash
+uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
+```
+
+- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
+- Join the conversation on our [Discord](https://discord.gg/omnigent).
+- Browse the [docs](https://omnigent.ai/docs) to go deeper.

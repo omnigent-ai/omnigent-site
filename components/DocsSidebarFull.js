@@ -44,6 +44,7 @@ const SECTIONS = [
           { href: "/docs/build/models", label: "Models & Credentials" },
           { href: "/docs/build/prompts", label: "Prompts & Skills" },
           { href: "/docs/build/tools", label: "MCP & Tools" },
+          { href: "/docs/build/scheduled-tasks", label: "Scheduled Tasks" },
         ],
       },
     ],
@@ -55,6 +56,7 @@ const SECTIONS = [
       { href: "/docs/interact/web-ui", label: "Web UI" },
       { href: "/docs/interact/mobile", label: "Mobile" },
       { href: "/docs/interact/desktop", label: "Desktop App" },
+      { href: "/docs/interact/slack", label: "Slack" },
     ],
   },
   {
@@ -100,7 +102,10 @@ const SECTIONS = [
   },
   {
     title: "Reference",
-    pages: [{ href: "/reference", label: "REST API" }],
+    pages: [
+      { href: "/reference", label: "REST API" },
+      { href: "/docs/deploy/telemetry", label: "Usage Telemetry" },
+    ],
   },
 ];
 

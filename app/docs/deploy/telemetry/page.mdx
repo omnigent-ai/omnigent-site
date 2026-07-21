@@ -1,0 +1,62 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Usage Telemetry",
+  "What anonymous usage telemetry the Omnigent server collects, and every way to turn it off.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/telemetry",
+  },
+);
+
+# Usage Telemetry
+
+Starting with **v0.6.0**, the Omnigent server collects a small amount of _anonymous
+usage data_ to help us understand whether Omnigent is working correctly and which
+features and configuration options are being used.
+
+Telemetry is best-effort: it never blocks, delays, or disrupts your server, and
+any error while collecting or sending data is silently ignored. It does not
+collect your personal data, prompts, message content, tool arguments, file
+contents, or credentials.
+
+## Turning telemetry off
+
+Any one of the following opts you out:
+
+| Method                                          | Scope          |
+| ----------------------------------------------- | -------------- |
+| `OMNIGENT_ANALYTICS=0`                          | Server process |
+| `DO_NOT_TRACK=1`                                | Server process |
+| `telemetry: false` in `~/.omnigent/config.yaml` | Server process |
+
+For example, to run a server with telemetry off:
+
+```
+OMNIGENT_ANALYTICS=0 omnigent server
+```
+
+Or set it once in your config file:
+
+```yaml
+# ~/.omnigent/config.yaml
+telemetry: false
+```
+
+<div className="note">
+
+When a **host** machine has opted out via any of the methods above, it signals
+that to the server during the tunnel handshake. The server honors this on a
+best-effort basis by skipping telemetry for sessions on that host.
+
+</div>
+
+## How it works
+
+Telemetry runs on a background thread and is initialised when the server starts.
+On startup the client fetches a remote configuration that carries the ingestion
+endpoint and kill-switches (a global disable flag, a per-event disable list, an
+OS exclusion list, and a rollout percentage). If that config cannot be fetched,
+or it signals that telemetry is disabled, the client stops itself and drops any
+pending events — so Omnigent can turn collection off remotely without a new
+release.

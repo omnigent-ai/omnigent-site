@@ -14,6 +14,11 @@
     "description": "Shape agent behavior with system prompts, and extend it with skills: reusable instruction sets the agent loads on demand.",
     "eyebrow": "Build"
   },
+  "/docs/build/scheduled-tasks": {
+    "title": "Scheduled Tasks",
+    "description": "Run an agent on a recurring schedule. A scheduled task is a saved prompt that fires an agent session on an RRULE cadence until you delete it.",
+    "eyebrow": "Build"
+  },
   "/docs/build/tools": {
     "title": "MCP & Tools",
     "description": "Give your agent capabilities beyond conversation. Declare tools and MCP servers in your agent YAML, each with a name you choose.",
@@ -44,6 +49,11 @@
     "description": "Deploy the Omnigent server so your agents are reachable from your phone, shareable with teammates, and running while your laptop sleeps.",
     "eyebrow": "Deploy"
   },
+  "/docs/deploy/telemetry": {
+    "title": "Usage Telemetry",
+    "description": "What anonymous usage telemetry the Omnigent server collects, and every way to turn it off.",
+    "eyebrow": "Deploy"
+  },
   "/docs/interact/desktop": {
     "title": "Desktop App",
     "description": "The Omnigent desktop app brings the full web UI to a native window, with notifications, a dock badge, and multiple windows.",
@@ -52,6 +62,11 @@
   "/docs/interact/mobile": {
     "title": "Mobile",
     "description": "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.",
+    "eyebrow": "Interact"
+  },
+  "/docs/interact/slack": {
+    "title": "Slack",
+    "description": "Talk to your Omnigent agents from Slack: set up the bot, map threads to sessions, stream replies, and approve tool calls without leaving your workspace.",
     "eyebrow": "Interact"
   },
   "/docs/interact/terminal": {

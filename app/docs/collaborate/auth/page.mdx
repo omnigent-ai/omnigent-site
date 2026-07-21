@@ -63,27 +63,25 @@ The only outside step is creating an app with your provider (e.g. Google Cloud C
 GitHub > Settings > Developer settings) to get the client ID and secret. Set its
 callback URL to `https://<your-domain>/auth/callback`.
 
-### Skipping the email-verified check
+### Custom email claim
 
-By default, Omnigent requires the `id_token` to carry a truthy `email_verified`
-claim before it will trust the email as the user's identity — a signed token
-proves the IdP issued it, not that the mailbox was verified. An absent or false
-`email_verified` claim is a hard reject that surfaces as **"Could not determine
-user email"** at login.
-
-Some IdPs omit the claim for directory-provisioned users even though the
-directory is authoritative for the address — for example Okta without custom API
-Access Management. To admit those users, set:
+Omnigent reads the user's identity from the `email` claim of the IdP's
+`id_token` by default. Some providers omit that claim — Microsoft Entra ID
+commonly issues only `preferred_username` (the UPN) — which fails login with
+`Could not determine user email`. Point Omnigent at the claim that carries the
+identity instead:
 
 ```
+OMNIGENT_OIDC_EMAIL_CLAIM=preferred_username
 OMNIGENT_OIDC_SKIP_EMAIL_VERIFICATION=1
 ```
 
-This is **off by default**. When enabled, Omnigent accepts any signed email
-claim from the issuer as the user's identity, and logs a warning at startup.
-Only enable it when the issuer is a trusted enterprise directory. It affects the
-generic-OIDC path only — the GitHub sign-in path always requires a verified
-primary email.
+`email_verified` describes the `email` claim only, so a custom claim carries no
+verified marker. Logins are rejected unless you also set
+`OMNIGENT_OIDC_SKIP_EMAIL_VERIFICATION=1` to waive that gate — only enable this
+for an IdP you trust to vouch for the claim. When set, the claim value is
+trimmed and normalized like an email address. This applies to the generic-OIDC
+path only; GitHub always requires a verified primary email.
 
 ## Header-based auth
 
@@ -107,11 +105,13 @@ Admins are the identities in the `admins` list (above), plus anyone you add to
 the runtime-editable `<data_dir>/admins` file (reloaded without a restart).
 Listed identities are promoted to admin on their next sign-in.
 
-Admins get two management sections in the web UI under **Settings**, in both
+Admins get three management sections in the web UI under **Settings**, in both
 built-in accounts and OIDC modes:
 
 - **Settings > Members** — the user roster (username, role, last login).
 - **Settings > Policies** — server-wide [contextual policies](/docs/policies/overview).
+- **Settings > Sharing** — the server-wide session-sharing policy (see
+  [Session sharing](#session-sharing) below).
 
 In built-in accounts mode, **Members** also carries the management actions
 (`Invite member`, per-user `Reset` password, and `Remove`); under OIDC it is a
@@ -119,6 +119,61 @@ read-only roster, since identities are owned by your IdP and provisioned on
 first sign-in. Separately, every signed-in account (built-in or OIDC) gets a
 **Settings > Account** section showing who they're signed in as, with a sign-out
 control and, in built-in accounts mode only, `Change password`.
+
+### Session sharing
+
+Admins set a **server-wide sharing policy** that governs how users can share
+sessions with each other. It applies to every session on the server and changes
+only _new_ grants — revoke, listing existing grants, session ownership, and
+grants already in place keep working in every mode. Configure it two ways:
+
+- **At boot**, with the `OMNIGENT_SHARING_MODE` environment variable.
+- **At runtime**, from **Settings > Sharing** in the web UI. This persists an
+  override that takes effect immediately, without a restart.
+
+The **sharing mode** has four tiers:
+
+| Mode                   | Behavior                                                                                                                                 |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `on`                   | Grants at any level (read / edit / manage) plus public and workspace read. This is the default.                                          |
+| `read_only`            | New grants are capped at read (view); edit and manage grants are rejected.                                                               |
+| `restricted_read_only` | Read-only, and sessions whose working directory is a user home directory or the filesystem root cannot be shared at all — not even read. |
+| `off`                  | Sharing is disabled. No new grants can be created and the **Share** control is hidden.                                                   |
+
+```
+OMNIGENT_SHARING_MODE=read_only omni server start
+```
+
+An unset or unrecognized value fails open to `on`. Under
+`restricted_read_only`, a workspace is considered too broad to share when its
+path is the filesystem root (`/`), root's home (`/root`), or a direct child of
+a home parent such as `/home/alice`, `/Users/bob`, or `/var/home/carol`; a
+subdirectory of a home (e.g. `/home/alice/proj`) stays shareable.
+
+#### Public access
+
+Separately from the tiers above, a **public-access** switch controls whether a
+session can be shared with _anyone who has the link_ (public read access). It
+is independent of the sharing mode — you can keep normal user-to-user sharing
+on while disabling public links.
+
+```
+OMNIGENT_PUBLIC_SHARING=off omni server start
+```
+
+Public access is enabled unless the value is explicitly falsy
+(`0` / `false` / `no` / `off`); unset or unrecognized fails open to enabled. It
+is also editable at runtime from **Settings > Sharing**. When disabled, the
+Share dialog hides its **Public access** toggle and the server rejects new
+public grants; sessions already shared publicly stay public until revoked.
+
+<div className="note">
+
+When a deployment manages the sharing mode or public access itself (for example
+a managed service that injects its own policy), **Settings > Sharing** shows the
+current value as read-only and cannot change it here.
+
+</div>
 
 ### Domain allowlist
 

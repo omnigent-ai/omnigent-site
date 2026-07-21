@@ -27,6 +27,12 @@ const SECTIONS = [
         pages: [],
       },
       {
+        title: "Scheduled Tasks",
+        collapsed: true,
+        href: "/docs/use/scheduled-tasks",
+        pages: [],
+      },
+      {
         title: "Built-in Multi-AI Agents",
         collapsed: true,
         href: "/docs/use/builtin-agents",

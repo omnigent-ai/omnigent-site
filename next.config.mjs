@@ -47,6 +47,44 @@ const nextConfig = {
           "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.5.0-arm64.dmg",
         permanent: false,
       },
+      // Desktop auto-update feed. The manifests (latest-mac.yml /
+      // latest-linux.yml / latest.yml) are served as static files from
+      // public/_desktop/updates/; the binaries (~120 MB) live on the vercel
+      // blob bucket and are 307-redirected here so electron-updater resolves
+      // them relative to the omnigent.ai feed URL (keeps big binaries out of
+      // the git repo / Next static dir).
+      //
+      // We redirect (not rewrite) because electron-updater issues multi-Range
+      // requests for .blockmap-based delta downloads and resumable full
+      // downloads; proxying that through an edge rewrite has historically
+      // mangled the Range headers (returns the full body / 501 / wrong
+      // content-type), so we point the client straight at the blob CDN, which
+      // answers ranges natively. electron-updater's HttpExecutor follows up
+      // to 10 redirects. `permanent: false` (307) so version-specific blob
+      // URLs aren't cached long-term across releases.
+      //
+      // electron-updater fetches every artifact (and its .blockmap) by bare
+      // filename from the feed base, so route each to its platform subdir by
+      // the filename token. The .yml manifests don't match any of these, so
+      // they fall through to the static files in public/.
+      {
+        source: "/_desktop/updates/:file(.*(?:mac\\.zip|\\.dmg).*)",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/:file",
+        permanent: false,
+      },
+      {
+        source: "/_desktop/updates/:file(.*(?:\\.AppImage|\\.deb).*)",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/linux/:file",
+        permanent: false,
+      },
+      {
+        source: "/_desktop/updates/:file(.*\\.exe.*)",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/win/:file",
+        permanent: false,
+      },
     ];
   },
   async rewrites() {

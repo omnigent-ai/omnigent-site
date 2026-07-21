@@ -26,7 +26,7 @@ const nextConfig = {
       {
         source: "/download/mac",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.5.0-arm64.dmg",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.6.0-arm64.dmg",
         permanent: false,
       },
       {
@@ -45,6 +45,24 @@ const nextConfig = {
         source: "/download/mac/v0.5.0",
         destination:
           "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.5.0-arm64.dmg",
+        permanent: false,
+      },
+      {
+        source: "/download/windows",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/win/Omnigent%20Setup%200.6.0.exe",
+        permanent: false,
+      },
+      {
+        source: "/download/linux-deb",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/linux/omnigent-desktop-electron_0.6.0_amd64.deb",
+        permanent: false,
+      },
+      {
+        source: "/download/linux-appimage",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/linux/Omnigent-0.6.0.AppImage",
         permanent: false,
       },
       // Desktop auto-update feed. The manifests (latest-mac.yml /

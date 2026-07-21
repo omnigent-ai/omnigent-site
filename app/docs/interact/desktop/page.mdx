@@ -1,5 +1,10 @@
 import { pageMeta } from "@/lib/og";
-import { MACOS_DOWNLOAD_URL } from "@/components/links";
+import {
+  MACOS_DOWNLOAD_URL,
+  WINDOWS_DOWNLOAD_URL,
+  LINUX_DEB_DOWNLOAD_URL,
+  LINUX_APPIMAGE_DOWNLOAD_URL,
+} from "@/components/links";
 import MacDownloadButton from "@/components/MacDownloadButton";
 
 export const metadata = pageMeta(
@@ -140,16 +145,24 @@ Omnigent desktop app?` rather than hanging.
     <tr>
       <td>Linux</td>
       <td>
-        <code>.AppImage</code> or <code>.deb</code>
+        <a href={LINUX_APPIMAGE_DOWNLOAD_URL}>
+          <code>.AppImage</code>
+        </a>{" "}
+        or{" "}
+        <a href={LINUX_DEB_DOWNLOAD_URL}>
+          <code>.deb</code>
+        </a>
       </td>
-      <td>Coming soon</td>
+      <td>Available</td>
     </tr>
     <tr>
       <td>Windows</td>
       <td>
         Installer (<code>.exe</code>)
       </td>
-      <td>Coming soon</td>
+      <td>
+        <a href={WINDOWS_DOWNLOAD_URL}>Download</a>
+      </td>
     </tr>
   </tbody>
 </table>

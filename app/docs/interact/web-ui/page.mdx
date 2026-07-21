@@ -184,6 +184,62 @@ Paste images, screenshots, diagrams, and mockups directly into the conversation.
 Omnigent sees them alongside your text. Useful for frontend work where describing a layout
 issue in words is slower than screenshotting it.
 
+## Voice dictation
+
+Click the mic button in the composer to dictate a message instead of typing it.
+Speech is transcribed into the composer while you speak.
+
+Omnigent picks the transcription path automatically:
+
+- **Browser speech recognition** is used whenever your browser has a working
+  one (official Chrome and Safari builds). This is the default and needs no
+  server setup.
+- **Server-side dictation** is used as a fallback where browser speech
+  recognition is unavailable or fails at runtime — Electron, Firefox, plain
+  Chromium, and self-hosted contexts. Audio is captured in the browser and
+  streamed to the Omnigent server for transcription, so it never leaves your
+  infrastructure and incurs no per-request cost. In this mode live partial
+  transcripts appear in the composer as you speak, and completed utterances are
+  appended as they're finalized.
+
+The mic button only offers the server fallback when the server reports it is
+available (see below); otherwise it keeps the browser-only behavior. On a
+browser with working speech recognition, nothing changes.
+
+### Enabling server-side dictation
+
+Server-side dictation is off by default and ships as an optional extra so the
+base install carries no extra dependencies. To turn it on, an operator installs
+the extra and downloads a speech model on the server:
+
+```
+pip install "omnigent[dictation]"     # local CPU speech-to-text via sherpa-onnx
+scripts/fetch-dictation-models.sh      # download a known-good model set
+```
+
+The fetch script downloads a streaming recognizer and an English punctuation
+model into `~/.omnigent/models/dictation/` (`asr/` and `punct/`). Once the extra
+is installed and the recognizer model is present on disk, the server reports
+`dictation_available: true` from `GET /v1/info` and the web UI enables the
+fallback; otherwise it reports `false` and the UI keeps browser-only behavior.
+
+Behavior is tuned with environment variables on the server:
+
+| Env var | Default | Meaning |
+| --- | --- | --- |
+| `OMNIGENT_DICTATION_MODEL_DIR` | `~/.omnigent/models/dictation/asr` | Directory with the streaming transducer model (`encoder*.onnx`, `decoder*.onnx`, `joiner*.onnx`, `tokens.txt`) |
+| `OMNIGENT_DICTATION_PUNCT_DIR` | `~/.omnigent/models/dictation/punct` | Optional online-punctuation model directory; without it, raw recognizer output is emitted as-is |
+| `OMNIGENT_DICTATION_MAX_STREAMS` | `2` | Maximum concurrent dictation connections |
+| `OMNIGENT_DICTATION_ENGINE` | `sherpa` | Recognizer engine to use, by registered name |
+
+Any [sherpa-onnx streaming transducer model](https://k2-fsa.github.io/sherpa/onnx/pretrained_models/online-transducer/index.html)
+works — point `OMNIGENT_DICTATION_MODEL_DIR` at it. Dictation transcribes
+whatever language the installed model was trained on. The fetch script's
+punctuation model is English-only, so for other-language models leave
+`OMNIGENT_DICTATION_PUNCT_DIR` unpopulated. On low-powered servers, use a
+smaller model that decodes at least at realtime and consider
+`OMNIGENT_DICTATION_MAX_STREAMS=1`.
+
 ## Message queue and steering
 
 Type a follow-up while the agent is still working and it's held in a client-side

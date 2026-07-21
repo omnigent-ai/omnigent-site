@@ -14,6 +14,9 @@ export default function CtaButtons() {
       <Link href="/quickstart/install#add-the-macos-app" className="btn">
         <AppleIcon size={16} /> macOS App
       </Link>
+      <Link href="/docs/interact/mobile#ios-app" className="btn">
+        <AppleIcon size={16} /> iOS App
+      </Link>
       <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
         <DiscordIcon /> Join Discord
       </a>

@@ -71,6 +71,41 @@ new worktree branch; leave the setting blank to turn auto-fill off.
 
 ![Setting a default base branch for worktrees](/images/docs/git_worktree_setting.gif)
 
+### Setting up an agent
+
+When you pick a harness in the new-chat dialog that the connected host isn't
+ready to run, the dialog shows a **set up this agent** checklist that mirrors
+what [`omnigent setup`](/docs/build/harnesses) walks you through — one row per
+requirement, in order: install the harness CLI, then sign in.
+
+For a small set of npm-installable harnesses (`claude`, `codex`, `pi`,
+`opencode`, `qwen`), the install row is a one-click **Install** action: the
+server installs the CLI onto the connected host for you, so you don't have to
+drop to a terminal. The badge flips as soon as the install finishes. Harnesses
+that install via curl/brew or need interactive auth aren't one-click installable
+— their checklist points you at `omnigent setup` on the host instead.
+
+The auth row shows the command to run on the host:
+
+| Harness | Sign-in step |
+| --- | --- |
+| Claude | `claude auth login --claudeai` (uses your Claude subscription) |
+| Codex | `codex login` (uses your ChatGPT subscription) |
+| OpenCode | `opencode auth login` |
+| Pi / Qwen | need an API key or gateway — run `omnigent setup` on the host |
+
+The picker distinguishes **not installed** from **installed but not signed in**,
+so you can tell whether a harness needs installing or just a login before it can
+launch.
+
+<div className="note">
+
+**Note:** One-click install is opt-in while it rolls out. A server operator
+enables it by setting `OMNIGENT_HARNESS_INSTALL_ENABLED=1`; when it's off, the
+dialog shows the `omnigent setup` hint instead of an Install button.
+
+</div>
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:

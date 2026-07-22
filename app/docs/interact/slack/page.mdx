@@ -1,0 +1,113 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Slack",
+  "Run Omnigent from Slack. Each user authenticates as their own Omnigent identity — including servers deployed as Databricks Apps.",
+  {
+    eyebrow: "Interact",
+    path: "/docs/interact/slack",
+  },
+);
+
+# Slack
+
+The Slack bot lets your team drive Omnigent from Slack — mention it in a channel
+or DM it, and it runs against a fixed Omnigent server the operator configures.
+Each user still authenticates as their **own** Omnigent identity, so history,
+policies, and access control apply per person.
+
+By default the bot auto-detects how to log a user in against the server:
+
+- **accounts mode** → the server's device-grant flow (durable, refreshable).
+- **oidc mode** → the server's CLI-login ticket flow (the user signs in at your
+  IdP; the session lasts its normal TTL, then the user logs in again).
+- **header / proxy mode** → identity is asserted by a trusted upstream proxy
+  (e.g. `X-Forwarded-Email`), so the server mints no token the auto-detect flow
+  can drive. For the common Databricks case, use the web-auth mode below.
+
+## Databricks Apps web-auth
+
+When the Omnigent **server** is deployed as a
+[Databricks App](/docs/deploy/overview), it runs in header mode: the Databricks
+Apps proxy authenticates every request and injects the user's identity. A Slack
+Socket-Mode event carries no such proxy-authenticated request, so the
+device/OIDC flows can't be driven. Instead the bot runs its own **custom U2M
+OAuth app** (authorization code + PKCE, `offline_access`) through an enrollment
+page it serves as its own Databricks App. Each Slack user signs in once and the
+bot receives a durable, refreshable token it forwards to the server.
+
+Enable it by setting `OMNIGENT_SLACK_SERVER_AUTH=databricks` (the default is
+`auto`) plus the custom OAuth app's credentials.
+
+### How enrollment works
+
+1. On `/omnigent`, the bot looks up the user's email (`users.info`), generates a
+   PKCE verifier and a single-use nonce, and posts a **Sign in with Databricks**
+   link — the workspace `/oidc/v1/authorize` URL whose signed `state` carries
+   that email and nonce.
+2. The user signs in at Databricks, which redirects back to the bot's
+   `GET /auth/callback` with a single-use, PKCE-bound code.
+3. The callback exchanges the code at `/oidc/v1/token` for an **access +
+   refresh** pair and reads the authenticated email from the `id_token`.
+4. **Identity binding.** The callback requires the OAuth-authenticated email to
+   equal the Slack email in the signed state, so a link bound to one user and
+   signed in by another can't store the wrong person's token. A mismatch is
+   refused (HTTP 403).
+5. **Confirm before storing.** The `GET` stores nothing — it shows a consent
+   page naming the exact identities being linked and a **Confirm** button. The
+   token pair is persisted only when the user submits the confirming POST, after
+   which the setup modal advances automatically.
+6. The bot calls the server with the access token; the proxy validates it and
+   injects the real `X-Forwarded-Email`, so **no server-side change is needed**.
+   On expiry the bot refreshes silently via the refresh token — the user signs
+   in once, not hourly.
+
+### Slack scopes
+
+Databricks web-auth needs two extra Slack scopes beyond the bot's core scopes,
+used to read the user's email (`users.info`) for the identity binding above:
+
+| Scope | Why |
+| ----- | --- |
+| `users:read`, `users:read.email` | Read the user's email — **required only for Databricks web-auth mode**. Omit for `accounts`/`oidc` mode. |
+
+### Configuration
+
+Set these on the Slack bot (not the Omnigent server):
+
+| Variable | Required | Description |
+| -------- | -------- | ----------- |
+| `OMNIGENT_SLACK_SERVER_AUTH` | yes | Set to `databricks` to select this mode (default `auto`). |
+| `OMNIGENT_SLACK_DATABRICKS_CLIENT_ID` | yes | Custom U2M OAuth app client id (public). |
+| `OMNIGENT_SLACK_DATABRICKS_CLIENT_SECRET` | yes | Custom U2M OAuth app client secret. |
+| `OMNIGENT_SLACK_DATABRICKS_STATE_SECRET` | yes | HMAC key signing the enrollment `state`. Its own secret, separate from the OAuth client secret; at least 32 characters of real entropy (e.g. `openssl rand -hex 32`). |
+| `OMNIGENT_SLACK_DATABRICKS_WORKSPACE_HOST` | yes\* | Workspace host the OAuth app is registered in. Defaults to the injected `DATABRICKS_HOST`; set only for a laptop run where it's unset. |
+| `OMNIGENT_SLACK_DATABRICKS_SCOPES` | no | Space-separated scopes to request (default `all-apis`). `openid` and `offline_access` are always added. The token's scopes must be a superset of the target server app's scopes. |
+| `OMNIGENT_SLACK_WEBAUTH_BASE_URL` | no | Public base URL of the bot's own Databricks App (the enrollment link base and OAuth redirect URI). Defaults to the injected `DATABRICKS_APP_URL`. |
+| `OMNIGENT_SLACK_WEBAUTH_PORT` | no | Port the enrollment web server binds. Defaults to `DATABRICKS_APP_PORT` (8000). |
+
+\* Required directly or via the platform-injected `DATABRICKS_HOST`. The bot
+fails fast at startup if any required value is missing in `databricks` mode.
+
+All of `OMNIGENT_SERVER_URL`, `OMNIGENT_SLACK_DATABRICKS_WORKSPACE_HOST`, and
+`OMNIGENT_SLACK_WEBAUTH_BASE_URL` must use `https://` (loopback excepted for
+local testing) — plaintext would leak the delegated bearer token or the OAuth
+authorization code.
+
+Register the custom U2M OAuth app in the workspace with the authorization-code
+grant enabled and the redirect URI `<bot-app-url>/auth/callback` — the same URL
+you set as `OMNIGENT_SLACK_WEBAUTH_BASE_URL`.
+
+### Deploying the bot on Databricks Apps
+
+To run the Slack bot itself as a Databricks App (so it can serve its enrollment
+page), deploy it via
+[Databricks Asset Bundles](https://docs.databricks.com/aws/en/dev-tools/bundles/).
+The full step-by-step recipe — secret scope setup, the two-pass first deploy to
+learn the app URL, and troubleshooting — lives in
+`integrations/slack/deploy/databricks/README.md` in the Omnigent repo.
+
+Run the bot as a **single instance** — do not enable Horizontal scaling. The bot
+is a Slack Socket-Mode consumer (a second replica double-processes every event),
+and the enrollment PKCE verifiers live in process memory (a callback routed to a
+different replica fails closed). Databricks Apps are single-instance by default.

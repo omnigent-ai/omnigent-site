@@ -184,6 +184,27 @@ Paste images, screenshots, diagrams, and mockups directly into the conversation.
 Omnigent sees them alongside your text. Useful for frontend work where describing a layout
 issue in words is slower than screenshotting it.
 
+## Voice dictation
+
+Dictate into the composer instead of typing. Click the **Voice dictation** mic
+button next to the composer, speak, and the transcript streams into the input as
+you go. Where the browser exposes Web Speech (Chrome, Safari) it's used directly;
+otherwise — and always in the desktop app — dictation runs through the server.
+
+You can also toggle dictation from the keyboard with `⌘⌥V` (`Ctrl+Alt+V` on
+Windows and Linux) — the same action as clicking the mic, reachable from anywhere
+in the app so you can start and stop talking without leaving the keyboard. The
+chord is inert when focus is inside a terminal or the code editor, which own
+their own keys. It's listed in the keyboard-shortcuts reference (`⌘/`) as
+`Toggle voice dictation`.
+
+While dictation is listening, two keys end the take:
+
+- **Enter** stops dictation and keeps the dictated text in the composer (it is
+  not sent).
+- **Esc** stops dictation and discards it, reverting the composer to whatever it
+  held before you started talking.
+
 ## Message queue and steering
 
 Type a follow-up while the agent is still working and it's held in a client-side

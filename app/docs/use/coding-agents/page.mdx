@@ -34,3 +34,30 @@ everything a single harness can't provide on its own.
 
 **[Follow the Coding Agent tutorial](/quickstart/coding-agent)** to get started
 in under a minute.
+
+## Import existing chats
+
+Already have local chats in another coding agent? Bring them into Omnigent with
+`omnigent import`. The source transcript is converted to ordinary Omnigent items
+and stored as a normal session, so you can resume, share, and continue it with
+any agent.
+
+Pass `--harness` to name the coding harness that owns the source session. The
+supported sources are `claude`, `codex`, `kimi`, `kiro`, `pi`, and `qwen`. Use
+`--session` for one chat, or `--last` for a bounded batch of recent chats:
+
+```
+omnigent import --harness claude --session <session-id>
+omnigent import --harness codex --session <session-id>
+omnigent import --harness qwen --session <session-id>
+omnigent import --harness claude --last 10
+```
+
+A source session can only be imported once.
+
+<div className="note">
+
+**Note:** Qwen, Kiro, and Kimi imports currently preserve visible messages but
+not native tool activity.
+
+</div>

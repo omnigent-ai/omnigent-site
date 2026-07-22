@@ -49,6 +49,26 @@ Most coding agents can run in one of two modes:
 Pi is a headless multi-model worker that runs on any gateway model — ideal for
 review, exploration, and read-heavy tasks delegated by a supervisor agent.
 
+## Auto (smart routing)
+
+When the server has smart routing enabled, the harness picker in the web UI's
+new-chat composer offers an extra **Auto** option, listed first. Pick it to let
+Omnigent choose the harness and model for you: instead of resolving at
+create-time, selection is deferred to your first message, where the intelligent
+router reads the task text and picks the best fit.
+
+Auto only considers the direct SDK harnesses — `claude-sdk`, `pi`, and `codex`.
+Native TUI harnesses are excluded, because they require a vendor CLI binary that
+may not be installed and they bake the model in at terminal launch rather than
+choosing it per turn. The router picks from the live model catalog for those
+harnesses, and picks a model to match the size of the task.
+
+Auto resolves once. After the first message, the session is pinned to the
+concrete harness and model the router chose, and every later turn behaves like a
+normally-picked session. If routing is unavailable when the message arrives, the
+session falls back to the agent's default harness. Auto applies only to
+`executor.type: omnigent` agents.
+
 ## Custom ACP agents
 
 Beyond the agents above, the generic `acp` harness drives *any* agent that

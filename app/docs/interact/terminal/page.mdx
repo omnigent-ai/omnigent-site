@@ -78,6 +78,29 @@ them useful:
 - **Persistent.** Every session has a conversation ID and lives beyond the current terminal window. Close your laptop, come back tomorrow, resume where you left off: `omni resume <conversation_id>`
 - **Shared.** Any omnigent can read the history of other sessions you have access to. When you spin up a new task, the agent already has context from previous work.
 
+### Import a session from another tool
+
+`omnigent import` pulls an existing local coding session into Omnigent. The
+source transcript is converted to ordinary Omnigent items and stored as a normal
+session, so you can read, resume, and share it like any other. A given source
+session can only be imported once.
+
+Pick the tool that owns the source session with `--harness`. Supported sources
+are `claude`, `codex`, `kimi`, `kiro`, `opencode`, `pi`, and `qwen`. Use
+`--session` to import one chat, or `--last <N>` for a bounded batch of your most
+recent sessions:
+
+```
+omnigent import --harness claude --session <session-id>
+omnigent import --harness opencode --session <session-id>
+omnigent import --harness codex --last 10
+```
+
+OpenCode and Pi preserve exported tool activity alongside visible messages;
+Qwen, Kiro, and Kimi currently preserve visible messages but not native tool
+activity. OpenCode sessions are read through OpenCode's own JSON export, so its
+`opencode` CLI must be on your `PATH`.
+
 ## When to use the terminal
 
 The terminal shines when you want to stay close to the command line:

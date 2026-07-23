@@ -50,6 +50,22 @@ diff can be reviewed by a different one — the cross-vendor check is the point.
 - **`/cross-review`** sends an implementer's diff to a different-vendor reviewer. Blocking issues loop back as fixes until clean.
 - **`/investigate`** delegates read-only work (debugging, audits, code understanding) to sub-agents and synthesizes findings.
 
+## Goal mode
+
+When Polly runs on the Claude SDK harness, the composer toolbar shows a **Goal**
+button. Use it to give Polly a completion condition and let it keep working until
+that condition is met, rather than steering turn by turn.
+
+Click **Goal**, enter a **completion condition** (for example, `All tests pass and
+the implementation is complete`), and choose **Start goal**. Omnigent sends this to
+Polly as a `/goal <condition>` command on the next turn. Progress and completion
+appear inline in the conversation.
+
+- The condition is trimmed before it's sent; an empty condition is rejected.
+- The control appears only on top-level Polly sessions running the Claude SDK
+  harness — not on sub-agent sessions or other harnesses.
+- In read-only (shared, view-only) sessions the button is disabled.
+
 ## When to use
 
 - Large refactors that benefit from parallel work.

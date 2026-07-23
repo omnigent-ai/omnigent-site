@@ -14,6 +14,7 @@ export const metadata = pageMeta(
 The web UI starts automatically with every session. When the server launches, the URL is
 printed in your terminal. Open it in any browser to get started.
 
+{/* TODO(doc-drafter): screenshot may be stale — the composer now shows a config gear (⚙) and a read-only model/effort label in place of the old model/effort dropdown and Smart Routing toggle. */}
 ![Omnigent web UI](/images/docs/single-harness-demo.gif)
 
 ## Session management
@@ -144,6 +145,39 @@ can be removed individually; the agent reads each one directly from disk at send
 time.
 
 ![Tagging workspace files](/images/docs/tag_workspace_files.gif)
+
+## Run configuration
+
+Every composer carries a **gear** (⚙) to its right that opens a
+**Configure &lt;harness&gt;** modal — the in-session controls for how the next
+turn runs. It exposes only the knobs that can change mid-session:
+
+- **Model** — the underlying LLM. Sessions that expose a model catalog (Claude,
+  Codex, and similar) get a dropdown; pick `Default` to keep the harness's own
+  configured model, or choose a specific model to pin it.
+- **Effort** — reasoning depth vs. speed, for harnesses that support effort
+  levels. Pick `Default` to leave it unset.
+- **Smart Routing** — let Omnigent auto-pick the model per turn by task. On
+  sessions that have a Model dropdown, `Smart Routing` appears as an option
+  inside it (pinning a model and Smart Routing are mutually exclusive). On
+  routable agents with no model dropdown (e.g. [Polly](/docs/use/builtin-agents/polly)),
+  it's a standalone toggle. While Smart Routing is on the router also picks the
+  effort per turn, so the Effort control is frozen.
+
+Changes are drafted locally and only take effect when you press **Save**;
+**Cancel** (or dismissing the modal) discards them. Launch-time-only settings —
+permission mode, approval policy, and cursor mode — are not in this modal, since
+they can't change once a session is running.
+
+Left of the gear, a read-only label shows the current **model and effort** (or
+`Smart Routing` when it's on) at a glance. Hovering the gear shows the same
+run-config as a tooltip — harness, model, effort, and smart routing — without
+opening the modal. Typing a bare `/model` in the composer opens this modal too.
+
+The gear is inert (dimmed) whenever the session can't accept a config change —
+read-only sessions, and sessions whose runner isn't live (asleep, stranded, or
+not yet observed). Its hover tooltip still works so you can read the current
+config.
 
 ## Appearance settings
 

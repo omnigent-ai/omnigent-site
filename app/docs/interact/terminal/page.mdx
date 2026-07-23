@@ -78,6 +78,53 @@ them useful:
 - **Persistent.** Every session has a conversation ID and lives beyond the current terminal window. Close your laptop, come back tomorrow, resume where you left off: `omni resume <conversation_id>`
 - **Shared.** Any omnigent can read the history of other sessions you have access to. When you spin up a new task, the agent already has context from previous work.
 
+## Export and import sessions
+
+A session's full transcript is portable. `omnigent session export` writes a
+session to a JSONL file (one `session_meta` line plus one `item` line per
+message, tool call, and result), and `omnigent session import` recreates it on
+any server:
+
+```
+omnigent session export --id <conversation_id> -o my_session.jsonl
+omnigent session import -i my_session.jsonl
+```
+
+This is handy for moving a conversation between servers, or for sharing a
+reproducible transcript with a teammate.
+
+`session import` takes the following options:
+
+- `--input`, `-i` `FILE` — path to a JSONL file produced by `omnigent session
+  export` (required).
+- `--title` — override the imported session title. Defaults to the exported
+  title.
+- `--server` — the Omnigent server URL to import into. Defaults to the
+  configured server, or a local server already running.
+
+```
+omnigent session import -i my_session.jsonl --title "Repro of ES-2065116"
+omnigent session import -i my_session.jsonl --server https://myserver.com
+```
+
+Import creates a **new** session (a fresh conversation ID each time) as
+history-only: no runner is launched, so open it in the [Web UI](/docs/interact/web-ui)
+or `omni resume <conversation_id>` to continue. Import binds the exported
+agent when it exists on the target server, otherwise falling back to the
+built-in native agent for the export's harness.
+
+A few details don't carry over: per-turn grouping is not preserved (replayed
+items are seeded under a single response), and item authorship is
+re-attributed to the importing user.
+
+<div className="note">
+
+**Note:** `omnigent session import` is the inverse of `omnigent session
+export`. It is distinct from `omnigent import`, which reads native harness
+history rather than an Omnigent export file.
+
+</div>
+
 ## When to use the terminal
 
 The terminal shines when you want to stay close to the command line:

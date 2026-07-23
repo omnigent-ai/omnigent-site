@@ -78,6 +78,36 @@ them useful:
 - **Persistent.** Every session has a conversation ID and lives beyond the current terminal window. Close your laptop, come back tomorrow, resume where you left off: `omni resume <conversation_id>`
 - **Shared.** Any omnigent can read the history of other sessions you have access to. When you spin up a new task, the agent already has context from previous work.
 
+## Track LLM cost
+
+`omni usage` reports your LLM spend from the command line, so you can see what a
+session or a day of work cost without leaving the terminal.
+
+```
+omni usage                           # summary + 10 most-recent sessions
+omni usage --limit 25                # show more sessions in the table
+omni usage --json                    # raw report as JSON
+```
+
+The output opens with a **summary** — spend today, over the last 7 days, the
+last 30 days, and all time. Those windows are calendar-day buckets in UTC (the
+same per-user daily rollup the [cost-control policies](/docs/policies/builtin#cost-control)
+record against), so they reflect when spend actually happened, not just a
+session's last-activity time.
+
+Below the summary, a **per-session** table lists your most-recent sessions
+(10 by default; change it with `--limit`), each showing the session's total
+cost and a per-model breakdown. Per-model costs are shown as recorded and may
+not sum to the session total: native harnesses report one cumulative session
+figure attributed to the active model, so a session that switched models
+mid-run shows a snapshot per model rather than each model's own spend (the same
+convention as the Web UI session sidebar).
+
+Costs are best-effort estimates — consult your provider for actual billing.
+
+Add `--server <url>` to report against a specific Omnigent server; by default
+the command uses your configured server, or a local server already running.
+
 ## When to use the terminal
 
 The terminal shines when you want to stay close to the command line:

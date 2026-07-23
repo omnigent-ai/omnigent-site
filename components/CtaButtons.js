@@ -1,11 +1,6 @@
 import Link from "next/link";
-import {
-  RocketIcon,
-  AppleIcon,
-  DiscordIcon,
-  CalendarIcon,
-} from "@/components/icons";
-import { DISCORD_URL, EVENTS_URL } from "@/components/links";
+import { RocketIcon, AppleIcon, DiscordIcon } from "@/components/icons";
+import { DISCORD_URL } from "@/components/links";
 
 // Get Started (purple, primary) · macOS App (white) · iOS App (white) · Join Discord (white).
 // The macOS button routes into the Get Started flow rather than downloading
@@ -24,9 +19,6 @@ export default function CtaButtons() {
       </Link>
       <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
         <DiscordIcon /> Join Discord
-      </a>
-      <a href={EVENTS_URL} className="btn" target="_blank" rel="noreferrer">
-        <CalendarIcon size={16} /> Events
       </a>
     </div>
   );

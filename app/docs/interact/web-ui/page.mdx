@@ -200,6 +200,34 @@ Each queued row has inline actions:
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
 
+## Scheduled tasks
+
+Run an agent on a recurring schedule instead of starting each session by hand. A
+scheduled task is a saved prompt plus a recurrence rule: it fires automatically,
+runs the chosen agent, and keeps firing until you delete it.
+
+To create one manually, open the **New scheduled task** dialog and fill in:
+
+- **Name** — a label for the task (for example, `Nightly triage`).
+- **Prompt** — the instruction the agent receives on every run.
+- **Runs with** — the agent or harness to run. Scheduled tasks use that agent's
+  default model, effort, and permission settings; there are no per-task model or
+  effort overrides in this dialog.
+- **Frequency** — one of four presets: **Hourly**, **Daily**, **Weekdays**, or
+  **Weekly**. Hourly fires once an hour and asks only for the **minute** of the
+  hour; Daily and Weekdays ask for a **time**; Weekly adds a weekday
+  multi-select (**On days**). Times are chosen in 15-minute steps. The schedule
+  is evaluated in your browser's local timezone.
+- **Host (optional)** — pin the task to a specific connected host, or leave it
+  set to **Resolve at fire time** to run on your connected host whenever the
+  task fires.
+- **Workspace (optional)** — shown only once a host is pinned. Pick a directory
+  to pin it; leave it unset to default to the host's home directory. A workspace
+  can't be set without a host.
+
+The **Create task** button stays disabled until Name, Prompt, a valid schedule,
+and an agent are all set.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

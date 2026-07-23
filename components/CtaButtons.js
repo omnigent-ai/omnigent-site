@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { RocketIcon, AppleIcon, DiscordIcon, CalendarIcon } from "@/components/icons";
+import {
+  RocketIcon,
+  AppleIcon,
+  DiscordIcon,
+  CalendarIcon,
+} from "@/components/icons";
 import { DISCORD_URL, EVENTS_URL } from "@/components/links";
 
 // Get Started (purple, primary) · macOS App (white) · iOS App (white) · Join Discord (white).

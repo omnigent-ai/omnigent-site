@@ -29,9 +29,9 @@ Press `⌘K` (`Ctrl+K` on Windows and Linux) from anywhere in the UI to open the
 command palette. It's a single search box (`Search sessions or run a command`) with
 two groups:
 
-- **Actions** — quick app commands: `New chat`, `Go to Inbox`, `Go to Settings`,
-  `Toggle conversations sidebar`, and `Toggle workspace sidebar`. These filter as
-  you type.
+- **Actions** — quick app commands: `New chat`, `Go to Inbox`,
+  `Go to Scheduled tasks`, `Go to Settings`, `Toggle conversations sidebar`, and
+  `Toggle workspace sidebar`. These filter as you type.
 - **Sessions** — jump to any session. The palette searches the server (the same
   source as the sidebar search), so it finds sessions beyond the ones currently
   loaded in the list; each result shows the session title and its agent type.
@@ -94,7 +94,29 @@ omni host           # (separate terminal) register this machine as a host
 After that, open **http://localhost:6767** and drive the agent entirely from
 the browser; no further terminal interaction needed.
 
-## Install as an app
+## Scheduled tasks
+
+Open `Scheduled` from the sidebar (directly under `New session`) or jump there
+from the command palette (`Go to Scheduled tasks`) to manage recurring agent
+runs at `/tasks`. A scheduled task runs an agent session automatically on a
+recurring schedule; tasks fire on a connected host.
+
+The page lists your tasks with a **search** box and **All / Active / Paused**
+filter tabs. Active tasks sort with the soonest next run first, and paused tasks
+sink to the bottom. Each row shows the task name and a plain-language schedule
+summary derived from the task's stored recurrence rule (for example
+`Every day at 9:00 AM`, `Weekdays at 8:00 AM`, or `Hourly at :30`). Paused tasks
+are marked with a small `Paused` pill next to the name.
+
+Open a row's `⋯` menu to **Pause** or **Resume** a task, or to **Delete** it.
+
+### Creating a task
+
+Click `New task` to open the create dialog and fill in the task's name, prompt,
+and schedule. When the list is empty (or on the `All` tab) a set of
+**Suggestions** chips — `Follow-up monitor`, `PR sweep`, and `News digest` —
+prefill the dialog's name and prompt so you can adjust and confirm the schedule.
+Suggestions are hidden while the `Active` or `Paused` filter is selected.
 
 The web UI is an installable [Progressive Web App (PWA)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps).
 From a supported browser you can install Omnigent to your desktop or phone home

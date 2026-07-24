@@ -23,19 +23,26 @@ Two routers are available:
 - **External routing API** — the server delegates the decision to an external
   `routes:select` service that you point it at.
 
-Smart routing is **off by default**. Enable it by setting `OMNIGENT_SMART_ROUTING=1`
-in the server's environment.
+Smart routing turns on automatically whenever the server config supplies a router
+— there is no separate feature flag to set.
 
 ## Enable smart routing
 
+Smart routing is enabled by configuration alone:
+
+- Configure a server `llm:` block and the server uses the **built-in judge** backed
+  by it — no `routing:` block required.
+- Or add a `routing:` block with `provider: external` to delegate to an
+  **external routing API** (see below).
+
 ```
-OMNIGENT_SMART_ROUTING=1 omni serve
+omni serve
 ```
 
-With the flag on and no `routing:` block configured, the server uses the built-in
-judge backed by your `llm:` block. Users then see an **Auto** option in the harness
-picker; picking it defers harness + model selection to the router on the first
-message.
+With a router configured, users see an **Auto** option in the harness picker;
+picking it defers harness + model selection to the router on the first message.
+With neither an `llm:` block nor an external `routing:` block, routing stays off
+and the Auto option is hidden.
 
 ## Configure the external routing API
 

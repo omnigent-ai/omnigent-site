@@ -50,6 +50,18 @@ diff can be reviewed by a different one — the cross-vendor check is the point.
 - **`/cross-review`** sends an implementer's diff to a different-vendor reviewer. Blocking issues loop back as fixes until clean.
 - **`/investigate`** delegates read-only work (debugging, audits, code understanding) to sub-agents and synthesizes findings.
 
+## Goal mode
+
+For a top-level Polly session, the composer shows a **Goal** toggle next to the
+input. Open it, type a completion condition, and start the goal: Polly keeps
+working until that condition is met, with progress and completion reported in
+the conversation.
+
+Goal mode is available when Polly runs on either the Claude or the Codex
+harness. Under the hood the dialog sends the harness's native `/goal <condition>`
+command as the next turn, so the objective persists across turns rather than
+being a one-off instruction.
+
 ## When to use
 
 - Large refactors that benefit from parallel work.

@@ -45,6 +45,37 @@ The setup wizard walks you through adding a credential, setting a default, or re
 It also auto-detects credentials already on your machine (API keys in environment variables,
 logged-in CLIs, and local servers) so you can confirm them with one tap.
 
+### From the web UI
+
+You don't always need a terminal. When a [connected host](/docs/deploy/overview)
+is missing a provider credential, the web UI's setup dialog offers an **Add a
+credential** action so you can configure it in the browser. It writes the
+credential onto that host with the same non-interactive logic `omni setup` uses:
+the secret goes to the host's OS keychain (falling back to
+`~/.omnigent/secrets.json`), and the host's `config.yaml` gets a `providers:`
+entry that references the secret rather than storing the raw value. The server
+is only an authenticated pass-through — it forwards the credential to the host
+over the tunnel and never persists or logs it.
+
+The dialog supports three kinds:
+
+- **API key** — a vendor key stored on the host.
+- **Gateway** — an OpenAI- or Anthropic-compatible proxy; provide a `base_url`
+  (must start with `http://` or `https://`) plus a key.
+- **Adopt** — reuse a credential the host already has. The dialog lists the
+  adoptable API keys it detects in the host's environment (for example
+  `$ANTHROPIC_API_KEY`) and, on one click, writes a provider entry that
+  references that variable by name — the value is never read or copied.
+
+Once written, the host recomputes readiness and the dialog updates in place, so
+the harness becomes runnable without reconnecting.
+
+This flow covers the harnesses whose provider credential Omnigent owns — the
+**Claude**, **Codex**, and **Pi** families. Environment-authenticated harnesses
+such as **OpenCode** and **Qwen** are not configurable from the UI; set those up
+on the host with `omni setup`. The web-UI credential flow is only available when
+the server has `OMNIGENT_HARNESS_INSTALL_ENABLED` turned on.
+
 ## Credential types
 
 | Type | What it is |

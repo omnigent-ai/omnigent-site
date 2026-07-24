@@ -1,0 +1,65 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Plug any ACP agent into Omnigent with your tools and governance built in",
+  "Point Omnigent at any agent that speaks the Agent Client Protocol and run it with your session tools, sub-agents, skills, and policies already wired in.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/any-acp-agent-with-tools-and-governance",
+  },
+);
+
+export const meta = {
+  title:
+    "Plug any ACP agent into Omnigent with your tools and governance built in",
+  date: "2026-07-10",
+  category: "Multi-harness",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="any-acp-agent-with-tools-and-governance" />
+
+If you run an agent that speaks the Agent Client Protocol, whether it's Gemini
+CLI, Qwen Code, Goose, Zed's Claude Code bridge, or something you built
+in-house, you can now point Omnigent straight at it and drive it from the same
+web UI as every other agent.
+
+Before this, a new agent meant a new integration. The generic `acp` harness
+removes that step: you give Omnigent a launch command and it speaks ACP against
+whatever that command starts. Omnigent renders the agent's streaming output,
+reasoning, and tool cards, routes its permission requests through your
+contextual policies as approval cards, and honors interrupts. It also hands the
+agent Omnigent's own builtin tools (session, sub-agent, skill, and policy
+tools) alongside the agent's native ones, so an outside agent runs inside your
+governance from the first turn.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: register Gemini CLI as an ACP agent in omnigent setup, then run a turn in the web UI showing a policy approval card on one of its tool calls. */}
+
+Each ACP agent brings its own auth, so log into it through its own CLI first;
+Omnigent stores no credential. Register an agent with `omnigent setup`, then
+_configure harnesses_, then **Custom ACP agent**, then _Add_, giving it a name,
+a launch command, and an optional model. Paste-ready commands include:
+
+```text
+gemini --experimental-acp
+qwen --acp
+goose acp
+npx -y @zed-industries/claude-code-acp
+```
+
+Each registered agent gets a stable slug and surfaces as its own harness id,
+`acp:<slug>`, in the web picker and in agent YAML. To launch one straight from
+the CLI:
+
+```bash
+omni run --harness acp:<slug>
+```
+
+See the [harnesses docs](/docs/build/harnesses) for the full setup, config
+format, and the `OMNIGENT_ACP_MCP=0` switch if you want to turn the builtin-tool
+bridge off.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [download the latest release](https://omnigent.ai/download).

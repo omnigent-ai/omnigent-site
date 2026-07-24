@@ -1,5 +1,6 @@
 export const GITHUB_URL = "https://github.com/omnigent-ai/omnigent";
 export const DISCORD_URL = "https://discord.gg/omnigent";
+export const EVENTS_URL = "https://luma.com/omnigent";
 // "Latest" alias — redirected to the current build on Vercel Blob storage in
 // next.config.mjs. Always point download UI at these bare paths (not a versioned
 // permalink like /download/mac/v0.3.0) so they track the latest release.

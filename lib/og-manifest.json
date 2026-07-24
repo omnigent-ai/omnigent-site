@@ -14,6 +14,11 @@
     "description": "Shape agent behavior with system prompts, and extend it with skills: reusable instruction sets the agent loads on demand.",
     "eyebrow": "Build"
   },
+  "/docs/build/routing": {
+    "title": "Smart Routing",
+    "description": "Let a router pick the best harness and model for each session automatically, using the built-in judge or an external routing API.",
+    "eyebrow": "Build"
+  },
   "/docs/build/tools": {
     "title": "MCP & Tools",
     "description": "Give your agent capabilities beyond conversation. Declare tools and MCP servers in your agent YAML, each with a name you choose.",
@@ -51,7 +56,7 @@
   },
   "/docs/interact/mobile": {
     "title": "Mobile",
-    "description": "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.",
+    "description": "Use Omnigent on your phone: the native iOS app from the App Store, or the mobile web UI in any phone browser. Start a session on your laptop, continue it on your phone.",
     "eyebrow": "Interact"
   },
   "/docs/interact/terminal": {

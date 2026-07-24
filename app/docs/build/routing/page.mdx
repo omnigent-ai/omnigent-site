@@ -13,8 +13,8 @@ export const metadata = pageMeta(
 
 Smart routing lets the server pick the best harness and model for a session
 **automatically**, based on the first message. Instead of committing to one model
-up front, the server asks a router — "given this task, which harness and model
-fit?" — and applies the answer for the rest of the session.
+up front, the server asks a router, "given this task, which harness and model
+fit?", and applies the answer for the rest of the session.
 
 <video
   src="/images/docs/smart-routing-oss.mp4"
@@ -28,20 +28,20 @@ fit?" — and applies the answer for the rest of the session.
 
 Two routers are available:
 
-- **Built-in judge** — an LLM call using the server's own `llm:` block.
+- **Built-in judge**: an LLM call using the server's own `llm:` block.
   No extra infrastructure.
-- **External routing API** — the server delegates the decision to an external
+- **External routing API**: the server delegates the decision to an external
   `routes:select` service that you point it at.
 
-Smart routing turns on automatically whenever the server config supplies a router
-— there is no separate feature flag to set.
+Smart routing turns on automatically whenever the server config supplies a router:
+there is no separate feature flag to set.
 
 ## Enable smart routing
 
 Smart routing is enabled by configuration alone:
 
 - Configure a server `llm:` block and the server uses the **built-in judge** backed
-  by it — no `routing:` block required.
+  by it, with no `routing:` block required.
 - Or add a `routing:` block with `provider: external` to delegate to an
   **external routing API** (see below).
 
@@ -69,7 +69,7 @@ routing:
   # Optional: strip a prefix from catalog model ids before sending them to
   # the router (and restore it on the answer). Accepts a string or a list.
   model_prefix: databricks-
-  # Optional auth — see "Authentication" below.
+  # Optional auth, see "Authentication" below.
   api_key: ${ROUTING_API_KEY}
 ```
 
@@ -83,18 +83,18 @@ routing:
 | `profile`      | no       | Databricks CLI profile. The server mints a fresh bearer per call (OAuth refresh), so a long-lived server never sends an expired token.                 |
 
 If `base_url` or `router_name` is missing, the external provider is skipped and a
-warning is logged — routing stays off rather than failing the server.
+warning is logged: routing stays off rather than failing the server.
 
 ### Authentication
 
 Auth mirrors the `llm:` block, in precedence order:
 
-1. **`api_key`** — an explicit, provider-agnostic bearer token (`${ENV}` expanded).
+1. **`api_key`**: an explicit, provider-agnostic bearer token (`${ENV}` expanded).
    Sent as `Authorization: Bearer <token>`.
-2. **`profile`** — a Databricks CLI profile. The server resolves a fresh token per
+2. **`profile`**: a Databricks CLI profile. The server resolves a fresh token per
    request via the Databricks SDK, so tokens that expire (~1h) are refreshed
    automatically.
-3. **Neither** — requests are sent unauthenticated.
+3. **Neither**: requests are sent unauthenticated.
 
 ## External routing API spec
 
@@ -110,7 +110,7 @@ The request and response bodies follow the `omnigent.api.routing.v1` schema
 independently of any gateway so the contract can evolve without coupling to a
 gateway's release cycle.
 
-### Request — `SelectRouteRequest`
+### Request: `SelectRouteRequest`
 
 | Field             | Type              | Description                                                                                    |
 | ----------------- | ----------------- | ---------------------------------------------------------------------------------------------- |
@@ -147,7 +147,7 @@ Example request body:
 }
 ```
 
-### Response — `SelectRouteResponse`
+### Response: `SelectRouteResponse`
 
 | Field             | Type                | Description                                                    |
 | ----------------- | ------------------- | -------------------------------------------------------------- |
@@ -170,7 +170,7 @@ Example response body:
       "route_option": { "model": "claude-opus-4-8", "harness": "claude-sdk" }
     }
   ],
-  "rationale": "Multi-file refactor with tests — favor the most capable model."
+  "rationale": "Multi-file refactor with tests: favor the most capable model."
 }
 ```
 

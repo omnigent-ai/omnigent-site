@@ -33,6 +33,27 @@ omni run agent.yaml --model claude-sonnet-4-6
 Use the `/model` command inside any running session to switch models on the fly.
 The agent keeps its conversation history and tool state – only the underlying model changes.
 
+### Model routing
+
+When the server has model routing configured, an orchestrator agent that
+declares sub-agents (`tools.agents`) gains an `advise_models` tool. Given a
+short description of what each sub-agent is for, it returns one
+`{agent, model, rationale}` entry per agent — pass the suggested model as
+`args.model` in `sys_session_send`. The advice is advisory only; nothing is
+overridden automatically.
+
+Model routing is enabled by server configuration alone — there is no opt-in
+environment variable. The server builds a routing client when either:
+
+- a server `llm:` block is configured — the default `llm` provider uses that
+  block as a built-in judge, or
+- a `routing:` block declares `provider: external` — Omnigent calls an external
+  `routes:select` service instead.
+
+If neither is configured, routing stays off and the `advise_models` tool is not
+registered. The web UI's session-info popover shows whether smart routing is
+enabled for the connected server.
+
 ## Credentials
 
 Omnigent needs credentials to talk to a model provider.

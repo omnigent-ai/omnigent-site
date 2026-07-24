@@ -48,6 +48,12 @@ Start the server with your config file:
 omni server -c path/to/config.yaml
 ```
 
+A **containerized server reads the same blocks** from its server config file —
+`/data/config.yaml` on the Docker volume (or the path in `OMNIGENT_CONFIG`),
+the same experience the laptop `-c` flag gives. Set `llm:` (and optionally
+`routing:`) there and smart routing is enabled on Docker Compose, cloud, and
+Kubernetes deployments too — no code or image change required.
+
 With a router configured, users see an **Auto** option in the harness picker;
 picking it defers harness + model selection to the router on the first message.
 With neither an `llm:` block nor an external `routing:` block, routing stays off

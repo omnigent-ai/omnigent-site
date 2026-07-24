@@ -165,6 +165,11 @@ policies:
 omnigent server -c config.yaml
 ```
 
+On a **containerized server** the same `policies:` block is read from the
+server config file — `/data/config.yaml` on the Docker volume (or the path in
+`OMNIGENT_CONFIG`) — so server-wide default policies apply to Docker Compose,
+cloud, and Kubernetes deployments just as they do with the laptop `-c` flag.
+
 Server-wide policies use the `function: {path, arguments}` format (not
 `handler` / `factory_params`). Restart the server after editing.
 

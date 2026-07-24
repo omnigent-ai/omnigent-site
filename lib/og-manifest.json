@@ -56,7 +56,7 @@
   },
   "/docs/interact/mobile": {
     "title": "Mobile",
-    "description": "Use Omnigent on your phone: the native iOS app from the App Store, or the mobile web UI in any phone browser. Start a session on your laptop, continue it on your phone.",
+    "description": "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.",
     "eyebrow": "Interact"
   },
   "/docs/interact/terminal": {

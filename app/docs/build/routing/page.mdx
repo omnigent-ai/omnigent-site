@@ -16,6 +16,16 @@ Smart routing lets the server pick the best harness and model for a session
 up front, the server asks a router — "given this task, which harness and model
 fit?" — and applies the answer for the rest of the session.
 
+<video
+  src="/images/docs/smart-routing-oss.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  controls
+  style={{ width: "100%", height: "auto", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
 Two routers are available:
 
 - **Built-in judge** — an LLM call using the server's own `llm:` block.
@@ -45,16 +55,6 @@ With a router configured, users see an **Auto** option in the harness picker;
 picking it defers harness + model selection to the router on the first message.
 With neither an `llm:` block nor an external `routing:` block, routing stays off
 and the Auto option is hidden.
-
-<video
-  src="/images/docs/smart-routing-oss.mp4"
-  autoPlay
-  loop
-  muted
-  playsInline
-  controls
-  style={{ width: "100%", height: "auto", borderRadius: "8px", margin: "1rem 0" }}
-/>
 
 ## Configure the external routing API
 

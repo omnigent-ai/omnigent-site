@@ -42,6 +42,7 @@ const SECTIONS = [
         pages: [
           { href: "/docs/build/harnesses", label: "Harnesses" },
           { href: "/docs/build/models", label: "Models & Credentials" },
+          { href: "/docs/build/routing", label: "Smart Routing" },
           { href: "/docs/build/prompts", label: "Prompts & Skills" },
           { href: "/docs/build/tools", label: "MCP & Tools" },
         ],

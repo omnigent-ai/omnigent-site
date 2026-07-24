@@ -14,6 +14,11 @@
     "description": "Shape agent behavior with system prompts, and extend it with skills: reusable instruction sets the agent loads on demand.",
     "eyebrow": "Build"
   },
+  "/docs/build/routing": {
+    "title": "Smart Routing",
+    "description": "Let a router pick the best harness and model for each session automatically, using the built-in judge or an external routing API.",
+    "eyebrow": "Build"
+  },
   "/docs/build/tools": {
     "title": "MCP & Tools",
     "description": "Give your agent capabilities beyond conversation. Declare tools and MCP servers in your agent YAML, each with a name you choose.",

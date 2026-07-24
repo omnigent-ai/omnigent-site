@@ -35,14 +35,26 @@ Smart routing is enabled by configuration alone:
 - Or add a `routing:` block with `provider: external` to delegate to an
   **external routing API** (see below).
 
+Start the server with your config file:
+
 ```
-omni serve
+omni server -c path/to/config.yaml
 ```
 
 With a router configured, users see an **Auto** option in the harness picker;
 picking it defers harness + model selection to the router on the first message.
 With neither an `llm:` block nor an external `routing:` block, routing stays off
 and the Auto option is hidden.
+
+<video
+  src="/images/docs/smart-routing-oss.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  controls
+  className="w-full rounded-lg border"
+/>
 
 ## Configure the external routing API
 

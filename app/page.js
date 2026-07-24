@@ -126,7 +126,7 @@ export default function Home() {
               style={{ maxWidth: "38rem", margin: "0 auto 1.8rem" }}
             >
               Omnigent is alpha and built in the open. Try it and give us
-              feedback on Discord.
+              feedback on Discord, or join an event.
             </p>
             <div className="hero-cta">
               <a

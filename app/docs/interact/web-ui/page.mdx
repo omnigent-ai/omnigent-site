@@ -94,6 +94,51 @@ omni host           # (separate terminal) register this machine as a host
 After that, open **http://localhost:6767** and drive the agent entirely from
 the browser; no further terminal interaction needed.
 
+## Set up an agent from the browser
+
+When you pick an agent in the new-chat composer whose harness isn't ready on the
+chosen host, a **Set up _\<agent\>_ on _\<host\>_** dialog offers to fix it in
+place — no trip to the terminal. It mirrors the steps `omni setup` walks through,
+as a checklist where each row shows its own state, and offers the right control
+per step:
+
+- **Install** — a one-click install for harnesses Omnigent can install on the
+  host.
+- **Set up authentication** — for the Claude, Codex, and Pi families, an inline
+  credential form (described below). Install runs first: the auth step unlocks
+  only once the harness binary is present.
+- **Copy command** — for a step the UI can't drive yet, a click-to-copy command
+  you run on the host.
+
+When no step is actionable from the UI, the dialog collapses to a single
+signpost to run `omni setup` on the host.
+
+### Authenticate a harness inline
+
+The **Set up authentication** step opens a form that lists every applicable way
+to authenticate as equally-weighted options, separated by "or":
+
+- **Use a credential found on this host** — one-click adopt a key Omnigent
+  already detected on the host (shown only when one is found). The form offers
+  only credentials the harness can actually use: Claude adopts an Anthropic key,
+  Codex an OpenAI key, and Pi either (it consumes both families), so it never
+  offers a cross-family key.
+- **Sign in with your subscription** — a copy-command for the harness's CLI
+  login (for example `codex login`), since the browser can't drive the OAuth
+  flow. Omitted for Pi, which has no subscription login.
+- **Use an API key** — paste a provider key.
+- **Connect a gateway** — a base URL plus key for any OpenAI- or
+  Anthropic-compatible gateway.
+
+On success the host's readiness updates live and the harness badge flips from
+yellow to green. If the credential saved but the harness still isn't ready, the
+form stays open and prompts you to try another option. Secrets ride in the
+request to the host daemon, which stores them locally — they're never held on
+the server.
+
+This browser-driven setup is available when the server has harness setup
+enabled; otherwise the composer falls back to the `omni setup` guidance.
+
 ## Install as an app
 
 The web UI is an installable [Progressive Web App (PWA)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps).

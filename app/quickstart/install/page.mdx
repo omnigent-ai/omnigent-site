@@ -1,6 +1,5 @@
 import { pageMeta } from "@/lib/og";
 import InstallCommandTabs from "@/components/InstallCommandTabs";
-import ExtrasCommandTabs from "@/components/ExtrasCommandTabs";
 import MacDownloadButton from "@/components/MacDownloadButton";
 
 export const metadata = pageMeta(
@@ -25,19 +24,13 @@ it's running, you can add the native macOS app for a full UI.
 
 ## Install Omnigent
 
-<InstallCommandTabs />
-
-Run the same command to upgrade an existing installation.
-
-### Optional integrations
-
 The base install covers everyday use. Extra integrations (model providers,
 sandboxes, additional harnesses, and storage backends) are opt-in at install
 time. Add them with the same tool you used to install:
 
-<ExtrasCommandTabs />
+<InstallCommandTabs />
 
-Homebrew can't pass Python extras; install the base formula with `brew`, then add extras with `uv` or `pip`.
+Run the same command to upgrade an existing installation.
 
 Available extras:
 

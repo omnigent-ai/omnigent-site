@@ -1,10 +1,9 @@
 import { pageMeta } from "@/lib/og";
 import InstallCommandTabs from "@/components/InstallCommandTabs";
-import MacDownloadButton from "@/components/MacDownloadButton";
 
 export const metadata = pageMeta(
   "Install",
-  "Install the Omnigent CLI with the installer script, uv, pip, or Homebrew, then grab the macOS desktop app.",
+  "Install the Omnigent CLI with the installer script, uv, pip, or Homebrew.",
   {
     eyebrow: "Quickstart",
     path: "/quickstart/install",
@@ -13,8 +12,7 @@ export const metadata = pageMeta(
 
 # Install
 
-Install the CLI, set up your credentials, and launch your first agent. When
-it's running, you can add the native macOS app for a full UI.
+Install the CLI, set up your credentials, and launch your first agent.
 
 ## Requirements
 
@@ -61,18 +59,6 @@ This launches a web UI and prints the server URL and port. Ask something
 like `What came first, the chicken or the egg?` and watch the models
 challenge each other. See the [Debby reference](/docs/use/builtin-agents/debby)
 for more.
-
-## Add the macOS app
-
-The macOS app adds a full UI and session history on top of the CLI you just
-installed. It's optional; everything above works from the terminal.
-
-<MacDownloadButton />
-
-1. Open the app and enter a server URL. `omni debby` prints one when it
-   starts the web UI, usually `http://localhost:6767`. Paste it into the app
-   to connect.
-2. Pick **Debby** from the agent picker and ask it anything.
 
 ## Uninstall
 

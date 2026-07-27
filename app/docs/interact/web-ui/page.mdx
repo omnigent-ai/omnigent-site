@@ -200,6 +200,34 @@ Each queued row has inline actions:
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
 
+## Scheduled tasks
+
+Save a prompt to run an agent on a recurring schedule. Open the tasks view and
+use the new-task button to create an automation: name it, write the prompt to
+send, pick the agent to run, and set the recurrence. The task then fires on its
+schedule until you pause or delete it.
+
+### Model and effort per task
+
+When the task's agent is a native coding agent that exposes a model and
+reasoning-effort surface (Claude Code), the create/edit dialog shows a **Model**
+and **Effort** row so a task can run at a specific model or reasoning effort
+without touching the agent's own configuration. Agents without that surface
+(for example Codex, or plain SDK agents like Polly) don't show the row — those
+tasks always use the agent's configured model and effort.
+
+- **Model** — the version-agnostic Claude aliases (for example `Opus`,
+  `Sonnet 4.6`). When the task pins a host, the picker lists that host's
+  resolved model options instead.
+- **Effort** — one of `Low`, `Medium`, `High`, `xHigh`, or `Max`.
+
+Both controls default to **Default**. Leaving a control on **Default** sends no
+override for that field, so the task inherits the agent's configured model or
+effort; picking a concrete value applies it to every run of that task. Editing a
+task prefills both controls from the saved values, and resetting a control back
+to **Default** clears the override. Permission and approval modes are not
+offered for scheduled tasks — those always fall back to the agent's defaults.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

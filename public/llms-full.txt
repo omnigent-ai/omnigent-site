@@ -839,14 +839,14 @@ Supported OpenAI- or Anthropic-compatible gateways include OpenRouter, LiteLLM, 
 | **OpenRouter** | Claude Code | `https://openrouter.ai/api` | your OpenRouter key (`sk-or-...`) |
 | **OpenRouter** | Codex / OpenAI agents | `https://openrouter.ai/api/v1` | your OpenRouter key (`sk-or-...`) |
 | **Ollama** (local) | Codex / OpenAI agents | `http://localhost:11434/v1` | any value (Ollama ignores it) |
-| **Gravitee** | Claude Code | `https://<your-gateway-host>/<api-context-path>` | leave blank, see note below |
-| **Gravitee** | Codex / OpenAI agents | `https://<your-gateway-host>/<api-context-path>` | your Gravitee subscription API key |
+| **Gravitee** | Claude Code | `https://<your-gateway-host>/<api-context-path>` | your Gravitee API key |
+| **Gravitee** | Codex / OpenAI agents | `https://<your-gateway-host>/<api-context-path>` | your Gravitee API key |
 
 **Note:** For Claude Code, point at OpenRouter's Anthropic-compatible
 endpoint (`.../api`, **not** `.../api/v1`); for Codex
 and the OpenAI-agents harness, use the OpenAI-compatible `.../api/v1`.
 
-**Note:** Gravitee's [LLM Proxy](https://documentation.gravitee.io/apim/ai-agent-management/llm-proxy) accepts both the native Anthropic Messages API and OpenAI-compatible calls, so it works for either harness family through the same gateway. For Claude Code specifically, [Gravitee's own integration guide](https://documentation.gravitee.io/apim/ai-agent-management/llm-proxy/connect-claude-code-through-gravitee-llm-proxy) keeps your existing `/login` OAuth session rather than replacing it: don't set an API key, instead pass the gateway's subscription key as a custom header, `ANTHROPIC_CUSTOM_HEADERS=X-Gravitee-Api-Key: <subscription-api-key>`.
+**Note:** Gravitee's [LLM Proxy](https://documentation.gravitee.io/apim/ai-agent-management/llm-proxy) accepts both the native Anthropic Messages API and OpenAI-compatible calls, so it works for either harness family through the same gateway. Omnigent delivers the key you enter here to Claude Code via `apiKeyHelper`, so configure your Gravitee API's security plan to accept that credential the same way you would for any API-key gateway — see [Gravitee's LLM Proxy docs](https://documentation.gravitee.io/apim/ai-agent-management/llm-proxy) for setup.
 
 ### Databricks
 

@@ -1,0 +1,48 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Group your sessions into projects that pre-fill every new chat",
+  "Projects now carry their own default session settings — host, working directory, agent, and an optional git worktree — so every new chat you start inside a project comes pre-filled instead of set up from scratch.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/first-class-projects-with-defaults",
+  },
+);
+
+export const meta = {
+  title: "Group your sessions into projects that pre-fill every new chat",
+  date: "2026-07-27",
+  category: "Projects",
+  author: "omnigent",
+  heroArt: "/images/blog/first-class-projects-with-defaults.png",
+};
+
+<BlogPostHeader slug="first-class-projects-with-defaults" />
+
+If you keep coming back to the same body of work, you can now group its sessions
+into a project and give that project its own defaults, so every new chat you
+start inside it opens ready to go.
+
+A project used to be just a way to file related sessions together in the
+sidebar. Now each one can also store the settings a new session usually needs:
+the host to run on, the working directory, the agent, and an optional fresh git
+worktree. When you start a chat inside a project, the composer reads those
+defaults and pre-fills them for you. You still see every field and can change
+any of them before you send, and any default that no longer fits (a host that is
+offline, an agent that is no longer installed) is quietly skipped so you never
+start from a broken setup.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: open a project's settings dialog, set a host, working directory, and agent, then start a new session in that project and show the composer pre-filled. */}
+
+To set a project's defaults, open the project folder's `⋯` menu in the sidebar
+and choose Project settings. Pick the host, working directory, and default
+agent, and turn on Random worktree if you want each new session to branch into
+its own fresh git worktree. Leave a field unset and new sessions fall back to
+your usual defaults. From then on, the shortcut to start a new session in that
+project's folder opens the composer already filled in. See the
+[Web UI guide](/docs/interact/web-ui#projects) for how projects work in the
+sidebar.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

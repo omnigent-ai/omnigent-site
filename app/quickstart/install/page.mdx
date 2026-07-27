@@ -78,12 +78,10 @@ installed. It's optional; everything above works from the terminal.
 
 <MacDownloadButton />
 
-Open the app and enter a server URL. `omni debby` prints one when it starts
-the web UI, usually `http://localhost:6767`. If that port is taken, the server
-uses the next one, so check the terminal output for the actual URL. Paste it
-into the app to connect.
-
-Then pick **Debby** from the agent picker and ask it anything.
+1. Open the app and enter a server URL. `omni debby` prints one when it
+   starts the web UI, usually `http://localhost:6767`. Paste it into the app
+   to connect.
+2. Pick **Debby** from the agent picker and ask it anything.
 
 ## Uninstall
 
@@ -118,10 +116,9 @@ or `all`. Other flags cover less common cases: `--dry-run` to force a preview,
 override tamper refusals, and `--modify-external-config` to allow marker-scoped
 edits to third-party config files.
 
-### Standalone fallback
-
-If the installed wheel is broken or `omni` is not on your `PATH`, run the
-standalone script instead. Add `--yes` to perform the previewed cleanup:
+If `omni` itself won't run (broken wheel, or not on your `PATH`), use the
+standalone uninstall script instead. It takes the same flags, so add `--yes`
+to perform the previewed cleanup:
 
 ```
 curl -fsSL https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/uninstall_oss.sh | sh

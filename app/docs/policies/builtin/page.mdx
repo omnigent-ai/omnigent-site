@@ -46,11 +46,47 @@ contained, and dangerous shell commands in check. They live under
 
 | Policy                            | What it does                                                                                                                                         | Parameters                                                     |
 | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `blast_radius`                    | Classifies shell commands (`sys_os_shell`, native Bash, Pi native bash) as safe, risky (ASK), or catastrophic (DENY), e.g. `rm -rf /` or force-push. | `gate_pushes` (bool, default `true`), `deny_reason`            |
+| `blast_radius`                    | Classifies shell commands as safe (ALLOW), recoverable-but-risky (`risky_action`), or catastrophic (always DENY, e.g. `rm -rf /` or force-push). Covers the shell tool across Omnigent (`sys_os_shell`), Claude/Codex (`Bash`), Cursor, Pi, Hermes, and Goose. | `gate_pushes` (bool, default `true`), `risky_action` (`"ASK"` default or `"DENY"`), `deny_reason`            |
 | `spawn_bounds`                    | Limits the number of sub-agent dispatches per turn to prevent runaway fan-out.                                                                       | `max_dispatches_per_turn` (int, default `5`), `dispatch_tools` |
 | `headless_subagent_purpose_guard` | Requires every sub-agent dispatch to declare a `purpose` (`implement`, `review`, `explore`, `search`).                                               | `allowed_purposes` (string[]), `deny_reason`                   |
 | `worktree_guard`                  | Blocks file writes outside the worker's git worktree to prevent cross-branch contamination.                                                          | `allowed_root` (string, default `.worktrees`), `deny_reason`   |
 | `read_only_os`                    | Denies every file-mutating tool so a report-only agent can read and run shell but never change code.                                                 | `deny_reason`                                                  |
+
+### Gate dangerous shell commands (`blast_radius`)
+
+`blast_radius` sorts every shell command into three tiers. Reads, tests, edits,
+and local git (commit / merge / worktree) are **ALLOWED**. Recoverable-but-outward
+commands — ordinary `git push`, scoped `rm -rf <path>`, `gh pr merge`, infra
+deploy/destroy — take the configurable `risky_action`. Catastrophic, irreversible
+commands (force-push, `rm -rf /`, hard-reset to a remote ref) are **always DENIED**,
+regardless of the other settings.
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  guard_shell:
+    type: function
+    handler: omnigent.policies.builtins.orchestration.blast_radius
+    factory_params:
+      # true (default): risky commands take risky_action.
+      # false: allow them without prompting — trusted unattended batch runs only.
+      gate_pushes: true
+      # "ASK" (default) prompts for approval; "DENY" blocks risky commands outright.
+      risky_action: ASK
+      deny_reason: "Blocked by the blast-radius policy."
+```
+
+Key behaviors:
+
+- **`risky_action`.** Applies to recoverable risky commands when `gate_pushes`
+  is true. `"ASK"` (default) routes them to human approval; `"DENY"` blocks them
+  immediately. It never weakens catastrophic-command denial. Any other value
+  fails at policy construction.
+- **`gate_pushes`.** `true` (default) applies `risky_action` to risky commands;
+  `false` allows them without prompting. Catastrophic commands are denied at both
+  settings.
+- **`deny_reason`.** Message surfaced on any DENY — both catastrophic commands and
+  risky commands blocked by `risky_action: DENY`.
 
 ### Confine confidential Google Drive data (`gdrive_policy`)
 

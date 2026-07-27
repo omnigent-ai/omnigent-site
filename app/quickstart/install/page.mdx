@@ -1,6 +1,6 @@
 import { pageMeta } from "@/lib/og";
 import InstallCommandTabs from "@/components/InstallCommandTabs";
-import ContentTabs from "@/components/ContentTabs";
+import ExtrasCommandTabs from "@/components/ExtrasCommandTabs";
 import MacDownloadButton from "@/components/MacDownloadButton";
 
 export const metadata = pageMeta(
@@ -35,42 +35,9 @@ The base install covers everyday use. Extra integrations (model providers,
 sandboxes, additional harnesses, and storage backends) are opt-in at install
 time. Add them with the same tool you used to install:
 
-<ContentTabs labels={["installer", "uv", "pip", "Homebrew"]}>
-  <div>
+<ExtrasCommandTabs />
 
-Pass `--extra` to the installer script (repeat it or comma-separate to add
-several):
-
-```
-curl -fsSL https://omnigent.ai/install.sh | sh -s -- --extra databricks,modal
-```
-
-  </div>
-  <div>
-
-Use the standard `package[extra,...]` syntax:
-
-```
-uv tool install "omnigent[databricks,modal]"
-```
-
-  </div>
-  <div>
-
-Use the standard `package[extra,...]` syntax:
-
-```
-pip install "omnigent[databricks,modal]"
-```
-
-  </div>
-  <div>
-
-Homebrew can't pass Python extras. Install the base formula with `brew`, then
-add extras with `uv` or `pip`.
-
-  </div>
-</ContentTabs>
+Homebrew can't pass Python extras; install the base formula with `brew`, then add extras with `uv` or `pip`.
 
 Available extras:
 

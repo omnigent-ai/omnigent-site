@@ -60,7 +60,10 @@ speaks ACP against whatever that command starts.
 Each ACP agent brings **its own auth** — Omnigent stores no credential, so log
 into the agent through its own CLI first. Register agents with `omnigent setup`
 → *configure harnesses* → **Custom ACP agent** → *Add*, providing a name, a
-launch command, and an optional model. Some paste-ready commands:
+launch command, and an optional model. (To pull agents in from an existing
+OpenClaw/acpx registry instead of typing each one, see
+[Import agents from OpenClaw](#import-agents-from-openclaw) below.) Some
+paste-ready commands:
 
 | Agent | Command |
 | --- | --- |
@@ -103,6 +106,42 @@ access to `/tmp`; an agent that must write its own config directory needs
 `sandbox: none` (the default) for now.
 
 </div>
+
+### Import agents from OpenClaw
+
+If you already keep an agent registry for OpenClaw or the
+`acpx` CLI, Omnigent can import those agents into its `acp:` block instead of
+re-adding each one by hand. Run `omnigent setup` → *configure harnesses* →
+**Import from OpenClaw**. The row shows how many agents were detected
+automatically. Omnigent looks in two default locations:
+
+| Source | Path |
+| --- | --- |
+| acpx | `~/.acpx/config.json` |
+| OpenClaw | `~/.openclaw/openclaw.json` |
+
+Both files are read as JSON5, and you can pick *Choose another file…* to point
+at a config elsewhere. Omnigent lists the agents it found, derives a stable slug
+from each name, and — after you confirm — appends them to the `acp:` block of
+`~/.omnigent/config.yaml`. From then on they behave exactly like manually added
+ACP agents.
+
+Import stores **only the launch command, not credentials** — each agent still
+authenticates through its own CLI. Re-running the import is safe: agents already
+present are skipped, and a new agent whose name collides with an existing slug
+gets a numbered suffix (e.g. `gemini-cli-2`) so nothing is overwritten. An agent
+whose binary isn't on your `PATH` is flagged as a hint, not blocked.
+
+To launch a single OpenClaw/acpx agent once **without** saving it to your config,
+use `--from-openclaw` on `omni run`:
+
+```
+omni run --from-openclaw "Gemini CLI" -p "review the last commit"
+```
+
+Match the agent by its display name (case-insensitive) or derived slug. This
+runs the agent through the `acp` harness for that one session; it can't be
+combined with an `AGENT` path or with `--harness`.
 
 ## Swap harnesses
 

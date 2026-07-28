@@ -1,9 +1,10 @@
 import { pageMeta } from "@/lib/og";
 import InstallCommandTabs from "@/components/InstallCommandTabs";
+import MacDownloadButton from "@/components/MacDownloadButton";
 
 export const metadata = pageMeta(
   "Install",
-  "Install the Omnigent CLI with the installer script, uv, pip, or Homebrew.",
+  "Install the Omnigent CLI with the installer script, uv, pip, or Homebrew, or download the desktop app.",
   {
     eyebrow: "Quickstart",
     path: "/quickstart/install",
@@ -12,7 +13,8 @@ export const metadata = pageMeta(
 
 # Install
 
-Install the CLI, set up your credentials, and launch your first agent.
+Install the CLI, set up your credentials, and launch your first agent. Prefer a
+native window? Add the [desktop app](#install-the-desktop-app).
 
 ## Requirements
 
@@ -59,6 +61,30 @@ This launches a web UI and prints the server URL and port. Ask something
 like `What came first, the chicken or the egg?` and watch the models
 challenge each other. See the [Debby reference](/docs/use/builtin-agents/debby)
 for more.
+
+## Install the desktop app
+
+The desktop app gives you the full UI in a native window, and adds OS features a
+browser can't, like notifications and a dock badge.
+
+<MacDownloadButton />
+
+{/* eslint-disable-next-line @next/next/no-img-element */}
+
+<img
+  src="/images/docs/desktop-start.png"
+  alt="Omnigent desktop app first-launch setup screen"
+  style={{ width: "100%", borderRadius: "8px" }}
+/>
+
+1. **Launch the app.** On first launch, you'll see a setup screen.
+2. **Enter your server URL.** `http://localhost:6767` if running locally, or your
+   deployed server URL (e.g. `https://your-app.onrender.com`).
+3. **Start working.** The app connects and shows the same UI you'd see in a
+   browser.
+
+See the [Desktop app](/docs/interact/desktop) reference for all platforms and
+details.
 
 ## Uninstall
 

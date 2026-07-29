@@ -93,6 +93,53 @@ Key behaviors:
 Because the confidential set is declared explicitly rather than inferred from a
 per-document classification label, the rule works on any Google Drive tenant.
 
+### Custom logic with CEL (`cel_policy`)
+
+`cel_policy` lets you express a guardrail as a CEL (Common Expression Language)
+expression instead of writing Python — a safe, non-Turing-complete language. The expression
+receives the policy event and should evaluate to a map with a `result`
+(`"DENY"`, `"ASK"`, or `"ALLOW"`) and an optional `reason`. Anything that isn't
+a map abstains (passes to the next policy). Inside the expression, `event.type`
+is the event kind and `event.data` holds its fields — e.g. `event.data.name`
+for a `tool_call`.
+
+You can register it three ways.
+
+**Static, in an agent `config.yaml`** (`policies:` block — `handler` plus
+`factory_params`):
+
+```yaml
+policies:
+  block_shell:
+    type: function
+    handler: omnigent.policies.builtins.cel.cel_policy
+    factory_params:
+      expression: 'event.type == "tool_call" && event.data.name == "sys_os_shell"'
+      reason: Shell access is blocked.
+```
+
+**Static, in a bundled agent spec** (`guardrails.policies` block). Note the
+different spelling: a `function` mapping with `path` plus `arguments`. This
+parser does **not** read `factory_params`:
+
+```yaml
+guardrails:
+  policies:
+    block_shell:
+      type: function
+      function:
+        path: omnigent.policies.builtins.cel.cel_policy
+        arguments:
+          expression: 'event.type == "tool_call" && event.data.name == "sys_os_shell"'
+          reason: Shell access is blocked.
+```
+
+**Dynamic, on a running session**, via the [policy REST API](/docs/policies/overview#adding-a-policy):
+
+```
+POST /v1/sessions/{session_id}/policies
+```
+
 ## Cost Control
 
 | Policy                            | What it does                                                                                                                                                                           | Parameters                                                                                                                   |

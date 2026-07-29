@@ -54,7 +54,7 @@ All builtin policies live under `omnigent.policies.builtins`.
 
 ### Usage examples
 
-#### Confine confidential Google Drive data (`gdrive_policy`)
+#### Confine confidential Google Drive data
 
 `gdrive_policy` can layer Bell-LaPadula's classic "no write-down" rule on top
 of its access controls. You declare a set of confidential documents up front
@@ -134,7 +134,7 @@ omnigent server -c config.yaml
 The daily cap exists to surface sessions that are genuinely off the rails,
 not to penalize productive use.
 
-#### Keep sessions focused (`detect_task_switch`)
+#### Keep sessions focused
 
 Use this policy to keep sessions focused and avoid wasting tokens on stale context.
 On each user `request`, it classifies whether the latest message continues the

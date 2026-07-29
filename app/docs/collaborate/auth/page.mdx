@@ -41,6 +41,17 @@ OMNIGENT_AUTH_ENABLED=1 omni server start
    - Go to **Admin > Members > Invite** to create a single-use invite link.
    - No email server needed; just send the link directly. Signup is invite-only.
 
+<div className="note">
+
+**Security note for public deployments.** While no password-bearing account
+exists, the Create-admin endpoint (`POST /auth/setup`) is intentionally
+unauthenticated, so an instance exposed on a public URL before its operator
+reaches the form can be claimed by the first visitor. Pre-seed
+`OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD` so the admin is created directly at
+boot, or keep the service private until you've completed setup.
+
+</div>
+
 ## Single sign-on (OIDC)
 
 Let your team sign in with Google, GitHub, Okta, or Microsoft. Adding an OIDC issuer flips

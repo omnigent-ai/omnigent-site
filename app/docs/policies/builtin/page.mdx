@@ -42,7 +42,19 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `worktree_guard`                  | Blocks file writes outside the worker's git worktree to prevent cross-branch contamination.                                                          | `allowed_root` (string, default `.worktrees`), `deny_reason`   |
 | `read_only_os`                    | Denies every file-mutating tool so a report-only agent can read and run shell but never change code.                                                 | `deny_reason`                                                  |
 
-### Confine confidential Google Drive data (`gdrive_policy`)
+## Cost Control
+
+| Policy                            | What it does                                                                                                                                                                           | Parameters                                                                                                                   |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `cost_budget`                     | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit.                                                                           | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                                          |
+| `detect_task_switch`              | Uses the server-level LLM to detect when a user starts a new unrelated task and nudges starting a fresh session.                                                                       | `min_turns` (int), `history_window` (int), `action` (`"ASK"` or `"DENY"`, default `"ASK"`), `classification_prompt` (string) |
+| `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                                                                                            | `expensive_models` (string[], required), `classification_prompt` (string)                                                    |
+| `subagent_cost_budget`            | Gates a sub-agent on its own subtree LLM spend. Blocks expensive models at the hard limit, ASKs at soft thresholds. Attach to a child via `sys_session_send`'s `cost_budget` argument. | `max_cost_usd`, `ask_thresholds_usd`, `expensive_models`                                                                     |
+| `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                                                                                                | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                                          |
+
+### Usage examples
+
+#### Confine confidential Google Drive data (`gdrive_policy`)
 
 `gdrive_policy` can layer Bell-LaPadula's classic "no write-down" rule on top
 of its access controls. You declare a set of confidential documents up front
@@ -68,36 +80,8 @@ policies:
       write_down_action: DENY
 ```
 
-Key behaviors:
-
-- **Off by default.** With no `confidential_files`, the base access policy is
-  unchanged.
-- **Read-triggered.** Containment engages only after the session reads a
-  confidential file _by id_. The rule does not restrict reads.
-- **Not a write grant.** Listing a file in `confidential_files` does not make it
-  writable — writing to a confidential file still requires it to be created this
-  session or listed in `write_files`.
-- **`write_down_action`.** `"DENY"` (default) hard-blocks a write-down; `"ASK"`
-  routes it to human approval. It is ignored when `confidential_files` is empty.
-
 Because the confidential set is declared explicitly rather than inferred from a
 per-document classification label, the rule works on any Google Drive tenant.
-
-## Cost Control
-
-| Policy                            | What it does                                                                                                                                                                           | Parameters                                                                                                                   |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `cost_budget`                     | Tracks cumulative LLM spend per session. ASKs at soft thresholds, blocks expensive models at the hard limit.                                                                           | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                                          |
-| `detect_task_switch`              | Uses the server-level LLM to detect when a user starts a new unrelated task and nudges starting a fresh session.                                                                       | `min_turns` (int), `history_window` (int), `action` (`"ASK"` or `"DENY"`, default `"ASK"`), `classification_prompt` (string) |
-| `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                                                                                            | `expensive_models` (string[], required), `classification_prompt` (string)                                                    |
-| `subagent_cost_budget`            | Gates a sub-agent on its own subtree LLM spend. Blocks expensive models at the hard limit, ASKs at soft thresholds. Attach to a child via `sys_session_send`'s `cost_budget` argument. | `max_cost_usd`, `ask_thresholds_usd`, `expensive_models`                                                                     |
-| `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                                                                                                | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                                          |
-
-### Usage examples
-
-Common scenarios: warn an engineer before a session gets expensive, cap
-daily spend per user across all sessions, or block expensive models once a
-session hits a hard limit while still letting work continue on a cheaper one.
 
 #### Make spend visible before you restrict it
 

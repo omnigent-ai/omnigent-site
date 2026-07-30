@@ -38,6 +38,36 @@ Available extras:
 | SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                             |
 | Storage and memory | `s3`, `hindsight`                                                            |
 
+## What installs where
+
+When you install Omnigent on your laptop, both the **server** (web UI, session
+management) and the **runner** (agent harness execution) run on the same
+machine. The runner has direct access to your local files, tools, and
+credentials — there's no separate setup to make any of that work.
+
+Omnigent's own state lives in `~/.omnigent/`, created the first time you run
+`omni`.
+
+Because the runner executes locally, it picks up what's already on your
+machine:
+
+- **Credentials.** `omni setup` detects your existing Claude CLI login
+  (`~/.claude/.credentials.json`), Codex auth, and standard API key
+  environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, and others).
+  It offers these as defaults rather than prompting you to re-enter them.
+- **Skills.** Agents inherit your `~/.claude/skills/` directory automatically.
+  Any skills you've built or installed for Claude Code are available without
+  additional configuration.
+- **MCP tools.** When you run a native harness like `omni claude`, the
+  underlying Claude Code process starts with your existing MCP server
+  configuration. Tools you've already connected to Claude Code — GitHub,
+  databases, and others — carry over.
+
+This changes when you move to a remote deployment. A server running in the
+cloud has its own execution environment, and credentials, skills, and tools
+need to be provisioned for it explicitly. See [Deploy](/docs/deploy/overview)
+when you're ready for that step.
+
 ## Set up credentials
 
 The wizard detects credentials in your environment and prompts for

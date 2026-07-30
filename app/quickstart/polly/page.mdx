@@ -17,7 +17,7 @@ agent for each one (Claude Code, Codex, Cursor, and others). Then a
 different agent reviews the results: if Claude Code writes the code,
 Codex checks it. Each sub-agent gets a clean slate with no prior conversation history, so it stays focused.
 
-**Time:** 5 minutes. **Everything runs locally.**
+Time: 5 minutes. Everything runs locally.
 
 ## 1. Start Polly
 
@@ -97,9 +97,9 @@ default model.
 
 Type any of these into the Polly chat to go further:
 
-- **`/fanout`** — run independent tasks in parallel. Each gets its own sub-agent and git worktree, and opens its own PR.
-- **`/cross-review`** — send an implementer's diff to a different-vendor reviewer. Blocking issues loop back as fixes until clean.
-- **`/investigate`** — delegate read-only work (debugging, audits, code understanding) to sub-agents and get a synthesized report.
+- **`/fanout`**: run independent tasks in parallel. Each gets its own sub-agent and git worktree, and opens its own PR.
+- **`/cross-review`**: send an implementer's diff to a different-vendor reviewer. Blocking issues loop back as fixes until clean.
+- **`/investigate`**: delegate read-only work (debugging, audits, code understanding) to sub-agents and get a synthesized report.
 
 See the [Polly reference](/docs/use/builtin-agents/polly) for full details.
 

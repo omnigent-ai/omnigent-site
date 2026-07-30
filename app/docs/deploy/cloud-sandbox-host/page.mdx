@@ -126,6 +126,25 @@ sandbox:
     idle_pause_after_s: 900                          # optional; null disables idle pause
 ```
 
+**OpenShell:**
+
+```
+sandbox:
+  provider: openshell
+  server_url: https://your-server.example.com
+  openshell:
+    image: ghcr.io/omnigent-ai/omnigent-host:latest  # optional, official image by default
+    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]         # server env vars to copy into sandbox
+    cluster: my-gateway                              # optional OpenShell gateway name
+    workspace: team-alpha                            # optional; defaults to "default"
+```
+
+`cluster` selects the OpenShell gateway to connect to; omit it to use the
+active gateway (`$OPENSHELL_GATEWAY` or `~/.config/openshell/active_gateway`).
+`workspace` is the OpenShell workspace used for sandbox lifecycle operations
+(create, get, delete). Omit it to resolve `$OMNIGENT_OPENSHELL_WORKSPACE`, then
+fall back to `"default"`.
+
 <div className="note">
 
 **Islo idle pause and resume:** server-managed Islo sandboxes pause after 15

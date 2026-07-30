@@ -139,8 +139,25 @@ sandbox:
   env_passthrough: [GH_TOKEN, AWS_PROFILE]  # only these vars reach the agent
 ```
 
-The sandbox strips environment variables to a minimal default set (`PATH`, `HOME`, `USER`,
-`LANG`, etc.). Secrets only reach the agent if you name them explicitly.
+Agent CLIs are spawned with a **deny-by-default** environment. Only two things are
+inherited automatically: the shared base (`HOME`, `PATH`, proxy/TLS settings, locale,
+`TMPDIR`, and the Omnigent session marker) and the running harness's own variable
+family. Everything else — including a host secret that belongs to some other
+provider — is stripped, and only reaches the agent if you name it in
+`env_passthrough`.
+
+An ambient key that used to reach the CLI implicitly now has to be declared. Two cases
+are worth knowing:
+
+- **A generic ACP agent** (`type: acp`) gets no vendor family at all, because Omnigent
+  cannot know which vendor an arbitrary agent belongs to. Gemini via ACP needs
+  `env_passthrough: ["GEMINI_API_KEY"]`.
+- **Goose** owns `GOOSE_*` only. Goose configured through Omnigent's provider/gateway
+  routing is unaffected, but a goose set up against an ambient provider key
+  (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, …) needs that name declared here.
+
+If an agent fails during its `initialize` handshake for no obvious reason, check this
+field first — the ACP executor logs a hint pointing back at it.
 
 ## Sharing a policy
 

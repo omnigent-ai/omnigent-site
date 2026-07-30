@@ -1,5 +1,4 @@
 import { pageMeta } from "@/lib/og";
-import ContentTabs from "@/components/ContentTabs";
 
 export const metadata = pageMeta(
   "Tutorial: Coding Agent",
@@ -12,79 +11,46 @@ export const metadata = pageMeta(
 
 # Tutorial: Coding Agent
 
-Already using Claude Code or Codex? This tutorial shows you what Omnigent
-adds on top: a web UI with file editing and inline comments, mobile access,
-session sharing, and the ability to fork or switch agents mid-conversation.
-None of this is possible with a native coding agent alone.
+If you're already using Claude Code or Codex, Omnigent runs them for you
+and adds a web UI, mobile access, session sharing, inline comments, and more.
 
 **Time:** 5 minutes. **Everything runs locally.**
 
 ## 1. Start your coding agent
 
-```
-omni claude    # Claude Code
-omni codex     # Codex
-```
+1. Launch your agent. Either command starts it in your terminal and opens a web
+   UI at `http://localhost:6767`.
 
-Pick whichever you already use. Either command launches the coding agent
-in your terminal and opens a web UI at `http://localhost:6767`. Both are
-connected to the same session and stream output in real time.
+   ```
+   omni claude    # Claude Code
+   omni codex     # Codex
+   ```
 
-## 2. Give it a task
+2. Give it a task. For example:
 
-Ask it to do something in your project. For example:
+   ```
+   Write a Python function that reads a CSV file and returns the top 5 rows sorted by the second column.
+   ```
 
-```
-Write a Python function that reads a CSV file and returns the top 5 rows sorted by the second column.
-```
+3. Open `http://localhost:6767` to follow along in the Omnigent UI. The
+   [desktop app](/docs/interact/desktop) connects to the same address.
 
-Watch it work in the terminal. Then follow along in the web UI or the
-desktop app. Terminal, browser, and desktop app are three views of the
-same session: type in one, and the others update in real time.
+   ![Omnigent web UI running a coding agent session](/images/docs/single-harness-demo.gif)
 
-<ContentTabs labels={["Web UI", "Desktop App"]}>
-  <div>
-
-Open `http://localhost:6767` in your browser. The web UI shows your
-conversation on the left and a right panel with four tabs: **Files**
-(browse and edit files the agent created), **Agents** (sub-agents if any),
-**Shells** (running terminals), and **Todos**. Everything syncs with the
-terminal in real time.
-
-![Omnigent web UI running a coding agent session](/images/docs/single-harness-demo.gif)
-
-  </div>
-  <div>
-
-Launch the [desktop app](/docs/interact/desktop) and connect it to
-`http://localhost:6767`. You get the same session and the same panels as
-the web UI, plus OS notifications and a dock badge when the agent finishes
-or needs your input, which is handy when you switch away while it works.
-
-![Omnigent desktop app showing an agent conversation alongside the session workspace](/images/docs/desktop-conversation.png)
-
-  </div>
-</ContentTabs>
-
-## 3. Try native Omnigent features
-
-Now that your agent has produced some output, try these features in
-the web UI:
+## 2. Explore Omnigent features
 
 ### Comment on the agent's work
 
-Click on a specific part of the agent's output and leave an inline
-comment like "make this more concise" or "use pandas instead".
-The agent sees exactly what you're referring to and revises it.
-No need to describe the location in chat.
+Click any part of the agent's output and leave an inline comment. The agent
+sees exactly what you highlighted and revises it. Click **Address All** to
+have the agent automatically address all your comments.
 
 ![Addressing an inline comment on agent output](/images/docs/address-comment.png)
 
 ### Edit files directly
 
-Open any file the agent created in the built-in editor. Make changes
-yourself with syntax highlighting. The agent can see your edits and
-continue from there.
+Open any file the agent created in the built-in editor. Make changes yourself
+with syntax highlighting. The agent can see your edits and continue from there.
 
 ![Editing a file in the Omnigent web UI](/images/docs/file-editor.gif)
 
@@ -95,18 +61,22 @@ alongside your text. Try pasting a screenshot of a UI bug or a design spec.
 
 ### Fork a session and switch agents
 
-Fork your current session to try a different approach without affecting
-the original. The fork copies the full conversation history up to that
-point, so you can experiment freely.
+Fork your current session to try a different approach without affecting the
+original. Click the <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="6" r="3"></circle><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"></path><path d="M12 12v3"></path></svg> icon on any message to fork from that point. The fork copies the full conversation history up to there, so you can experiment freely. You can also fork to a different agent: start in Claude Code and continue with Codex, or vice versa.
 
-Sessions in Omnigent belong to you, not to a specific agent, so a fork
-doesn't have to continue with the agent it started with.
-**Started in Claude Code? Fork the session and continue the fork with
-Codex (or vice versa).** The new agent picks up the full conversation
-history and keeps going, so you can compare how each one tackles the same
-problem from the same starting point.
+### Use the built-in browser (desktop app)
 
-## 4. Add a policy in plain language
+The [Omnigent desktop app](/docs/interact/desktop) includes an embedded browser
+pane your agent can drive directly: navigate to a URL, click elements, type into inputs, and take screenshots. The pane opens automatically when the
+agent needs it. Useful for tasks like testing a local web app, scraping a page,
+or verifying a UI change.
+
+### Share a session for pair programming
+
+Hit **Share** in the web UI to get a link. Teammates join with Read access
+(watch the stream) or Edit access (co-drive and send messages). Messages, tool calls, and file changes all stream in real time. From the terminal, `omni attach <session_id>` does the same thing.
+
+## 3. Add a policy in plain language
 
 Type this into the chat:
 
@@ -114,16 +84,13 @@ Type this into the chat:
 Don't send any PII like emails or credit card numbers to the model. Ask me first if a message contains some.
 ```
 
-The agent attaches Omnigent's built-in PII policy to the session. From
-now on, every outgoing model request is scanned, and anything containing
-PII is held for your approval before it leaves your machine. Try it: paste
-a log file with a fake email address and watch the policy step in. This
-is enforcement at the platform layer, something no coding agent can do
-on its own. Cost budgets, access controls, and more work the same way.
-See [Contextual Policies](/docs/policies/overview).
+Omnigent attaches a PII policy to the session. Every outgoing model request
+is scanned, and anything containing PII is held for your approval before it
+leaves your machine. Cost budgets, access controls, and more work the same
+way. See [Contextual Policies](/docs/policies/overview).
 
 ## What's next
 
-- [Try Polly](/quickstart/polly) to see multi-agent coding orchestration in action.
-- [Collaborate from anywhere](/quickstart/collaborate) to deploy a server and share sessions with teammates.
-- [Build a custom agent](/docs/use/custom-agents) with your own tools, prompts, and policies.
+[Try Polly](/quickstart/polly) to coordinate multiple agents across different AI
+providers -- Claude Code, Codex, Cursor -- on the same task, whether that's
+splitting the work or having them review each other's output.

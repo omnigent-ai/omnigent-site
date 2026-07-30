@@ -13,8 +13,7 @@ export const metadata = pageMeta(
 
 # Install
 
-Install the CLI, set up your credentials, and launch your first agent. Prefer a
-native window? Add the [desktop app](#install-the-desktop-app).
+Install the CLI, set up your credentials, and launch your first agent.
 
 ## Requirements
 
@@ -24,8 +23,10 @@ native window? Add the [desktop app](#install-the-desktop-app).
 
 ## Install Omnigent
 
-The base install covers everyday use. Extra integrations are opt-in at install
-time. Run the same command to upgrade an existing installation.
+The base install covers everyday use. Add extra integrations at install time. Run the same command to upgrade.
+
+When you install Omnigent on your laptop, the agent runner executes locally, so it has
+direct access to your files and projects.
 
 <InstallCommandTabs />
 
@@ -38,59 +39,38 @@ Available extras:
 | SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                             |
 | Storage and memory | `s3`, `hindsight`                                                            |
 
-## What installs where
-
-When you install Omnigent on your laptop, both the **server** (web UI, session
-management) and the **runner** (agent harness execution) run on the same
-machine. The runner has direct access to your local files, tools, and
-credentials — there's no separate setup to make any of that work.
-
-Omnigent's own state lives in `~/.omnigent/`, created the first time you run
-`omni`.
-
-Because the runner executes locally, it picks up what's already on your
-machine:
-
-- **Credentials.** `omni setup` detects your existing Claude CLI login
-  (`~/.claude/.credentials.json`), Codex auth, and standard API key
-  environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, and others).
-  It offers these as defaults rather than prompting you to re-enter them.
-- **Skills.** Agents inherit your `~/.claude/skills/` directory automatically.
-  Any skills you've built or installed for Claude Code are available without
-  additional configuration.
-- **MCP tools.** When you run a native harness like `omni claude`, the
-  underlying Claude Code process starts with your existing MCP server
-  configuration. Tools you've already connected to Claude Code — GitHub,
-  databases, and others — carry over.
-
-This changes when you move to a remote deployment. A server running in the
-cloud has its own execution environment, and credentials, skills, and tools
-need to be provisioned for it explicitly. See [Deploy](/docs/deploy/overview)
-when you're ready for that step.
-
 ## Set up credentials
 
-The wizard detects credentials in your environment and prompts for
-any that are missing. See [Models & Credentials](/docs/build/models#credentials)
-for the full reference.
+Omnigent needs credentials to reach an LLM provider. It scans your environment
+for existing credentials and offers them as defaults.
 
 ```
 omni setup
 ```
 
+You can connect a direct API key, an existing provider subscription, a gateway
+like OpenRouter, or a Databricks workspace.
+
+See [Models & Credentials](/docs/build/models#credentials) for all supported providers.
+
+## Auto-discover skills, MCPs, and more
+
+Omnigent scans your existing developer environment and picks up what's already
+there. Skills, MCP configurations, and session history from Claude Code,
+Codex, Cursor, and others carry over automatically.
+
 ## Launch Debby
 
-Try your install with Debby, a built-in multi-AI agent that sends every
+Try your install with [Debby](/docs/use/builtin-agents/debby), a built-in multi-AI agent that sends every
 question to both Claude and GPT and lets them debate.
 
 ```
 omni debby
 ```
 
-This launches a web UI and prints the server URL and port. Ask something
-like `What came first, the chicken or the egg?` and watch the models
-challenge each other. See the [Debby reference](/docs/use/builtin-agents/debby)
-for more.
+This starts a local server and opens the web UI. Ask something like
+`What came first, the chicken or the egg?` and watch the models challenge
+each other.
 
 ## Install the desktop app
 

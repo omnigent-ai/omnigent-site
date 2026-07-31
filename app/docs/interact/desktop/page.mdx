@@ -1,5 +1,10 @@
 import { pageMeta } from "@/lib/og";
-import { MACOS_DOWNLOAD_URL } from "@/components/links";
+import {
+  MACOS_DOWNLOAD_URL,
+  WINDOWS_DOWNLOAD_URL,
+  LINUX_DEB_DOWNLOAD_URL,
+  LINUX_APPIMAGE_DOWNLOAD_URL,
+} from "@/components/links";
 import MacDownloadButton from "@/components/MacDownloadButton";
 
 export const metadata = pageMeta(
@@ -37,6 +42,81 @@ showing how many sessions are waiting, and multiple independent windows.
 Everything else (sessions, file editor, inline comments, collaboration) works exactly the
 same as the web UI.
 
+## Embedded browser
+
+The desktop app includes an embedded browser pane your agent can drive directly.
+Five framework-owned tools are always available to every agent — you don't declare
+them in your agent YAML:
+
+<table>
+  <thead>
+    <tr>
+      <th>Tool</th>
+      <th>What it does</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>browser_navigate</code>
+      </td>
+      <td>
+        Opens or navigates the pane to a URL, auto-opening the pane if it isn't
+        open yet.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_snapshot</code>
+      </td>
+      <td>
+        Captures an accessibility-tree snapshot: a <code>snapshot_id</code>, the
+        current URL and title, and a YAML-shaped tree of interactive elements,
+        each tagged with a <code>[ref=N]</code> id.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_click</code>
+      </td>
+      <td>
+        Clicks an element by <code>ref</code> (preferred) or CSS{" "}
+        <code>selector</code>. Pass the <code>snapshot_id</code> alongside a{" "}
+        <code>ref</code> so a stale snapshot is rejected with a precise error.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_type</code>
+      </td>
+      <td>
+        Focuses an input and types <code>text</code> into it, identified by{" "}
+        <code>ref</code> or <code>selector</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_screenshot</code>
+      </td>
+      <td>
+        Captures a PNG of the pane for visual inspection. Prefer{" "}
+        <code>browser_snapshot</code> when picking elements to act on —
+        screenshots carry no refs.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Refs from a snapshot are far more stable than CSS selectors against generated class
+names and Shadow DOM, so the usual flow is: `browser_navigate`, then `browser_snapshot`
+to see what's on the page, then `browser_click` / `browser_type` using the refs it
+returned.
+
+Because the browser runs inside the desktop window, these tools require the Omnigent
+desktop app to be running with the session open. If no desktop window is subscribed,
+the action fails cleanly with `browser action timed out — is the session open in the
+Omnigent desktop app?` rather than hanging.
+
 ## Prerequisites
 
 - **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.
@@ -67,14 +147,19 @@ same as the web UI.
       <td>
         <code>.AppImage</code> or <code>.deb</code>
       </td>
-      <td>Coming soon</td>
+      <td>
+        <a href={LINUX_DEB_DOWNLOAD_URL}>Download .deb</a> ·{" "}
+        <a href={LINUX_APPIMAGE_DOWNLOAD_URL}>Download .AppImage</a>
+      </td>
     </tr>
     <tr>
       <td>Windows</td>
       <td>
         Installer (<code>.exe</code>)
       </td>
-      <td>Coming soon</td>
+      <td>
+        <a href={WINDOWS_DOWNLOAD_URL}>Download</a>
+      </td>
     </tr>
   </tbody>
 </table>
@@ -120,3 +205,32 @@ Notifications and badge counts are combined across all connected servers.
   alt="Omnigent desktop app setup screen prompting for the server URL to connect to"
   style={{ width: "100%", borderRadius: "8px" }}
 />
+
+## Open a session from a link
+
+The desktop app registers the `omnigent://` URL scheme, so a link can open a
+specific session on a specific server the way a web link opens a page. The link
+names the server by host and the session by its conversation id:
+
+```
+omnigent://localhost:6767/c/conv_abc
+omnigent://my-workspace.cloud.databricks.com/c/conv_xyz
+```
+
+The link carries no `http`/`https` — the app infers it the same way the setup
+screen does: `http` for a loopback host (`localhost`, `127.0.0.1`), `https` for
+a remote host. A Databricks workspace mount is discovered automatically, so you
+don't include it in the link. Only `/c/<session_id>` links are recognized;
+other paths are ignored.
+
+Clicking a link behaves like opening a page for a known site:
+
+- If a window is already connected to that server, the app **reuses it** and
+  navigates to the session in place.
+- If you've connected to that server before but have no window open for it, the
+  app opens it in a **new window**.
+- If you've **never connected** to that server, the app asks you to confirm
+  first, since connecting to a server grants it privileges like notifications
+  and registering this machine as a runner. Cancel is the default; only open
+  links from servers you trust. Once you allow it, the server is remembered so
+  future links open without a prompt.

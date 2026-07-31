@@ -1,0 +1,107 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Scheduled Tasks", "Run an agent on a recurring schedule. A scheduled task is a saved prompt that fires an agent session on an RRULE cadence until you delete it.", {
+  eyebrow: "Build",
+  path: "/docs/build/scheduled-tasks",
+});
+
+# Scheduled Tasks
+
+A scheduled task is a saved prompt that fires an agent session on a recurring
+schedule. Point it at an agent, a prompt, a recurrence rule, and a place to run,
+and Omnigent launches that agent automatically on every occurrence — no one has
+to be at the keyboard.
+
+Scheduled tasks are managed through four built-in tools that **every agent has
+automatically**. They are framework-owned and auto-registered, so an agent can
+create, list, update, and delete its own recurring runs at runtime without the
+agent YAML opting in. Under the hood the runner dispatches each tool to the
+Omnigent server's `/v1/scheduled-tasks` REST endpoints.
+
+## The built-in tools
+
+| Tool | What it does |
+| --- | --- |
+| `sys_scheduled_task_create` | Create a recurring task. |
+| `sys_scheduled_task_list` | List your scheduled tasks with their schedules and state. |
+| `sys_scheduled_task_update` | Update a task's mutable fields. |
+| `sys_scheduled_task_delete` | Delete a task so it no longer fires. |
+
+Tasks are scoped to the calling user (or the single `local` user when auth is
+disabled). You only see and manage your own tasks; a task owned by someone else
+is not enumerable.
+
+## Creating a task
+
+`sys_scheduled_task_create` takes these fields:
+
+- **`name`** (required) — a human-readable task name, e.g. `nightly triage`.
+- **`prompt`** (required) — the instruction dispatched to the agent on each firing.
+- **`rrule`** (required) — the recurrence rule (see [Recurrence rules](#recurrence-rules)).
+- **`agent_id`** (required) — the agent to run, e.g. `ag_abc123` (from
+  `sys_agent_list` or `sys_agent_get`).
+- **`workspace`** (required) — an existing absolute path on the host where the
+  fired session's runner starts.
+- **`host_id`** (required) — the connected host to run on, from the current
+  workspace's host list.
+- **`timezone`** (optional) — the IANA timezone the rule is evaluated in, e.g.
+  `America/Los_Angeles`. Defaults to `UTC`.
+- **`model_override`** (optional) — a per-run model override. Omit for the
+  agent default.
+- **`reasoning_effort`** (optional) — a per-run reasoning-effort hint, e.g.
+  `high`. Omit for the agent default.
+
+Once created, the task fires automatically on its schedule until you delete it.
+
+## Recurrence rules
+
+The schedule is an [RFC 5545](https://icalendar.org/) `RRULE` string, evaluated
+in the task's `timezone`. Examples:
+
+```
+FREQ=DAILY;BYHOUR=9;BYMINUTE=0                       # daily at 9am
+FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0 # weekday mornings
+```
+
+Rules are validated when you create or update a task. A rule is rejected (HTTP
+400) if it has bad syntax, never fires, fires only once, or fires more often
+than the minimum interval. **A task must fire at least twice and no more often
+than once per hour** — the minimum gap between any two consecutive fires is 60
+minutes.
+
+## Pausing, updating, and deleting
+
+`sys_scheduled_task_update` changes only the fields you pass; the rest are left
+untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
+`model_override`, `reasoning_effort`, `workspace`, `host_id`, and `state`.
+
+The `state` field accepts `active` or `paused`:
+
+- Pass `state=paused` to stop a task firing without deleting it.
+- Pass `state=active` to resume it.
+
+To remove a task permanently, use `sys_scheduled_task_delete` — deletion is not
+done through `update`.
+
+## How a firing runs
+
+Scheduled tasks currently run on a **connected host**, in an **existing
+workspace**. When a task is due, Omnigent:
+
+1. Re-reads the task row — a task that was deleted or paused since the timer was
+   armed is skipped.
+2. Creates a session bound to the task's agent, carrying the stored `workspace`,
+   `host_id`, `model_override`, and `reasoning_effort`.
+3. Grants the task's owner ownership of the new session so the run is visible.
+4. Launches the runner and dispatches the prompt so the agent actually runs.
+5. Records the run — stamping the task's last-run time and the run's
+   conversation id.
+
+A few scheduling guarantees:
+
+- **The database is the source of truth.** On server start, every active task is
+  re-armed from the store.
+- **Missed fires are not replayed.** If the server was down when a task was due,
+  only the next future occurrence is armed — Omnigent does not backfill.
+- **Overlapping fires are skipped.** If a task's previous run is still in flight
+  when the next occurrence arrives, that occurrence is dropped.

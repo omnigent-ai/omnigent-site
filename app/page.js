@@ -5,8 +5,8 @@ import InstallTabs from "@/components/InstallTabs";
 import CtaButtons from "@/components/CtaButtons";
 import PillarsTabs from "@/components/PillarsTabs";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
-import { DiscordIcon } from "@/components/icons";
-import { DISCORD_URL } from "@/components/links";
+import { DiscordIcon, CalendarIcon } from "@/components/icons";
+import { DISCORD_URL, EVENTS_URL } from "@/components/links";
 
 export default function Home() {
   return (
@@ -136,6 +136,14 @@ export default function Home() {
                 rel="noreferrer"
               >
                 <DiscordIcon /> Join the Discord
+              </a>
+              <a
+                href={EVENTS_URL}
+                className="btn"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <CalendarIcon size={16} /> Events
               </a>
             </div>
           </section>

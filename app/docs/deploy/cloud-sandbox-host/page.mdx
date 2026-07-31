@@ -28,14 +28,14 @@ That's [Omnibox](/docs/omnibox).
 | **Environment**  | Local files              | Isolated, reproducible |
 | **Best for**     | Interactive work         | Long-running tasks     |
 
-Omnigent currently supports [Modal](https://modal.com) and [Daytona](https://www.daytona.io)
-as hosting platforms for cloud sandbox hosts, with more on the way.
+Omnigent currently supports [Modal](https://modal.com), [Daytona](https://www.daytona.io),
+and [Islo](https://islo.dev) as hosting platforms for cloud sandbox hosts, with more on the way.
 
-|                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) |
-| ------------------------ | ---------------------------------- | --------------------------------- |
-| **Runner lifetime**      | 24 hours (platform cap)            | No cap (runs until deleted)       |
-| **Credential injection** | Named secrets (Modal secret store) | Env vars copied from server       |
-| **Free-tier egress**     | Full egress                        | Allowlisted domains only          |
+|                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) | [Islo](https://islo.dev)                       |
+| ------------------------ | ---------------------------------- | --------------------------------- | ---------------------------------------------- |
+| **Runner lifetime**      | 24 hours (platform cap)            | No cap (runs until deleted)       | No cap (idle-paused after 15 min when managed) |
+| **Credential injection** | Named secrets (Modal secret store) | Env vars copied from server       | Env vars copied from server / gateway profile  |
+| **Free-tier egress**     | Full egress                        | Allowlisted domains only          | Gateway profile controls egress                |
 
 ## Server-managed (recommended)
 
@@ -47,7 +47,11 @@ web UI.
 ```
 pip install 'omnigent[modal]'       # for Modal
 pip install 'omnigent[daytona]'     # for Daytona
+pip install 'omnigent[islo]'        # for Islo
 ```
+
+The Islo launcher uses the Islo Python SDK, which ships in the `omnigent[islo]`
+extra and is imported lazily, so only users of the Islo provider need to install it.
 
 ### 2. Set provider credentials
 
@@ -59,6 +63,17 @@ pip install 'omnigent[daytona]'     # for Daytona
 
 ```
 export DAYTONA_API_KEY=dtn_…
+```
+
+**Islo:** create an API key with the [Islo CLI](https://docs.islo.dev)
+(`islo login`, then `islo api-key create omnigent --show`) and set it on the
+server. The SDK exchanges the key for short-lived session tokens and refreshes
+them automatically, so the API key is the only required runtime credential:
+
+```
+export ISLO_API_KEY=islo_key_…
+# export ISLO_BASE_URL=https://api.islo.dev      # optional, non-default API endpoint
+# export ISLO_COMPUTE_URL=…                       # optional, non-default compute endpoint
 ```
 
 ### 3. Configure the cloud sandbox host
@@ -99,6 +114,31 @@ sandbox:
 cloud sandbox host. Values never live in the config file. A listed variable that isn't set fails the
 launch loudly.
 
+**Islo:**
+
+```
+sandbox:
+  provider: islo
+  server_url: https://your-server.example.com
+  islo:
+    image: ghcr.io/omnigent-ai/omnigent-host:latest  # optional, official image by default
+    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]         # server env vars to copy into sandbox
+    idle_pause_after_s: 900                          # optional; null disables idle pause
+```
+
+<div className="note">
+
+**Islo idle pause and resume:** server-managed Islo sandboxes pause after 15
+idle minutes by default (`idle_pause_after_s: 900`). When a new message arrives
+for a session bound to a paused Islo host, Omnigent resumes the same sandbox in
+place — reusing its id and workspace — and restarts the runner. Set
+`idle_pause_after_s: null` to opt out and manage sandbox lifetime yourself. The
+policy is applied when the sandbox is created, so changing it affects new
+managed sandboxes, not existing ones. Deleting the session still deletes the
+sandbox.
+
+</div>
+
 <div className="note">
 
 **Daytona free-tier egress:** Daytona Tier 1/2 organizations restrict outbound
@@ -109,6 +149,42 @@ use a Cloudflare Worker relay on the allowlisted `*.workers.dev` domain (see
 `deploy/daytona/` in the repo). Modal has full egress on its entry tier.
 
 </div>
+
+### Inject provider config into sandboxes (optional)
+
+An optional top-level `host_config` under `sandbox:` (provider-agnostic — not
+inside a provider block like `modal:` or `daytona:`) holds verbatim in-sandbox
+`~/.omnigent/config.yaml` content that the server installs into each sandbox
+before `omnigent host` starts. The common use is a `providers:` block that
+routes a harness through a self-hosted gateway (for example LiteLLM or vLLM):
+
+```
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+  host_config:
+    providers:
+      litellm:
+        kind: gateway
+        default: [pi]
+        openai:
+          base_url: http://litellm.litellm.svc.cluster.local/v1
+          api_key_ref: env:LITELLM_API_KEY
+          wire_api: chat
+```
+
+The block is **server-managed**: entries injected by a previous launch are
+replaced or removed on the next launch or resume, so each sandbox always
+reflects the current config. Config created inside the sandbox under names the
+server never injects survives untouched.
+
+**Keep secrets out of `host_config`.** Reference credentials with
+`api_key_ref: env:VAR` — the variable is resolved inside the sandbox against its
+own environment (the provider's credential lane, such as Modal secrets or copied
+env vars), never on the server. An inline `api_key` is rejected at server
+startup. The `host_config` block (and its `providers:` shape) is validated when
+the server starts, so a typo fails loudly instead of degrading silently inside
+the sandbox.
 
 ### 4. Launch from the web UI
 
@@ -122,7 +198,7 @@ Create and manage cloud sandbox hosts from the command line. The commands are th
 hosting platforms, just switch the `--provider` flag.
 
 ```
-omni sandbox create --provider modal          # or --provider daytona
+omni sandbox create --provider modal          # or --provider daytona / islo
 omni sandbox connect --provider modal \
   --sandbox-id <id> --server <url>
 ```

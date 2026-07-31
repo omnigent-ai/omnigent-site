@@ -119,6 +119,14 @@ const docsRoutes = [
       "Add MCP servers, Python function tools, sub-agent tools, authentication, and tool inheritance.",
   },
   {
+    section: "Build Custom Agents",
+    href: "/docs/build/scheduled-tasks",
+    label: "Scheduled Tasks",
+    source: "app/docs/build/scheduled-tasks/page.mdx",
+    description:
+      "Run an agent on a recurring RRULE schedule with the built-in sys_scheduled_task_* tools.",
+  },
+  {
     section: "Interfaces",
     href: "/docs/interact/terminal",
     label: "Terminal",

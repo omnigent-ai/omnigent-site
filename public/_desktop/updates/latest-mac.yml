@@ -1,0 +1,11 @@
+version: 0.6.0
+files:
+  - url: Omnigent-0.6.0-arm64-mac.zip
+    sha512: rDtSmatecJ+CzD6FHsgHc9bfwK21VshJRZGla4GBAWVQA/d7qMWjAgRz0HGJMKy139MIDiSbwbYCgFjwuGyLWA==
+    size: 121163197
+  - url: Omnigent-0.6.0-arm64.dmg
+    sha512: KJHXvHwIvfSfaU7RElxB5AS9NNZW7So3AEr/MFR2N3CJNACeI0P5XJWmQ4LWmqRm6CN3pjA3DJW4e7Ftl3qWSQ==
+    size: 122545572
+path: Omnigent-0.6.0-arm64-mac.zip
+sha512: rDtSmatecJ+CzD6FHsgHc9bfwK21VshJRZGla4GBAWVQA/d7qMWjAgRz0HGJMKy139MIDiSbwbYCgFjwuGyLWA==
+releaseDate: '2026-07-21T07:45:54.737Z'

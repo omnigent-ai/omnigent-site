@@ -3,12 +3,13 @@ import {
   filterRecentReleases,
   groupReleasesByMonth,
 } from "@/lib/group-releases";
+import { pageMeta } from "@/lib/og";
 
-export const metadata = {
-  title: "Releases",
-  description:
-    "What's new in each version of Omnigent — release highlights, version by version.",
-};
+export const metadata = pageMeta(
+  "Releases",
+  "What's new in each version of Omnigent — release highlights, version by version.",
+  { eyebrow: "Releases", path: "/releases" },
+);
 
 // The /releases index is a feed: it renders each release post's full content
 // inline, newest first (mirroring MLflow's release listing). Each version lives

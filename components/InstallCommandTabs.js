@@ -8,9 +8,18 @@ import { useEffect, useState } from "react";
 //
 // /install.sh rewrites to the GitHub install script (see next.config.mjs)
 const cliTabs = (origin) => [
-  { label: "installer", code: `curl -fsSL ${origin}/install.sh | sh` },
-  { label: "uv", code: "uv tool install omnigent" },
-  { label: "pip", code: "pip install omnigent" },
+  {
+    label: "installer",
+    code: `curl -fsSL ${origin}/install.sh | sh\n\n# install an optional integration\ncurl -fsSL ${origin}/install.sh | sh -s -- --extra databricks,modal`,
+  },
+  {
+    label: "uv",
+    code: `uv tool install omnigent\n\n# install an optional integration\nuv tool install "omnigent[databricks,modal]"`,
+  },
+  {
+    label: "pip",
+    code: `pip install omnigent\n\n# install an optional integration\npip install "omnigent[databricks,modal]"`,
+  },
   { label: "Homebrew", code: "brew install omnigent-ai/tap/omnigent" },
 ];
 

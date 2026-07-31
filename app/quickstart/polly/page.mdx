@@ -92,7 +92,47 @@ Smart Routing requires a Databricks AI Gateway connection. If you're running
 entirely locally, the router is unavailable and Polly falls back to the
 default model.
 
-## 4. Use Polly's built-in skills
+## 4. Explore Omnigent features
+
+### Comment on the agent's work
+
+Click any part of the agent's output and leave an inline comment. The agent
+sees exactly what you highlighted and revises it. Click **Address All** to
+have the agent automatically address all your comments.
+
+![Addressing an inline comment on agent output](/images/docs/address-comment.png)
+
+### Edit files directly
+
+Open any file the agent created in the built-in editor. Make changes yourself
+with syntax highlighting, and see a diff of what the agent changed. The agent
+can see your edits and continue from there.
+
+![Editing a file in the Omnigent web UI](/images/docs/file-editor.gif)
+
+### Paste an image
+
+Drag a screenshot, mockup, or diagram into the chat. The agent sees it
+alongside your text. Try pasting a screenshot of a UI bug or a design spec.
+
+### Fork a session and switch agents
+
+Fork your current session to try a different approach without affecting the
+original. Click the <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="6" r="3"></circle><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"></path><path d="M12 12v3"></path></svg> icon on any message to fork from that point. The fork copies the full conversation history up to there, so you can experiment freely. You can also fork to a different agent: start in Claude Code and continue with Codex, or vice versa.
+
+### Use the built-in browser (desktop app)
+
+The [Omnigent desktop app](/docs/interact/desktop) includes an embedded browser
+pane your agent can drive directly: navigate to a URL, click elements, type into inputs, and take screenshots. The pane opens automatically when the
+agent needs it. Use it for tasks like testing a local web app, scraping a page,
+or verifying a UI change.
+
+### Share a session for pair programming
+
+Hit **Share** in the web UI to get a link. Teammates join with Read access
+(watch the stream) or Edit access (co-drive and send messages). Messages, tool calls, and file changes all stream in real time. From the terminal, `omni attach <session_id>` does the same thing.
+
+## 5. Use Polly's built-in skills
 
 Type any of these into the Polly chat to go further:
 

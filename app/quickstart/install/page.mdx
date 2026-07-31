@@ -13,8 +13,7 @@ export const metadata = pageMeta(
 
 # Install
 
-Install the CLI, set up your credentials, and launch your first agent. Prefer a
-native window? Add the [desktop app](#install-the-desktop-app).
+Install the CLI, set up your credentials, and launch your first agent.
 
 ## Requirements
 
@@ -24,8 +23,9 @@ native window? Add the [desktop app](#install-the-desktop-app).
 
 ## Install Omnigent
 
-The base install covers everyday use. Extra integrations are opt-in at install
-time. Run the same command to upgrade an existing installation.
+When you install Omnigent on your laptop, the agent runner executes locally, so it has direct access to your files and projects.
+
+The base install covers everyday use. Add extra integrations at install time. Run the same command to upgrade.
 
 <InstallCommandTabs />
 
@@ -38,29 +38,36 @@ Available extras:
 | SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                             |
 | Storage and memory | `s3`, `hindsight`                                                            |
 
-## Set up credentials
+## Set up or use existing credentials
 
-The wizard detects credentials in your environment and prompts for
-any that are missing. See [Models & Credentials](/docs/build/models#credentials)
-for the full reference.
+Omnigent needs credentials to reach an LLM provider. It scans your environment
+for existing credentials and offers them as defaults.
 
 ```
 omni setup
 ```
 
+You can connect an API key, a provider subscription, a gateway like OpenRouter,
+or a Databricks workspace.
+
+See [Models & Credentials](/docs/build/models#credentials) for all supported providers.
+
+## Auto-discover skills, MCPs, and more
+
+Omnigent scans your existing developer environment and picks up what's already there. Skills and MCP configurations carry over automatically. And you can [import session history](/docs/use/coding-agents#import-existing-chats) from Claude Code, Codex, Cursor, and other agents.
+
 ## Launch Debby
 
-Try your install with Debby, a built-in multi-AI agent that sends every
+Try your install with [Debby](/docs/use/builtin-agents/debby), a built-in multi-AI agent that sends every
 question to both Claude and GPT and lets them debate.
 
 ```
 omni debby
 ```
 
-This launches a web UI and prints the server URL and port. Ask something
-like `What came first, the chicken or the egg?` and watch the models
-challenge each other. See the [Debby reference](/docs/use/builtin-agents/debby)
-for more.
+This starts a local server and opens the web UI. Ask something like
+`What came first, the chicken or the egg?` and watch the models challenge
+each other.
 
 ## Install the desktop app
 

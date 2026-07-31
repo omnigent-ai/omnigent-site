@@ -74,6 +74,18 @@ codex login          # for ChatGPT
 
 `omni setup` auto-detects an active CLI login and offers it as a one-tap option.
 
+<div className="note">
+
+**Cursor models are discovered live.** For the Cursor harnesses
+(`cursor` / `cursor-native`), Omnigent lists the models your installed
+`cursor-agent` CLI advertises by running `cursor-agent models` and normalizing
+each entry to its base model id. The model picker therefore tracks whatever
+your Cursor install offers — new models appear as soon as the CLI knows about
+them, with no Omnigent release required. Other subscription CLIs without a
+listing API still fall back to a curated static list.
+
+</div>
+
 ### Gateway
 
 Omnigent works with any **OpenAI-compatible** or **Anthropic-compatible** gateway:

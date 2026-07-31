@@ -12,12 +12,12 @@ const ALL_PAGES = [
   },
   {
     href: "/quickstart/coding-agent",
-    label: "Tutorial: Coding Agent",
+    label: "Tutorial: Single AI coding agent",
     section: "Get Started",
   },
   {
     href: "/quickstart/polly",
-    label: "Tutorial: Polly (Multi-AI Coding)",
+    label: "Tutorial: Multi-AI coding agent (Polly)",
     section: "Get Started",
   },
   {

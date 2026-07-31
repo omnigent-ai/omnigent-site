@@ -71,7 +71,7 @@
   },
   "/docs/interact/mobile": {
     "title": "Mobile",
-    "description": "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.",
+    "description": "Use Omnigent on your phone: the native iOS app from the App Store, or the mobile web UI in any phone browser. Start a session on your laptop, continue it on your phone.",
     "eyebrow": "Interact"
   },
   "/docs/interact/slack": {
@@ -161,7 +161,7 @@
   },
   "/quickstart/install": {
     "title": "Install",
-    "description": "Install the Omnigent CLI with a single command — via the installer script, uv, pip, or Homebrew — and grab the macOS desktop app.",
+    "description": "Install the Omnigent CLI with the installer script, uv, pip, or Homebrew, or download the desktop app.",
     "eyebrow": "Quickstart"
   },
   "/quickstart/policies": {
@@ -197,6 +197,11 @@
   "/releases/0.6.0": {
     "title": "Omnigent v0.6.0",
     "description": "Omnigent v0.6.0 adds richer file previews, custom themes, chat imports, Slack integration, and Windows and Linux desktop apps.",
+    "eyebrow": "Release"
+  },
+  "/releases/0.7.0": {
+    "title": "Omnigent v0.7.0",
+    "description": "What's new in Omnigent v0.7.0 — release highlights, improvements, and fixes.",
     "eyebrow": "Release"
   },
   "/releases": {

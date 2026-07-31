@@ -1,0 +1,103 @@
+{/* Auto-generated from the GitHub Release for v0.7.0. Edit the GitHub Release, not this file. */}
+
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Omnigent v0.7.0",
+  "What's new in Omnigent v0.7.0 — release highlights, improvements, and fixes.",
+  {
+    eyebrow: "Release",
+    path: "/releases/0.7.0",
+    absoluteTitle: true,
+  },
+);
+
+# v0.7.0
+
+_Released 2026-07-27_ · 3 min read · Omnigent maintainers
+
+Omnigent 0.7.0 is a major release focused on putting your agents to work on your own terms, from scheduling recurring tasks that run without you to letting Omnigent pick the right harness and model for the job. This release brings first-class Automations and a dedicated `/tasks` page, real Project entities that organize your sessions and pre-fill their defaults, hands-free voice dictation in the composer, and smarter routing that chooses both harness and model straight from your task.
+
+## 1. Automations (Scheduled Tasks)
+
+<video
+  src="/images/releases/0.7.0/automations.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Creating a scheduled task, running it on demand, and tracking the run"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+Some work should just happen on a cadence — a morning digest, a nightly cleanup, a weekly report — without you kicking it off by hand every time. Automations let you set an agent task to run on a recurring schedule and then get out of the way.
+
+A new `/tasks` page lets you create, edit, and run recurring agent tasks, complete with model and reasoning-effort selectors and a "Run now" action for when you don't want to wait for the next firing. You get live relative next-run times so you always know what's coming up, plus terminal run tracking with full history available at `GET /v1/scheduled-tasks/&[#123](https://github.com/omnigent-ai/omnigent/pull/123);id&[#125](https://github.com/omnigent-ai/omnigent/pull/125);/runs`. For chat-only work, tasks no longer require a workspace or a pinned host, so you can automate a conversation as easily as a code job.
+
+_Learn more in the [Scheduled Tasks](/docs/build/scheduled-tasks)._
+
+## 2. First-class Projects
+
+<video
+  src="/images/releases/0.7.0/projects.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Organizing sessions into first-class projects with per-project defaults"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+Projects are now real entities rather than just labels. You can create, rename, and delete them right in the sidebar and file your sessions into the project they belong to, keeping related work grouped instead of scattered across a flat session list.
+
+Each project can carry its own default session settings — host, working directory, agent, and model — which pre-fill the new-session composer so you're not re-selecting the same options every time you start work in a familiar context. If you already relied on the older label-based projects, those keep working, so there's nothing to migrate.
+
+_Learn more in the [Projects](/docs/interact/web-ui#projects)._
+
+## 3. Voice dictation in the composer
+
+<video
+  src="/images/releases/0.7.0/voice-dictation.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Dictating into the composer with live streaming partials"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+Sometimes it's faster to talk than to type. Optional server-side transcription — installed with `omnigent[dictation]` — lets you dictate straight into the composer, with live streaming partials so you can watch your words appear as you speak.
+
+It works in Electron, Firefox, and Chromium, and your audio never leaves your server. Toggle it from anywhere with ⌘⌥V, and if you'd rather not run transcription in-process, the engine can be offloaded to a remote worker.
+
+## 4. Smarter routing
+
+<video
+  src="/images/releases/0.7.0/smart-routing.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Selecting the Auto smart-routing harness in the composer"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+Choosing the right harness and model for each task is friction you shouldn't have to think about. A new "Auto · smart routing" harness option lets the router pick both the harness and the model based on your task itself.
+
+Smart routing now activates automatically from your `llm:`/`routing:` config — there's no `OMNIGENT_SMART_ROUTING` env var to set anymore. And when you want to steer things yourself, a composer gear modal lets you tune the model, reasoning effort, and routing mid-chat without leaving the conversation.
+
+_Learn more in the [Harnesses](/docs/build/harnesses)._
+
+Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
+
+## What's Next
+
+Install or upgrade Omnigent:
+
+```bash
+uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
+```
+
+- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
+- Join the conversation on our [Discord](https://discord.gg/omnigent).
+- Browse the [docs](https://omnigent.ai/docs) to go deeper.

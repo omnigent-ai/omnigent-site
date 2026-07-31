@@ -17,7 +17,7 @@ const ALL_PAGES = [
   },
   {
     href: "/quickstart/polly",
-    label: "Tutorial: Multi-AI coding agent (Polly)",
+    label: "Tutorial: Multi-AI coding (Polly)",
     section: "Get Started",
   },
   {

@@ -32,7 +32,7 @@ Omnigent 0.7.0 is a major release focused on putting your agents to work on your
 
 Some work should just happen on a cadence — a morning digest, a nightly cleanup, a weekly report — without you kicking it off by hand every time. Automations let you set an agent task to run on a recurring schedule and then get out of the way.
 
-A new `/tasks` page lets you create, edit, and run recurring agent tasks, complete with model and reasoning-effort selectors and a "Run now" action for when you don't want to wait for the next firing. You get live relative next-run times so you always know what's coming up, plus terminal run tracking with full history available at `GET /v1/scheduled-tasks/&[#123](https://github.com/omnigent-ai/omnigent/pull/123);id&[#125](https://github.com/omnigent-ai/omnigent/pull/125);/runs`. For chat-only work, tasks no longer require a workspace or a pinned host, so you can automate a conversation as easily as a code job.
+A new `/tasks` page lets you create, edit, and run recurring agent tasks, complete with model and reasoning-effort selectors and a "Run now" action for when you don't want to wait for the next firing. You get live relative next-run times so you always know what's coming up, plus terminal run tracking with full history available at `GET /v1/scheduled-tasks/{id}/runs`. For chat-only work, tasks no longer require a workspace or a pinned host, so you can automate a conversation as easily as a code job.
 
 _Learn more in the [Scheduled Tasks](/docs/build/scheduled-tasks)._
 

@@ -830,7 +830,7 @@ codex login          # for ChatGPT
 
 Omnigent works with any **OpenAI-compatible** or **Anthropic-compatible** gateway:
 
-Supported OpenAI- or Anthropic-compatible gateways include OpenRouter, LiteLLM, Ollama, Azure, vLLM, and similar providers.
+Supported OpenAI- or Anthropic-compatible gateways include OpenRouter, LiteLLM, Portkey, Gravitee, Cloudflare, Kong, Ollama, Azure, vLLM, and similar providers.
 
 `omni setup` asks for a **base URL** and a **key**. The base URL differs depending on the agent:
 
@@ -839,10 +839,14 @@ Supported OpenAI- or Anthropic-compatible gateways include OpenRouter, LiteLLM, 
 | **OpenRouter** | Claude Code | `https://openrouter.ai/api` | your OpenRouter key (`sk-or-...`) |
 | **OpenRouter** | Codex / OpenAI agents | `https://openrouter.ai/api/v1` | your OpenRouter key (`sk-or-...`) |
 | **Ollama** (local) | Codex / OpenAI agents | `http://localhost:11434/v1` | any value (Ollama ignores it) |
+| **Gravitee** | Claude Code | `https://<your-gateway-host>/<api-context-path>` | your Gravitee API key |
+| **Gravitee** | Codex / OpenAI agents | `https://<your-gateway-host>/<api-context-path>` | your Gravitee API key |
 
 **Note:** For Claude Code, point at OpenRouter's Anthropic-compatible
 endpoint (`.../api`, **not** `.../api/v1`); for Codex
 and the OpenAI-agents harness, use the OpenAI-compatible `.../api/v1`.
+
+**Note:** Gravitee's [LLM Proxy](https://documentation.gravitee.io/apim/ai-agent-management/llm-proxy) accepts both the native Anthropic Messages API and OpenAI-compatible calls, so it works for either harness family through the same gateway. Omnigent delivers the key you enter here to Claude Code via `apiKeyHelper`, so configure your Gravitee API's security plan to accept that credential the same way you would for any API-key gateway — see [Gravitee's LLM Proxy docs](https://documentation.gravitee.io/apim/ai-agent-management/llm-proxy) for setup.
 
 ### Databricks
 

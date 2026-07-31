@@ -11,7 +11,7 @@ export const metadata = pageMeta(
 
 # Slack
 
-The Omnigent Slack integration (**v0.6.0+**) lets your team talk to agents
+The Omnigent Slack integration lets your team talk to agents
 directly from Slack. Mention the bot in a channel or DM it, and it starts an
 Omnigent session; replies stream into the thread live, and tool approvals show
 up as interactive **Approve / Deny** cards you can answer in place.
@@ -62,6 +62,15 @@ Slack, so it needs no public HTTP endpoint and no request URLs.
 | `commands`          | Register and receive `/omnigent`.                              |
 | `team:read`         | Read the workspace name to label the login request.            |
 
+Add two more bot scopes **only for Databricks web-auth mode**, where the bot
+signs the user's email into the enrollment link and matches it against the
+OAuth-authenticated identity; omit them in `accounts` / `oidc` mode:
+
+| Scope              | Why                                                 |
+| ------------------ | --------------------------------------------------- |
+| `users:read`       | Read the user's profile to look up their email.     |
+| `users:read.email` | Read the user's email address for identity binding. |
+
 **Channel history scopes** — add only for the channel types where the bot will
 run: `channels:history` (public), `groups:history` (private), `mpim:history`
 (group DMs). If you only use DMs and channel `@mention`s, you can omit all
@@ -76,14 +85,19 @@ types you enabled above.
 
 ### 3. Install and configure the bot
 
-The bot ships as the `slack` extra of Omnigent, in the same environment as the
-`omni` CLI:
+The bot ships as the `slack` extra of Omnigent (the separate `omnigent-slack`
+package), installed **in the same environment as** the `omni` CLI so
+`omni integration slack` can find it:
 
 ```bash
 uv tool install "omnigent[slack]"    # or, from a source checkout: uv sync --extra slack
 ```
 
-Copy `.env.example` to `.env` and fill in:
+Configuration comes from **real environment variables** — the bot does **not**
+read a `.env` file itself (matching `omni server`). Export the variables
+directly, or launch the bot under a tool that injects a `.env`
+(e.g. `uv run --env-file .env omni integration slack`). `.env.example`
+documents the full set to copy from:
 
 | Variable                              | Required | Purpose                                                                                                                                       |
 | ------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -98,30 +112,35 @@ Copy `.env.example` to `.env` and fill in:
 Generate an encryption key with:
 
 ```bash
-python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+uv run python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
+
+If the Omnigent server runs as a **Databricks App** (header/proxy auth), the bot
+uses its own Databricks web-auth flow instead of the device/OIDC login — see
+[Databricks Apps web-auth](#databricks-apps-web-auth) below for the extra
+`OMNIGENT_SLACK_DATABRICKS_*` variables it needs.
 
 ### 4. Run it
 
 The bot runs as a background daemon managed by the `omni` CLI:
 
 ```bash
-omni integration slack           # run in the foreground (Ctrl-C to stop)
-omni integration slack start     # run in the background (detached)
-omni integration slack status    # is the background bot running?
-omni integration slack stop      # stop the background bot
-omni integration slack logs      # print the log path
-omni integration slack logs -f   # follow the log
+omni integration slack               # run in the foreground (Ctrl-C to stop)
+omni integration slack --background  # run in the background (detached)
+omni integration slack status        # is the background bot running?
+omni integration slack stop          # stop the background bot
+omni integration slack logs          # print the log path
+omni integration slack logs -f       # follow the log
 ```
 
-Running `start` while the bot is already up is a no-op that reports the
-existing process.
+Running `--background` while the bot is already up is a no-op that reports the
+existing process. A foreground run refuses to start if a background daemon
+already holds the socket (stop it first).
 
 ## Per-user setup
 
 The first time someone interacts with the bot without having configured it, the
-bot DMs them a **Set up Omnigent** button (and drops an ephemeral pointer in
-the thread for channel mentions). The button opens a modal that:
+bot DMs them a **Set up Omnigent** button. The button opens a modal that:
 
 1. Validates connectivity to the operator's server, and — if the server has
    authentication enabled — walks the user through login (see below).
@@ -143,22 +162,73 @@ user logs in with their own Omnigent identity inside the `/omnigent` modal. The
 bot auto-detects the server's auth mode and picks the matching flow:
 
 - **`accounts` mode** — OAuth 2.0 Device Authorization Grant (RFC 8628). The
-  modal shows a verification link and code; the user approves a consent page in
-  their browser. The server issues a short-lived, session-scoped delegated
+  modal shows a one-click verification link (code prefilled) and the short code
+  to confirm; the user approves a consent page in their browser. The consent
+  page **forces a fresh password entry** before approving — even if the user is
+  already signed in — so a link the user didn't personally start can't be
+  approved by reflex. The server issues a short-lived, session-scoped delegated
   token with a rotating refresh token. **The server must enable the device
-  grant** (`OMNIGENT_DEVICE_GRANT_ENABLED=1` — it is off by default).
+  grant** (`OMNIGENT_DEVICE_GRANT_ENABLED=1` — it is off by default). Set the
+  bot's `OMNIGENT_DEVICE_CLIENT_SECRET` to match the server's so only this bot
+  can drive the flow.
 - **`oidc` mode** — the server's cli-login ticket flow. The user signs in at
   your IdP in their browser; the bot receives the server's regular session JWT.
   There is no refresh token, so after the session's TTL (default 8 hours) the
   user logs in again.
-- **`header` / proxy mode** — **not supported.** Identity is asserted by an
-  upstream proxy, so there is no per-user login the bot can drive. Run the
-  server in `accounts` or `oidc` mode, or place the bot behind the same
-  identity proxy.
+- **`header` / proxy mode** — auto-detect can't drive a per-user login here,
+  since identity is asserted by an upstream proxy. When the server is deployed
+  as a **Databricks App**, set `OMNIGENT_SLACK_SERVER_AUTH=databricks` and the
+  bot runs its own web-auth flow (see [below](#databricks-apps-web-auth)).
+  Otherwise, run the server in `accounts` / `oidc` mode or place the bot behind
+  the same identity proxy.
 
 Tokens are stored **encrypted at rest** when
 `OMNIGENT_SLACK_TOKEN_ENCRYPTION_KEY` is set; otherwise they're kept in memory
 only and lost on restart (users simply re-authenticate).
+
+### Databricks Apps web-auth
+
+When the Omnigent server is a **Databricks App**, its proxy authenticates every
+request and injects the user's identity — a Socket-Mode event carries no such
+proxy-authenticated request, so the device/OIDC flows can't be driven. Instead
+the bot runs a **custom U2M OAuth app** (authorization code + PKCE,
+`offline_access`) through an enrollment page it serves as its own Databricks
+App:
+
+1. On `/omnigent`, the bot looks up the user's email, generates a PKCE verifier
+   and single-use nonce, and posts a **Sign in with Databricks** link to the
+   workspace `/oidc/v1/authorize`.
+2. The user signs in; Databricks redirects back to the bot's `/auth/callback`
+   with a single-use, PKCE-bound code, which the bot exchanges for an access +
+   refresh token pair.
+3. **Identity binding** — the callback requires the OAuth-authenticated email to
+   equal the Slack email signed into the link, so a link bound to one user can't
+   store another's token. A mismatch is refused.
+4. **Confirm before storing** — the callback shows a consent page naming the
+   exact identities being linked; the token is persisted only when the user
+   submits the confirming button, then the setup modal advances automatically.
+
+The bot presents the access token to the server; the proxy validates it and
+injects the real identity header, so **no server-side change is needed**. It
+refreshes silently, so the user signs in once, not hourly.
+
+Enable it with `OMNIGENT_SLACK_SERVER_AUTH=databricks` plus these variables:
+
+| Variable                                  | Required | Purpose                                                                                                                                                   |
+| ----------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OMNIGENT_SLACK_DATABRICKS_CLIENT_ID`     | Yes      | The custom U2M OAuth app's client id (public).                                                                                                             |
+| `OMNIGENT_SLACK_DATABRICKS_CLIENT_SECRET` | Yes      | The custom U2M OAuth app's client secret.                                                                                                                  |
+| `OMNIGENT_SLACK_DATABRICKS_STATE_SECRET`  | Yes      | HMAC key signing the enrollment `state` (≥32 chars of entropy, e.g. `openssl rand -hex 32`). Its own secret, separate from the OAuth client secret.        |
+| `OMNIGENT_SLACK_DATABRICKS_APP_URL`       | Yes¹     | Public base URL of the bot's own Databricks App — the enrollment link base and OAuth redirect base. Not platform-injected, and the URL only exists after the first deploy, so it's wired in on a second deploy pass. |
+| `OMNIGENT_SLACK_DATABRICKS_SCOPES`        | No       | Requested scopes (space-separated). Defaults to `all-apis`; must be a superset of the server app's scopes. `openid` + `offline_access` are always added.   |
+
+¹ Not enforced at startup — the bot boots without it, but no enrollment link is
+issued until it's set. The enrollment web server always binds `DATABRICKS_APP_PORT`
+(8000 by convention, platform-injected); there's no override knob.
+
+Register the custom OAuth app's redirect URI as `<app-url>/auth/callback`. To
+deploy the bot as its own Databricks App, see
+`integrations/slack/deploy/databricks/README.md` in the repo.
 
 ## Approvals and questions
 
@@ -196,12 +266,13 @@ the conversation.
 - Live streamed Markdown replies, in strict chronological order
 - Tool-approval cards and multiple-choice question forms, answerable in Slack or the web UI
 - Per-user identity on `accounts`- and `oidc`-mode servers, and unauthenticated servers
+- Per-user identity on `header`/proxy servers deployed as **Databricks Apps** (via the bot's web-auth flow)
 - Live-updating todo/plan messages, policy-denial notices, and produced-file notices
 - `/omnigent` (setup / reconfigure) and `/omnigent logout` slash commands
 
 **Not supported**
 
-- **`header`/proxy auth mode** — no per-user login flow exists for the bot to drive.
+- **`header`/proxy auth mode outside Databricks Apps** — auto-detect can't drive a per-user login; use `accounts`/`oidc` mode or place the bot behind the same identity proxy.
 - **Free-form typed input in Slack** — handled via a web-UI link instead of an in-thread form.
 - **Multiple servers** — the bot bridges to exactly one server, fixed by the operator.
 - **Multi-user threads** — a session belongs to the user who started the thread.

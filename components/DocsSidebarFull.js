@@ -7,27 +7,27 @@ import { useDocsSidebar } from "./DocsSidebarContext";
 
 const SECTIONS = [
   {
-    title: "Get Started",
+    title: "Get started",
     pages: [
       { href: "/quickstart/install", label: "Install Omnigent" },
       { href: "/quickstart/coding-agent", label: "Tutorial: Single AI coding agent" },
       { href: "/quickstart/polly", label: "Tutorial: Multi-AI coding agent (Polly)" },
       { href: "/quickstart/collaborate", label: "Tutorial: Collaborate" },
-      { href: "/quickstart/policies", label: "Tutorial: Contextual Policies" },
+      { href: "/quickstart/policies", label: "Tutorial: Contextual policies" },
     ],
   },
   {
-    title: "Use Cases",
+    title: "Use cases",
     pages: [],
     subsections: [
       {
-        title: "Coding Agents",
+        title: "Coding agents",
         collapsed: false,
         href: "/docs/use/coding-agents",
         pages: [],
       },
       {
-        title: "Built-in Multi-AI Agents",
+        title: "Built-in multi-AI agents",
         collapsed: true,
         href: "/docs/use/builtin-agents",
         pages: [
@@ -36,15 +36,15 @@ const SECTIONS = [
         ],
       },
       {
-        title: "Custom Agents",
+        title: "Custom agents",
         collapsed: true,
         href: "/docs/use/custom-agents",
         pages: [
           { href: "/docs/build/harnesses", label: "Harnesses" },
-          { href: "/docs/build/models", label: "Models & Credentials" },
-          { href: "/docs/build/prompts", label: "Prompts & Skills" },
-          { href: "/docs/build/tools", label: "MCP & Tools" },
-          { href: "/docs/build/scheduled-tasks", label: "Scheduled Tasks" },
+          { href: "/docs/build/models", label: "Models & credentials" },
+          { href: "/docs/build/prompts", label: "Prompts & skills" },
+          { href: "/docs/build/tools", label: "MCP & tools" },
+          { href: "/docs/build/scheduled-tasks", label: "Scheduled tasks" },
         ],
       },
     ],
@@ -55,38 +55,38 @@ const SECTIONS = [
       { href: "/docs/interact/terminal", label: "Terminal" },
       { href: "/docs/interact/web-ui", label: "Web UI" },
       { href: "/docs/interact/mobile", label: "Mobile" },
-      { href: "/docs/interact/desktop", label: "Desktop App" },
+      { href: "/docs/interact/desktop", label: "Desktop app" },
       { href: "/docs/interact/slack", label: "Slack" },
     ],
   },
   {
     title: "Collaboration",
     pages: [
-      { href: "/docs/collaborate", label: "Pair Programming" },
-      { href: "/docs/deploy/overview", label: "Shared Server" },
+      { href: "/docs/collaborate", label: "Pair programming" },
+      { href: "/docs/deploy/overview", label: "Shared server" },
       { href: "/docs/collaborate/auth", label: "Auth & SSO" },
       { href: "/docs/deploy/database", label: "Database" },
-      { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host" },
+      { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud sandbox host" },
     ],
   },
   {
-    title: "Contextual Policies",
+    title: "Contextual policies",
     pages: [{ href: "/docs/policies/overview", label: "Overview" }],
     subsections: [
       {
-        title: "Builtin Policies",
+        title: "Builtin policies",
         collapsed: false,
         href: "/docs/policies/builtin",
         pages: [
           { href: "/docs/policies/builtin#safety", label: "Safety" },
           {
             href: "/docs/policies/builtin#cost-control",
-            label: "Cost Control",
+            label: "Cost control",
           },
         ],
       },
       {
-        title: "Custom Policies",
+        title: "Custom policies",
         collapsed: false,
         href: "/docs/policies/custom",
         pages: [],
@@ -97,14 +97,14 @@ const SECTIONS = [
     title: "Omnibox",
     pages: [
       { href: "/docs/omnibox", label: "Overview" },
-      { href: "/docs/policies/os-sandbox", label: "OS Sandbox Config" },
+      { href: "/docs/policies/os-sandbox", label: "OS sandbox config" },
     ],
   },
   {
     title: "Reference",
     pages: [
       { href: "/reference", label: "REST API" },
-      { href: "/docs/deploy/telemetry", label: "Usage Telemetry" },
+      { href: "/docs/deploy/telemetry", label: "Usage telemetry" },
     ],
   },
 ];

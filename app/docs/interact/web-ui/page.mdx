@@ -66,6 +66,25 @@ new worktree branch; leave the setting blank to turn auto-fill off.
 
 ![Setting a default base branch for worktrees](/images/docs/git_worktree_setting.gif)
 
+### Choose the launch model
+
+Native coding-agent sessions carry a per-session **Model** picker in their
+launch config, next to the harness's other launch knobs. Both Claude Code
+(`claude-native`) and Codex (`codex-native`) surface it: open the agent's config
+in the new-chat composer and pick the underlying LLM the harness launches with.
+
+The choices come from the **selected host's resolved model catalog**, so the list
+reflects the providers and credentials configured on that machine. The first
+option is **Default** — labeled `Default (<model-id>)` when the host reports a
+default model — which leaves the harness on its own configured/default model.
+Leaving the picker on **Default** omits the override entirely.
+
+Your choice is remembered per harness, so a model picked for Codex doesn't change
+the model remembered for Claude Code (and vice versa). When you start the session,
+the selected model rides along as the launch override and the runner uses it at
+launch. Under a sandbox launch, where no host catalog is resolved, the picker is
+empty and the harness default is used.
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:

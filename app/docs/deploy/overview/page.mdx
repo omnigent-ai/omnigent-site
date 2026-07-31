@@ -155,6 +155,45 @@ kubectl apply -k deploy/kubernetes/overlays/sandbox-runners
 # then create the omnigent-creds harness Secret (see the overlay README)
 ```
 
+#### Persistent storage for runner Pods
+
+Runner Pods are ephemeral: the workspace lives on an `emptyDir` and is
+destroyed with the Pod. To expose durable data (datasets, model caches, shared
+output directories), mount pre-created PersistentVolumeClaims into every runner
+Pod with `sandbox.kubernetes.pvc_mounts`:
+
+```
+sandbox:
+  provider: kubernetes
+  kubernetes:
+    pvc_mounts:
+      - claim_name: omnigent-datasets
+        mount_path: /mnt/datasets
+        read_only: true       # default true; set false only for shared scratch
+```
+
+Each entry is a `{claim_name, mount_path, read_only?}` mapping. `read_only`
+defaults to `true`. Omnigent only **references** the claim — you pre-create the
+PV/PVC in the runner namespace (`omnigent-sandboxes`) out of band, so the server
+RBAC stays unchanged. Mounts land on the host container only; the init container
+that clones the repo never sees them.
+
+Keep these caveats in mind:
+
+- **Mount paths are validated at server startup.** A `mount_path` may not
+  overlap `/home/omnigent`, Secret projections, or the image's OS directories
+  (e.g. `/home`, `/var`, `/run`, `/tmp`, `/etc`, `/opt`); a malformed or
+  reserved path fails startup rather than the first launch. Paths must be
+  absolute and normalized, and may not duplicate or nest within each other.
+- **Writable claims are shared across concurrent runners.** Use a
+  `ReadWriteMany`-capable backend (NFS/SMB/CephFS) for anything writable, and
+  prefer `read_only: true` everywhere else — a writable shared mount lets one
+  session read and modify what another wrote, and its contents outlive the Pod.
+- **`ReadWriteOnce` claims pin all runners to one node** — combine with
+  `node_selector` deliberately, or later Pods sit `Pending`.
+- A mount visible in the Pod is **not** automatically visible to a harness's own
+  OS-level sandbox ([Omnibox](/docs/omnibox) path grants are separate).
+
 See `deploy/kubernetes/README.md` and
 `deploy/kubernetes/overlays/sandbox-runners/README.md` in the repo for the full
 guide.

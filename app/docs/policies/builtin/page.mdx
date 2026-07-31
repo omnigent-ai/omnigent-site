@@ -93,40 +93,6 @@ Key behaviors:
 Because the confidential set is declared explicitly rather than inferred from a
 per-document classification label, the rule works on any Google Drive tenant.
 
-### Block irreversible GitHub deletes (`github_policy`)
-
-`github_policy` treats irreversible destructive operations separately from
-ordinary writes. Even on a repo listed in `write_repos`, deletes are **denied by
-default** — you must opt in with `allow_destructive: true` to let them through
-normal write gating.
-
-```yaml
-# Omnigent config (policies block)
-policies:
-  github_access:
-    type: function
-    handler: omnigent.policies.builtins.github.github_policy
-    factory_params:
-      write_repos:
-        - "octo/hello"
-      # Off by default. Set true to permit deletes on allowed repos.
-      allow_destructive: false
-```
-
-What counts as destructive:
-
-- **MCP tools** — `delete_file`, `delete_branch`, and `delete_release`.
-- **Shell `git push`** — branch deletes via `--delete` / `-d`, or a `:branch`
-  refspec (empty left side deletes the remote branch).
-- **Shell `gh` CLI** — the `delete` action on `repo`, `release`, `issue`,
-  `gist`, `cache`, `codespace`, `variable`, `ssh-key`, `gpg-key`, `secret`,
-  `label`, and `run`, plus `project delete` / `project item-delete`.
-
-Non-destructive writes — creating issues, pushing files, opening PRs — are
-unaffected by `allow_destructive`; they are gated only by the repo and branch
-allowlists. The destructive check runs after the repo allowlist, so a delete on
-a repo that isn't allowed is reported as a repo denial, not a destructive one.
-
 ## Cost Control
 
 | Policy                            | What it does                                                                                                                                                                           | Parameters                                                                                                                   |

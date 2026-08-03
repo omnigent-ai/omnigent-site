@@ -1,0 +1,58 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Bring your OpenClaw coding agents into Omnigent and run them under one roof",
+  "Import the coding agents you already registered in OpenClaw or acpx into Omnigent's harness picker, or launch one for a single run without saving it. Each agent keeps its own login; Omnigent stores only the launch command.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/import-openclaw-agents",
+  },
+);
+
+export const meta = {
+  title:
+    "Bring your OpenClaw coding agents into Omnigent and run them under one roof",
+  date: "2026-08-03",
+  category: "Multi-harness",
+  author: "omnigent",
+  heroArt: "/images/blog/import-openclaw-agents.png",
+};
+
+<BlogPostHeader slug="import-openclaw-agents" />
+
+If you already keep a set of coding agents registered in OpenClaw or acpx, you
+can now pull them straight into Omnigent and run them next to every other agent
+you drive here, without redoing setup by hand.
+
+Before this, an agent that lived in your OpenClaw or acpx registry stayed there.
+To use it in Omnigent you had to look up its launch command and add it yourself.
+Now Omnigent reads that registry for you and turns each entry into a coding
+agent you can pick from Omnigent's harness list, so one orchestration and policy
+layer sits over all of them. Each imported agent keeps its own authentication,
+and Omnigent stores only the launch command, never the agent's credentials.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: run `omni setup`, open Configure harnesses, select "Import from OpenClaw", pick a detected registry, and confirm the imported agents appearing in the harness picker */}
+
+To import, run `omni setup`, open **Configure harnesses**, and choose **Import
+from OpenClaw**. Omnigent auto-detects the registry at `~/.acpx/config.json` or
+`~/.openclaw/openclaw.json` (or you can point it at another path), then lists the
+agents it found so you can confirm the import. Each one shows up as `acp:<slug>`
+in the harness picker.
+
+```bash
+omni setup
+```
+
+If you just want to try one agent for a single run without saving it to your
+config, address it by its registry name:
+
+```bash
+omni run --from-openclaw "Gemini CLI"
+```
+
+See the [Harnesses guide](/docs/build/harnesses) for how coding agents and their
+harness ids work in Omnigent.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

@@ -1,4 +1,5 @@
 import { getBlogPost, getReadingMinutes } from "@/lib/blog";
+import { getAuthorProfile } from "@/lib/authors";
 
 // Header rendered at the top of every blog post: title, then a byline row with
 // the author avatar, author name, publish date, and estimated reading time.
@@ -7,7 +8,8 @@ import { getBlogPost, getReadingMinutes } from "@/lib/blog";
 // so the automation-generated posts get a consistent header for free.
 //
 // Auto-generated posts use `author: "omnigent"`; for that byline the avatar is
-// the square Omnigent mark. A human author name falls back to a monogram tile.
+// the square Omnigent mark. Known human authors use their profile image and
+// link, while other human author names fall back to a monogram tile.
 
 function formatDate(date) {
   if (!date) return null;
@@ -20,13 +22,25 @@ function formatDate(date) {
   });
 }
 
-function Avatar({ author }) {
+function Avatar({ author, avatar }) {
   const isOmnigent = !author || author.toLowerCase() === "omnigent";
   if (isOmnigent) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src="/images/favicon.svg"
+        alt=""
+        className="blog-post-avatar"
+        width={36}
+        height={36}
+      />
+    );
+  }
+  if (avatar) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={avatar}
         alt=""
         className="blog-post-avatar"
         width={36}
@@ -48,6 +62,7 @@ function Avatar({ author }) {
 export default function BlogPostHeader({ slug }) {
   const { title, date, category, author } = getBlogPost(slug);
   const displayAuthor = author || "omnigent";
+  const authorProfile = getAuthorProfile(author);
   const minutes = getReadingMinutes(slug);
   const formattedDate = formatDate(date);
 
@@ -56,9 +71,20 @@ export default function BlogPostHeader({ slug }) {
       {category ? <span className="blog-card-cat">{category}</span> : null}
       <h1>{title}</h1>
       <div className="blog-post-byline">
-        <Avatar author={author} />
+        <Avatar author={author} avatar={authorProfile?.avatar} />
         <div className="blog-post-byline-text">
-          <span className="blog-post-author">{displayAuthor}</span>
+          {authorProfile?.href ? (
+            <a
+              href={authorProfile.href}
+              className="blog-post-author blog-post-author-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {displayAuthor}
+            </a>
+          ) : (
+            <span className="blog-post-author">{displayAuthor}</span>
+          )}
           <span className="blog-post-meta">
             {formattedDate ? <span>{formattedDate}</span> : null}
             {formattedDate ? <span aria-hidden="true">·</span> : null}

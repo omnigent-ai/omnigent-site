@@ -95,7 +95,23 @@ its streaming output, reasoning, and tool cards, routes its permission requests
 through your [contextual policies](/docs/policies/overview) as web elicitation
 cards, and honors interrupts. Omnigent also exposes its own builtin tools
 (session, sub-agent, skill, and policy tools) to the agent alongside the agent's
-native tools; set `OMNIGENT_ACP_MCP=0` to disable that bridge.
+native tools; set `OMNIGENT_ACP_MCP=0` to disable that bridge for a session.
+
+To disable that MCP relay permanently for a specific agent, set
+`omnigent_mcp: false` on its `acp:` entry. The agent keeps its own native tools;
+Omnigent simply stops lending its builtin tools to that agent in `session/new`
+(the field is still sent as an empty list, which ACP requires). This is required
+for agents whose ACP server rejects per-session MCP servers — such as the
+OpenClaw Gateway bridge described below. The value must be a boolean;
+`omnigent setup` reports an error if it isn't.
+
+```yaml
+acp:
+  agents:
+    - name: OpenClaw
+      command: openclaw acp --url <gateway-url> --token-file <token-file>
+      omnigent_mcp: false
+```
 
 <div className="note">
 
@@ -142,6 +158,48 @@ omni run --from-openclaw "Gemini CLI" -p "review the last commit"
 Match the agent by its display name (case-insensitive) or derived slug. This
 runs the agent through the `acp` harness for that one session; it can't be
 combined with an `AGENT` path or with `--harness`.
+
+This path drives the selected coding agent directly. It does **not** bring
+OpenClaw's Gateway session, routing, memory, or channels into the conversation —
+for that, register the Gateway bridge (below).
+
+### Drive the OpenClaw Gateway
+
+Beyond importing individual coding agents, the `openclaw acp` command exposes a
+live OpenClaw Gateway session as an ACP server over stdio, giving Omnigent
+access to OpenClaw's own routing, memory, and channels. Register it as an `acp:`
+agent, disabling Omnigent's MCP relay because the Gateway bridge rejects
+per-session MCP servers:
+
+```yaml
+acp:
+  agents:
+    - name: OpenClaw
+      command: openclaw acp --url <gateway-url> --token-file <token-file>
+      omnigent_mcp: false
+```
+
+Replace `<gateway-url>` and `<token-file>` with your running Gateway's
+connection details, then launch it:
+
+```
+omni run --harness acp:openclaw
+```
+
+<div className="note">
+
+**Caution:** Prefer `--token-file` so the Gateway token isn't stored in the
+launch command. Don't commit or share `~/.omnigent/config.yaml`, and use a token
+with the narrowest permissions OpenClaw supports.
+
+</div>
+
+Omnigent owns the outer conversation and transcript; OpenClaw owns the
+Gateway-backed session. OpenClaw's Control UI is a separate Gateway client, so
+messages entered there while Omnigent is offline are **not** imported into the
+Omnigent conversation — use Omnigent as the canonical conversation when you need
+its transcript and resume behavior. Bidirectional sync with the Control UI and
+per-session Omnigent MCP are not supported by this integration.
 
 ## Swap harnesses
 

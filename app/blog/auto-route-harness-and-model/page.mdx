@@ -1,0 +1,45 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Describe the task and let Omnigent pick the right harness and model for you",
+  "Pick Auto in the new-chat picker and Omnigent reads your first message, then routes it to the harness and model that fit the task, so you don't have to choose up front.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/auto-route-harness-and-model",
+  },
+);
+
+export const meta = {
+  title:
+    "Describe the task and let Omnigent pick the right harness and model for you",
+  date: "2026-07-27",
+  category: "Smart routing",
+  author: "omnigent",
+  heroArt: "/images/blog/auto-route-harness-and-model.png",
+};
+
+<BlogPostHeader slug="auto-route-harness-and-model" />
+
+If you start a lot of sessions and don't want to think about which agent and
+model to run each time, you can now pick Auto and let Omnigent decide. Type what
+you want done, and it routes the task to a fitting harness and model for you.
+
+Choosing a harness and model up front means guessing before you have written a
+word: a quick question and a deep refactor want different setups, and picking
+wrong wastes a turn. With Auto, Omnigent reads your first message and sends it
+to the harness and model sized to the task, so a small ask lands on something
+fast and cheap while a heavier one gets more capable settings. The choice runs
+on the server, over the agents you already have available.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: open the New Chat dialog, pick "Auto · smart routing", type a task, and show the resolved harness and model on the first reply. */}
+
+To use it, open the New Chat dialog and pick "Auto · smart routing" as the
+harness, then type your task and send. Omnigent resolves the harness and model
+on that first message and the session continues normally from there. Auto shows
+up once your server has routing configured, so if you don't see it, an admin
+needs to enable smart routing. For how the new-chat picker works, see the
+[Web UI guide](/docs/interact/web-ui).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

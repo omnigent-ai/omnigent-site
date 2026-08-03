@@ -1,4 +1,9 @@
 {
+  "/blog/first-class-projects-with-defaults": {
+    "title": "Organize your sessions into projects, with optional defaults that pre-fill every new chat",
+    "description": "Projects keep related sessions together instead of scattered across a flat list. Each one can optionally carry default session settings (host, working directory, agent, and a fresh git worktree) so new chats open pre-filled when the work runs the same way.",
+    "eyebrow": "Blog"
+  },
   "/blog/queue-and-steer-messages-while-agents-work": {
     "title": "Line up your next moves while an agent works — steer or reorder them mid-run",
     "description": "Type follow-ups while a turn is running: they queue in a strip above the composer and send in order when the agent goes idle, or you can steer, edit, reorder, and delete them.",
@@ -66,7 +71,7 @@
   },
   "/docs/interact/mobile": {
     "title": "Mobile",
-    "description": "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.",
+    "description": "Use Omnigent on your phone: the native iOS app from the App Store, or the mobile web UI in any phone browser. Start a session on your laptop, continue it on your phone.",
     "eyebrow": "Interact"
   },
   "/docs/interact/slack": {

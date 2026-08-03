@@ -1,0 +1,73 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Automatically catch agents stuck in a retry loop and pull you in to intervene",
+  "Two built-in guardrail policies watch a running agent for stuck behavior: detect_loop catches the same tool call repeating with identical arguments, and detect_thrashing catches a run of failing tool results. Either one pauses the agent and asks you to step in.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/catch-runaway-agent-loops",
+  },
+);
+
+export const meta = {
+  title:
+    "Automatically catch agents stuck in a retry loop and pull you in to intervene",
+  date: "2026-08-03",
+  category: "Governance",
+  author: "omnigent",
+  heroArt: "/images/blog/catch-runaway-agent-loops.png",
+};
+
+<BlogPostHeader slug="catch-runaway-agent-loops" />
+
+If you leave agents running on real work, you can now have Omnigent watch for
+the moment one gets stuck and pull you in before it burns tokens going nowhere.
+Two built-in guardrail policies do the watching, and neither one needs a server
+model to run.
+
+An agent that retries the exact same failing tool call, or keeps hitting errors
+turn after turn, used to run until it hit a total call cap or you happened to
+notice. A plain call limit cannot tell useful work apart from a spin, so it
+either cuts the agent off too early or lets it churn. These policies look at
+what is actually happening. `detect_loop` tracks recent tool calls and fires
+when the same tool runs with identical arguments enough times inside a sliding
+window. `detect_thrashing` watches tool results and fires when several calls in
+a row fail or the error rate across the recent window gets too high. When either
+trips, the agent pauses and you get an approval prompt explaining why, so you
+can redirect it or start fresh instead of letting it grind.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an agent retrying the same failing command a few times, then Omnigent surfacing the "stuck in a retry loop" approval prompt for the user to break it. */}
+
+Both are contextual policies you add to an agent's guardrails, and they work
+with any agent you run in Omnigent. Wire them into the agent config under
+`guardrails.policies`:
+
+```yaml
+guardrails:
+  policies:
+    loop_guard:
+      type: function
+      function:
+        path: omnigent.policies.builtins.safety.detect_loop
+        arguments:
+          window: 10
+          threshold: 3
+    thrashing_guard:
+      type: function
+      function:
+        path: omnigent.policies.builtins.context.detect_thrashing
+        arguments:
+          consecutive_threshold: 5
+          window: 10
+          window_error_rate: 0.8
+          action: ASK
+```
+
+Tune `window` and `threshold` to how tight you want the loop check, and set
+`detect_thrashing`'s `action` to `DENY` if you would rather block the next step
+outright than be asked. See the
+[built-in policies guide](/docs/policies/builtin) for the full parameter list.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

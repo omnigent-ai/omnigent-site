@@ -220,6 +220,25 @@ tools:
 The JSON Schema under `parameters` is optional. If you omit it, Omnigent
 auto-generates the schema from the function's type annotations and signature.
 
+### Sandboxed execution
+
+Run Python tools inside a container by adding a `sandbox` block under `tools`.
+Set `container_image` to the image to run in; `container_runtime` selects the
+container CLI and is either `docker` (the default) or `podman`:
+
+```
+tools:
+  sandbox:
+    container_image: python:3.12-slim
+    container_runtime: podman  # optional; defaults to docker (or OMNIGENT_CONTAINER_RUNTIME)
+```
+
+You can also set the runtime globally with the `OMNIGENT_CONTAINER_RUNTIME`
+environment variable (accepted values: `docker`, `podman`). The per-agent
+`container_runtime` key takes precedence over the environment variable, so a
+spec can always override the global default. When neither is set, the runtime
+falls back to `docker`.
+
 ## Sub-agent tools
 
 Declare agents as tools so a supervisor agent can delegate work to them. You can define a

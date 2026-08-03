@@ -1,0 +1,47 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Let trusted teammates approve an agent's risky actions without handing over the session",
+  "As a session owner you can now delegate approval authority to a collaborator you trust, so they can clear an agent's privileged actions while it works. Ordinary editors can still reject an action but not approve it, and you never give up ownership.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/delegate-approval-authority",
+  },
+);
+
+export const meta = {
+  title:
+    "Let trusted teammates approve an agent's risky actions without handing over the session",
+  date: "2026-08-03",
+  category: "Governance",
+  author: "omnigent",
+  heroArt: "/images/blog/delegate-approval-authority.png",
+};
+
+<BlogPostHeader slug="delegate-approval-authority" />
+
+If you own a shared session and cannot always be the one to clear an agent's
+privileged actions, you can now hand that authority to a collaborator you
+trust. The agent keeps working while a teammate approves the prompts you used
+to have to catch yourself.
+
+Sharing a session with someone as an editor lets them steer the run, but until
+now only the owner could approve a privileged action like a `git push`, so the
+agent stalled whenever you stepped away. You can now grant a specific editor
+the right to approve those actions too. Everyone else stays where they were: an
+ordinary editor can reject a pending action but cannot approve it, and approval
+authority is a separate switch you control per person, never a transfer of
+ownership.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an owner opening the Share dialog, flipping the approval toggle on for one editor, then that editor clearing a pending "git push" approval card while the owner is away. */}
+
+To delegate it, open the session's Share dialog, find the collaborator, and turn
+on their approval authority. The switch is only available once they have at
+least edit access, and it never applies to public link access. Only the owner
+can change it, and you can turn it back off at any time. For how session sharing
+and access levels work, see the
+[collaboration guide](/docs/collaborate/auth#session-sharing).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

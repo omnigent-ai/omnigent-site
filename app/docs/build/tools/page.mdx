@@ -198,6 +198,102 @@ Because these tools only persist and recall when the model actually calls them,
 prompt the agent to recall before answering and to retain durable facts as it
 learns them — see the `remy` example agent for a worked prompt.
 
+### Nimble web data
+
+Two built-in tools call [Nimble](https://docs.nimbleway.com/) to research and
+extract live web data. Both authenticate with a Nimble API key and are enabled
+by name under `tools.builtins`.
+
+#### `nimble_research`
+
+Runs a research task on a Nimble Web Search Agent through the asynchronous Agent
+API v2 — it starts a run, polls it to completion, then fetches the cited result
+in a single call. A run can take minutes. The tool returns a bounded JSON
+envelope with both run identifiers, the output (prose text or structured JSON),
+and trust metadata:
+
+```
+{run_id, web_search_agent_id, status,
+ output: {type: text|json, content},
+ trust: {confidence, sources, claims}}
+```
+
+`nimble_research` needs the optional `nimble` extra, which pulls in the
+`nimble-python` client (imported lazily, so the base install never needs it):
+
+```
+pip install 'omnigent[nimble]'
+export NIMBLE_API_KEY=...
+```
+
+Enable it under `tools.builtins`:
+
+```
+tools:
+  builtins:
+    - name: nimble_research
+      api_key: ${NIMBLE_API_KEY}
+      # optional:
+      # agent_id: wsa_...          # omit to let Nimble provision the agent
+      # effort: high               # low | medium | high | x-high
+      # timeout_seconds: 300       # 10-3600 (default 300)
+      # poll_interval_seconds: 10  # 0.5-30 (default 10)
+```
+
+Config keys (`api_key` is required, the rest optional):
+
+| Key | Purpose |
+| --- | --- |
+| `api_key` | Nimble API key (typically `${NIMBLE_API_KEY}`). |
+| `agent_id` | Run against an agent you own. Omit it and Nimble provisions the agent for the run. |
+| `effort` | Default effort tier when a call doesn't set one. |
+| `timeout_seconds` | Overall deadline for the run (start + poll + result). Clamped to 10–3600; default 300. |
+| `poll_interval_seconds` | Pause between status polls. Clamped to 0.5–30; default 10. |
+
+The model supplies the `task` (required) plus optional per-call controls:
+
+| Argument | Purpose |
+| --- | --- |
+| `task` | The research task or question for the agent. |
+| `effort` | Override the effort tier for this run — `low`, `medium`, `high`, or `x-high`. Omit to use the agent/template default (the product default is `high`). |
+| `input_data` | A JSON object, or array of objects, of records to enrich. |
+| `output_schema` | A JSON Schema the output must conform to, for structured research or dataset building. |
+| `sources` | Source guidance: free-text `prioritize`/`avoid` plus `allow`/`block` arrays of named domain groups. |
+| `use_case` | Run mode — `research`, `enrichment`, or `dataset_building`. |
+| `agent_name`, `skill` | Optional name and skill hints for the run agent. |
+
+Run creation is billable and issued exactly once (never retried), so if a
+create call fails in a way that leaves the outcome unknown, the tool says so and
+tells you not to resubmit rather than risk a duplicate billed run.
+
+#### `nimble_extract`
+
+Runs one of your account's Nimble Extract Templates
+(`POST /v2/extract/templates/run`) and returns its structured, parsed results as
+JSON in a single synchronous call. Unlike `nimble_research`, it talks to Nimble
+over plain HTTP and needs no extra — just an API key:
+
+```
+export NIMBLE_API_KEY=...
+```
+
+The `template` names one of your account's extract templates, and the model
+supplies that template's declared inputs as a `params` object:
+
+```
+tools:
+  builtins:
+    - name: nimble_extract
+      api_key: ${NIMBLE_API_KEY}
+      template: my_template_name   # one of your account's extract templates
+      # optional:
+      # timeout_seconds: 120        # 10-600 (default 120)
+```
+
+Both `api_key` and `template` are required. `timeout_seconds` is optional and
+clamped to 10–600 (default 120). List your account's templates — and each one's
+input schema — with `GET /v2/extract/templates`.
+
 ## Python function tools
 
 Expose any Python callable as a tool. The function is referenced by its fully qualified

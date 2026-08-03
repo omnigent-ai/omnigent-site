@@ -49,6 +49,29 @@ Most coding agents can run in one of two modes:
 Pi is a headless multi-model worker that runs on any gateway model — ideal for
 review, exploration, and read-heavy tasks delegated by a supervisor agent.
 
+## Grok Build
+
+Grok Build (xAI's `grok` CLI) ships as a builtin harness with the id `grok`
+(alias `grok-build`). Under the hood it drives `grok agent stdio` over the
+[Agent Client Protocol](https://agentclientprotocol.com) — Omnigent renders its
+streaming output, reasoning, and tool cards and routes its permission requests
+through your [contextual policies](/docs/policies/overview), just like the
+generic `acp` harness below. The difference is that it's built in: you select
+the `grok` harness id directly instead of registering a launch command.
+
+```
+omni run --harness grok
+```
+
+Like the generic ACP agents, Grok Build brings **its own auth and model** —
+Omnigent stores no credential and a `/model` pick is rejected up front. Install
+the CLI and log in through xAI first:
+
+```
+curl -fsSL https://x.ai/cli/install.sh | bash
+grok login --device-auth   # xAI OAuth (device-code capable); or set XAI_API_KEY
+```
+
 ## Custom ACP agents
 
 Beyond the agents above, the generic `acp` harness drives *any* agent that

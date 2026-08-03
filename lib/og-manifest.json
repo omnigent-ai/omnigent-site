@@ -1,4 +1,9 @@
 {
+  "/blog/first-class-projects-with-defaults": {
+    "title": "Organize your sessions into projects, with optional defaults that pre-fill every new chat",
+    "description": "Projects keep related sessions together instead of scattered across a flat list. Each one can optionally carry default session settings (host, working directory, agent, and a fresh git worktree) so new chats open pre-filled when the work runs the same way.",
+    "eyebrow": "Blog"
+  },
   "/blog/meta-harness-missing-layer": {
     "title": "Meta-Harness: the Missing Layer Above Claude Code, Codex, and Pi",
     "description": "Use Claude Code, Codex, Pi, and other coding agents together through one shared orchestration, collaboration, and policy layer.",
@@ -22,6 +27,11 @@
   "/docs/build/prompts": {
     "title": "Prompts & Skills",
     "description": "Shape agent behavior with system prompts, and extend it with skills: reusable instruction sets the agent loads on demand.",
+    "eyebrow": "Build"
+  },
+  "/docs/build/routing": {
+    "title": "Smart Routing",
+    "description": "Let a router pick the best harness and model for each session automatically, using the built-in judge or an external routing API.",
     "eyebrow": "Build"
   },
   "/docs/build/scheduled-tasks": {
@@ -71,7 +81,7 @@
   },
   "/docs/interact/mobile": {
     "title": "Mobile",
-    "description": "Access the same Omnigent session on terminal, browser, and phone simultaneously. Start on your laptop, continue on your phone.",
+    "description": "Use Omnigent on your phone: the native iOS app from the App Store, or the mobile web UI in any phone browser. Start a session on your laptop, continue it on your phone.",
     "eyebrow": "Interact"
   },
   "/docs/interact/slack": {
@@ -161,7 +171,7 @@
   },
   "/quickstart/install": {
     "title": "Install",
-    "description": "Install the Omnigent CLI with a single command — via the installer script, uv, pip, or Homebrew — and grab the macOS desktop app.",
+    "description": "Install the Omnigent CLI with the installer script, uv, pip, or Homebrew, or download the desktop app.",
     "eyebrow": "Quickstart"
   },
   "/quickstart/policies": {
@@ -197,6 +207,11 @@
   "/releases/0.6.0": {
     "title": "Omnigent v0.6.0",
     "description": "Omnigent v0.6.0 adds richer file previews, custom themes, chat imports, Slack integration, and Windows and Linux desktop apps.",
+    "eyebrow": "Release"
+  },
+  "/releases/0.7.0": {
+    "title": "Omnigent v0.7.0",
+    "description": "What's new in Omnigent v0.7.0 — release highlights, improvements, and fixes.",
     "eyebrow": "Release"
   },
   "/releases": {

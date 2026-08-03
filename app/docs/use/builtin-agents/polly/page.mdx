@@ -72,6 +72,34 @@ policy still `DENY`s the catastrophic set.
 - **`/cross-review`** sends an implementer's diff to a different-vendor reviewer. Blocking issues loop back as fixes until clean.
 - **`/investigate`** delegates read-only work (debugging, audits, code understanding) to sub-agents and synthesizes findings.
 
+## Goal mode
+
+In the web UI, for a top-level Polly session, the composer shows a **Goal**
+button next to the input. Click **Goal**, enter a **Completion condition** (for
+example, `All tests pass and the implementation is complete`), and choose
+**Start goal**. Polly keeps working until that condition is met, with progress
+and completion reported in the conversation.
+
+Omnigent sends this to Polly as a `/goal <condition>` command — posted
+immediately if the session is idle, or queued to open the next turn if one is
+already streaming — so the objective persists across turns rather than being a
+one-off instruction.
+
+Goal mode is available on top-level Polly sessions whose **brain harness** is
+`claude-sdk` or `codex`. This is the harness Polly's own supervisor loop runs
+on — not the sub-agent harnesses in the table above, and sub-agent sessions
+never show the control (including those on `claude-native` and `codex-native`).
+`omni polly` runs the Claude variant; to use the Codex brain harness, start a
+new Polly session from the web UI and pick the Codex harness.
+
+- To stop early on the Claude harness, send `/goal clear`. Codex has no
+  equivalent: sending `/goal clear` on Codex sets a goal whose objective is the
+  literal string `clear`, so don't use it to stop.
+- A goal can also end without succeeding: Codex reports `blocked`,
+  `usageLimited`, or `budgetLimited`, and Claude can report the condition as
+  unachievable.
+- In read-only (shared, view-only) sessions the button is disabled.
+
 ## When to use
 
 - Large refactors that benefit from parallel work.

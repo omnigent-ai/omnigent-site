@@ -69,6 +69,29 @@ an isolated remote container rather than on your personal machine. To constrain 
 agent can touch even on a trusted host, apply an
 [OS sandbox](/docs/policies/os-sandbox) policy.
 
+### Who said what
+
+When more than one authenticated person participates in a session, Omnigent
+labels each model-visible user message with the author's account, prefixed as
+`[account]:` (for example `[alice@example.com]: ...`), so the agent can tell
+collaborators apart mid-conversation. Labels appear only once two or more
+distinct authors have contributed; a solo session is left unlabeled.
+
+The label is **informational only**. It does not change stored message authors,
+UI avatars, session ownership, or who may approve or run privileged actions —
+authorization is unaffected.
+
+To hide the labels from the model, set the environment variable before starting
+the server:
+
+```
+OMNIGENT_SHARED_MESSAGE_ATTRIBUTION_ENABLED=0 omni server start
+```
+
+The switch is on by default; any of `0`, `false`, `no`, or `off` disables it.
+Disabling it removes the prompt labels only — internal authorship metadata is
+still stripped from what the model sees, and persisted authors are unchanged.
+
 ## Fork
 
 Clone a conversation and continue independently from the fork point. The original session is

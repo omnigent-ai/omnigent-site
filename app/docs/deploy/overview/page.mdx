@@ -198,6 +198,42 @@ See `deploy/kubernetes/README.md` and
 `deploy/kubernetes/overlays/sandbox-runners/README.md` in the repo for the full
 guide.
 
+<div className="note">
+
+**Rotation-friendly credentials (`secret_mounts`).** Under
+`sandbox.kubernetes`, an optional `secret_mounts` list projects Kubernetes
+Secrets you pre-created in the runner namespace as read-only files on each
+runner Pod. Each entry is `{ secret_name, mount_path }`:
+
+```
+sandbox:
+  provider: kubernetes
+  server_url: https://your-server.example.com
+  kubernetes:
+    secret_mounts:
+      - secret_name: git-token          # a Secret in the runner namespace
+        mount_path: /mnt/secrets/git     # absolute, non-reserved in-Pod path
+      - secret_name: npm-token
+        mount_path: /mnt/secrets/npm
+```
+
+Unlike credentials injected via `envFrom` (read once at container start), a
+Secret projected as a volume is refreshed in place by the kubelet, so a
+long-lived runner picks up a **rotated** credential without a restart. The
+refresh is eventually consistent (kubelet sync, up to ~1 min), so the
+in-sandbox consumer must re-read the file on each use — a value cached at start
+defeats the rotation.
+
+Each volume mounts read-only on the host container only (never the clone-time
+init container), so a Secret volume has no `read_only` knob. Entries are
+validated at server startup: `secret_name` must be a DNS-1123 subdomain and
+`mount_path` an absolute, normalized path that isn't reserved and doesn't
+duplicate, nest with, or overlap another `secret_mounts` or `pvc_mounts` path —
+an operator typo fails startup, not the first launch. A missing Secret keeps
+the Pod from starting.
+
+</div>
+
 ## Runner
 
 The **runner** is the per-session process that executes Omnigent loops. It

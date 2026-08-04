@@ -86,6 +86,54 @@ browser can't, like notifications and a dock badge.
 See the [Desktop app](/docs/interact/desktop) reference for all platforms and
 details.
 
+## Nightly builds
+
+Nightly builds are datestamped prereleases (`vX.Y.Z.devYYYYMMDD`) cut from the
+newest green commit on `main` around 04:30 UTC each day. They are git tags that
+never reach the package index, so you install them straight from GitHub. Use
+them to try the latest changes ahead of a tagged release.
+
+Building a nightly compiles the web UI, so it needs **git**, plus **Node.js 22**
+and **pnpm**, in addition to the base requirements.
+
+To move an existing install onto the newest nightly:
+
+```
+omni upgrade --nightly
+```
+
+This resolves the newest nightly tag and reinstalls Omnigent pinned to it,
+using whichever installer you originally used. It works from any install shape:
+a package-index install hops onto the nightly channel, an older nightly moves
+forward, and a rerun on the current nightly is a no-op. The following flags
+compose with `--nightly`:
+
+- `--check` — report the newest nightly and exit non-zero if upgrading would
+  change the install, without changing anything.
+- `--dry-run` — print the command that would run and exit.
+- `--extra` — keep or add extras (comma-separate to add several).
+
+`--pre` and `--target-version` do **not** apply to `--nightly` — it always
+tracks the newest nightly tag. To install one specific nightly, run your
+installer against that tag directly:
+
+```
+uv tool install --force git+https://github.com/omnigent-ai/omnigent@v0.8.0.dev20260801
+```
+
+Because `pip` and `uv pip` do not record which extras were requested, a
+package-index install made with either cannot preserve extras through
+`omni upgrade --nightly`. In that case Omnigent prints the manual git command
+to run instead.
+
+To install or update the nightly on a schedule (for example, from cron), use
+the `update_nightly.sh` helper. It resolves the newest nightly tag, installs it
+with `uv`, and exits fast when you are already current:
+
+```
+0 9 * * * bash /path/to/update_nightly.sh >> "$HOME/.omnigent-nightly.log" 2>&1
+```
+
 ## Uninstall
 
 `omni uninstall` removes Omnigent while preserving your data by default. With

@@ -41,7 +41,7 @@ Already have local Claude Code or Codex history? Bring it into Omnigent as a
 normal session with `omnigent import`. The source transcript is converted to
 ordinary Omnigent items and stored as a regular session, so it gains the web UI,
 persistence, collaboration, and everything else. A given source session can only
-be imported once.
+be imported once unless you pass `--force` to replace the previous import.
 
 Import a single chat by its harness-native session ID:
 
@@ -59,6 +59,15 @@ omnigent import --harness claude --last 10
 ```
 
 Provide exactly one of `--session` or `--last` — they are mutually exclusive.
+
+Re-importing a source session that was already imported is rejected by default.
+Pass `--force` to replace the previous import instead — Omnigent deletes the old
+conversation and re-imports the transcript in place, keeping the same session
+ID:
+
+```
+omnigent import --harness claude --session <session-id> --force
+```
 
 When importing a batch, sessions that were already imported are skipped and a
 session that fails to import doesn't stop the rest. Omnigent prints a summary of

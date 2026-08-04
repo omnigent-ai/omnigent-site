@@ -70,12 +70,44 @@ sandbox:
   write_paths: [.]                          # writable directories
   write_files: [~/.ssh/known_hosts]         # individual writable files
   cwd_allow_hidden: [.venv, .git, .env]     # dotfiles to allow (rest are masked)
+  mask_paths: [config/production.key]       # hide specific paths by name/depth
 ```
 
 Dotfiles under `cwd` and `read_paths` are hidden by default unless
 listed in `cwd_allow_hidden`. This makes broad read grants safe: granting
 `~` doesn't expose `~/.aws/credentials` or `~/.ssh/id_rsa`. On macOS, `~/Library` is also
 denied by default.
+
+By default the dotfile mask is **non-recursive** — it scans only the top level of
+`cwd` and each `read_paths` root. Top-level secrets (`.env`, `.git/`, `.aws/`,
+`.ssh/`) are still hidden, but a dotfile nested below the first level (for example
+`services/api/.env`) stays visible. This is the scalable default: a recursive walk of
+a medium or large tree visits enormous numbers of entries and routinely trips
+`cwd_hidden_scan_max_entries`.
+
+For untrusted source trees where a deeply nested credential file would be an
+unacceptable leak, set `cwd_hidden_scan_recursive: true` to walk the whole tree. The
+`cwd_hidden_scan_max_entries` and `cwd_hidden_scan_overflow` knobs then bound the cost
+of the full walk.
+
+```
+sandbox:
+  cwd_hidden_scan_recursive: true           # mask dotfiles at any depth
+```
+
+To hide a specific file or directory the name-based masker won't catch — a named
+secret like `config/production.key`, or a single deeply nested dotfile without turning
+on full recursion — list it under `mask_paths`. Entries are resolved like `read_paths`
+(`~` is expanded, relative paths are taken against `cwd`, `$VAR` is not expanded) and
+are hidden regardless of name or depth, on top of the dotfile mask. A directory is
+masked as an empty view, a file as an empty file.
+
+```
+sandbox:
+  mask_paths:
+    - config/production.key
+    - ~/.config/private
+```
 
 ### Network
 
@@ -107,8 +139,25 @@ sandbox:
   env_passthrough: [GH_TOKEN, AWS_PROFILE]  # only these vars reach the agent
 ```
 
-The sandbox strips environment variables to a minimal default set (`PATH`, `HOME`, `USER`,
-`LANG`, etc.). Secrets only reach the agent if you name them explicitly.
+Agent CLIs are spawned with a **deny-by-default** environment. Only two things are
+inherited automatically: the shared base (`HOME`, `PATH`, proxy/TLS settings, locale,
+`TMPDIR`, and the Omnigent session marker) and the running harness's own variable
+family. Everything else — including a host secret that belongs to some other
+provider — is stripped, and only reaches the agent if you name it in
+`env_passthrough`.
+
+An ambient key that used to reach the CLI implicitly now has to be declared. Two cases
+are worth knowing:
+
+- **A generic ACP agent** (`type: acp`) gets no vendor family at all, because Omnigent
+  cannot know which vendor an arbitrary agent belongs to. Gemini via ACP needs
+  `env_passthrough: ["GEMINI_API_KEY"]`.
+- **Goose** owns `GOOSE_*` only. Goose configured through Omnigent's provider/gateway
+  routing is unaffected, but a goose set up against an ambient provider key
+  (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, …) needs that name declared here.
+
+If an agent fails during its `initialize` handshake for no obvious reason, check this
+field first — the ACP executor logs a hint pointing back at it.
 
 ### Credentials (secretless proxy)
 
@@ -245,17 +294,19 @@ Omnigent errors instead of quietly running unsandboxed. The only opt-out is
 
 ### `os_env.sandbox`
 
-| Field                               | Type     | Default     | Description                                          |
-| ----------------------------------- | -------- | ----------- | ---------------------------------------------------- |
-| `type`                              | string   | auto-detect | `linux_bwrap`, `darwin_seatbelt`, or `none`          |
-| `write_paths`                       | string[] | `[]`        | Writable directories. `cwd` is read-only by default. |
-| `write_files`                       | string[] | `[]`        | Individual writable files                            |
-| `read_paths`                        | string[] | none        | Read-only grants outside `cwd`                       |
-| `allow_network`                     | bool     | `true`      | Network access on/off                                |
-| `cwd_allow_hidden`                  | string[] | `[".venv"]` | Dotfile basenames to allow                           |
-| `cwd_hidden_scan_max_entries`       | int      | `50000`     | Max entries for dotfile mask walk                    |
-| `cwd_hidden_scan_overflow`          | string   | `warn`      | `error`, `warn`, or `unlimited`                      |
-| `env_passthrough`                   | string[] | minimal set | Env vars the agent can see                           |
-| `egress_rules`                      | string[] | none        | HTTP(S) allow-list. Default-deny when set.           |
-| `egress_allow_private_destinations` | bool     | `false`     | Allow connections to private/metadata IPs            |
-| `credential_proxy`                  | block[]  | none        | Secretless auth entries; requires `egress_rules`     |
+| Field                               | Type     | Default     | Description                                                                 |
+| ----------------------------------- | -------- | ----------- | --------------------------------------------------------------------------- |
+| `type`                              | string   | auto-detect | `linux_bwrap`, `darwin_seatbelt`, or `none`                                 |
+| `write_paths`                       | string[] | `[]`        | Writable directories. `cwd` is read-only by default.                        |
+| `write_files`                       | string[] | `[]`        | Individual writable files                                                   |
+| `read_paths`                        | string[] | none        | Read-only grants outside `cwd`                                              |
+| `allow_network`                     | bool     | `true`      | Network access on/off                                                       |
+| `cwd_allow_hidden`                  | string[] | `[".venv"]` | Dotfile basenames to allow                                                  |
+| `cwd_hidden_scan_recursive`         | bool     | `false`     | Recurse subdirectories when masking dotfiles. `false` scans top level only. |
+| `mask_paths`                        | string[] | none        | Explicit files/dirs to hide by any path/name, on top of the dotfile mask    |
+| `cwd_hidden_scan_max_entries`       | int      | `50000`     | Max entries for dotfile mask walk (recursive mode)                          |
+| `cwd_hidden_scan_overflow`          | string   | `warn`      | `error`, `warn`, or `unlimited`                                             |
+| `env_passthrough`                   | string[] | minimal set | Env vars the agent can see                                                  |
+| `egress_rules`                      | string[] | none        | HTTP(S) allow-list. Default-deny when set.                                  |
+| `egress_allow_private_destinations` | bool     | `false`     | Allow connections to private/metadata IPs                                   |
+| `credential_proxy`                  | block[]  | none        | Secretless auth entries; requires `egress_rules`                            |

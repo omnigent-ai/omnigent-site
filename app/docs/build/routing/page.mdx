@@ -1,0 +1,178 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Smart Routing",
+  "Let a router pick the best harness and model for each session automatically, using the built-in judge or an external routing API.",
+  {
+    eyebrow: "Build",
+    path: "/docs/build/routing",
+  },
+);
+
+# Smart Routing
+
+Smart routing lets the server pick the best harness and model for a session
+**automatically**, based on the first message. Instead of committing to one model
+up front, the server asks a router, "given this task, which harness and model
+fit?", and applies the answer for the rest of the session.
+
+<video
+  src="/images/docs/smart-routing-oss.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  controls
+  style={{ width: "100%", height: "auto", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+Two routers are available:
+
+- **Built-in judge**: an LLM call using the server's own `llm:` block.
+  No extra infrastructure.
+- **External routing API**: the server delegates the decision to an external
+  `routes:select` service that you point it at.
+
+## Enable smart routing
+
+Smart routing is enabled by configuration alone:
+
+- Configure a server `llm:` block and the server uses the **built-in judge** backed
+  by it, with no `routing:` block required.
+- Or add a `routing:` block with `provider: external` to delegate to an
+  **external routing API** (see below).
+
+Start the server with your config file:
+
+```
+omni server -c path/to/config.yaml
+```
+
+With a router configured, users see an **Auto** option in the harness picker;
+picking it defers harness + model selection to the router on the first message.
+With neither an `llm:` block nor an external `routing:` block, routing stays off
+and the Auto option is hidden.
+
+## Configure the external routing API
+
+To delegate routing to an external service, add a top-level `routing:` block to the
+server config with `provider: external`:
+
+```yaml
+routing:
+  provider: external
+  base_url: https://gateway.example.com/ai-gateway/routing/v1
+  router_name: task_v0
+  # Optional: strip a prefix from catalog model ids before sending them to
+  # the router (and restore it on the answer). Accepts a string or a list.
+  model_prefix: databricks-
+  # Optional auth, see "Authentication" below.
+  api_key: ${ROUTING_API_KEY}
+```
+
+| Field          | Required | Description                                                                                                                                           |
+| -------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `provider`     | yes      | Must be `external` to select the external routing API. Any other value (or omitting the block) falls back to the built-in judge.                       |
+| `base_url`     | yes      | Base URL of the routing service. The server appends `/routes:select` to it.                                                                           |
+| `router_name`  | yes      | The routing strategy the gateway should apply, e.g. `task_v0`. Sent as `route_selector.router_name`.                                                   |
+| `model_prefix` | no       | A prefix (or list of prefixes) stripped from catalog model ids before they are sent to the router, and restored on its answer. Example: `databricks-`. |
+| `api_key`      | no       | Static bearer token. `${ENV}` references are expanded. Takes precedence over `profile`.                                                                |
+| `profile`      | no       | Databricks CLI profile. The server mints a fresh bearer per call (OAuth refresh), so a long-lived server never sends an expired token.                 |
+
+If `base_url` or `router_name` is missing, the external provider is skipped and a
+warning is logged: routing stays off rather than failing the server.
+
+### Authentication
+
+Auth mirrors the `llm:` block, in precedence order:
+
+1. **`api_key`**: an explicit, provider-agnostic bearer token (`${ENV}` expanded).
+   Sent as `Authorization: Bearer <token>`.
+2. **`profile`**: a Databricks CLI profile. The server resolves a fresh token per
+   request via the Databricks SDK, so tokens that expire (~1h) are refreshed
+   automatically.
+3. **Neither**: requests are sent unauthenticated.
+
+## External routing API spec
+
+The server calls a single endpoint:
+
+```
+POST <base_url>/routes:select
+Content-Type: application/json
+```
+
+The request and response bodies follow the `omnigent.api.routing.v1` schema
+(proto3, serialized as JSON with snake_case field names). This schema is versioned
+independently of any gateway so the contract can evolve without coupling to a
+gateway's release cycle.
+
+### Request: `SelectRouteRequest`
+
+| Field             | Type              | Description                                                                                    |
+| ----------------- | ----------------- | ---------------------------------------------------------------------------------------------- |
+| `route_options`   | `RouteOption[]`   | Candidate destinations the router may choose from. One entry per (model, harness) pair.        |
+| `task`            | `Task`            | The unit of work to route. Carries the user's `prompt` (truncated to 4000 chars).              |
+| `route_selector`  | `RouteSelector`   | The routing strategy to apply. Required in practice; a gateway rejects a request that omits it. |
+| `session_history` | `SessionHistory`  | Prior turns in the session, when available. Routers may use it to keep turns consistent.        |
+
+**`RouteOption`**
+
+| Field     | Type     | Description                                                                                     |
+| --------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `model`   | `string` | Model id to serve the request, e.g. `gpt-5-5`.                                                   |
+| `harness` | `string` | Harness that drives the model. May be omitted for a native harness; required for a meta-harness. |
+
+**`RouteSelector`**
+
+| Field         | Type     | Description                                                                                       |
+| ------------- | -------- | ------------------------------------------------------------------------------------------------- |
+| `router_name` | `string` | Name of the routing strategy to invoke (from the `router_name` config field).                     |
+| `config`      | `Struct` | Optional router-specific configuration, interpreted by the selected router (gateway-defined).      |
+
+Example request body:
+
+```json
+{
+  "route_options": [
+    { "model": "claude-opus-4-8", "harness": "claude-sdk" },
+    { "model": "gpt-5-5", "harness": "codex" },
+    { "model": "gpt-5-4-mini", "harness": "pi" }
+  ],
+  "task": { "prompt": "Refactor the auth module and add tests" },
+  "route_selector": { "router_name": "task_v0" }
+}
+```
+
+### Response: `SelectRouteResponse`
+
+| Field             | Type                | Description                                                    |
+| ----------------- | ------------------- | -------------------------------------------------------------- |
+| `route_selection` | `RouteSelection[]`  | The routing decision(s). The server uses the first entry.     |
+| `rationale`       | `string`            | Human-readable explanation of why this route was selected.    |
+
+**`RouteSelection`**
+
+| Field          | Type          | Description                                                              |
+| -------------- | ------------- | ------------------------------------------------------------------------ |
+| `route_option` | `RouteOption` | The chosen destination (model + harness).                                |
+| `params`       | `Struct`      | Optional router-specific parameters emitted alongside the decision.      |
+
+Example response body:
+
+```json
+{
+  "route_selection": [
+    {
+      "route_option": { "model": "claude-opus-4-8", "harness": "claude-sdk" }
+    }
+  ],
+  "rationale": "Multi-file refactor with tests: favor the most capable model."
+}
+```
+
+The server maps the chosen `model` (and `harness`, when present) back to the
+matching catalog entry, restoring any stripped `model_prefix`. A model the server
+did not offer in `route_options` is rejected, and the session falls back to its
+default harness. On any error (HTTP 4xx/5xx, unparseable body, empty selection) the
+server surfaces the reason and degrades gracefully rather than blocking the session.

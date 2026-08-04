@@ -66,6 +66,11 @@ const ALL_PAGES = [
     section: "Use Omnigent",
   },
   {
+    href: "/docs/build/routing",
+    label: "Smart Routing",
+    section: "Use Omnigent",
+  },
+  {
     href: "/docs/build/prompts",
     label: "Prompts & Skills",
     section: "Use Omnigent",

@@ -1216,7 +1216,7 @@ figcaption {
   font-size: 1.5rem;
 }
 .docs-main h3 {
-  font-size: 1.05rem;
+  font-size: 1.2rem;
 }
 .docs-main ul,
 .docs-main ol {
@@ -1748,6 +1748,14 @@ figcaption {
   font-weight: 600;
   font-size: 0.95rem;
 }
+.blog-post-author-link {
+  width: fit-content;
+  color: inherit;
+  text-decoration: none;
+}
+.blog-post-author-link:hover {
+  text-decoration: underline;
+}
 .blog-post-meta {
   display: flex;
   align-items: center;
@@ -1755,7 +1763,6 @@ figcaption {
   font-size: 0.85rem;
   color: var(--fg-soft);
 }
-
 /* Shared thumbnail — real hero art, or a category placeholder tile. */
 .blog-thumb {
   display: block;

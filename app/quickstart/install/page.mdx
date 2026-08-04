@@ -4,7 +4,7 @@ import MacDownloadButton from "@/components/MacDownloadButton";
 
 export const metadata = pageMeta(
   "Install",
-  "Install the Omnigent CLI with a single command — via the installer script, uv, pip, or Homebrew — and grab the macOS desktop app.",
+  "Install the Omnigent CLI with the installer script, uv, pip, or Homebrew, or download the desktop app.",
   {
     eyebrow: "Quickstart",
     path: "/quickstart/install",
@@ -13,10 +13,8 @@ export const metadata = pageMeta(
 
 # Install
 
-Get Omnigent running in a few minutes. Install the CLI, set up your
-credentials, and launch your first agent. Once it's running you can
-add the native macOS app for a full UI — it's the last step of this
-same flow.
+Install the CLI, set up your credentials, and launch your first agent. Prefer a
+native window? Add the [desktop app](#install-the-desktop-app).
 
 ## Requirements
 
@@ -26,35 +24,67 @@ same flow.
 
 ## Install Omnigent
 
+The base install covers everyday use. Extra integrations are opt-in at install
+time. Run the same command to upgrade an existing installation.
+
 <InstallCommandTabs />
 
-Run the same command to upgrade an existing installation.
+Available extras:
 
-## Optional integrations
+| Category           | Extras                                                                       |
+| ------------------ | ---------------------------------------------------------------------------- |
+| Model providers    | `databricks`, `bedrock`, `vertex`                                            |
+| Sandbox providers  | `modal`, `daytona`, `boxlite`, `cwsandbox`, `e2b`, `openshell`, `kubernetes` |
+| SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                             |
+| Storage and memory | `s3`, `hindsight`                                                            |
 
-The base install covers everyday use. Optional integrations ship as
-**extras** you opt into at install time. Pass one or more to the installer
-script with `--extra` (comma-separate to add several):
+## Set up credentials
 
-```
-curl -fsSL https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/install_oss.sh | sh -s -- --extra databricks
-curl -fsSL https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/install_oss.sh | sh -s -- --extra modal,e2b
-```
-
-Available user-facing extras include:
-
-- **Model providers:** `databricks`, `bedrock`, `vertex`
-- **Sandbox providers:** `modal`, `daytona`, `boxlite`, `cwsandbox`, `e2b`,
-  `openshell`, `kubernetes`
-- **SDK harnesses:** `antigravity`, `copilot`, `cursor`, `agents-sdk`
-- **Storage and memory:** `s3`, `hindsight`
-
-Manual installs use the same extras, expressed with the standard
-`package[extra,...]` syntax:
+The wizard detects credentials in your environment and prompts for
+any that are missing. See [Models & Credentials](/docs/build/models#credentials)
+for the full reference.
 
 ```
-uv tool install "omnigent[databricks,modal]"
+omni setup
 ```
+
+## Launch Debby
+
+Try your install with Debby, a built-in multi-AI agent that sends every
+question to both Claude and GPT and lets them debate.
+
+```
+omni debby
+```
+
+This launches a web UI and prints the server URL and port. Ask something
+like `What came first, the chicken or the egg?` and watch the models
+challenge each other. See the [Debby reference](/docs/use/builtin-agents/debby)
+for more.
+
+## Install the desktop app
+
+The desktop app gives you the full UI in a native window, and adds OS features a
+browser can't, like notifications and a dock badge.
+
+<MacDownloadButton />
+
+{/* eslint-disable-next-line @next/next/no-img-element */}
+
+<img
+  src="/images/docs/desktop-start.png"
+  alt="Omnigent desktop app first-launch setup screen"
+  style={{ width: "100%", borderRadius: "8px" }}
+/>
+
+1. **Launch the app.** On first launch, you'll see a setup screen.
+2. **Enter your server URL.** `http://localhost:6767` if running locally, or your
+   deployed server URL (e.g. `https://your-app.onrender.com`).
+3. **Start working.** The app connects and shows the same UI you'd see in a
+   browser.
+
+See the [Desktop app](/docs/interact/desktop) reference for all platforms and
+details.
 
 ## Nightly builds
 
@@ -107,15 +137,15 @@ with `uv`, and exits fast when you are already current:
 ## Uninstall
 
 `omni uninstall` removes Omnigent while preserving your data by default. With
-no destructive flag it runs in **dry-run preview** mode, printing exactly what
-it would do without changing anything:
+no destructive flag, it runs a dry-run preview and prints what it would do
+without changing anything:
 
 ```
 omni uninstall
 ```
 
-To actually remove the CLI and the installer-managed PATH entries — while
-keeping your local history, credentials, and projects — add `--yes`:
+To actually remove the CLI and the installer-managed PATH entries, add
+`--yes`. Your local history, credentials, and projects stay in place:
 
 ```
 omni uninstall --yes
@@ -131,62 +161,16 @@ you also pass `--purge-workspace`:
 omni uninstall --purge --yes
 ```
 
-You can scope the run to one or more targets — `cli`, `state`, `desktop-data`,
-or `all` — and other flags cover less common cases: `--dry-run` to force a
-preview, `--json` for machine-readable output, `--force` to stop stubborn
-processes and override tamper refusals, and `--modify-external-config` to allow
-marker-scoped edits to third-party config files.
+You can scope the run to one or more targets: `cli`, `state`, `desktop-data`,
+or `all`. Other flags cover less common cases: `--dry-run` to force a preview,
+`--json` for machine-readable output, `--force` to stop stubborn processes and
+override tamper refusals, and `--modify-external-config` to allow marker-scoped
+edits to third-party config files.
 
-### Standalone fallback
-
-If the installed wheel is broken or `omni` is not on your `PATH`, run the
-standalone script instead. Add `--yes` to perform the previewed cleanup:
+If `omni` itself won't run (broken wheel, or not on your `PATH`), use the
+standalone uninstall script instead. It takes the same flags, so add `--yes`
+to perform the previewed cleanup:
 
 ```
 curl -fsSL https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/uninstall_oss.sh | sh
 ```
-
-## Set up credentials
-
-```
-omni setup
-```
-
-The wizard detects credentials in your environment and prompts for
-any that are missing. See [Models & Credentials](/docs/build/models#credentials)
-for the full reference.
-
-## Launch Debby
-
-Try your install with Debby, a built-in multi-AI agent that sends every
-question to both Claude and GPT and lets them debate.
-
-```
-omni debby
-```
-
-This launches a web UI and prints the server URL and port. Ask something
-like `What came first, the chicken or the egg?` and watch the models
-challenge each other. See the [Debby reference](/docs/use/builtin-agents/debby)
-for more.
-
-## Add the macOS app
-
-Prefer a native experience? The macOS app gives you a full UI, session
-history, and the ability to connect to a local or remote server — on top
-of the install you just set up. It's optional; everything above already
-works from the terminal.
-
-<MacDownloadButton />
-
-Open the downloaded app — it will ask for a server URL. The `omni debby`
-command above prints that URL when it launches the web UI. By default it is
-`http://localhost:6767`. If port 6767 is already taken, the server uses the
-next available port, so check the web UI for the actual URL (e.g.
-`http://localhost:6768`). Paste that into the desktop app to connect.
-
-Now your desktop app is ready to use. Pick **Debby** from the agent picker
-in the UI (along with the other agents we ship) and ask it anything.
-
-This also works with a remote server. See [Shared Server](/docs/deploy/overview)
-to learn how to deploy your own server.

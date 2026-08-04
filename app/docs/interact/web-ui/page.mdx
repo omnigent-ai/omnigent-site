@@ -43,16 +43,42 @@ is hidden.
 
 Organize related sessions into a named `Project`. Each project is a collapsible
 folder in the sidebar, keeping a long session list grouped around the work you're
-doing. Projects don't nest, and a session belongs to at most one.
+doing. Projects don't nest, and a session belongs to at most one. Grouping is the
+only thing a project requires; the sessions inside it can each use whatever host,
+agent, and settings you like.
 
-You can set or change a session's project from two places:
+Create a project from the sidebar at any time, including an empty one with no
+sessions yet, then move sessions into it as the work takes shape.
 
-- When you start a session: in the new-chat composer, use the `Project` chip
-  to search your projects, or type a name to create one on the spot.
-- For an existing session: open the session's `⋯` menu and choose `Move session`, then search your projects, create a new one, or remove the session from its project.
+You can file a session into a project from two places:
 
-Each project folder has a shortcut to start a new session already filed there.
-Removing a session from a project moves the session back to `Chats` section, and deleting a project archives all its sessions.
+- Start a new session already filed there: each project folder in the sidebar
+  has a shortcut that opens the new-chat composer with the session assigned to
+  that project.
+- Move an existing session: open the session's `⋯` menu and choose
+  `Move session`, then search your projects, create a new one, or remove the
+  session from its project.
+
+Removing a session from a project moves the session back to `Sessions` section, and deleting a project archives all its sessions.
+
+#### Project settings and defaults
+
+When the sessions in a project tend to run the same way, a project can store its
+own default session settings so you don't re-pick them every time. Open the
+project folder's `⋯` menu and choose `Project settings`, then set any of:
+
+- **Host** the new session runs on.
+- **Working directory** the agent starts in.
+- **Default agent** for the session.
+- **Random worktree**, which branches each new session into its own fresh git
+  worktree.
+
+New sessions started in that project pre-fill the composer from these defaults.
+Nothing is locked in: every field is still editable before you send, any default
+you leave unset falls back to your usual settings, and a default that no longer
+applies (an offline host, an uninstalled agent) is skipped rather than blocking
+the session. Leave the settings empty and the project stays a pure organizing
+tool.
 
 ### Worktree branches
 
@@ -231,6 +257,34 @@ Each queued row has inline actions:
   flush.
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
+
+## Scheduled tasks
+
+Run an agent on a recurring schedule instead of starting each session by hand. A
+scheduled task is a saved prompt plus a recurrence rule: it fires automatically,
+runs the chosen agent, and keeps firing until you delete it.
+
+To create one manually, open the **New scheduled task** dialog and fill in:
+
+- **Name** — a label for the task (for example, `Nightly triage`).
+- **Prompt** — the instruction the agent receives on every run.
+- **Runs with** — the agent or harness to run. Scheduled tasks use that agent's
+  default model, effort, and permission settings; there are no per-task model or
+  effort overrides in this dialog.
+- **Frequency** — one of four presets: **Hourly**, **Daily**, **Weekdays**, or
+  **Weekly**. Hourly fires once an hour and asks only for the **minute** of the
+  hour; Daily and Weekdays ask for a **time**; Weekly adds a weekday
+  multi-select (**On days**). Times are chosen in 15-minute steps. The schedule
+  is evaluated in your browser's local timezone.
+- **Host (optional)** — pin the task to a specific connected host, or leave it
+  set to **Resolve at fire time** to run on your connected host whenever the
+  task fires.
+- **Workspace (optional)** — shown only once a host is pinned. Pick a directory
+  to pin it; leave it unset to default to the host's home directory. A workspace
+  can't be set without a host.
+
+The **Create task** button stays disabled until Name, Prompt, a valid schedule,
+and an agent are all set.
 
 ## Collaboration
 

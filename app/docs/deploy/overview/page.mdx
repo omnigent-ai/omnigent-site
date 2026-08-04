@@ -136,6 +136,26 @@ service is not available in your region, or when you need something it does
 not expose yet — custom YAML policies, bring-your-own provider API keys, or
 custom egress controls.
 
+#### Headless access with a Databricks profile
+
+Once the server is running as a Databricks App, connect a client to it with
+`omni run --server https://<app>.databricksapps.com`. Interactively this uses
+your `omni login` credentials, but for **headless service-principal access** —
+CI, scheduled jobs, or any environment where you can't run an interactive
+`omni login` first — pass `--profile` to authenticate with a named profile from
+your `~/.databrickscfg`:
+
+```
+omni run --server https://<app>.databricksapps.com --profile my-sp -p "hi"
+```
+
+`--profile NAME` sets `DATABRICKS_CONFIG_PROFILE` for the run so the Databricks
+SDK credential chain (service-principal M2M, PAT, or OAuth) resolves that
+profile. An explicit `--profile` wins over any ambient
+`DATABRICKS_CONFIG_PROFILE`; omit the flag and an env var you've exported
+yourself is left untouched. Only this CLI process's environment is affected,
+not your shell.
+
 ### Kubernetes
 
 Deploy the Omnigent server to a Kubernetes cluster with the kustomize manifests

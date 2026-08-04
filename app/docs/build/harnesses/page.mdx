@@ -72,6 +72,29 @@ curl -fsSL https://x.ai/cli/install.sh | bash
 grok login --device-auth   # xAI OAuth (device-code capable); or set XAI_API_KEY
 ```
 
+## Kimi Code
+
+Kimi Code (`kimi`, alias `kimi-code`) brings **its own auth** — Omnigent stores
+no credential. Kimi ships via a curl installer (no npm package), so install the
+CLI and sign in through it first:
+
+```
+curl -fsSL https://code.kimi.com/kimi-code/install.sh | bash
+kimi login   # Moonshot OAuth, or paste a Moonshot API key
+```
+
+`kimi login` writes its credential to `~/.kimi-code/credentials/kimi-code.json`.
+`omni setup` detects that file and shows Kimi as **Signed in** once a login has
+completed; while the CLI is installed but no credential is present it shows
+**Not configured** with a "Sign in with `kimi login`" hint.
+
+Kimi has **no** `kimi logout` subcommand, so `omni setup` offers no sign-out
+row. To sign out, delete the credential file:
+
+```
+rm ~/.kimi-code/credentials/kimi-code.json
+```
+
 ## Custom ACP agents
 
 Beyond the agents above, the generic `acp` harness drives *any* agent that

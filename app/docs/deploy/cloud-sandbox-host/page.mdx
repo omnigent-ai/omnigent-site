@@ -145,6 +145,30 @@ active gateway (`$OPENSHELL_GATEWAY` or `~/.config/openshell/active_gateway`).
 (create, get, delete). Omit it to resolve `$OMNIGENT_OPENSHELL_WORKSPACE`, then
 fall back to `"default"`.
 
+**Boxlite:**
+
+```
+sandbox:
+  provider: boxlite
+  server_url: https://your-server.example.com
+  boxlite:
+    image: docker.io/me/omnigent-host:latest     # optional, official image by default
+    env: [OPENAI_API_KEY, GIT_TOKEN]             # server env vars to copy into sandbox
+    disk_size_gb: 100                            # optional; box disk size in GB
+    cloud:
+      endpoint: https://boxlite.example.com:8100 # selects CLOUD mode
+    # local: {home_dir: /data/boxlite, registry: {...}}  # LOCAL mode (default if omitted)
+```
+
+`env` lists env var names to copy from the server's environment into each box;
+values never live in the config file. Provide exactly one mode: a `cloud` block
+with an `endpoint` (CLOUD mode, authenticated with the `BOXLITE_API_KEY` env
+var), or a `local` block with `home_dir` / `registry` (LOCAL mode, used by
+default when neither is set).
+
+`disk_size_gb` sets the box disk size in gigabytes and must be a positive
+integer. Omit it to use the Boxlite SDK's own default disk size.
+
 <div className="note">
 
 **Islo idle pause and resume:** server-managed Islo sandboxes pause after 15

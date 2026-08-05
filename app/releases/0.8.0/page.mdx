@@ -1,62 +1,46 @@
 {/* Auto-generated from the GitHub Release for v0.8.0. Edit the GitHub Release, not this file. */}
 
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Omnigent v0.8.0",
+  "What's new in Omnigent v0.8.0 — release highlights, improvements, and fixes.",
+  {
+    eyebrow: "Release",
+    path: "/releases/0.8.0",
+    absoluteTitle: true,
+  },
+);
+
 # v0.8.0
 
 _Released 2026-08-03_ · 3 min read · Omnigent maintainers
 
-Omnigent 0.8.0 is a major release focused on making the platform smarter and more collaborative, from how you pick a model to how your team shares a session. Model choices now come live from your active providers and installed CLIs, the web workspace has been reworked into an editor-style experience, new guardrail policies catch agents stuck in loops, and owners can delegate approval authority without handing over their credentials.
+Omnigent 0.8.0 is a major release focused on making the platform smarter and more collaborative, from how you pick a model to how you bring in agents. Model choices now come live from your active providers and installed CLIs, the web workspace has been reworked into an editor-style experience, and new guardrail policies catch agents stuck in loops.
 
 ## 1. Live model discovery
-
-![TODO: add a demo screenshot or GIF for "Live model discovery"](TODO)
 
 Model lists used to be baked into each release, which meant they drifted out of date the moment a provider shipped something new. Now the choices come straight from your active provider catalog and the CLIs you actually have installed — Kiro, Cursor, and Pi — so the models you see are the models you can run.
 
 To keep things stable when an upstream catalog hiccups, Omnigent validates and falls back to a last-known-good catalog, so a provider outage never leaves you without options. You simply pick from the current, live list when you start or switch a session.
 
-_Learn more in the [Choose a model](/docs/build/models#choose-a-model)._
-
 ## 2. Reworked web workspace and sidebar
-
-![TODO: add a demo screenshot or GIF for "Reworked web workspace and sidebar"](TODO)
 
 The web workspace now behaves like a real editor. Files and shells open as tabs, with shells docked in the rail and a full-screen toggle when you want room to work. Markdown previews render Mermaid diagrams inline, and the subagent graph is clickable and zoomable so you can trace what your agents are doing.
 
 You can also choose a Codex model before you launch, right from the sidebar, instead of committing first and adjusting later.
 
-_Learn more in the [Web UI](/docs/interact/web-ui)._
-
 ## 3. More agents and sign-ins
-
-![TODO: add a demo screenshot or GIF for "More agents and sign-ins"](TODO)
 
 Omnigent 0.8.0 widens the set of agents you can bring in and how you authenticate them. You can sign in to Antigravity with Google OAuth through `agy`, and add `agy` as a Polly sub-agent. Existing OpenClaw and acpx coding agents drop into the ACP picker with `omnigent run --from-openclaw`, and you can launch Claude and Codex children directly in goal mode.
 
-_Learn more in the [Custom ACP agents](/docs/build/harnesses#custom-acp-agents)._
-
 ## 4. New guardrail policies
-
-![TODO: add a demo screenshot or GIF for "New guardrail policies"](TODO)
 
 Two new policies watch for agents that get stuck. `detect_loop` and `detect_thrashing` catch an agent retrying or failing in a loop and prompt you to step in before it burns time and tokens going nowhere.
 
 The GitHub policy also gets safer by default: destructive deletes are now blocked unless you explicitly opt in with `allow_destructive: true`.
 
-_Learn more in the [Safety](/docs/policies/builtin#safety)._
-
-## 5. Shared-session collaboration
-
-![TODO: add a demo screenshot or GIF for "Shared-session collaboration"](TODO)
-
-Collaborating on a session no longer means giving up control of it. Owners can now delegate approval authority to trusted collaborators without handing over ownership, so someone else can approve actions while you stay in charge.
-
-Every message carries author attribution, too, so you always know who said what — without changing whose credentials actually execute the work.
-
-_Learn more in the [Session sharing](/docs/collaborate/auth#session-sharing)._
-
-## 6. Sharper CLI
-
-![TODO: add a demo screenshot or GIF for "Sharper CLI"](TODO)
+## 5. Sharper CLI
 
 The command line gets a round of polish. `omni upgrade` now preserves your installed extras and accepts `--extra`, `--target-version`, and `--dry-run` so you can see exactly what an upgrade will do first. `omnigent --help` groups and colorizes harness commands for easier scanning, and `omnigent diagnose` prints a secret-free snapshot of your environment when you need to troubleshoot.
 

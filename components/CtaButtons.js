@@ -1,8 +1,13 @@
 import Link from "next/link";
-import { RocketIcon, AppleIcon, DiscordIcon } from "@/components/icons";
+import {
+  RocketIcon,
+  AppleIcon,
+  AndroidIcon,
+  DiscordIcon,
+} from "@/components/icons";
 import { DISCORD_URL } from "@/components/links";
 
-// Get Started (purple, primary) · macOS App (white) · iOS App (white) · Join Discord (white).
+// Get Started (purple, primary) · macOS App (white) · iOS App (white) · Android App (white) · Join Discord (white).
 // The macOS button links to the desktop app reference page (/docs/interact/desktop).
 export default function CtaButtons() {
   return (
@@ -15,6 +20,9 @@ export default function CtaButtons() {
       </Link>
       <Link href="/docs/interact/mobile#ios-app" className="btn">
         <AppleIcon size={16} /> iOS App
+      </Link>
+      <Link href="/docs/interact/mobile#android-app" className="btn">
+        <AndroidIcon size={16} /> Android App
       </Link>
       <a href={DISCORD_URL} className="btn" target="_blank" rel="noreferrer">
         <DiscordIcon /> Join Discord

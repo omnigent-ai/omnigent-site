@@ -81,7 +81,7 @@
   },
   "/docs/interact/mobile": {
     "title": "Mobile",
-    "description": "Use Omnigent on your phone: the native iOS app from the App Store, or the mobile web UI in any phone browser. Start a session on your laptop, continue it on your phone.",
+    "description": "Use Omnigent on your phone: native apps for iOS and Android, or the mobile web UI in any phone browser. Start a session on your laptop, continue it on your phone.",
     "eyebrow": "Interact"
   },
   "/docs/interact/slack": {

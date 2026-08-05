@@ -26,6 +26,20 @@ export function AppleIcon({ size = 17 }) {
   );
 }
 
+export function AndroidIcon({ size = 17 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M17.6 9.48 19.44 6.3a.63.63 0 0 0-1.09-.63l-1.86 3.22a11.43 11.43 0 0 0-8.98 0L5.65 5.67a.63.63 0 0 0-1.09.63L6.4 9.48A10.81 10.81 0 0 0 1 18.75h22a10.81 10.81 0 0 0-5.4-9.27ZM7 15.25a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm10 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z" />
+    </svg>
+  );
+}
+
 export function CalendarIcon({ size = 17 }) {
   return (
     <svg

@@ -31,7 +31,7 @@
   },
   "/docs/build/routing": {
     "title": "Smart Routing",
-    "description": "Let a router pick the best harness and model for each session automatically, using the built-in judge or an external routing API.",
+    "description": "Let a router pick the best harness and model for each session automatically — with the built-in judge, the Databricks AI Gateway task_v1 router, or both.",
     "eyebrow": "Build"
   },
   "/docs/build/scheduled-tasks": {

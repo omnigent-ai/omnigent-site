@@ -2,7 +2,7 @@ import { pageMeta } from "@/lib/og";
 
 export const metadata = pageMeta(
   "Smart Routing",
-  "Let a router pick the best harness and model for each session automatically, using the built-in judge or an external routing API.",
+  "Let a router pick the best harness and model for each session automatically — with the built-in judge, the Databricks AI Gateway task_v1 router, or both.",
   {
     eyebrow: "Build",
     path: "/docs/build/routing",
@@ -26,111 +26,290 @@ fit?", and applies the answer for the rest of the session.
   style={{ width: "100%", height: "auto", borderRadius: "8px", margin: "1rem 0" }}
 />
 
-Two routers are available:
+## The two routers
 
-- **Built-in judge**: an LLM call using the server's own `llm:` block.
-  No extra infrastructure.
-- **External routing API**: the server delegates the decision to an external
-  `routes:select` service that you point it at.
+Omnigent ships two routers. They are not alternatives you choose between — a
+deployment can have either, both, or neither, and the server picks between them
+per decision.
 
-## Enable smart routing
+- **The built-in judge** — an LLM call using the server's own `llm:` block. It
+  names models from the candidate menu it is handed, so it can serve any
+  harness, on any credential. No extra infrastructure, and no dependency on any
+  vendor: this is the pure open-source router.
+- **The Databricks AI Gateway `task_v1` router** — a hosted routing service the
+  server calls over the [routing API](#external-routing-api) with
+  `routing.provider: external`. Its picks are AI Gateway catalog ids, so it can
+  only serve a harness whose inference actually runs through that gateway.
 
-Smart routing is enabled by configuration alone:
+### Which one answers
 
-- Configure a server `llm:` block and the server uses the **built-in judge** backed
-  by it, with no `routing:` block required.
-- Or add a `routing:` block with `provider: external` to delegate to an
-  **external routing API** (see below).
+One selector runs per decision:
 
-Start the server with your config file:
+> The `task_v1` router answers when it is configured **and** every model family
+> the decision involves is AI-Gateway-backed on the target host. Otherwise the
+> built-in judge answers. A server with neither configured has no routing.
+
+Gateway backing selects the **source**, not whether the feature exists. A pane
+that is off the gateway still routes — the judge serves it — and the decision
+records which router answered.
+
+| Your setup                                                    | Which router answers                                                                                                             | What you see                                                                            |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `task_v1` configured, **every** family gateway-backed         | the AI Gateway `task_v1` router                                                                                                  | every surface; each decision chip carries a small Databricks mark                       |
+| `task_v1` configured, one family off the gateway              | per decision: the backed family keeps `task_v1`; the off-gateway family — and any decision spanning both — goes to the judge | the same surfaces, nothing hidden; only the judge's chips lack the mark                 |
+| only an `llm:` block                                          | the built-in judge                                                                                                               | every surface; no chip carries a mark                                                    |
+| neither                                                       | nobody                                                                                                                           | no Smart Routing surfaces, and the CLI reports that the server has no routing model      |
+
+A host that reports nothing about gateway backing counts as backed — "unknown"
+is not "off the gateway", so a deployment whose hosts cannot yet answer is not
+silently downgraded.
+
+## Configure
+
+Smart routing is enabled by configuration alone — there is no env var and no
+feature flag. The examples below are complete `~/.omnigent/config.yaml` files.
+
+Point the server at the file explicitly:
 
 ```
-omni server -c path/to/config.yaml
+omni server -c ~/.omnigent/config.yaml
 ```
 
-With a router configured, users see an **Auto** option in the harness picker;
-picking it defers harness + model selection to the router on the first message.
-With neither an `llm:` block nor an external `routing:` block, routing stays off
-and the Auto option is hidden.
+The `-c` matters. `providers:` is picked up from `~/.omnigent/config.yaml`
+whether or not you pass it, but **`llm:` and `routing:` are read only from the
+file given to `-c`**. An `llm:` block in a config the server was never pointed
+at is the most common reason a judge silently fails to appear.
 
-## Configure the external routing API
+### Out of the box: routing off
 
-To delegate routing to an external service, add a top-level `routing:` block to the
-server config with `provider: external`:
+Providers only, with no `llm:` and no `routing:` block. Nothing routes, and the
+Smart Routing options stay hidden.
 
 ```yaml
-routing:
-  provider: external
-  base_url: https://gateway.example.com/ai-gateway/routing/v1
-  router_name: task_v0
-  # Optional: strip a prefix from catalog model ids before sending them to
-  # the router (and restore it on the answer). Accepts a string or a list.
-  model_prefix: databricks-
-  # Optional auth, see "Authentication" below.
-  api_key: ${ROUTING_API_KEY}
+providers:
+  anthropic:
+    kind: key
+    api_key: ${ANTHROPIC_API_KEY}
 ```
 
-| Field          | Required | Description                                                                                                                                           |
-| -------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `provider`     | yes      | Must be `external` to select the external routing API. Any other value (or omitting the block) falls back to the built-in judge.                       |
-| `base_url`     | yes      | Base URL of the routing service. The server appends `/routes:select` to it.                                                                           |
-| `router_name`  | yes      | The routing strategy the gateway should apply, e.g. `task_v0`. Sent as `route_selector.router_name`.                                                   |
-| `model_prefix` | no       | A prefix (or list of prefixes) stripped from catalog model ids before they are sent to the router, and restored on its answer. Example: `databricks-`. |
-| `api_key`      | no       | Static bearer token. `${ENV}` references are expanded. Takes precedence over `profile`.                                                                |
-| `profile`      | no       | Databricks CLI profile. The server mints a fresh bearer per call (OAuth refresh), so a long-lived server never sends an expired token.                 |
+### The built-in judge
 
-If `base_url` or `router_name` is missing, the external provider is skipped and a
-warning is logged: routing stays off rather than failing the server.
+Add an `llm:` block to any provider setup. `model` is the only required field.
 
-### Authentication
+```yaml
+providers:
+  anthropic:
+    kind: key
+    api_key: ${ANTHROPIC_API_KEY}
 
-Auth mirrors the `llm:` block, in precedence order:
+llm:
+  model: openai/gpt-5.4
+  connection:
+    base_url: https://api.openai.com/v1
+    api_key: ${OPENAI_API_KEY}
+```
 
-1. **`api_key`**: an explicit, provider-agnostic bearer token (`${ENV}` expanded).
-   Sent as `Authorization: Bearer <token>`.
-2. **`profile`**: a Databricks CLI profile. The server resolves a fresh token per
-   request via the Databricks SDK, so tokens that expire (~1h) are refreshed
-   automatically.
-3. **Neither**: requests are sent unauthenticated.
+The model id takes either form: provider-prefixed (`openai/gpt-5.4`), or a bare
+`databricks-…` catalog id, which the server routes through its Databricks
+adapter. Credentials come from either a `connection:` mapping or a Databricks
+CLI profile — `connection:` wins when both are present:
 
-## External routing API spec
+```yaml
+llm:
+  model: databricks-claude-haiku-4-5
+  profile: my-workspace
+```
 
-The server calls a single endpoint:
+This is the pure open-source path: no gateway, no external service, and the
+judge serves every harness on the host.
+
+### The Databricks AI Gateway `task_v1` router
+
+A `kind: databricks` provider makes both model families gateway-backed; the
+`routing:` block names the router to call.
+
+```yaml
+providers:
+  my-workspace:
+    default: true
+    kind: databricks
+    profile: my-workspace
+
+routing:
+  provider: external
+  base_url: https://<workspace-host>/ai-gateway/routing/v1
+  router_name: task_v1
+  profile: my-workspace
+  model_prefix:
+    - databricks-
+    - system.ai.
+```
+
+Use `profile:` rather than a static `api_key:` where you can — the server mints
+a fresh bearer per call, so a long-lived server never sends a token expired by
+the ~1 hour OAuth window.
+
+Two things worth knowing about this block:
+
+- **It is optional on a Databricks provider.** Leave the `routing:` key out
+  entirely and the server derives the same client from your default Databricks
+  provider, using that workspace's `/ai-gateway/routing/v1`. Declaring it makes
+  the target explicit. Note the derivation only fires when the key is absent —
+  a `routing:` block naming any provider other than `external` or `none` leaves
+  you with the judge alone.
+- **Deleting it does not turn routing off.** Because of that derivation, the
+  only true off-switch is:
+
+  ```yaml
+  routing:
+    provider: none
+  ```
+
+  This one is absolute: it disables the `task_v1` router *and* the built-in
+  judge, even if an `llm:` block is present.
+
+### Both
+
+Configure `llm:` and `routing:` together and you get the full posture: the
+`task_v1` router on gateway-backed decisions, the built-in judge everywhere
+else. This is what keeps Smart Routing available on a host where only one family
+is wired to the gateway — the unbacked family degrades to the judge instead of
+losing the feature.
+
+`model_prefix` strips a prefix from catalog model ids before they are sent to
+the router and restores it on the answer, so a catalog full of
+`databricks-claude-…` ids can talk to a router that knows them by their bare
+names.
+
+## Verify your setup
+
+Ask the server which routers it has:
+
+```
+curl -s localhost:50151/v1/info | jq '{smart_routing_enabled, smart_routing_sources}'
+```
+
+`smart_routing_sources` reports the two sides independently — `external` is the
+AI Gateway `task_v1` router, `oss` is the built-in judge.
+
+Then ask whether the host can actually run the gateway router's picks:
+
+```
+curl -s localhost:50151/v1/hosts | jq '.hosts[0] | {status, gateway_inference}'
+```
+
+`gateway_inference` is a per-family map, reported by each host at registration.
+A family reported `false` cannot run `task_v1`'s picks, so its decisions fall to
+the judge. A family missing from the map could not be evaluated, and counts as
+backed — the map distinguishes "not backed" from "could not tell". Two families
+are evaluated, Claude and Codex; anything else is always unknown.
+
+What makes a family gateway-backed:
+
+| Family     | Gateway-backed when                                                              | Not backed                                                             |
+| ---------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Claude** | the launch pins `ANTHROPIC_BASE_URL` **and** delivers its token via `apiKeyHelper` | Bedrock (`ANTHROPIC_BEDROCK_BASE_URL`, no helper), or a Claude Pro/Max subscription login |
+| **Codex**  | the launch resolves an AI Gateway Codex base URL (a gateway URL ending `/codex/v1`) | a ChatGPT subscription login, or any non-gateway base URL              |
+
+Subscriptions and Bedrock are never gateway-backed. That is the most common
+reason a decision comes back from the judge on an otherwise Databricks-backed
+server.
+
+## What you see
+
+**Decision chips.** Every routing decision renders a chip under the message
+showing the harness and model it picked and the router's own rationale — the
+rule trace behind the choice ("trivial task → cheapest arm"). Chips appear for
+the session's own decision and for each routed subagent spawn. A session's gear
+carries one in-session routing control, **Subagent routing**, which decides
+whether spawns route or run on the harness default; the session's own routing is
+decided once, when it is created.
+
+**Which router answered.** A chip carries a small Databricks mark when the
+`task_v1` router answered. No mark means the built-in judge answered. Pickers
+are never branded — only decisions. The exact answer is in the raw verdict JSON
+on the routing card, under `router_source`: `"databricks-aigw"` or `"oss-llm"`.
+
+**Partial credentials degrade, they don't hide.** If only one family is
+gateway-backed, every surface stays. The unbacked family's decisions — and any
+decision spanning both families — come from the judge, and their chips carry no
+mark. The CLI says so once per launch, in one line: _"&lt;harness&gt; is not
+AI-Gateway-backed on this host — routing with the built-in router instead."_
+Surfaces disappear only when the server has no judge either, and then the error
+is specific: _"not AI-Gateway-backed"_ is a credential problem on your machine,
+_"the server has no routing model configured"_ is a server problem.
+
+**From the CLI.** `--smart-routing` routes a launch:
+
+```
+omni run --smart-routing -p "review the last commit"
+omni run --harness claude-native --smart-routing -p "fix the flaky test"
+```
+
+Routing happens when the session is created, so `--smart-routing` starts a new
+session and cannot be combined with `--resume` or `--continue`.
+
+**First-message routing in a bare TUI.** Native harnesses that hook their own
+first typed message can be launched with no prompt at all:
+
+```
+omni claude --smart-routing
+omni codex --smart-routing
+```
+
+The TUI opens unrouted. Type your first message and the harness routes it in
+place: the prompt is held, a notice reads _"Smart Routing selected &lt;model&gt;;
+rerunning your message on it."_, the model switch is applied while nothing is
+running, and your message is replayed on it. The switch is scoped to the
+session, so your global CLI defaults are never touched, and the replay does not
+duplicate the message in the session. Later messages do not re-route — the
+decision is per-session.
+
+## External routing API
+
+`routing.provider: external` calls a single endpoint:
 
 ```
 POST <base_url>/routes:select
 Content-Type: application/json
 ```
 
-The request and response bodies follow the `omnigent.api.routing.v1` schema
-(proto3, serialized as JSON with snake_case field names). This schema is versioned
-independently of any gateway so the contract can evolve without coupling to a
-gateway's release cycle.
+Request and response bodies follow the `omnigent.api.routing.v1` schema (proto3,
+serialized as JSON with snake_case field names). The schema is versioned
+independently of any gateway, so the contract can evolve without coupling to a
+gateway's release cycle — `task_v1` is one router served over it, not the
+protocol itself.
+
+### Configuration fields
+
+| Field          | Required | Description                                                                                                                     |
+| -------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `provider`     | yes      | `external` selects the routing API. `none` disables routing entirely. Any other value leaves only the built-in judge.            |
+| `base_url`     | yes      | Base URL of the routing service. The server appends `/routes:select`.                                                           |
+| `router_name`  | yes      | The routing strategy to apply, e.g. `task_v1`. Sent as `route_selector.router_name`.                                            |
+| `model_prefix` | no       | A prefix, or list of prefixes, stripped from catalog model ids before they are sent and restored on the answer.                  |
+| `selection_model` | no    | Pins the model the router uses for its own selection call. Sent as `route_selector.config.model`; omitted leaves the router's default. |
+| `api_key`      | no       | Static bearer token. `${ENV}` references are expanded. Takes precedence over `profile`.                                          |
+| `profile`      | no       | Databricks CLI profile. The server mints a fresh bearer per call (OAuth refresh), so a long-lived server never sends an expired token. |
+
+If `base_url` or `router_name` is missing, the external side is skipped with a
+warning rather than failing the server — the built-in judge, if configured,
+carries on alone.
 
 ### Request: `SelectRouteRequest`
 
-| Field             | Type              | Description                                                                                    |
-| ----------------- | ----------------- | ---------------------------------------------------------------------------------------------- |
-| `route_options`   | `RouteOption[]`   | Candidate destinations the router may choose from. One entry per (model, harness) pair.        |
-| `task`            | `Task`            | The unit of work to route. Carries the user's `prompt` (truncated to 4000 chars).              |
-| `route_selector`  | `RouteSelector`   | The routing strategy to apply. Required in practice; a gateway rejects a request that omits it. |
-| `session_history` | `SessionHistory`  | Prior turns in the session, when available. Routers may use it to keep turns consistent.        |
+| Field             | Type             | Description                                                                                     |
+| ----------------- | ---------------- | ------------------------------------------------------------------------------------------------- |
+| `route_options`   | `RouteOption[]`  | Candidate destinations the router may choose from. One entry per (model, harness) pair.         |
+| `task`            | `Task`           | The unit of work to route. Carries the user's `prompt` (truncated to 4000 chars).                |
+| `route_selector`  | `RouteSelector`  | The routing strategy to apply. Required in practice; a gateway rejects a request that omits it. |
+| `session_history` | `SessionHistory` | Prior turns in the session, when available. Routers may use it to keep turns consistent.        |
 
-**`RouteOption`**
+**`RouteOption`** — `model` (string, e.g. `gpt-5-5`) and `harness` (string; may
+be omitted for a native harness, required for a meta-harness).
 
-| Field     | Type     | Description                                                                                     |
-| --------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `model`   | `string` | Model id to serve the request, e.g. `gpt-5-5`.                                                   |
-| `harness` | `string` | Harness that drives the model. May be omitted for a native harness; required for a meta-harness. |
-
-**`RouteSelector`**
-
-| Field         | Type     | Description                                                                                       |
-| ------------- | -------- | ------------------------------------------------------------------------------------------------- |
-| `router_name` | `string` | Name of the routing strategy to invoke (from the `router_name` config field).                     |
-| `config`      | `Struct` | Optional router-specific configuration, interpreted by the selected router (gateway-defined).      |
-
-Example request body:
+**`RouteSelector`** — `router_name` (string, from the config field) and an
+optional `config` (`Struct`) interpreted by the selected router.
 
 ```json
 {
@@ -140,25 +319,19 @@ Example request body:
     { "model": "gpt-5-4-mini", "harness": "pi" }
   ],
   "task": { "prompt": "Refactor the auth module and add tests" },
-  "route_selector": { "router_name": "task_v0" }
+  "route_selector": { "router_name": "task_v1" }
 }
 ```
 
 ### Response: `SelectRouteResponse`
 
-| Field             | Type                | Description                                                    |
-| ----------------- | ------------------- | -------------------------------------------------------------- |
-| `route_selection` | `RouteSelection[]`  | The routing decision(s). The server uses the first entry.     |
-| `rationale`       | `string`            | Human-readable explanation of why this route was selected.    |
+| Field             | Type               | Description                                                |
+| ----------------- | ------------------ | ------------------------------------------------------------ |
+| `route_selection` | `RouteSelection[]` | The routing decision(s). The server uses the first entry.  |
+| `rationale`       | `string`           | Human-readable explanation of why this route was selected. |
 
-**`RouteSelection`**
-
-| Field          | Type          | Description                                                              |
-| -------------- | ------------- | ------------------------------------------------------------------------ |
-| `route_option` | `RouteOption` | The chosen destination (model + harness).                                |
-| `params`       | `Struct`      | Optional router-specific parameters emitted alongside the decision.      |
-
-Example response body:
+**`RouteSelection`** — `route_option` (the chosen model + harness) and an
+optional `params` (`Struct`) emitted alongside the decision.
 
 ```json
 {
@@ -174,5 +347,12 @@ Example response body:
 The server maps the chosen `model` (and `harness`, when present) back to the
 matching catalog entry, restoring any stripped `model_prefix`. A model the server
 did not offer in `route_options` is rejected, and the session falls back to its
-default harness. On any error (HTTP 4xx/5xx, unparseable body, empty selection) the
-server surfaces the reason and degrades gracefully rather than blocking the session.
+default harness. On any error (HTTP 4xx/5xx, unparseable body, empty selection)
+the server surfaces the reason and degrades gracefully rather than blocking the
+session.
+
+## Related
+
+- [Models & Credentials](/docs/build/models) — how each provider and credential
+  type is wired, including Databricks workspace profiles.
+- [Harnesses](/docs/build/harnesses) — the runtimes a router can pick between.

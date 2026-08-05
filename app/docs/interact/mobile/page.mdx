@@ -2,7 +2,7 @@ import { pageMeta } from "@/lib/og";
 
 export const metadata = pageMeta(
   "Mobile",
-  "Use Omnigent on your phone: the native iOS app from the App Store, or the mobile web UI in any phone browser. Start a session on your laptop, continue it on your phone.",
+  "Use Omnigent on your phone: native apps for iOS and Android, or the mobile web UI in any phone browser. Start a session on your laptop, continue it on your phone.",
   {
     eyebrow: "Interact",
     path: "/docs/interact/mobile",
@@ -14,10 +14,11 @@ export const metadata = pageMeta(
 The same session is accessible on terminal, browser, and phone simultaneously. Start on your
 laptop, continue on your phone. Everything syncs in real time across devices.
 
-You have two ways to use Omnigent on a phone:
+You have three ways to use Omnigent on a phone:
 
 - **iOS app.** A native app from the App Store that connects to any Omnigent server you point it at.
-- **Mobile web UI.** The full web UI in any phone browser, on Android, or on iOS if you prefer not to install the app.
+- **Android app.** A native app from Google Play that connects to your Omnigent server.
+- **Mobile web UI.** The full web UI in any phone browser if you prefer not to install an app.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
@@ -67,6 +68,21 @@ than hosting sessions itself.
 
 The app shows foreground notifications and updates the app badge while it's open. It does not
 do background polling, so notifications arrive when the app is in the foreground.
+
+## Android app
+
+The Omnigent Android app is available on
+[Google Play](https://play.google.com/store/apps/details?id=ai.omnigent.android).
+It connects to a self-hosted or cloud-hosted Omnigent server and keeps your
+sessions in sync with the desktop and browser interfaces.
+
+### Get started
+
+1. **Install the app** from [Google Play](https://play.google.com/store/apps/details?id=ai.omnigent.android).
+2. **Enter your server URL.** On first launch, connect to an Omnigent server you
+   run or have access to.
+3. **Start working.** Follow agent work, send messages, review outputs, and switch
+   between sessions from your phone.
 
 ## Mobile web UI
 

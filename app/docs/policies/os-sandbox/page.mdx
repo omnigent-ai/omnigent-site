@@ -50,13 +50,29 @@ os_env:
 ```
 
 On Linux, Omnigent uses bubblewrap (`bwrap`). On macOS, it uses Seatbelt
-(`sandbox-exec`). Omit `type` to auto-detect.
+(`sandbox-exec`). Omit `type` — or set `type: auto` — to pick the platform
+default; the two resolve identically.
 
-| Platform | Backend           | Mechanism                        |
-| -------- | ----------------- | -------------------------------- |
-| Linux    | `linux_bwrap`     | Bubblewrap namespaces + seccomp  |
-| macOS    | `darwin_seatbelt` | `sandbox-exec` SBPL profiles     |
-| Other    | `none`            | No sandboxing (explicit opt-out) |
+| Platform | Backend             | Mechanism                        |
+| -------- | ------------------- | -------------------------------- |
+| Linux    | `linux_bwrap`       | Bubblewrap namespaces + seccomp  |
+| macOS    | `darwin_seatbelt`   | `sandbox-exec` SBPL profiles     |
+| Windows  | `windows_jobobject` | Windows job objects              |
+| Other    | `none`              | No sandboxing (explicit opt-out) |
+
+### Choosing or disabling the backend
+
+You usually don't set `type` at all — Omnigent picks the platform default. Two
+explicit values are available when you want to be deliberate:
+
+- `type: auto` requests the platform default explicitly. It is identical to
+  omitting `type`, so the same YAML stays portable across platforms.
+- `type: none` and `type: null` both explicitly disable the sandbox. Setting the
+  `sandbox:` block to `false` is equivalent.
+
+Asking for a named backend (for example `type: linux_bwrap`) still routes to that
+backend and errors loudly on a platform that can't provide it — the author asked
+for it by name.
 
 ## What you can restrict
 
@@ -279,7 +295,7 @@ policy. It does **not** apply to:
 
 If you ask for a sandbox (explicitly or via the default) and it can't be provided,
 Omnigent errors instead of quietly running unsandboxed. The only opt-out is
-`sandbox.type: none`.
+`sandbox.type: none` (equivalently `sandbox.type: null` or `sandbox: false`).
 
 ## Field reference
 
@@ -296,7 +312,7 @@ Omnigent errors instead of quietly running unsandboxed. The only opt-out is
 
 | Field                               | Type     | Default     | Description                                                                 |
 | ----------------------------------- | -------- | ----------- | --------------------------------------------------------------------------- |
-| `type`                              | string   | auto-detect | `linux_bwrap`, `darwin_seatbelt`, or `none`                                 |
+| `type`                              | string   | platform default | `auto` (or omitted) picks the platform default; `linux_bwrap`, `darwin_seatbelt`, `windows_jobobject`; `none`/`null` disables |
 | `write_paths`                       | string[] | `[]`        | Writable directories. `cwd` is read-only by default.                        |
 | `write_files`                       | string[] | `[]`        | Individual writable files                                                   |
 | `read_paths`                        | string[] | none        | Read-only grants outside `cwd`                                              |

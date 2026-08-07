@@ -1,0 +1,50 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Run xAI's Grok Build alongside Claude Code and Codex",
+  "Grok Build (xAI's grok CLI) is now a built-in harness. Select it with `omni run --harness grok` and drive it in the same UI, with the same policies, as your other agents.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/grok-build-xai-harness",
+  },
+);
+
+export const meta = {
+  title: "Run xAI's Grok Build alongside Claude Code and Codex",
+  date: "2026-08-07",
+  category: "Multi-harness",
+  author: "omnigent",
+  heroArt: "/images/blog/grok-build-xai-harness.png",
+};
+
+<BlogPostHeader slug="grok-build-xai-harness" />
+
+If you want to put xAI's Grok Build to work next to Claude Code and Codex, it is
+now a built-in harness in Omnigent. Pick it the same way you pick any other
+agent and drive it in the same UI, with the same sessions and the same policies.
+
+Grok Build used to sit outside your workflow: to run it alongside your other
+agents you had to register its launch command yourself. Now you just select the
+`grok` harness id and Omnigent drives xAI's `grok` CLI for you, rendering its
+streaming output, reasoning, and tool cards and routing its permission requests
+through your contextual policies, exactly as it does for the agents you already
+run.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: pick "Grok Build" in the harness picker, start a session, and show it working a real task next to a Claude Code or Codex session. */}
+
+Grok Build brings its own credentials and its own model, so install the CLI and
+log in through xAI once, then launch it.
+
+```
+curl -fsSL https://x.ai/cli/install.sh | bash
+grok login --device-auth   # xAI OAuth; or set XAI_API_KEY
+omni run --harness grok
+```
+
+Omnigent stores no credential and leaves the model choice to Grok. For the full
+list of built-in harnesses, see the
+[Harnesses guide](/docs/build/harnesses).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

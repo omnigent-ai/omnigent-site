@@ -123,16 +123,29 @@ On a multi-user server the sidebar splits your session list across two tabs:
 
 ### Browser-first mode
 
-If you prefer to work in the browser rather than the terminal UI, start the server and host
-daemon once from the command line:
+If you prefer to work in the browser rather than the terminal UI, one command
+starts everything and returns:
 
 ```
-omni server start   # start the local server + web UI in the background
-omni host           # (separate terminal) register this machine as a host
+omni host --background   # start the local server + host daemon, then return
 ```
 
-After that, open **http://localhost:6767** and drive the agent entirely from
-the browser; no further terminal interaction needed.
+`--background` spawns the host daemon as a detached process instead of running
+it in the foreground. In local mode (no server URL) that daemon also owns the
+local Omnigent server, so this single command is the whole "start everything"
+step: it starts (or reuses) the local server, waits for it, and prints the
+server URL along with the daemon's pid and log path. It reuses a healthy daemon
+if one is already up rather than double-registering the machine.
+
+Open the printed URL (by default **http://localhost:6767**) and drive the agent
+entirely from the browser; no further terminal interaction needed. Stop the
+daemon later with the `omni host stop` command it prints.
+
+Sign-in still happens in the foreground, before the spawn: pointing
+`--background` at an authenticated remote server (for example
+`omni host --background --server https://your-server.databricksapps.com`) runs
+the browser login in your terminal first, since the detached daemon has no
+terminal to prompt on.
 
 ## Install as an app
 

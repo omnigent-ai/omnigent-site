@@ -62,6 +62,22 @@ omni run agent.yaml --harness codex --model gpt-4.1-mini
 The `--harness` and `--model` flags map directly to the `executor` block. This lets
 you reuse the same config across different LLM backends.
 
+### Choosing a server
+
+`--server` decides which Omnigent server the run connects to:
+
+```
+omni run agent.yaml --server https://<app>.databricksapps.com  # remote server
+omni run agent.yaml --server local                             # local server
+```
+
+Pass a URL to target a remote server. Pass `--server local` to auto-spawn a
+persistent local server in the background and target that instead of a remote
+one, overriding any configured server default. The value is matched
+case-insensitively and ignores surrounding whitespace, and `--server ""` (the
+historical spelling) does the same thing. A host that merely starts with
+`local`, such as `localhost:8000`, is still treated as a normal remote URL.
+
 From here, the agent streams its output as it thinks and acts. Tool calls run in real time,
 so you watch file writes, shell commands, and API calls land as they happen. The session also
 stays in sync with the [Web UI](/docs/interact/web-ui) both ways: run the

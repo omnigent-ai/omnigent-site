@@ -1,0 +1,51 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Let Omnigent route each task to the right model and harness automatically",
+  "Pick Auto and let the server read your first message, then choose the harness and model that fit the task and run the rest of the session on them.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/smart-routing-per-task-model-harness",
+  },
+);
+
+export const meta = {
+  title:
+    "Let Omnigent route each task to the right model and harness automatically",
+  date: "2026-08-07",
+  category: "Orchestration",
+  author: "omnigent",
+  heroArt: "/images/blog/smart-routing-per-task-model-harness.png",
+};
+
+<BlogPostHeader slug="smart-routing-per-task-model-harness" />
+
+If you run a mix of tasks and keep second-guessing which model or agent to
+start each one on, you can now hand that choice to Omnigent. Pick Auto, type
+your first message, and the server reads the task and starts the session on the
+harness and model that fit it.
+
+Committing to one model up front means a quick edit and a large refactor both
+land on whatever you happened to pick last. Smart Routing removes that guess:
+the server asks a router "given this task, which harness and model fit?" and
+applies the answer for the rest of the session, so each piece of work runs where
+it belongs without you switching anything by hand.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: pick Auto in the harness picker, type a task, and show the session opening on the harness and model the router chose. */}
+
+In the web UI, choose **Auto** in the harness picker and send your first
+message; the router picks the harness and model from there. From the terminal,
+start a session that routes the first message you type inside the harness:
+
+```
+omnigent claude --smart-routing
+omnigent codex --smart-routing
+```
+
+Routing turns on through configuration alone, backed by the server's built-in
+judge or an external routing API you point it at. See the
+[Smart Routing guide](/docs/build/routing) for setup.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

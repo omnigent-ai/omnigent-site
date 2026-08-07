@@ -87,6 +87,39 @@ If you want a more app-like experience without the App Store, the web UI is an i
 PWA: use your browser's **Add to Home Screen** option to launch Omnigent in its own standalone
 window. See [Install as an app](/docs/interact/web-ui#install-as-an-app) for details.
 
+## Managed configuration (org-preset servers)
+
+On the native **Android app**, an organization can preconfigure the server URLs
+users see, so people don't have to type one. The app publishes an [Android
+managed configuration](https://developer.android.com/work/managed-configurations)
+that any EMM/MDM console (Intune, Jamf, Workspace ONE, Google Workspace, the
+Android Management API) can push to enrolled devices. It has a single key:
+
+| Key          | Type   | Value                                                           |
+| ------------ | ------ | --------------------------------------------------------------- |
+| `serverUrls` | string | Server URLs, comma- or newline-separated, most preferred first. |
+
+For example, setting `serverUrls` to `https://omnigent.corp.example.com` offers
+that server at the top of the list.
+
+How the app treats presets:
+
+- **Offered, not forced.** Preset URLs are listed ahead of the user's recent
+  servers on the connect screen and in the server switcher. The user still taps
+  one to connect — that holds whether the policy sets one URL or several.
+- **Never auto-connects.** The app never connects to a preset on its own and
+  never skips the connect screen, so a policy can't silently move someone onto a
+  different server.
+- **Not a lock.** A user can still type any other server URL, and the one they
+  pick stays current.
+- **Always live.** A preset is never written to the app's own storage, so an
+  admin's later edit is picked up the next time the list is shown.
+- **Sanitized.** Unparseable entries are dropped, an entry without a scheme gets
+  `https://`, same-origin duplicates collapse, and the list is capped at 8.
+
+The iOS app has no equivalent yet; when it lands it will reuse the same
+`serverUrls` key via Managed App Configuration.
+
 ## What works on mobile
 
 The full Web UI, touch-optimized: chat, monitor sub-agents, browse files, view code changes,

@@ -49,6 +49,45 @@ Most coding agents can run in one of two modes:
 Pi is a headless multi-model worker that runs on any gateway model — ideal for
 review, exploration, and read-heavy tasks delegated by a supervisor agent.
 
+## GitHub Copilot
+
+The `copilot` harness authenticates with a GitHub token that carries Copilot
+access. Omnigent resolves one from the first source that's set, in this order:
+
+1. A `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `GITHUB_TOKEN` environment variable.
+2. A token you stored through `omnigent setup` → *configure harnesses* →
+   **Copilot**.
+3. Your GitHub CLI login — if you've run `gh auth login`, Omnigent asks `gh` for
+   the token directly (`gh auth token`), so a logged-in user is ready without
+   pasting anything into setup.
+
+<div className="note">
+
+**Note:** The `gh` fallback runs `gh auth token` because the Copilot CLI only
+picks up a `gh` login by reading `oauth_token` from `~/.config/gh/hosts.yml` —
+which is absent whenever `gh` keeps the token in an OS keychain (the default on
+macOS). Asking `gh` itself works on every platform.
+
+</div>
+
+### GitHub Enterprise host
+
+Organizations that reach Copilot through a GitHub Enterprise (data-residency)
+instance need auth and API calls pointed at their own hostname rather than
+`github.com`. Set it through `omnigent setup` → *configure harnesses* →
+**Copilot** → **Set GitHub Enterprise host** (the same menu lets you change or
+clear it), or edit `~/.omnigent/config.yaml` directly:
+
+```yaml
+copilot:
+  github_host: acme.ghe.com
+```
+
+Provide a bare hostname; a pasted `https://` scheme or trailing slash is
+stripped automatically. When set, Omnigent forwards it to the bundled Copilot
+CLI as the `COPILOT_GH_HOST` environment variable and fetches your `gh` token
+for that host. With no host configured, Copilot uses its default `github.com`.
+
 ## Grok Build
 
 Grok Build (xAI's `grok` CLI) ships as a builtin harness with the id `grok`

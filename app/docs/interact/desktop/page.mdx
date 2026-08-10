@@ -26,6 +26,7 @@ showing how many sessions are waiting, and multiple independent windows.
 <MacDownloadButton />
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
+{/* TODO(doc-drafter): screenshot may be stale — the server picker moved from the macOS title bar to the bottom of the sidebar; window chrome shown here may no longer match. */}
 
 <img
   src="/images/docs/desktop-app.png"
@@ -188,6 +189,19 @@ Omnigent desktop app?` rather than hanging.
 
 The app remembers your server URL for future launches. To change it later, go to
 **Server > Change Server**.
+
+## Switch servers from the sidebar
+
+A server picker is docked at the bottom of the sidebar in every desktop window.
+It shows the host of the server this window is connected to (for example,
+`localhost:6767`) next to a server glyph. Click it to open a menu that lists,
+under **Recents**, the server you're currently on (checked) followed by every
+other recently-connected server. Selecting one re-points the whole window to
+that server; **Connect to new server…** returns the window to the setup screen
+so you can enter a new URL.
+
+The picker is part of the desktop app only — it doesn't appear in a plain
+browser tab — and is available on macOS, Windows, and Linux alike.
 
 ## Work with multiple servers
 

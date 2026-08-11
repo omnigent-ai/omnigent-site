@@ -1,0 +1,67 @@
+{/* Auto-generated from the GitHub Release for v0.9.0. Edit the GitHub Release, not this file. */}
+
+# v0.9.0
+
+_Released 2026-08-11_ · 3 min read · Omnigent maintainers
+
+Omnigent 0.9.0 is a major release focused on putting the right model behind every task and polishing the surface you work on all day, from automatic model-and-harness selection to a refreshed web UI. It brings smart routing that sends each task and its subagents to the best model and harness, a redesigned interface built around a Zinc palette and clearer session controls, deeper control over sandboxes and deployments, a first-class Grok Build harness alongside a set of ship-ready example agents, and new Nimble web builtins for pulling structured data straight off the web.
+
+## 1. Smart Routing
+
+![TODO: add a demo screenshot or GIF for "Smart Routing"](TODO)
+
+Choosing the right model for a task — and for every subagent that task spawns — is a decision you shouldn't have to make by hand on every run. Smart Routing makes it automatic: each task and its subagents are routed to the best model and harness for the job.
+
+On Databricks, routing is powered by AI Gateway smart routing. In open source, smart routing uses an LLM classifier to pick the best model. Either way, you turn it on once and let Omnigent match work to the model that fits it.
+
+_Learn more in the [Smart Routing](/docs/build/routing) docs._
+
+## 2. Refreshed web UI
+
+![TODO: add a demo screenshot or GIF for "Refreshed web UI"](TODO)
+
+The web UI has been redesigned for clarity: a Zinc palette, tightened typography, flush rails, and unified menus and shadows give the whole interface a calmer, more consistent feel.
+
+Alongside the visual refresh, session management gets more practical. A session filter menu lets you narrow to All, My, Shared, or Archived sessions, the harness picker is now organized by support tier, and settled turns fold away behind a compact "Worked for Xs" row so long conversations stay readable.
+
+_Learn more in the [Web UI](/docs/interact/web-ui) docs._
+
+## 3. More sandbox and deployment control
+
+![TODO: add a demo screenshot or GIF for "More sandbox and deployment control"](TODO)
+
+This release gives you finer control over where and how agents run. Set `sandbox.type: auto` to pick the platform default automatically, and size Boxlite disks with `sandbox.boxlite.disk_size_gb` when a workload needs more room.
+
+For team deployments, you can target per-agent Kubernetes runner Pods by label, set a project default base branch for new worktree sessions, and authenticate headless with `omnigent run --profile` against a deployed Databricks app.
+
+## 4. New harnesses and example agents
+
+![TODO: add a demo screenshot or GIF for "New harnesses and example agents"](TODO)
+
+Grok Build (xAI) joins as a first-class ACP harness, so you can drive Omnigent with xAI's coding agent the same way you would any other supported harness.
+
+The release also ships a set of ready-to-run example agents: a deep-research agent, a repro-agent that reproduces a bug live and authors an end-to-end test for it, and a resolve-agent that fixes the bug and proves the fix. They're a practical starting point for building your own agents around real workflows.
+
+_Learn more in the [Grok Build](/docs/build/harnesses#grok-build) docs._
+
+## 5. Nimble web builtins
+
+![TODO: add a demo screenshot or GIF for "Nimble web builtins"](TODO)
+
+Two new built-in tools bring the web directly into your agent's reach. `nimble_extract` and `nimble_research` pull structured data straight off the web, so an agent can gather and shape information without you wiring up a custom integration.
+
+_Learn more in the [Built-in tools](/docs/build/tools#built-in-tools) docs._
+
+Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
+
+## What's Next
+
+Install or upgrade Omnigent:
+
+```bash
+uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
+```
+
+- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
+- Join the conversation on our [Discord](https://discord.gg/omnigent).
+- Browse the [docs](https://omnigent.ai/docs) to go deeper.

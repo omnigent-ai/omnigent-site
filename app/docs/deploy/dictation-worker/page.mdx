@@ -1,0 +1,93 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Dictation Worker",
+  "Offload voice-to-text to a beefier LAN box when your Omnigent server can't run the speech model you want at realtime.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/dictation-worker",
+  },
+);
+
+# Dictation Worker
+
+The web UI's microphone button streams audio to a server-side speech-to-text
+engine. By default the server runs the recognizer itself (the `sherpa` engine).
+When the server is a small box that can't run the model you want at realtime,
+the **remote** engine relays each take to a standalone **dictation worker**
+running on a beefier machine on your LAN.
+
+The worker speaks the exact same wire protocol the browser does (PCM audio up,
+transcript events down over `WS /v1/dictation/stream`), so no new protocol or
+code path is involved. The browser never talks to the worker directly: the main
+server authenticates the user on its own dictation route, then relays the audio
+to the worker.
+
+## Engine selection
+
+The server chooses its dictation engine with `OMNIGENT_DICTATION_ENGINE`:
+
+| Value              | Behavior                                                                     |
+| ------------------ | ---------------------------------------------------------------------------- |
+| unset / `sherpa`   | Run the recognizer locally on the server (the default).                      |
+| `remote`           | Relay each take to a dictation worker at `OMNIGENT_DICTATION_REMOTE_URL`.    |
+| `fake`             | A deterministic scripted engine used by tests; no models, no microphone.     |
+
+## Run the worker
+
+Run the worker wherever the models live. It is just the dictation route served
+on its own:
+
+```
+pip install omnigent[dictation]
+scripts/fetch-dictation-models.sh
+python -m omnigent.server.dictation_worker --host 0.0.0.0 --port 8100
+```
+
+`--host` defaults to `127.0.0.1` and `--port` to `8100`. The same
+`OMNIGENT_DICTATION_*` env vars configure the worker itself (model dirs, stream
+cap, or the fake engine for tests).
+
+<div className="note">
+
+**The worker is unauthenticated.** It accepts raw audio from anyone who can
+reach the port and returns transcripts. Bind it to a trusted network (LAN or
+VPN) only — never expose it publicly. The main server enforces user auth on its
+own dictation route before relaying.
+
+</div>
+
+## Point the main server at the worker
+
+Select the `remote` engine on the main server and point it at the worker's
+stream URL. No CLI integration is required — it's all env vars:
+
+```
+OMNIGENT_DICTATION_ENGINE=remote \
+OMNIGENT_DICTATION_REMOTE_URL=ws://<worker-host>:8100/v1/dictation/stream \
+omnigent server ...
+```
+
+## Configuration reference
+
+| Variable                        | Default                                | Purpose                                                                                   |
+| ------------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `OMNIGENT_DICTATION_ENGINE`     | unset (`sherpa`)                       | Engine to use by registered name (`sherpa`, `remote`, `fake`).                            |
+| `OMNIGENT_DICTATION_REMOTE_URL` | unset                                  | Worker stream URL for the `remote` engine, e.g. `ws://venus:8100/v1/dictation/stream`.    |
+| `OMNIGENT_DICTATION_MODEL_DIR`  | `~/.omnigent/models/dictation/asr`     | Dir containing `encoder*.onnx`, `decoder*.onnx`, `joiner*.onnx`, `tokens.txt`.            |
+| `OMNIGENT_DICTATION_PUNCT_DIR`  | `~/.omnigent/models/dictation/punct`   | Optional online-punctuation model dir (`model*.onnx` + `bpe.vocab`).                       |
+| `OMNIGENT_DICTATION_MAX_STREAMS`| `2`                                    | Concurrent dictation WebSockets.                                                          |
+
+## Fallback behavior
+
+Fallback is decided **per take**, when a stream is created:
+
+- If the worker is unreachable and local models are installed, a locally-built
+  `sherpa` engine serves that take instead. Its model weights cost no memory
+  until the worker actually goes down.
+- Each new take retries the worker first.
+- If the worker is unreachable and no local models are installed, the take fails
+  loudly rather than silently dropping audio.
+
+Selecting `remote` without `OMNIGENT_DICTATION_REMOTE_URL` set reports the
+engine as unavailable (reason `remote_url_missing`) rather than crashing.

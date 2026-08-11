@@ -49,6 +49,24 @@ Most coding agents can run in one of two modes:
 Pi is a headless multi-model worker that runs on any gateway model — ideal for
 review, exploration, and read-heavy tasks delegated by a supervisor agent.
 
+<div className="note">
+
+**Installing the Claude Code CLI:** The `claude-sdk` and `claude-native`
+harnesses run Anthropic's `claude` CLI. `omni setup` → *configure harnesses*
+installs it for you with Anthropic's native installer (not `npm install -g`), or
+you can run the installer yourself:
+
+```
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+The native installer writes to a user-writable `~/.local/bin` and self-updates,
+so it sidesteps the permission errors an `npm install -g` on a root-owned npm
+global prefix can hit. After it's installed, sign in with `claude auth login`
+(see [Models & Credentials](/docs/build/models#subscription)).
+
+</div>
+
 ## Grok Build
 
 Grok Build (xAI's `grok` CLI) ships as a builtin harness with the id `grok`

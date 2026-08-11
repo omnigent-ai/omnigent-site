@@ -111,6 +111,35 @@ curl -fsSL https://x.ai/cli/install.sh | bash
 grok login --device-auth   # xAI OAuth (device-code capable); or set XAI_API_KEY
 ```
 
+## Hermes
+
+Hermes ships as a builtin harness with the id `hermes` and is offered directly
+in the web harness picker. Select it like any other builtin — in the picker, via
+`--harness hermes`, or in agent YAML:
+
+```
+executor:
+  harness: hermes
+  model: hermes-4-405b
+```
+
+Like the ACP agents, Hermes brings **its own auth** — Omnigent stores no
+credential and injects none. Hermes reads credentials from its own file-based
+store (`auth.json` / `.env` under `HERMES_HOME`), so log in and pick a model
+through its own CLI first:
+
+```
+hermes setup    # file-based auth under HERMES_HOME
+hermes model    # choose the model Hermes runs
+```
+
+Unlike the generic ACP agents, a `/model` pick **is** honored for Hermes: the
+model you declare in YAML or switch to mid-session threads through to the
+harness (via `HARNESS_HERMES_MODEL`). The sandbox and workspace a session
+selects are threaded through as well, so a sandbox chosen in the web session
+dialog actually confines the Hermes run.
+
+
 ## Kimi Code
 
 Kimi Code (`kimi`, alias `kimi-code`) brings **its own auth** — Omnigent stores

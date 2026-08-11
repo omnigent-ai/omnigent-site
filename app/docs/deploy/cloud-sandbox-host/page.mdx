@@ -32,11 +32,11 @@ Omnigent currently supports [Modal](https://modal.com), [Daytona](https://www.da
 [Blaxel](https://blaxel.ai), and [Islo](https://islo.dev) as hosting platforms for cloud sandbox
 hosts, with more on the way.
 
-|                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) | [Blaxel](https://blaxel.ai)                    | [Islo](https://islo.dev)                       |
-| ------------------------ | ---------------------------------- | --------------------------------- | ---------------------------------------------- | ---------------------------------------------- |
-| **Runner lifetime**      | 24 hours (platform cap)            | No cap (runs until deleted)       | 24h max age by default (raise via `ttl`)       | No cap (idle-paused after 15 min when managed) |
-| **Credential injection** | Named secrets (Modal secret store) | Env vars copied from server       | Env vars copied from server                    | Env vars copied from server / gateway profile  |
-| **Free-tier egress**     | Full egress                        | Allowlisted domains only          | Full egress                                    | Gateway profile controls egress                |
+|                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) | [Blaxel](https://blaxel.ai)              | [Islo](https://islo.dev)                       |
+| ------------------------ | ---------------------------------- | --------------------------------- | ---------------------------------------- | ---------------------------------------------- |
+| **Runner lifetime**      | 24 hours (platform cap)            | No cap (runs until deleted)       | 24h max age by default (raise via `ttl`) | No cap (idle-paused after 15 min when managed) |
+| **Credential injection** | Named secrets (Modal secret store) | Env vars copied from server       | Env vars copied from server              | Env vars copied from server / gateway profile  |
+| **Free-tier egress**     | Full egress                        | Allowlisted domains only          | Full egress                              | Gateway profile controls egress                |
 
 ## Server-managed (recommended)
 

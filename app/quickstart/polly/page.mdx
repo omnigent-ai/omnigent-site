@@ -1,5 +1,4 @@
 import { pageMeta } from "@/lib/og";
-import ContentTabs from "@/components/ContentTabs";
 
 export const metadata = pageMeta(
   "Tutorial: Polly (Multi-AI Coding)",
@@ -12,72 +11,59 @@ export const metadata = pageMeta(
 
 # Tutorial: Polly (Multi-AI Coding)
 
-Polly is a multi-agent coding orchestrator. It breaks your task into
-sub-tasks and delegates each one to a different AI agent, with
-cross-vendor code review built in. This tutorial shows you how it
-looks in practice.
+Polly is a multi-agent coding orchestrator. You give it a task; Polly
+splits it into sub-tasks and uses intelligent routing to pick the right
+agent for each one (Claude Code, Codex, Cursor, and others). Then a
+different agent reviews the results: if Claude Code writes the code,
+Codex checks it. Each sub-agent gets a clean slate with no prior conversation history, so it stays focused.
 
 **Time:** 5 minutes. **Everything runs locally.**
 
-## 1. Run Polly
+## 1. Start Polly
 
-```
-omni polly
-```
+1. Launch Polly. Either command starts it in your terminal and opens a web UI
+   at `http://localhost:6767`.
 
-This starts Polly and opens a web UI at `http://localhost:6767`
-(bare `omni` starts Polly too, when a Claude credential is configured).
+   ```
+   omni polly    # explicit
+   omni          # same, when a Claude credential is configured
+   ```
 
-<figure>
-  {/* eslint-disable-next-line @next/next/no-img-element */}
-  <img
-    src="/images/docs/polly-default-launch.gif"
-    alt="Running omni from the terminal launches Polly"
-    style={{ width: "100%", borderRadius: "8px" }}
-  />
-  <figcaption>
-    Start Polly with <code>omni polly</code>, or just <code>omni</code>.
-  </figcaption>
-</figure>
+   <figure>
+     {/* eslint-disable-next-line @next/next/no-img-element */}
+     <img
+       src="/images/docs/polly-default-launch.gif"
+       alt="Running omni from the terminal launches Polly"
+       style={{ width: "100%", borderRadius: "8px" }}
+     />
+     <figcaption>
+       Start Polly with <code>omni polly</code>, or just <code>omni</code>.
+     </figcaption>
+   </figure>
 
-## 2. Give it a task
+2. Give Polly a task, for example:
 
-```
-Refactor the authentication module into separate files for OAuth, JWT, and session handling. Add tests for each.
-```
+   ```
+   Refactor the authentication module into separate files for OAuth, JWT, and session handling. Add tests for each.
+   ```
 
-Polly breaks this into sub-tasks and delegates each one to a different
-AI agent. Claude Code implements one piece, Codex implements another in
-parallel, and a different agent reviews each PR.
+   Polly breaks this into sub-tasks and delegates each one to a different AI
+   agent. Claude Code implements one piece, Codex implements another in
+   parallel, and a different agent reviews each PR.
 
-## 3. Watch it in the web UI or desktop app
+## 2. Watch the agents work
 
-<ContentTabs labels={["Web UI", "Desktop App"]}>
-  <div>
+Claude Code and Codex work on different parts of the task at the same time.
 
-Open `http://localhost:6767` in your browser. It shows the same session
-as your terminal, updating in real time.
+Open `http://localhost:6767` or launch the [desktop app](/docs/interact/desktop)
+and connect to the same address.
 
-  </div>
-  <div>
-
-Launch the [desktop app](/docs/interact/desktop) and connect it to
-`http://localhost:6767`. It shows the same session as your terminal, and
-adds OS notifications and a dock badge when Polly or a sub-agent needs
-your attention, which is useful while sub-agents work in parallel.
-
-  </div>
-</ContentTabs>
-
-The right panel has four tabs: **Files**, **Agents**, **Shells**, and
-**Todos**.
-
-Click the **Agents** tab to see every sub-agent Polly dispatches, with
-live status (working, idle, finished).
+Click the **Agents** tab to see every sub-agent Polly dispatches, with live
+status (working, idle, finished).
 
 - Click any sub-agent to switch to its view and see its conversation, files, and terminal output.
-- Switch to the **Shells** tab to see all running shells side by side.
 - Intervene at any point: send a message to a sub-agent, or switch back to Polly to see the orchestrator's view.
+- Switch to the **Shells** tab to see all running shells side by side.
 
 <figure>
   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -92,12 +78,30 @@ live status (working, idle, finished).
   </figcaption>
 </figure>
 
-This is where multi-AI orchestration becomes tangible: you can watch
-Claude Code and Codex working on different parts of the same task
-simultaneously, each in its own git worktree.
+## 3. Turn on Smart Routing
 
-See [Polly reference](/docs/use/builtin-agents/polly) for the full details
-on skills like `/fanout`, `/cross-review`, and `/investigate`.
+Smart Routing picks the best model for each sub-task based on complexity:
+a short, well-scoped task goes to a faster model; an ambiguous or
+cross-cutting refactor goes to a stronger one. Polly applies this per
+sub-agent spawn, so each worker gets the model suited to its slice of
+the work.
+
+To enable it, click the gear icon in the chat composer and select
+**Smart Routing** from the Model dropdown. A <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"></path><path d="M9 13a4.5 4.5 0 0 0 3-4"></path><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"></path><path d="M3.477 10.896a4 4 0 0 1 .585-.396"></path><path d="M6 18a4 4 0 0 1-1.967-.516"></path><path d="M12 13h4"></path><path d="M12 18h6a2 2 0 0 1 2 2v1"></path><path d="M12 8h8"></path><path d="M16 8V5a2 2 0 0 1 2-2"></path><circle cx="16" cy="13" r=".5"></circle><circle cx="18" cy="3" r=".5"></circle><circle cx="20" cy="21" r=".5"></circle><circle cx="20" cy="8" r=".5"></circle></svg> chip appears below each routed message showing which model was picked and why.
+
+Smart Routing requires a Databricks AI Gateway connection. If you're running
+entirely locally, the router is unavailable and Polly falls back to the
+default model.
+
+## 4. Use Polly's built-in skills
+
+Type any of these into the Polly chat to go further:
+
+- **`/fanout`** — run independent tasks in parallel. Each gets its own sub-agent and git worktree, and opens its own PR.
+- **`/cross-review`** — send an implementer's diff to a different-vendor reviewer. Blocking issues loop back as fixes until clean.
+- **`/investigate`** — delegate read-only work (debugging, audits, code understanding) to sub-agents and get a synthesized report.
+
+See the [Polly reference](/docs/use/builtin-agents/polly) for full details.
 
 ## What's next
 

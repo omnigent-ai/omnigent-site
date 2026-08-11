@@ -6,11 +6,11 @@ export const metadata = {
     "An introduction to Omnigent policies: contextual ALLOW/ASK/DENY guardrails for AI agents, with built-in, custom Python, and CEL examples.",
     {
       eyebrow: "Blog",
-      path: "/blog/contextual-policies",
+      path: "/blog/omnigent-policies",
     },
   ),
   alternates: {
-    canonical: "/blog/contextual-policies",
+    canonical: "/blog/omnigent-policies",
   },
 };
 
@@ -19,10 +19,10 @@ export const meta = {
   date: "2026-08-13",
   category: "Policies",
   author: "Daniel Liden",
-  heroArt: "/images/blog/contextual-policies.png",
+  heroArt: "/images/blog/omnigent-policies.png",
 };
 
-<BlogPostHeader slug="contextual-policies" />
+<BlogPostHeader slug="omnigent-policies" />
 
 If you've worked with coding agents before, you've seen them pause and ask
 before editing files or reading the contents of certain directories. In
@@ -68,7 +68,7 @@ desktop app by selecting the info button (ⓘ) in the top-right corner, clicking
 `+` next to `policies`, and selecting "Require Approval for File & Shell
 Operations."
 
-![Omnigent Add Policy dialog listing policies including Require Approval for File & Shell Operations](/images/blog/contextual-policies/add-policy-dialog.png)
+![Omnigent Add Policy dialog listing policies including Require Approval for File & Shell Operations](/images/blog/omnigent-policies/add-policy-dialog.png)
 
 _The Add Policy dialog, with "Require Approval for File & Shell Operations" in
 the list._
@@ -79,7 +79,7 @@ supplies coding agents with the tools they need to add policies themselves.
 Now, whenever the agent attempts a file or shell operation, it will first ask
 the user for permission.
 
-![Omnigent showing an Approval required panel before a file write, with Approve and Reject buttons](/images/blog/contextual-policies/file-write-approval.png)
+![Omnigent showing an Approval required panel before a file write, with Approve and Reject buttons](/images/blog/omnigent-policies/file-write-approval.png)
 
 _Omnigent pausing for approval before a file write, with Approve and Reject
 buttons._
@@ -158,7 +158,7 @@ omni run agent.yaml
 Run this from the directory where both files are located. `omni run` resolves
 your module against the directory you launch from.
 
-![Omnigent budget shell calls policy pausing for approval on the fourth shell call](/images/blog/contextual-policies/shell-budget-approval.png)
+![Omnigent budget shell calls policy pausing for approval on the fourth shell call](/images/blog/omnigent-policies/shell-budget-approval.png)
 
 _The budget policy pausing for approval on the fourth shell call._
 
@@ -195,7 +195,7 @@ erroring. And unlike the Python policy above, a CEL policy is just an expression
 with nothing to load, so the agent can add one to a live session immediately,
 no restart needed.
 
-![Omnigent chat where echo succeeds but rm -rf is denied by policy](/images/blog/contextual-policies/recursive-delete-denied.png)
+![Omnigent chat where echo succeeds but rm -rf is denied by policy](/images/blog/omnigent-policies/recursive-delete-denied.png)
 
 _The custom policy denying an `rm -rf` shell command with "Denied by policy:
 Recursive delete is blocked."_

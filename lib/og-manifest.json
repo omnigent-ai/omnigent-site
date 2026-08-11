@@ -4,11 +4,6 @@
     "description": "Point Omnigent at any agent that speaks the Agent Client Protocol and run it with your session tools, sub-agents, skills, and policies already wired in.",
     "eyebrow": "Blog"
   },
-  "/blog/contextual-policies": {
-    "title": "Allow, ask, deny: contextual policies in Omnigent",
-    "description": "An introduction to Omnigent policies: contextual ALLOW/ASK/DENY guardrails for AI agents, with built-in, custom Python, and CEL examples.",
-    "eyebrow": "Blog"
-  },
   "/blog/first-class-projects-with-defaults": {
     "title": "Organize your sessions into projects, with optional defaults that pre-fill every new chat",
     "description": "Projects keep related sessions together instead of scattered across a flat list. Each one can optionally carry default session settings (host, working directory, agent, and a fresh git worktree) so new chats open pre-filled when the work runs the same way.",
@@ -17,6 +12,11 @@
   "/blog/meta-harness-missing-layer": {
     "title": "Meta-Harness: the Missing Layer Above Claude Code, Codex, and Pi",
     "description": "Use Claude Code, Codex, Pi, and other coding agents together through one shared orchestration, collaboration, and policy layer.",
+    "eyebrow": "Blog"
+  },
+  "/blog/omnigent-policies": {
+    "title": "Allow, ask, deny: contextual policies in Omnigent",
+    "description": "An introduction to Omnigent policies: contextual ALLOW/ASK/DENY guardrails for AI agents, with built-in, custom Python, and CEL examples.",
     "eyebrow": "Blog"
   },
   "/blog/queue-and-steer-messages-while-agents-work": {

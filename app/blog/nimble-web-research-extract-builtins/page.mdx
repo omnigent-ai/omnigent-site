@@ -1,0 +1,59 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Give your agents built-in structured web research and extraction",
+  "Enable nimble_research and nimble_extract by name in your agent spec: your agents can run cited web research and pull structured data off live pages, no glue code required.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/nimble-web-research-extract-builtins",
+  },
+);
+
+export const meta = {
+  title: "Give your agents built-in structured web research and extraction",
+  date: "2026-08-11",
+  category: "Tools",
+  author: "omnigent",
+  heroArt: "/images/blog/nimble-web-research-extract-builtins.png",
+};
+
+<BlogPostHeader slug="nimble-web-research-extract-builtins" />
+
+If you build agents that need real information from the live web, you can now
+turn on two ready-made tools instead of wiring up your own scraping and search
+code. Add `nimble_research` and `nimble_extract` to an agent spec by name and
+your agent can run a cited research task or pull structured data straight off a
+page.
+
+Getting good web data into an agent usually means gluing together a search API,
+a scraper, and your own parsing, then keeping all of it working. These builtins
+hand that back to you as two calls. `nimble_research` runs a research task and
+returns the answer along with the sources it consulted and per-claim citations,
+so you can see where each fact came from. `nimble_extract` runs one of your
+Nimble extract templates against the live web and returns the parsed result as
+structured JSON in a single call. Both resolve inside the runner, so they work
+with any agent you run in Omnigent, not just one model family.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an agent answering a research question with the cited sources it returned, then an extract call returning structured JSON from a page. */}
+
+Enable them under `tools.builtins` in your agent spec and pass your Nimble API
+key. `nimble_research` needs the optional `nimble` extra
+(`pip install 'omnigent[nimble]'`); `nimble_extract` names one of your
+account's extract templates.
+
+```yaml
+tools:
+  builtins:
+    - name: nimble_research
+      api_key: ${NIMBLE_API_KEY}
+    - name: nimble_extract
+      api_key: ${NIMBLE_API_KEY}
+      template: my_template_name # one of your account's extract templates
+```
+
+See the [built-in tools guide](/docs/build/tools#built-in-tools) for the full
+list of config keys.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

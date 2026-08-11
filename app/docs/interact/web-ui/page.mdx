@@ -178,6 +178,25 @@ Your mode and palette choices are remembered in the browser and reapplied on
 your next visit. Picking **Omnigent** clears any palette override and returns
 to the default look.
 
+## Workspace file browser
+
+The Workspace rail's **Files** tab lists everything in the session's working
+folder. Hidden, dot-prefixed entries (`.claude/`, `.github/`, `.env`, and
+friends) are **shown by default** so you can see the parts of a workspace that
+agents write to constantly, and the default holds when you switch between
+sessions.
+
+The header carries an **eye** toggle whose icon reflects the current state
+rather than the pending action:
+
+- **Plain eye** (`Hide hidden files`) — dot-prefixed entries are listed. Click
+  to filter them out.
+- **Slashed eye** (`Show hidden files`) — dot-prefixed entries are hidden. Click
+  to bring them back.
+
+Toggling the eye only changes what this panel shows; it doesn't send a message
+or change anything on disk.
+
 ## File editor
 
 A full markdown editor with syntax highlighting for browsing and editing every file your

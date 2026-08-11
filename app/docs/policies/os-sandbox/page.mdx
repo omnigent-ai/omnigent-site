@@ -310,19 +310,19 @@ Omnigent errors instead of quietly running unsandboxed. The only opt-out is
 
 ### `os_env.sandbox`
 
-| Field                               | Type     | Default     | Description                                                                 |
-| ----------------------------------- | -------- | ----------- | --------------------------------------------------------------------------- |
+| Field                               | Type     | Default          | Description                                                                                                                   |
+| ----------------------------------- | -------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `type`                              | string   | platform default | `auto` (or omitted) picks the platform default; `linux_bwrap`, `darwin_seatbelt`, `windows_jobobject`; `none`/`null` disables |
-| `write_paths`                       | string[] | `[]`        | Writable directories. `cwd` is read-only by default.                        |
-| `write_files`                       | string[] | `[]`        | Individual writable files                                                   |
-| `read_paths`                        | string[] | none        | Read-only grants outside `cwd`                                              |
-| `allow_network`                     | bool     | `true`      | Network access on/off                                                       |
-| `cwd_allow_hidden`                  | string[] | `[".venv"]` | Dotfile basenames to allow                                                  |
-| `cwd_hidden_scan_recursive`         | bool     | `false`     | Recurse subdirectories when masking dotfiles. `false` scans top level only. |
-| `mask_paths`                        | string[] | none        | Explicit files/dirs to hide by any path/name, on top of the dotfile mask    |
-| `cwd_hidden_scan_max_entries`       | int      | `50000`     | Max entries for dotfile mask walk (recursive mode)                          |
-| `cwd_hidden_scan_overflow`          | string   | `warn`      | `error`, `warn`, or `unlimited`                                             |
-| `env_passthrough`                   | string[] | minimal set | Env vars the agent can see                                                  |
-| `egress_rules`                      | string[] | none        | HTTP(S) allow-list. Default-deny when set.                                  |
-| `egress_allow_private_destinations` | bool     | `false`     | Allow connections to private/metadata IPs                                   |
-| `credential_proxy`                  | block[]  | none        | Secretless auth entries; requires `egress_rules`                            |
+| `write_paths`                       | string[] | `[]`             | Writable directories. `cwd` is read-only by default.                                                                          |
+| `write_files`                       | string[] | `[]`             | Individual writable files                                                                                                     |
+| `read_paths`                        | string[] | none             | Read-only grants outside `cwd`                                                                                                |
+| `allow_network`                     | bool     | `true`           | Network access on/off                                                                                                         |
+| `cwd_allow_hidden`                  | string[] | `[".venv"]`      | Dotfile basenames to allow                                                                                                    |
+| `cwd_hidden_scan_recursive`         | bool     | `false`          | Recurse subdirectories when masking dotfiles. `false` scans top level only.                                                   |
+| `mask_paths`                        | string[] | none             | Explicit files/dirs to hide by any path/name, on top of the dotfile mask                                                      |
+| `cwd_hidden_scan_max_entries`       | int      | `50000`          | Max entries for dotfile mask walk (recursive mode)                                                                            |
+| `cwd_hidden_scan_overflow`          | string   | `warn`           | `error`, `warn`, or `unlimited`                                                                                               |
+| `env_passthrough`                   | string[] | minimal set      | Env vars the agent can see                                                                                                    |
+| `egress_rules`                      | string[] | none             | HTTP(S) allow-list. Default-deny when set.                                                                                    |
+| `egress_allow_private_destinations` | bool     | `false`          | Allow connections to private/metadata IPs                                                                                     |
+| `credential_proxy`                  | block[]  | none             | Secretless auth entries; requires `egress_rules`                                                                              |

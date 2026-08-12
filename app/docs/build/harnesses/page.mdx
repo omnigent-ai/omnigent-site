@@ -111,6 +111,13 @@ curl -fsSL https://x.ai/cli/install.sh | bash
 grok login --device-auth   # xAI OAuth (device-code capable); or set XAI_API_KEY
 ```
 
+Grok Build also shows up in `omnigent setup` → *configure harnesses*, listed
+after Goose (the other ACP-family builtin). Selecting its row prints these same
+install and sign-in commands. Because the vendor owns its auth, setup only
+reports whether the `grok` binary is on your `PATH` — it shows **ACP · own
+auth** when the binary is present and **Not installed** with the install hint
+when it isn't; it can't tell whether you've actually signed in.
+
 ## Hermes
 
 Hermes ships as a builtin harness with the id `hermes` and is offered directly

@@ -244,6 +244,38 @@ to keep it disabled.
 
 </div>
 
+### Offer several providers (optional)
+
+To offer more than one provider on the same server, replace the scalar
+`provider:` with a `providers:` list. The two shapes are mutually exclusive —
+setting both fails at server startup. Shared top-level keys (`server_url` and
+`host_config`) stay at the top level and apply to every entry; each list entry
+carries its own `provider:` and provider block, and validates exactly as it
+would in the single-provider shape.
+
+```
+sandbox:
+  server_url: https://your-server.example.com
+  providers:
+    - provider: modal
+      modal:
+        image: ghcr.io/omnigent-ai/omnigent-host:latest
+        secrets: [omnigent-llm]
+    - provider: e2b
+```
+
+The first launch-capable provider in the list is the **default** — the one a
+create that names no provider launches on. Listing the same provider twice is
+rejected at server startup.
+
+In the web UI, the host picker then shows one **New Sandbox** row per configured
+provider (for example *Modal Sandbox* and *E2B Sandbox*). The user's pick is
+sticky: the composer reopens on the provider used last. Over the REST API, pass
+the chosen provider as `sandbox_provider` (one of the names `GET /v1/info`
+reports in `sandbox_providers`) on a `host_type: "managed"` create; omit it to
+take the server's default. A create naming a provider the server doesn't offer
+is rejected synchronously with the list of available providers.
+
 ### Inject provider config into sandboxes (optional)
 
 An optional top-level `host_config` under `sandbox:` (provider-agnostic — not
@@ -284,7 +316,9 @@ the sandbox.
 
 Start a new session and select **New Sandbox** in the host picker. The server
 provisions the cloud host, starts the runner, and connects it back automatically. This works
-the same on both hosting platforms.
+the same on both hosting platforms. When the server
+[offers several providers](#offer-several-providers-optional), the picker shows
+one labeled row per provider and remembers the one you used last.
 
 ## CLI
 

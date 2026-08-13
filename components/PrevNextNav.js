@@ -56,11 +56,6 @@ const ALL_PAGES = [
     section: "Use Omnigent",
   },
   {
-    href: "/docs/build/harnesses",
-    label: "Harnesses",
-    section: "Use Omnigent",
-  },
-  {
     href: "/docs/build/models",
     label: "Models & Credentials",
     section: "Use Omnigent",
@@ -75,11 +70,35 @@ const ALL_PAGES = [
     label: "Prompts & Skills",
     section: "Use Omnigent",
   },
-  { href: "/docs/build/tools", label: "MCP & Tools", section: "Use Omnigent" },
+  {
+    href: "/docs/build/tools",
+    label: "MCP & Tools",
+    section: "Use Omnigent",
+  },
   {
     href: "/docs/build/scheduled-tasks",
     label: "Scheduled Tasks",
     section: "Use Omnigent",
+  },
+  {
+    href: "/docs/build/harnesses",
+    label: "Overview",
+    section: "Harnesses",
+  },
+  {
+    href: "/docs/build/harnesses/supported",
+    label: "Supported Harnesses",
+    section: "Harnesses",
+  },
+  {
+    href: "/docs/build/harnesses/configuration",
+    label: "Configuration",
+    section: "Harnesses",
+  },
+  {
+    href: "/docs/build/harnesses/community",
+    label: "Community Harnesses",
+    section: "Harnesses",
   },
   { href: "/docs/interact/terminal", label: "Terminal", section: "Interact" },
   { href: "/docs/interact/web-ui", label: "Web UI", section: "Interact" },

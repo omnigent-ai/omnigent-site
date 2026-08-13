@@ -1,0 +1,81 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Supported Harnesses",
+  "See every harness available in Omnigent, including its ids, aliases, execution modes, and support status.",
+  {
+    eyebrow: "Harnesses",
+    path: "/docs/build/harnesses/supported",
+  },
+);
+
+# Supported Harnesses
+
+Every harness on this page is supported. The Support column describes how the
+integration is maintained and how urgently the Omnigent team responds when it
+breaks; it does not indicate whether the harness works.
+
+## Support
+
+- **Fully supported.** Every Omnigent feature is expected to work well with
+  these harnesses. Their integrations are heavily tested in CI and manually by
+  the team. A regression is treated as a serious, blocking bug.
+- **Maintained.** These harnesses are tested in CI and their features are
+  verified to work with Omnigent, but the team gives them less focus than Fully
+  supported harnesses. Bugs are fixed in the normal course of work and shipped
+  with the next release.
+- **Community-supported.** These harness integrations are primarily maintained
+  by the community. They can work reliably through shared direct, ACP, and
+  native-TUI paths, and community contributions are welcome.
+
+A Community-supported harness can become Maintained or Fully supported as it
+gains dedicated integration coverage, CI testing, and active maintenance from
+the Omnigent team.
+
+## Execution modes
+
+Most coding agents can run in one of two modes:
+
+- **Direct** — Omnigent drives the agent's model and tools itself. You get the
+  full platform: web UI, streaming, [contextual policies](/docs/policies/overview),
+  persistent sessions, and mobile.
+- **Native TUI** — Omnigent boots the vendor's own terminal UI in a pane and
+  mirrors it back. You get the exact native experience, wrapped with Omnigent's
+  collaboration and policy layer. These ids end in `-native`.
+
+## Harnesses
+
+| Harness | IDs and aliases | Direct execution | Native TUI | Support | Repository |
+| --- | --- | --- | --- | --- | --- |
+| Claude Code | `claude-sdk` (`claude`), `claude-native` | Yes | Yes | Fully supported | — |
+| Codex | `codex`, `codex-native` | Yes | Yes | Fully supported | — |
+| OpenAI Agents SDK | `openai-agents` (`openai-agents-sdk`) | Yes | No | Fully supported | — |
+| Copilot | `copilot` | Yes | No | Maintained | — |
+| Cursor | `cursor`, `cursor-native` | Yes | Yes | Maintained | — |
+| OpenCode | `opencode-native` (`opencode`) | No | Yes | Maintained | — |
+| Pi | `pi`, `pi-native` | Yes | Yes | Maintained | — |
+| Antigravity | `antigravity`, `antigravity-native` | Yes | Yes | Community-supported | — |
+| Hermes | `hermes`, `hermes-native` | Yes | Yes | Community-supported | — |
+| Kimi | `kimi` (`kimi-code`), `kimi-native` | Yes | Yes | Community-supported | — |
+| Kiro | `kiro-native` | No | Yes | Community-supported | — |
+| Qwen Code | `qwen` (`qwen-code`), `qwen-native` | Yes | Yes | Community-supported | — |
+| Rovo Dev | `rovo` (`rovo-cli`) | Yes | No | Community-supported | [shbhmrzd/omnigent-rovo](https://github.com/shbhmrzd/omnigent-rovo) |
+
+Pi is a headless multi-model worker that runs on any gateway model — ideal for
+review, exploration, and read-heavy tasks delegated by a supervisor agent.
+
+## Harnesses supported via ACP
+
+Some built-in harnesses use Omnigent's ACP integration under the hood rather
+than having a separate support designation.
+
+| Harness | IDs and aliases | Direct execution | Native TUI |
+| --- | --- | --- | --- |
+| Goose | `goose`, `goose-native` | Yes | Yes |
+| Grok Build | `grok` (`grok-build`) | Yes | No |
+
+See [Custom ACP agents](/docs/build/harnesses/configuration#custom-acp-agents)
+for ACP configuration details.
+
+See [Configuration](/docs/build/harnesses/configuration) to set up and run one
+of these harnesses.

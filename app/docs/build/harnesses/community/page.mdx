@@ -1,0 +1,81 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Community Harnesses",
+  "Package and register a new Omnigent harness as a community plugin.",
+  {
+    eyebrow: "Harnesses",
+    path: "/docs/build/harnesses/community",
+  },
+);
+
+# Community Harnesses
+
+The built-in harnesses ship with `pip install omnigent`. Beyond those, Omnigent
+discovers additional harnesses at startup through a plugin registry, so the
+community can add support for a new runtime as a **separate package** — without
+changing the core `omnigent` package. See [Supported Harnesses](/docs/build/harnesses/supported)
+for details on how each integration is maintained and how its support can
+change.
+
+```
+pip install omnigent          # core harnesses only
+pip install omnigent-foo      # adds the `foo` harness to the same omni CLI
+```
+
+An installed plugin's harness shows up everywhere a built-in one does: it's
+accepted in agent YAML, honored by `--harness`, and merged into the harness
+picker in the web UI.
+
+Once your harness is published, we welcome pull requests that add its repository
+to the [Harnesses table](/docs/build/harnesses/supported#harnesses).
+
+## Build a plugin
+
+A harness plugin is a Python package that declares an entry point in the
+`omnigent.community.harness` group and exports a `get_contribution()` function.
+Implementation modules live under the `omnigent.community.harness.*` namespace.
+
+```toml
+# pyproject.toml
+[project]
+name = "omnigent-foo"
+dependencies = ["omnigent"]
+
+[project.entry-points."omnigent.community.harness"]
+foo = "omnigent.community.harness.foo.plugin:get_contribution"
+```
+
+```python
+# omnigent/community/harness/foo/plugin.py
+from omnigent.harness_plugins import HarnessContribution
+from omnigent.harness_install_spec import HarnessInstallSpec
+
+
+def get_contribution() -> HarnessContribution:
+    return HarnessContribution(
+        name="omnigent-foo",
+        valid_harnesses=frozenset({"foo"}),
+        harness_modules={
+            "foo": "omnigent.community.harness.foo.harness",
+        },
+        aliases={"foo-code": "foo"},
+        harness_labels={"foo": "Foo"},
+    )
+```
+
+Each harness module exports `create_app() -> FastAPI`; the runner imports it to
+launch the harness. Keep top-level imports in `plugin.py` light — entry-point
+discovery runs early, so put heavy imports inside the callables that need them.
+
+<div className="note">
+
+**Note:** Core rejects plugins that register flat package paths or try to
+override a built-in harness name. Community native-TUI harnesses aren't
+pluggable yet — the plugin interface covers direct and headless harnesses.
+
+</div>
+
+See the [harness plugin interface](https://github.com/omnigent-ai/omnigent/blob/main/designs/harness-plugin-interface.md)
+design doc for the full plugin contract, including install/auth metadata,
+model-override env vars, and per-spawn environment builders.

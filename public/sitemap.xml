@@ -86,6 +86,27 @@
   </url>
 
   <url>
+    <loc>https://omnigent.ai/docs/build/harnesses/supported</loc>
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://omnigent.ai/docs/build/harnesses/configuration</loc>
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://omnigent.ai/docs/build/harnesses/community</loc>
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
     <loc>https://omnigent.ai/docs/build/models</loc>
     <lastmod>2026-06-23</lastmod>
     <changefreq>weekly</changefreq>

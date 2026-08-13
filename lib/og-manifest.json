@@ -21,9 +21,24 @@
   },
   "/docs/build/harnesses": {
     "title": "Harnesses",
-    "description": "The harness is the runtime that executes your agent loop. Swap one line of YAML to switch between Claude, Codex, Cursor, and more — or ship your own as a community plugin.",
+    "description": "Understand the runtime layer that executes your agent loop and how to launch or select a harness.",
     "eyebrow": "Build"
   },
+  "/docs/build/harnesses/supported": {
+    "title": "Supported Harnesses",
+    "description": "See every harness available in Omnigent, including its ids, aliases, execution modes, and support status.",
+    "eyebrow": "Harnesses"
+  },
+  "/docs/build/harnesses/configuration": {
+    "title": "Configuration",
+    "description": "Configure built-in and custom ACP harnesses, authentication, runtime selection, and launch overrides.",
+    "eyebrow": "Harnesses"
+  },
+  "/docs/build/harnesses/community": {
+    "title": "Community Harnesses",
+    "description": "Package and register a new Omnigent harness as a community plugin.",
+    "eyebrow": "Harnesses"
+  }
   "/docs/build/models": {
     "title": "Models & Credentials",
     "description": "Declare your model in agent YAML and let Omnigent manage the credentials that authenticate to each provider.",

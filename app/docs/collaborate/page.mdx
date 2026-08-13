@@ -107,3 +107,11 @@ omni run --fork <session_id>
 
 Forking copies the full conversation history up to the fork point. From there, each session
 diverges independently.
+
+### Promote a sub-agent
+
+You can fork a sub-agent session, which promotes it to a top-level session of
+its own. The fork is always a fresh top-level conversation — it appears in the
+sidebar and outlives its parent — while the original sub-agent keeps running
+under its parent untouched. The promoted session takes the host and working
+directory of its parent but does not adopt the sub-agent's own children.

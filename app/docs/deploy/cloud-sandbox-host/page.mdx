@@ -244,6 +244,32 @@ to keep it disabled.
 
 </div>
 
+### Offer several providers (optional)
+
+To offer more than one provider side by side, replace the scalar `provider:`
+with a `providers:` list. The two shapes are mutually exclusive — set one or the
+other, never both, or the server refuses to start. The shared top-level keys
+(`server_url`, `host_config`) apply to every entry, so you write them once:
+
+```
+sandbox:
+  server_url: https://your-server.example.com
+  providers:
+    - provider: modal
+      modal:
+        image: ghcr.io/omnigent-ai/omnigent-host:latest
+        secrets: [omnigent-llm]
+    - provider: e2b
+      e2b:
+        env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]
+```
+
+Each entry is validated exactly as its single-provider form, and a provider may
+be listed only once. The web UI's host picker then shows one **New Sandbox** row
+per provider (for example **Modal Sandbox**, **E2B Sandbox**), and the user's
+last pick is remembered so the composer reopens on it. A create that names no
+provider launches on the **first launch-capable** entry in the list.
+
 ### Inject provider config into sandboxes (optional)
 
 An optional top-level `host_config` under `sandbox:` (provider-agnostic — not
@@ -285,6 +311,11 @@ the sandbox.
 Start a new session and select **New Sandbox** in the host picker. The server
 provisions the cloud host, starts the runner, and connects it back automatically. This works
 the same on both hosting platforms.
+
+When the server offers [several providers](#offer-several-providers-optional),
+the picker lists one labeled row per provider (for example **Modal Sandbox**,
+**E2B Sandbox**). Choose the one to launch on; your choice is remembered and the
+composer reopens on it next time.
 
 ## CLI
 

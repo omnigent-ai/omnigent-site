@@ -92,6 +92,35 @@ The switch is on by default; any of `0`, `false`, `no`, or `off` disables it.
 Disabling it removes the prompt labels only — internal authorship metadata is
 still stripped from what the model sees, and persisted authors are unchanged.
 
+## Leave a shared session
+
+When someone shares a session with you, it appears in your sidebar. Once you're
+done with it, pick **Leave session** from the session's row menu to drop it from
+your sidebar.
+
+Leaving only gives up **your own** access — nothing is deleted. The owner keeps
+the session and can share it again later, which brings it back to your sidebar.
+
+<ul>
+  <li>
+    <strong>Leave session</strong> shows up only on sessions shared with you.
+    On a session you own, the row menu offers <strong>Delete</strong> instead —
+    an owner can't leave, because their grant is what keeps the session
+    reachable; archive or delete it instead.
+  </li>
+  <li>
+    You can leave even if you were granted <strong>Edit</strong>-level access —
+    a guest is still a guest.
+  </li>
+  <li>
+    Sub-agent sessions can't be left on their own; their access comes from the
+    parent session. Leave the parent instead.
+  </li>
+</ul>
+
+If you leave the session you're currently viewing, the app navigates you away —
+it's no longer accessible to you afterward.
+
 ## Fork
 
 Clone a conversation and continue independently from the fork point. The original session is

@@ -14,6 +14,11 @@
     "description": "Use Claude Code, Codex, Pi, and other coding agents together through one shared orchestration, collaboration, and policy layer.",
     "eyebrow": "Blog"
   },
+  "/blog/omnigent-policies": {
+    "title": "Allow, ask, deny: contextual policies in Omnigent",
+    "description": "An introduction to Omnigent policies: contextual ALLOW/ASK/DENY guardrails for AI agents, with built-in, custom Python, and CEL examples.",
+    "eyebrow": "Blog"
+  },
   "/blog/queue-and-steer-messages-while-agents-work": {
     "title": "Line up your next moves while an agent works — steer or reorder them mid-run",
     "description": "Type follow-ups while a turn is running: they queue in a strip above the composer and send in order when the agent goes idle, or you can steer, edit, reorder, and delete them.",

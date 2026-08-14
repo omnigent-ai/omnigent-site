@@ -68,6 +68,7 @@ const SECTIONS = [
       { href: "/docs/collaborate/auth", label: "Auth & SSO" },
       { href: "/docs/deploy/database", label: "Database" },
       { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host" },
+      { href: "/docs/deploy/feature-flags", label: "Release Features" },
     ],
   },
   {

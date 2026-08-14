@@ -1,0 +1,93 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Release Features",
+  "Enable or roll back deployment-wide release features on the Omnigent server with the OMNIGENT_FEATURES environment variable.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/feature-flags",
+  },
+);
+
+# Release Features
+
+Release features are deployment-wide, temporary rollout switches for the
+Omnigent server. They are **not** authorization controls or per-user
+preferences — a feature is either on or off for the whole server. They exist so
+a new surface can ship dark, be enabled on one deployment at a time, and be
+rolled back without a code change.
+
+Every release feature is **off by default**.
+
+## Enabling features
+
+Set the comma-separated `OMNIGENT_FEATURES` environment variable and restart or
+redeploy the server:
+
+```
+OMNIGENT_FEATURES=usage_page,harness_install
+```
+
+Unset or empty means every release feature is off. Unknown names **fail server
+startup** rather than silently applying a typo, so a misspelled key can never
+quietly change rollout behavior.
+
+The server resolves the enabled set **once at startup** and publishes the
+frontend-visible values in `GET /v1/info` under `features`. Because the web app
+caches server capabilities at page boot, users must **reload the web app** after
+you change the flag set for the change to take effect.
+
+<div className="note">
+
+The former `OMNIGENT_HARNESS_INSTALL_ENABLED` switch has been removed. Setting
+it to a truthy value is rejected at startup with a migration hint — use
+`OMNIGENT_FEATURES=harness_install` instead.
+
+</div>
+
+## Available features
+
+| Key               | Default | Review by | Purpose                                                                                                                                                              |
+| ----------------- | ------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `usage_page`      | Off     | 0.11.0    | Exposes the web Usage route, sidebar navigation, cost timeline, and cost-breakdown details. The existing `GET /v1/usage` CLI API remains available while it is off. |
+| `harness_install` | Off     | 0.11.0    | Lets the web UI install and configure supported harnesses on a connected host. When off, the install/credential routes return 404 and the UI keeps the "run `omni setup`" hint. |
+
+Each flag is scheduled to be removed by its **review** release — either by making
+the feature unconditional, removing it, or promoting a genuinely permanent
+setting into normal server configuration.
+
+## Enabling per platform
+
+The mechanism is the same everywhere — set `OMNIGENT_FEATURES` and restart the
+server process — but each deployment target exposes it differently.
+
+- **Docker Compose.** Set `OMNIGENT_FEATURES` in `.env`, then recreate the
+  server container with `docker compose up -d`. Verify with
+  `curl -s http://localhost:8000/v1/info | jq '.features'`.
+- **Kubernetes.** Set the `OMNIGENT_FEATURES` value in `base/configmap.yaml`,
+  apply your Kustomize target, and restart the Deployment so every pod picks up
+  one fresh startup snapshot:
+
+  ```
+  kubectl kustomize deploy/kubernetes/base/ | kubectl apply -f -
+  kubectl rollout restart deployment/omnigent
+  kubectl rollout status deployment/omnigent
+  ```
+
+- **Railway.** In the Omnigent service's **Variables** tab, set
+  `OMNIGENT_FEATURES` to the enabled set (for example `usage_page`). Railway
+  redeploys the service automatically.
+- **Render.** Set the `OMNIGENT_FEATURES` environment variable on the service
+  (it defaults to empty in `render.yaml`), then redeploy.
+- **Databricks.** Pass the comma-separated list to the deploy script's
+  `--features` argument (for example `--features usage_page,harness_install`),
+  then reload the web app after the redeploy.
+
+## Rolling out and back
+
+1. Deploy an immutable image with the feature absent from `OMNIGENT_FEATURES`.
+2. Enable it on one deployment, consistently across all replicas.
+3. Verify `GET /v1/info`, then reload and exercise the gated UI.
+4. Expand by deployment cohort.
+5. Roll back by removing the key (or emptying the variable), redeploying the
+   same image, and reloading the web app.

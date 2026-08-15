@@ -1,0 +1,80 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Branding",
+  "White-label a deployed Omnigent server: set the app name, landing heading, and logos so the web UI carries your identity, even on the login screen.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/branding",
+  },
+);
+
+# Branding
+
+Once you [deploy the server](/docs/deploy/overview), you can white-label the web
+UI: replace the app name, landing heading, and logos with your own. Branding is
+served before sign-in, so the login screen carries your identity too.
+
+## Configuration
+
+Add a `branding:` block to the server config (`omnigent server -c config.yaml`,
+or `<data_dir>/config.yaml` — `/data/config.yaml` in the Docker stack). It takes
+effect on the next server start.
+
+```yaml
+branding:
+  app_name: "Acme Agent" # tab title, sidebar wordmark, login screen
+  heading: "How can I help?" # landing hero; "" hides it, omit to keep the default
+  logo: # a bare string sets `main`; or per-variant:
+    main: logo.png # branding-assets/logo.png
+    loading: loading.webp # working indicator (falls back to main)
+    favicon: favicon.png # browser-tab icon
+  powered_by: true # "Powered by Omnigent" credit; false to hide
+```
+
+Any unset field keeps its built-in default (`Omnigent` for the app name,
+`What should we build?` for the heading, and the built-in mascot for the logos),
+so a partial block is fine.
+
+| Field        | Purpose                                                                                      |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| `app_name`   | Tab title, sidebar wordmark, and login screen. Defaults to `Omnigent`.                       |
+| `heading`    | Landing hero text. Set `""` to hide it; omit to keep the default `What should we build?`.    |
+| `logo`       | A bare string sets the `main` variant; a mapping sets `main`, `loading`, and `favicon`.      |
+| `powered_by` | Show the "Powered by Omnigent" credit (default `true`). Set `false` to hide it.              |
+
+### Logo variants
+
+The `logo` value can be a single filename (which sets `main`) or a mapping with
+up to three variants:
+
+- **`main`** — the primary mark.
+- **`loading`** — shown by the working indicator; falls back to `main` when unset.
+- **`favicon`** — the browser-tab icon.
+
+## Logo files
+
+Logo files must live under a dedicated `branding-assets/` directory beside the
+config file (for example, `/data/branding-assets/logo.png`). Reference them by
+name relative to that directory.
+
+PNG, JPEG, GIF, WebP, and ICO files up to 5 MiB are accepted, and only after
+full decoder validation. Malformed, truncated, oversized, overlapping,
+trailing-payload, SVG, symlinked, escaped, and non-image files are ignored.
+Images are also bounded to 4096 pixels per side, 128 frames, 16 megapixels per
+frame, and 64 megapixels across all decoded frames. ICO files must contain only
+PNG-backed entries; DIB/BMP-backed entries are rejected.
+
+<div className="note">
+
+Branding values are served over the unauthenticated `GET /v1/info` and
+`GET /v1/branding/logo/<variant>` endpoints, so the login screen is branded
+before sign-in. Only fields you set are exposed.
+
+</div>
+
+## "Powered by Omnigent" credit
+
+The small "Powered by Omnigent" credit under the landing composer appears only
+once you set custom branding. `powered_by: false` hides it even then. It always
+shows the Omnigent mascot, never your logo.

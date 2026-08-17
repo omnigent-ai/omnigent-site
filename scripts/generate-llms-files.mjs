@@ -87,12 +87,34 @@ const docsRoutes = [
       "Create custom agents in YAML and configure harnesses, models, prompts, skills, tools, and policies.",
   },
   {
-    section: "Build Custom Agents",
+    section: "Harnesses",
     href: "/docs/build/harnesses",
-    label: "Harnesses",
+    label: "Overview",
     source: "app/docs/build/harnesses/page.mdx",
+    description: "Understand harnesses and how to launch or select one.",
+  },
+  {
+    section: "Harnesses",
+    href: "/docs/build/harnesses/supported",
+    label: "Supported Harnesses",
+    source: "app/docs/build/harnesses/supported/page.mdx",
     description:
-      "Runtime harnesses for executing agent loops and switching between Claude, Codex, and other runtimes.",
+      "Compare available harnesses, ids, aliases, execution modes, and support status.",
+  },
+  {
+    section: "Harnesses",
+    href: "/docs/build/harnesses/configuration",
+    label: "Configuration",
+    source: "app/docs/build/harnesses/configuration/page.mdx",
+    description:
+      "Configure authentication, ACP integrations, runtime selection, and launch overrides.",
+  },
+  {
+    section: "Harnesses",
+    href: "/docs/build/harnesses/community",
+    label: "Community Harnesses",
+    source: "app/docs/build/harnesses/community/page.mdx",
+    description: "Package and register a new harness as a community plugin.",
   },
   {
     section: "Build Custom Agents",

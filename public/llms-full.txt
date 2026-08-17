@@ -727,22 +727,372 @@ policies:
 
 # Harnesses
 
-The harness is the runtime that executes your agent loop. Swap one line to switch runtimes.
+A harness is the runtime that executes your agent loop.
+
+You can start a native harness session directly from the CLI without writing
+agent YAML:
+
+```
+omni claude
+omni codex
+omni pi
+```
+
+See [Terminal](/docs/interact/terminal) for more launch commands.
+
+To select a harness in agent YAML, swap one line:
 
 ```
 executor:
-  harness: claude
+  harness: claude-sdk
 ```
 
-## Supported harnesses
+Tools, policies, prompts, and models stay the same across harnesses — only the
+runtime underneath changes.
 
-| Harness | Runtime | Best for |
-| --- | --- | --- |
-| `claude` | Claude Code | Claude Code out of the box. Add tools, policies, and prompts to customize. |
-| `codex` | Codex | Codex out of the box. Add tools, policies, and prompts to customize. |
-| `pi` | Pi | Headless multi-model worker that runs on any gateway model. Ideal for review, exploration, and read-heavy tasks delegated by a supervisor agent. |
+## Next steps
 
-More harness integrations are on the way.
+- [Supported Harnesses](/docs/build/harnesses/supported) lists every available
+  harness, its ids and aliases, execution modes, and support status.
+- [Configuration](/docs/build/harnesses/configuration) covers vendor setup,
+  custom ACP agents, runtime selection, and launch overrides.
+- [Community Harnesses](/docs/build/harnesses/community) explains how to
+  package and register a new harness as a plugin.
+
+---
+
+## https://omnigent.ai/docs/build/harnesses/supported
+
+# Supported Harnesses
+
+Every harness on this page is supported. The Support column describes how the
+integration is maintained and how urgently the Omnigent team responds when it
+breaks; it does not indicate whether the harness works.
+
+## Support
+
+- **Fully supported.** Every Omnigent feature is expected to work well with
+  these harnesses. Their integrations are heavily tested in CI and manually by
+  the team. A regression is treated as a serious, blocking bug.
+- **Maintained.** These harnesses are tested in CI and their features are
+  verified to work with Omnigent, but the team gives them less focus than Fully
+  supported harnesses. Bugs are fixed in the normal course of work and shipped
+  with the next release.
+- **Community-supported.** These harness integrations are primarily maintained
+  by the community. They can work reliably through shared direct, ACP, and
+  native-TUI paths, and community contributions are welcome.
+
+A Community-supported harness can become Maintained or Fully supported as it
+gains dedicated integration coverage, CI testing, and active maintenance from
+the Omnigent team.
+
+## Execution modes
+
+Most coding agents can run in one of two modes:
+
+- **Direct** — Omnigent drives the agent's model and tools itself. You get the
+  full platform: web UI, streaming, [contextual policies](/docs/policies/overview),
+  persistent sessions, and mobile.
+- **Native TUI** — Omnigent boots the vendor's own terminal UI in a pane and
+  mirrors it back. You get the exact native experience, wrapped with Omnigent's
+  collaboration and policy layer. These ids end in `-native`.
+
+## Harnesses
+
+| Harness | IDs and aliases | Direct execution | Native TUI | Support | Repository |
+| --- | --- | --- | --- | --- | --- |
+| Claude Code | `claude-sdk` (`claude`), `claude-native` | Yes | Yes | Fully supported | — |
+| Codex | `codex`, `codex-native` | Yes | Yes | Fully supported | — |
+| OpenAI Agents SDK | `openai-agents` (`openai-agents-sdk`) | Yes | No | Fully supported | — |
+| Copilot | `copilot` | Yes | No | Maintained | — |
+| Cursor | `cursor`, `cursor-native` | Yes | Yes | Maintained | — |
+| OpenCode | `opencode-native` (`opencode`) | No | Yes | Maintained | — |
+| Pi | `pi`, `pi-native` | Yes | Yes | Maintained | — |
+| Antigravity | `antigravity`, `antigravity-native` | Yes | Yes | Community-supported | — |
+| Hermes | `hermes`, `hermes-native` | Yes | Yes | Community-supported | — |
+| Kimi | `kimi` (`kimi-code`), `kimi-native` | Yes | Yes | Community-supported | — |
+| Kiro | `kiro-native` | No | Yes | Community-supported | — |
+| Qwen Code | `qwen` (`qwen-code`), `qwen-native` | Yes | Yes | Community-supported | — |
+| Rovo Dev | `rovo` (`rovo-cli`) | Yes | No | Community-supported | [shbhmrzd/omnigent-rovo](https://github.com/shbhmrzd/omnigent-rovo) |
+
+Pi is a headless multi-model worker that runs on any gateway model — ideal for
+review, exploration, and read-heavy tasks delegated by a supervisor agent.
+
+## Harnesses supported via ACP
+
+Some built-in harnesses use Omnigent's ACP integration under the hood rather
+than having a separate support designation.
+
+| Harness | IDs and aliases | Direct execution | Native TUI |
+| --- | --- | --- | --- |
+| Goose | `goose`, `goose-native` | Yes | Yes |
+| Grok Build | `grok` (`grok-build`) | Yes | No |
+
+See [Custom ACP agents](/docs/build/harnesses/configuration#custom-acp-agents)
+for ACP configuration details.
+
+See [Configuration](/docs/build/harnesses/configuration) to set up and run one
+of these harnesses.
+
+---
+
+## https://omnigent.ai/docs/build/harnesses/configuration
+
+# Configuration
+
+Choose a harness id from [Supported Harnesses](/docs/build/harnesses/supported),
+then configure any authentication or launch settings it needs.
+
+## GitHub Copilot
+
+The `copilot` harness authenticates with a GitHub token that carries Copilot
+access. Omnigent resolves one from the first source that's set, in this order:
+
+1. A `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `GITHUB_TOKEN` environment variable.
+2. A token you stored through `omnigent setup` → *configure harnesses* →
+   **Copilot**.
+3. Your GitHub CLI login — if you've run `gh auth login`, Omnigent asks `gh` for
+   the token directly (`gh auth token`), so a logged-in user is ready without
+   pasting anything into setup.
+
+**Note:** The `gh` fallback runs `gh auth token` because the Copilot CLI only
+picks up a `gh` login by reading `oauth_token` from `~/.config/gh/hosts.yml` —
+which is absent whenever `gh` keeps the token in an OS keychain (the default on
+macOS). Asking `gh` itself works on every platform.
+
+### GitHub Enterprise host
+
+Organizations that reach Copilot through a GitHub Enterprise (data-residency)
+instance need auth and API calls pointed at their own hostname rather than
+`github.com`. Set it through `omnigent setup` → *configure harnesses* →
+**Copilot** → **Set GitHub Enterprise host** (the same menu lets you change or
+clear it), or edit `~/.omnigent/config.yaml` directly:
+
+```yaml
+copilot:
+  github_host: acme.ghe.com
+```
+
+Provide a bare hostname; a pasted `https://` scheme or trailing slash is
+stripped automatically. When set, Omnigent forwards it to the bundled Copilot
+CLI as the `COPILOT_GH_HOST` environment variable and fetches your `gh` token
+for that host. With no host configured, Copilot uses its default `github.com`.
+
+## Grok Build
+
+Grok Build (xAI's `grok` CLI) ships as a builtin harness with the id `grok`
+(alias `grok-build`). Under the hood it drives `grok agent stdio` over the
+[Agent Client Protocol](https://agentclientprotocol.com) — Omnigent renders its
+streaming output, reasoning, and tool cards and routes its permission requests
+through your [contextual policies](/docs/policies/overview), just like the
+generic `acp` harness below. The difference is that it's built in: you select
+the `grok` harness id directly instead of registering a launch command.
+
+```
+omni run --harness grok
+```
+
+Like the generic ACP agents, Grok Build brings **its own auth and model** —
+Omnigent stores no credential and a `/model` pick is rejected up front. Install
+the CLI and log in through xAI first:
+
+```
+curl -fsSL https://x.ai/cli/install.sh | bash
+grok login --device-auth   # xAI OAuth (device-code capable); or set XAI_API_KEY
+```
+
+## Hermes
+
+Hermes ships as a builtin harness with the id `hermes` and is offered directly
+in the web harness picker. Select it like any other builtin — in the picker, via
+`--harness hermes`, or in agent YAML:
+
+```
+executor:
+  harness: hermes
+  model: hermes-4-405b
+```
+
+Like the ACP agents, Hermes brings **its own auth** — Omnigent stores no
+credential and injects none. Hermes reads credentials from its own file-based
+store (`auth.json` / `.env` under `HERMES_HOME`), so log in and pick a model
+through its own CLI first:
+
+```
+hermes setup    # file-based auth under HERMES_HOME
+hermes model    # choose the model Hermes runs
+```
+
+Unlike the generic ACP agents, a `/model` pick **is** honored for Hermes: the
+model you declare in YAML or switch to mid-session threads through to the
+harness (via `HARNESS_HERMES_MODEL`). The sandbox and workspace a session
+selects are threaded through as well, so a sandbox chosen in the web session
+dialog actually confines the Hermes run.
+
+## Kimi Code
+
+Kimi Code (`kimi`, alias `kimi-code`) brings **its own auth** — Omnigent stores
+no credential. Kimi ships via a curl installer (no npm package), so install the
+CLI and sign in through it first:
+
+```
+curl -fsSL https://code.kimi.com/kimi-code/install.sh | bash
+kimi login   # Moonshot OAuth, or paste a Moonshot API key
+```
+
+`kimi login` writes its credential to `~/.kimi-code/credentials/kimi-code.json`.
+`omni setup` detects that file and shows Kimi as **Signed in** once a login has
+completed; while the CLI is installed but no credential is present it shows
+**Not configured** with a "Sign in with `kimi login`" hint.
+
+Kimi has **no** `kimi logout` subcommand, so `omni setup` offers no sign-out
+row. To sign out, delete the credential file:
+
+```
+rm ~/.kimi-code/credentials/kimi-code.json
+```
+
+## Custom ACP agents
+
+Beyond the built-in harnesses, the generic `acp` harness drives *any* agent that
+speaks the [Agent Client Protocol](https://agentclientprotocol.com) — the open,
+editor-agnostic protocol used by Gemini CLI, Qwen Code, Goose, and in-house
+agents. You point Omnigent at a launch command and it
+speaks ACP against whatever that command starts.
+
+Each ACP agent brings **its own auth** — Omnigent stores no credential, so log
+into the agent through its own CLI first. Register agents with `omnigent setup`
+→ *configure harnesses* → **Custom ACP agent** → *Add*, providing a name, a
+launch command, and an optional model. (To pull agents in from an existing
+OpenClaw/acpx registry instead of typing each one, see
+[Import agents from OpenClaw](#import-agents-from-openclaw) below.) Some
+paste-ready commands:
+
+| Agent | Command |
+| --- | --- |
+| Gemini CLI | `gemini --experimental-acp` |
+| Qwen Code | `qwen --acp` |
+| Goose | `goose acp` |
+
+Each registered agent is stored in a top-level `acp:` block of
+`~/.omnigent/config.yaml` and gets a stable slug derived from its name. It then
+surfaces as its own harness id, `acp:`, in the web picker and in agent
+YAML:
+
+```yaml
+acp:
+  agents:
+    - { name: Gemini CLI, command: gemini --experimental-acp }
+    - { name: Goose, command: goose acp, model: gpt-5.3 }
+```
+
+```yaml
+executor:
+  harness: acp:gemini-cli
+```
+
+The agent runs its own agent loop, tools, and context window; Omnigent renders
+its streaming output, reasoning, and tool cards, routes its permission requests
+through your [contextual policies](/docs/policies/overview) as web elicitation
+cards, and honors interrupts. Omnigent also exposes its own builtin tools
+(session, sub-agent, skill, and policy tools) to the agent alongside the agent's
+native tools; set `OMNIGENT_ACP_MCP=0` to disable that bridge for a session.
+
+To disable that MCP relay permanently for a specific agent, set
+`omnigent_mcp: false` on its `acp:` entry. The agent keeps its own native tools;
+Omnigent simply stops lending its builtin tools to that agent in `session/new`
+(the field is still sent as an empty list, which ACP requires). This is required
+for agents whose ACP server rejects per-session MCP servers — such as the
+OpenClaw Gateway bridge described below. The value must be a boolean;
+`omnigent setup` reports an error if it isn't.
+
+```yaml
+acp:
+  agents:
+    - name: OpenClaw
+      command: openclaw acp --url <gateway-url> --token-file <token-file>
+      omnigent_mcp: false
+```
+
+**Note:** The generic ACP harness has no fixed binary — each agent owns its own
+install and login, so a missing binary is a hint, not a hard gate. A sandboxed
+generic ACP agent gets read access to its binary directory, the cwd, and write
+access to `/tmp`; an agent that must write its own config directory needs
+`sandbox: none` (the default) for now.
+
+### Import agents from OpenClaw
+
+If you already keep an agent registry for OpenClaw or the `acpx` CLI, Omnigent
+can import those agents into its `acp:` block instead of re-adding each one by
+hand. Run `omnigent setup` → *configure harnesses* → **Import from OpenClaw**.
+The row shows how many agents were detected automatically. Omnigent looks in two
+default locations:
+
+| Source | Path |
+| --- | --- |
+| acpx | `~/.acpx/config.json` |
+| OpenClaw | `~/.openclaw/openclaw.json` |
+
+Both files are read as JSON5, and you can pick *Choose another file…* to point
+at a config elsewhere. Omnigent lists the agents it found, derives a stable slug
+from each name, and — after you confirm — appends them to the `acp:` block of
+`~/.omnigent/config.yaml`. From then on they behave exactly like manually added
+ACP agents.
+
+Import stores **only the launch command, not credentials** — each agent still
+authenticates through its own CLI. Re-running the import is safe: agents already
+present are skipped, and a new agent whose name collides with an existing slug
+gets a numbered suffix (e.g. `gemini-cli-2`) so nothing is overwritten. An agent
+whose binary isn't on your `PATH` is flagged as a hint, not blocked.
+
+To launch a single OpenClaw/acpx agent once **without** saving it to your config,
+use `--from-openclaw` on `omni run`:
+
+```
+omni run --from-openclaw "Gemini CLI" -p "review the last commit"
+```
+
+Match the agent by its display name (case-insensitive) or derived slug. This
+runs the agent through the `acp` harness for that one session; it can't be
+combined with an `AGENT` path or with `--harness`.
+
+This path drives the selected coding agent directly. It does **not** bring
+OpenClaw's Gateway session, routing, memory, or channels into the conversation —
+for that, register the Gateway bridge (below).
+
+### Drive the OpenClaw Gateway
+
+Beyond importing individual coding agents, the `openclaw acp` command exposes a
+live OpenClaw Gateway session as an ACP server over stdio, giving Omnigent
+access to OpenClaw's own routing, memory, and channels. Register it as an `acp:`
+agent, disabling Omnigent's MCP relay because the Gateway bridge rejects
+per-session MCP servers:
+
+```yaml
+acp:
+  agents:
+    - name: OpenClaw
+      command: openclaw acp --url <gateway-url> --token-file <token-file>
+      omnigent_mcp: false
+```
+
+Replace `<gateway-url>` and `<token-file>` with your running Gateway's
+connection details, then launch it:
+
+```
+omni run --harness acp:openclaw
+```
+
+**Caution:** Prefer `--token-file` so the Gateway token isn't stored in the
+launch command. Don't commit or share `~/.omnigent/config.yaml`, and use a token
+with the narrowest permissions OpenClaw supports.
+
+Omnigent owns the outer conversation and transcript; OpenClaw owns the
+Gateway-backed session. OpenClaw's Control UI is a separate Gateway client, so
+messages entered there while Omnigent is offline are **not** imported into the
+Omnigent conversation — use Omnigent as the canonical conversation when you need
+its transcript and resume behavior. Bidirectional sync with the Control UI and
+per-session Omnigent MCP are not supported by this integration.
 
 ## Swap harnesses
 
@@ -754,6 +1104,141 @@ omni run agent.yaml --harness codex
 ```
 
 See [Models & Credentials](/docs/build/models) for how to set up API keys and choose models.
+
+## Override the harness binary and launch args
+
+By default each harness launches its vendor CLI from your `PATH` (e.g. `claude`,
+`codex`). You can point a harness at a specific executable, or prepend base
+launch args, from your Omnigent config — `~/.omnigent/config.yaml` (user) or
+`.omnigent/config.yaml` (project, takes precedence). View it with
+`omni config list`; set a value with `omni config set =`.
+
+The top-level `harness:` config key is polymorphic. The legacy scalar form still
+works (and auto-migrates to the mapping form the next time the config is
+written):
+
+```yaml
+# Legacy scalar (deprecated, still honored):
+harness: claude-sdk
+
+# Mapping form — a default plus per-harness startup overrides:
+harness:
+  default: claude-sdk
+  codex-native:
+    command: /usr/local/bin/codex
+    args: [--config, approval_policy=on-request]
+  pi-native:
+    command: /opt/bin/pi
+```
+
+- `default` (optional) — the default harness id for `omni run`.
+- `command` (optional) — overrides the vendor CLI executable for that harness.
+- `args` (optional list) — base launch args; any CLI pass-through args are
+  appended *after* these.
+
+This top-level `harness:` config key selects the CLI default and per-binary
+launch overrides. It's separate from the `executor.harness` value inside an
+agent's own YAML, which pins the harness for that one agent.
+
+**Note:** A project's per-harness overrides are deep-merged onto your global
+ones — a `.omnigent/config.yaml` entry augments (rather than replaces) the
+matching `~/.omnigent/config.yaml` entry, with the project's fields winning.
+
+### Binary-path precedence
+
+For a harness's `command`, the first non-empty source wins:
+
+1. The `OMNIGENT__PATH` environment variable.
+2. The config `harness..command`.
+3. The harness's built-in default executable.
+
+`args` follow the same idea: the config `args` are the base, and CLI pass-through
+args are appended after them.
+
+`` is the harness's underlying *binary*, not its id: the `-native` suffix
+is stripped, so `pi` and `pi-native` share `OMNIGENT_PI_PATH`, and the Claude
+harnesses map to `OMNIGENT_CLAUDE_PATH` (so `claude-sdk` and `claude-native`
+share one var).
+
+**Deprecated:** The older `HARNESS__PATH` env vars (for `codex`, `pi`,
+`kimi`, `goose`, `qwen`, and `hermes`) are still read as a fallback but log a
+warning and will be removed in **v0.8.0** — use `OMNIGENT__PATH` instead.
+The `omni claude --command` flag is likewise deprecated (set
+`OMNIGENT_CLAUDE_PATH` or `harness.claude-native.command` instead) and will be
+removed in a future release. No other native command has a `--command` flag.
+
+To add a runtime that Omnigent does not include, see
+[Community Harnesses](/docs/build/harnesses/community).
+
+---
+
+## https://omnigent.ai/docs/build/harnesses/community
+
+# Community Harnesses
+
+The built-in harnesses ship with `pip install omnigent`. Beyond those, Omnigent
+discovers additional harnesses at startup through a plugin registry, so the
+community can add support for a new runtime as a **separate package** — without
+changing the core `omnigent` package. See [Supported Harnesses](/docs/build/harnesses/supported)
+for details on how each integration is maintained and how its support can
+change.
+
+```
+pip install omnigent          # core harnesses only
+pip install omnigent-foo      # adds the `foo` harness to the same omni CLI
+```
+
+An installed plugin's harness shows up everywhere a built-in one does: it's
+accepted in agent YAML, honored by `--harness`, and merged into the harness
+picker in the web UI.
+
+Once your harness is published, we welcome pull requests that add its repository
+to the [Harnesses table](/docs/build/harnesses/supported#harnesses).
+
+## Build a plugin
+
+A harness plugin is a Python package that declares an entry point in the
+`omnigent.community.harness` group and exports a `get_contribution()` function.
+Implementation modules live under the `omnigent.community.harness.*` namespace.
+
+```toml
+# pyproject.toml
+[project]
+name = "omnigent-foo"
+dependencies = ["omnigent"]
+
+[project.entry-points."omnigent.community.harness"]
+foo = "omnigent.community.harness.foo.plugin:get_contribution"
+```
+
+```python
+# omnigent/community/harness/foo/plugin.py
+from omnigent.harness_plugins import HarnessContribution
+from omnigent.harness_install_spec import HarnessInstallSpec
+
+def get_contribution() -> HarnessContribution:
+    return HarnessContribution(
+        name="omnigent-foo",
+        valid_harnesses=frozenset({"foo"}),
+        harness_modules={
+            "foo": "omnigent.community.harness.foo.harness",
+        },
+        aliases={"foo-code": "foo"},
+        harness_labels={"foo": "Foo"},
+    )
+```
+
+Each harness module exports `create_app() -> FastAPI`; the runner imports it to
+launch the harness. Keep top-level imports in `plugin.py` light — entry-point
+discovery runs early, so put heavy imports inside the callables that need them.
+
+**Note:** Core rejects plugins that register flat package paths or try to
+override a built-in harness name. Community native-TUI harnesses aren't
+pluggable yet — the plugin interface covers direct and headless harnesses.
+
+See the [harness plugin interface](https://github.com/omnigent-ai/omnigent/blob/main/designs/harness-plugin-interface.md)
+design doc for the full plugin contract, including install/auth metadata,
+model-override env vars, and per-spawn environment builders.
 
 ---
 

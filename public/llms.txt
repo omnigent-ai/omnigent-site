@@ -22,9 +22,15 @@ For a single-file expanded context, use [llms-full.txt](https://omnigent.ai/llms
 - [Debby](https://omnigent.ai/docs/use/builtin-agents/debby): Model debate agent, debate workflow, and when to use it.
 - [Custom Agents](https://omnigent.ai/docs/use/custom-agents): Create custom agents in YAML and configure harnesses, models, prompts, skills, tools, and policies.
 
+## Harnesses
+
+- [Overview](https://omnigent.ai/docs/build/harnesses): Understand harnesses and how to launch or select one.
+- [Supported Harnesses](https://omnigent.ai/docs/build/harnesses/supported): Compare available harnesses, ids, aliases, execution modes, and support status.
+- [Configuration](https://omnigent.ai/docs/build/harnesses/configuration): Configure authentication, ACP integrations, runtime selection, and launch overrides.
+- [Community Harnesses](https://omnigent.ai/docs/build/harnesses/community): Package and register a new harness as a community plugin.
+
 ## Build Custom Agents
 
-- [Harnesses](https://omnigent.ai/docs/build/harnesses): Runtime harnesses for executing agent loops and switching between Claude, Codex, and other runtimes.
 - [Models & Credentials](https://omnigent.ai/docs/build/models): Declare models and configure API keys, subscriptions, gateways, and Databricks credentials.
 - [Prompts & Skills](https://omnigent.ai/docs/build/prompts): Shape agent behavior with system prompts and reusable skills.
 - [MCP & Tools](https://omnigent.ai/docs/build/tools): Add MCP servers, Python function tools, sub-agent tools, authentication, and tool inheritance.

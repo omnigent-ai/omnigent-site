@@ -40,13 +40,30 @@ const SECTIONS = [
         collapsed: true,
         href: "/docs/use/custom-agents",
         pages: [
-          { href: "/docs/build/harnesses", label: "Harnesses" },
           { href: "/docs/build/models", label: "Models & Credentials" },
           { href: "/docs/build/routing", label: "Smart Routing" },
           { href: "/docs/build/prompts", label: "Prompts & Skills" },
           { href: "/docs/build/tools", label: "MCP & Tools" },
           { href: "/docs/build/scheduled-tasks", label: "Scheduled Tasks" },
         ],
+      },
+    ],
+  },
+  {
+    title: "Harnesses",
+    pages: [
+      { href: "/docs/build/harnesses", label: "Overview" },
+      {
+        href: "/docs/build/harnesses/supported",
+        label: "Supported Harnesses",
+      },
+      {
+        href: "/docs/build/harnesses/configuration",
+        label: "Configuration",
+      },
+      {
+        href: "/docs/build/harnesses/community",
+        label: "Community Harnesses",
       },
     ],
   },

@@ -111,6 +111,11 @@ curl -fsSL https://x.ai/cli/install.sh | bash
 grok login --device-auth   # xAI OAuth (device-code capable); or set XAI_API_KEY
 ```
 
+Once the `grok` binary is on your `PATH`, Grok Build is seeded into the web
+new-chat picker automatically — like the custom ACP agents above, it appears in
+the **Harnesses** group (under **More**), not under **Agents**. On a host where
+the CLI isn't installed, no Grok row is seeded.
+
 ## Hermes
 
 Hermes ships as a builtin harness with the id `hermes` and is offered directly
@@ -203,6 +208,14 @@ acp:
 executor:
   harness: acp:gemini-cli
 ```
+
+Every configured `acp:<slug>` agent is seeded into the web new-chat picker
+automatically on any host where it's set up — no `--harness` typing required. It
+lands in the **Harnesses** group (under **More**), beside the native CLIs rather
+than under **Agents**, because selecting it runs a harness, not a composed
+agent. The slug is capitalized for display (so `devin` shows as **Devin**). This
+seeding is host-scoped: a shared/remote server that holds no `acp:` config shows
+no ACP rows, so you never see a picker entry that can't launch there.
 
 The agent runs its own agent loop, tools, and context window; Omnigent renders
 its streaming output, reasoning, and tool cards, routes its permission requests

@@ -88,6 +88,34 @@ stripped automatically. When set, Omnigent forwards it to the bundled Copilot
 CLI as the `COPILOT_GH_HOST` environment variable and fetches your `gh` token
 for that host. With no host configured, Copilot uses its default `github.com`.
 
+## Devin
+
+Devin (Cognition's `devin` CLI) ships as a builtin harness with the id `devin`.
+Under the hood it drives `devin acp` — Devin's ACP stdio server — so Omnigent
+renders its streaming output, reasoning, and tool cards and routes its
+permission requests through your [contextual policies](/docs/policies/overview),
+just like the generic `acp` harness below. The difference is that it's built in:
+you select the `devin` harness id directly instead of registering a launch
+command.
+
+```
+omni run --harness devin
+```
+
+Like the generic ACP agents, Devin brings **its own auth** — Omnigent stores no
+credential. Devin ships via a curl installer (no npm package), so install the
+CLI and log in through it first:
+
+```
+curl -fsSL https://cli.devin.ai/install.sh | bash
+devin auth login   # or set a Devin API key
+```
+
+Devin runs your **account-default model**. Because a builtin harness row can't
+carry a per-user model, pin one with the `DEVIN_MODEL` environment variable, or
+register an `acp:` config entry with a `--model` argument instead (see
+[Custom ACP agents](#custom-acp-agents)).
+
 ## Grok Build
 
 Grok Build (xAI's `grok` CLI) ships as a builtin harness with the id `grok`

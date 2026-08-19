@@ -95,21 +95,36 @@ new worktree branch; leave the setting blank to turn auto-fill off.
 ### Choose the launch model
 
 Native coding-agent sessions carry a per-session **Model** picker in their
-launch config, next to the harness's other launch knobs. Both Claude Code
-(`claude-native`) and Codex (`codex-native`) surface it: open the agent's config
-in the new-chat composer and pick the underlying LLM the harness launches with.
+launch config, next to the harness's other launch knobs. Claude Code
+(`claude-native`), Codex (`codex-native`), and Pi (`pi-native`) surface it: open
+the agent's config in the new-chat composer and pick the underlying LLM the
+harness launches with.
 
-The choices come from the **selected host's resolved model catalog**, so the list
-reflects the providers and credentials configured on that machine. The first
-option is **Default** — labeled `Default (<model-id>)` when the host reports a
-default model — which leaves the harness on its own configured/default model.
-Leaving the picker on **Default** omits the override entirely.
+For Claude Code and Codex the choices come from the **selected host's resolved
+model catalog**, so the list reflects the providers and credentials configured
+on that machine. The first option is **Default** — labeled `Default (<model-id>)`
+when the host reports a default model — which leaves the harness on its own
+configured/default model. Leaving the picker on **Default** omits the override
+entirely.
 
 Your choice is remembered per harness, so a model picked for Codex doesn't change
 the model remembered for Claude Code (and vice versa). When you start the session,
 the selected model rides along as the launch override and the runner uses it at
 launch. Under a sandbox launch, where no host catalog is resolved, the picker is
 empty and the harness default is used.
+
+#### Pi's launch model picker
+
+Pi's picker lists only the models the host serves through its
+**Omnigent-managed provider** — the models you configured with `omni setup` —
+rather than Pi's full built-in catalog. Each entry is a provider-qualified
+`provider/model` value (for example `omnigent/claude-sonnet-4-6` or
+`omnigent-openai/system.ai.gpt-5-6-sol`), so both Claude and non-Claude families
+(GPT, GLM, Llama, …) served by that provider appear in one list. Because the
+list can be long, Pi's picker is **searchable** — type to filter by display
+name. As with the other harnesses, **Default** leaves Pi on its configured
+default and omits the override, your pick is remembered per harness, and a
+sandbox launch (no resolved host catalog) shows an empty picker.
 
 ### Shared sessions
 

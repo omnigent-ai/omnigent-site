@@ -277,6 +277,44 @@ Omnigent conversation — use Omnigent as the canonical conversation when you ne
 its transcript and resume behavior. Bidirectional sync with the Control UI and
 per-session Omnigent MCP are not supported by this integration.
 
+## ACP approval prompts (permission mode)
+
+Every ACP-based harness — the generic `acp` agents above, plus builtins like
+Grok Build — routes the agent's permission requests through your
+[contextual policies](/docs/policies/overview). When no policy has an opinion on
+a tool call, Omnigent shows a human approval card by default. For a headless
+worker (a scheduled task or a sub-agent nobody is watching) that card can park
+the turn indefinitely, so you can opt out of the *human* gate with
+`permission_mode`:
+
+```yaml
+executor:
+  harness: acp:gemini-cli
+  permission_mode: bypassPermissions
+```
+
+- `auto` (default) — a policy-silent tool call still shows the approval card.
+- `bypassPermissions` — a policy-silent tool call is allowed without prompting,
+  and logged so the audit trail still names what ran unreviewed.
+
+Only the exact value `bypassPermissions` waives the card; any other value
+(including a typo or a mode borrowed from another harness) falls back to
+prompting.
+
+<div className="note">
+
+**Note:** Policy still runs in every mode, so `bypassPermissions` waives only the
+human prompt, never your rules. A policy that **denies** a call still blocks it,
+and a policy that says **ask** still prompts. The bypass answers each request
+individually — it never tells the agent to stop asking — so every later tool
+call stays visible to your policies.
+
+</div>
+
+When launching the harness wrap directly, the equivalent knob is the
+`HARNESS_ACP_PERMISSION_MODE` environment variable (`auto` or
+`bypassPermissions`); an unset or blank value keeps the prompting default.
+
 ## Swap harnesses
 
 Tools, policies, and other config stay the same across harnesses. Just change the

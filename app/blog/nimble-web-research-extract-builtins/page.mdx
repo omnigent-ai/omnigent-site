@@ -26,13 +26,24 @@ your agent can run a cited research task or pull structured data straight off a
 page.
 
 Getting good web data into an agent usually means gluing together a search API,
-a scraper, and your own parsing, then keeping all of it working. These builtins
-hand that back to you as two calls. `nimble_research` runs a research task and
-returns the answer along with the sources it consulted and per-claim citations,
-so you can see where each fact came from. `nimble_extract` runs one of your
-Nimble extract templates against the live web and returns the parsed result as
-structured JSON in a single call. Both resolve inside the runner, so they work
-with any agent you run in Omnigent, not just one model family.
+a scraper, and your own parsing, then keeping all of it working.
+
+`nimble_research` hands a task to a Nimble Web Search Agent. The agent plans the
+search itself and browses in a real browser, so JavaScript-rendered and
+interactive pages still resolve. It cross-checks what it finds across sources and
+returns an answer with per-claim citations and a confidence signal for each one.
+Pass an `output_schema` to get typed JSON instead of prose. Pass `input_data` and
+it enriches the records you give it instead of answering a question, which is
+what you want when the job is a few thousand records rather than one lookup. Each
+run also stores its sources and the retrieval paths that worked, so an agent that
+runs this kind of task repeatedly builds on earlier runs instead of starting
+cold.
+
+`nimble_extract` runs one of your Nimble extract templates against the live web
+and returns the parsed result as structured JSON in a single call.
+
+Both resolve inside the runner, so they work with any agent you run in Omnigent,
+not just one model family.
 
 {/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an agent answering a research question with the cited sources it returned, then an extract call returning structured JSON from a page. */}
 
@@ -51,8 +62,15 @@ tools:
       template: my_template_name # one of your account's extract templates
 ```
 
-See the [built-in tools guide](/docs/build/tools#built-in-tools) for the full
-list of config keys.
+For a quick lookup rather than a full research run, Nimble has been one of the
+[`web_search` providers](/docs/build/tools#websearch) since that tool shipped.
+Set `search_provider: nimble` and results come back in seconds instead of the
+minutes a research run can take, with no extra to install.
+
+See the [built-in tools guide](/docs/build/tools#built-in-tools) for how builtins
+are configured, and [Nimble's Omnigent connector
+docs](https://docs.nimbleway.com/integrations/connectors/omnigent) for the full
+config reference on all three capabilities, including where to get an API key.
 
 ---
 

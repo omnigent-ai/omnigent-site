@@ -14,6 +14,11 @@
     "description": "Use Claude Code, Codex, Pi, and other coding agents together through one shared orchestration, collaboration, and policy layer.",
     "eyebrow": "Blog"
   },
+  "/blog/nimble-web-research-extract-builtins": {
+    "title": "Give your agents built-in structured web research and extraction",
+    "description": "Enable nimble_research and nimble_extract by name in your agent spec: your agents can run cited web research and pull structured data off live pages, no glue code required.",
+    "eyebrow": "Blog"
+  },
   "/blog/queue-and-steer-messages-while-agents-work": {
     "title": "Line up your next moves while an agent works — steer or reorder them mid-run",
     "description": "Type follow-ups while a turn is running: they queue in a strip above the composer and send in order when the agent goes idle, or you can steer, edit, reorder, and delete them.",

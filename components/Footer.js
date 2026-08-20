@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { GitHubIcon, DiscordIcon, LinkedInIcon } from "./icons";
-import { GITHUB_URL, DISCORD_URL, DATABRICKS_URL, NEON_URL, LINKEDIN_URL } from "./links";
+import {
+  GITHUB_URL,
+  DISCORD_URL,
+  DATABRICKS_URL,
+  NEON_URL,
+  LINKEDIN_URL,
+} from "./links";
 
 export default function Footer() {
   return (

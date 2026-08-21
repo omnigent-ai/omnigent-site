@@ -69,6 +69,18 @@ than hosting sessions itself.
 The app shows foreground notifications and updates the app badge while it's open. It does not
 do background polling, so notifications arrive when the app is in the foreground.
 
+### Sign in with your identity provider
+
+If your server uses [single sign-on (OIDC)](/docs/collaborate/auth#single-sign-on-oidc), the
+iOS app completes sign-in in the system browser rather than inside the app's WebView. When
+sign-in sends you to your identity provider (a different origin than the server you connected
+to), the app hands off to Safari, you authenticate there, and the resulting session is copied
+back into the app's isolated WebView so you land signed in.
+
+This handoff is why providers such as Google — which reject sign-in from embedded browsers —
+work in the iOS app. You don't need to do anything special: tap sign in and complete it in the
+browser that opens.
+
 ## Android app
 
 The Omnigent Android app is available on

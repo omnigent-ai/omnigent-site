@@ -50,6 +50,12 @@ is not enumerable.
   agent default.
 - **`reasoning_effort`** (optional) — a per-run reasoning-effort hint, e.g.
   `high`. Omit for the agent default.
+- **`max_cost_usd`** (optional) — a per-firing cost budget in USD. Must be
+  greater than 0. When set, each fired session is capped at this spend: a
+  [`cost_budget`](/docs/policies/builtin#cost-control) policy is attached to the
+  spawned session and all models are blocked once cumulative spend reaches the
+  limit. Omit for no per-firing cap (the session runs unconstrained unless the
+  agent spec or server-wide defaults impose one).
 
 Once created, the task fires automatically on its schedule until you delete it.
 
@@ -73,7 +79,8 @@ minutes.
 
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
 untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
-`model_override`, `reasoning_effort`, `workspace`, `host_id`, and `state`.
+`model_override`, `reasoning_effort`, `max_cost_usd`, `workspace`, `host_id`,
+and `state`. Passing `max_cost_usd` as `null` clears the cap.
 
 The `state` field accepts `active` or `paused`:
 
@@ -92,9 +99,12 @@ workspace**. When a task is due, Omnigent:
    armed is skipped.
 2. Creates a session bound to the task's agent, carrying the stored `workspace`,
    `host_id`, `model_override`, and `reasoning_effort`.
-3. Grants the task's owner ownership of the new session so the run is visible.
-4. Launches the runner and dispatches the prompt so the agent actually runs.
-5. Records the run — stamping the task's last-run time and the run's
+3. Attaches a [`cost_budget`](/docs/policies/builtin#cost-control) policy to the
+   session when `max_cost_usd` is set. This step is non-fatal: if attaching the
+   policy fails, the run proceeds uncapped rather than dying.
+4. Grants the task's owner ownership of the new session so the run is visible.
+5. Launches the runner and dispatches the prompt so the agent actually runs.
+6. Records the run — stamping the task's last-run time and the run's
    conversation id.
 
 A few scheduling guarantees:

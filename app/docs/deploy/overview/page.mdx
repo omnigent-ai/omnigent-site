@@ -252,6 +252,11 @@ This is why your local Claude Code or Codex installation "just works." Runners
 started on your laptop have direct access to your machine's tools, files, and
 credentials.
 
+On an auth-enabled server, a host registered this way renews its own access in
+the background so it keeps running past session-token expiry without a human
+re-running `omni login` — see
+[Staying logged in](/docs/collaborate/auth#staying-logged-in-hosts--cli).
+
 However, moving the runner to a
 [cloud sandbox host](/docs/deploy/cloud-sandbox-host) gives you:
 

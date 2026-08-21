@@ -101,6 +101,58 @@ injects a trusted header, Omnigent can read the user identity directly from
 `X-Forwarded-Email`. No additional auth configuration is needed on the Omnigent
 side.
 
+## Staying logged in (hosts & CLI)
+
+When you run `omnigent login <server-url>` against a built-in accounts or OIDC
+server, the CLI now walks away with a **refresh grant** in addition to the
+short-lived session token. This lets a long-running host renew its own access
+in the background instead of going dark when the session token expires.
+
+Previously an unattended host registered with `omnigent host` would keep
+working only until its session token lapsed (default 8 hours), after which the
+next reconnect was rejected with a misleading `403` and the host stayed offline
+until someone re-ran `omnigent login`. With a refresh grant, the host tunnel
+renews automatically on reconnect and keeps running with no human in the loop.
+
+- **Automatic renewal.** The host/runner renews its access token from the stored
+  refresh grant whenever the session token is expired or about to lapse. This
+  happens on the tunnel's normal reconnect path — you don't run anything.
+- **Both auth modes.** Refresh grants are issued for both built-in accounts and
+  OIDC logins. The browser web login never receives refresh material — only the
+  CLI/host login flows do — so an unattended credential can't leak through the
+  web UI.
+- **One login per host.** Give each host its own `omnigent login`. That way a
+  single host can be revoked (via logout, below) without cutting off the rest.
+  A revoked or expired grant stops renewing immediately.
+- **Logout revokes it.** `omnigent logout` revokes the grant on the server, so
+  the host can no longer renew.
+
+<div className="note">
+
+**Known limitation.** Only the host/runner reconnect path renews automatically
+today. General CLI commands (`omnigent usage`, session commands, direct
+remote-URL chat) still read the stored token without refreshing it, so an
+expired login leaves those commands unauthenticated until something on the host
+path renews the shared credential file. Wiring the remaining CLI entrypoints is
+follow-up work.
+
+</div>
+
+### Refresh grant lifetime
+
+A refresh grant has an absolute lifetime — 30 days by default — after which a
+human must re-run `omnigent login` to re-authenticate. Renewal within that
+window is automatic; the cap bounds how long a lost or stolen grant stays
+usable. Extend it for long-lived unattended hosts with:
+
+```
+OMNIGENT_GRANT_MAX_LIFETIME_DAYS=90 omni server start
+```
+
+The value is in whole days and applies in both accounts and OIDC modes. An
+invalid or non-positive value falls back to the 30-day default (auth lifetimes
+never fail open to "unbounded").
+
 ## Access control
 
 Once auth is enabled, control who can sign in and what they can access.

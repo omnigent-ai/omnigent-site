@@ -62,6 +62,20 @@ omni run agent.yaml --harness codex --model gpt-4.1-mini
 The `--harness` and `--model` flags map directly to the `executor` block. This lets
 you reuse the same config across different LLM backends.
 
+### Global flags
+
+Some flags apply to the CLI itself rather than to a single command. Place them
+**before** the command:
+
+```
+omni --profiling run agent.yaml
+```
+
+`--profiling` profiles CLI execution, prints a summary, and writes a timestamped
+`.prof` file — useful when diagnosing slow startup or command performance. It is
+distinct from `omni run --profile <name>`, which selects a Databricks config
+profile for a specific run.
+
 From here, the agent streams its output as it thinks and acts. Tool calls run in real time,
 so you watch file writes, shell commands, and API calls land as they happen. The session also
 stays in sync with the [Web UI](/docs/interact/web-ui) both ways: run the

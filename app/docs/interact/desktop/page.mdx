@@ -1,6 +1,7 @@
 import { pageMeta } from "@/lib/og";
 import {
   MACOS_DOWNLOAD_URL,
+  MACOS_X64_DOWNLOAD_URL,
   WINDOWS_DOWNLOAD_URL,
   LINUX_DEB_DOWNLOAD_URL,
   LINUX_APPIMAGE_DOWNLOAD_URL,
@@ -139,7 +140,8 @@ Omnigent desktop app?` rather than hanging.
         <code>.dmg</code>
       </td>
       <td>
-        <a href={MACOS_DOWNLOAD_URL}>Download</a>
+        <a href={MACOS_DOWNLOAD_URL}>Download for Apple silicon</a> ·{" "}
+        <a href={MACOS_X64_DOWNLOAD_URL}>Download for Intel</a>
       </td>
     </tr>
     <tr>

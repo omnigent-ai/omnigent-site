@@ -1,4 +1,4 @@
-import { MACOS_DOWNLOAD_URL } from "@/components/links";
+import { MACOS_DOWNLOAD_URL, MACOS_X64_DOWNLOAD_URL } from "@/components/links";
 
 function AppleLogo() {
   return (
@@ -18,14 +18,14 @@ function AppleLogo() {
 
 export default function MacDownloadButton() {
   return (
-    <p>
-      <a
-        href={MACOS_DOWNLOAD_URL}
-        className="btn btn-primary"
-        style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}
-      >
+    <p style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
+      <a href={MACOS_DOWNLOAD_URL} className="btn btn-primary">
         <AppleLogo />
-        Download macOS App
+        Download for Apple silicon
+      </a>
+      <a href={MACOS_X64_DOWNLOAD_URL} className="btn">
+        <AppleLogo />
+        Download for Intel
       </a>
     </p>
   );

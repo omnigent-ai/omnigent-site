@@ -84,7 +84,7 @@ history, and the ability to connect to a local or remote server — on top
 of the install you just set up. It's optional; everything above already
 works from the terminal.
 
-[Download macOS App](https://omnigent.ai/download/mac/v0.1.1)
+[Download macOS App for Apple silicon](https://omnigent.ai/download/mac) · [Download macOS App for Intel](https://omnigent.ai/download/mac-x64)
 
 Open the downloaded app — it will ask for a server URL. The `omni debby`
 command above prints that URL when it launches the web UI. By default it is
@@ -1953,7 +1953,7 @@ The Omnigent desktop app gives you the full
 a browser can't provide: notifications when your agent needs attention, a dock badge
 showing how many sessions are waiting, and multiple independent windows.
 
-[Download macOS App](https://omnigent.ai/download/mac/v0.1.1)
+[Download macOS App for Apple silicon](https://omnigent.ai/download/mac) · [Download macOS App for Intel](https://omnigent.ai/download/mac-x64)
 
 ![Omnigent native desktop app showing the session chat and file workspace](/images/docs/desktop-app.png)
 
@@ -1987,7 +1987,7 @@ same as the web UI.
         .dmg
       
       
-        Download
+        Download for Apple silicon · Download for Intel
       
     
     

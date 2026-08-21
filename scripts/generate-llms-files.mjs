@@ -353,7 +353,7 @@ function cleanMdx(sourcePath) {
     )
     .replace(
       /<MacDownloadButton \/>/g,
-      "[Download macOS App](https://omnigent.ai/download/mac)",
+      "[Download macOS App for Apple silicon](https://omnigent.ai/download/mac) · [Download macOS App for Intel](https://omnigent.ai/download/mac-x64)",
     )
     .replace(
       /<ProviderKeyTable \/>/g,

@@ -84,6 +84,9 @@ a:hover {
 .docs-main a:hover {
   text-decoration-color: var(--accent);
 }
+.docs-main a.btn {
+  text-decoration: none;
+}
 
 h1,
 h2,

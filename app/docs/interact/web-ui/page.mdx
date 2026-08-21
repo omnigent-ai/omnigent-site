@@ -111,6 +111,39 @@ the selected model rides along as the launch override and the runner uses it at
 launch. Under a sandbox launch, where no host catalog is resolved, the picker is
 empty and the harness default is used.
 
+### Claude Code permission mode
+
+Claude Code (`claude-native`) sessions carry a **Permissions** control — "How
+much Claude asks before acting" — that sets how freely the agent edits files and
+runs commands. Pick it in the new-chat composer's config gear to choose the mode
+the session launches in, or open the same config gear on a running session to
+switch modes mid-conversation.
+
+The full set of launch modes is:
+
+- **Manual** (`default`) — prompts before edits and commands.
+- **Auto** (`auto`) — auto-runs; a classifier blocks risky actions.
+- **Accept edits** (`acceptEdits`) — auto-applies file edits; commands still
+  prompt.
+- **Plan** (`plan`) — plans only; makes no edits.
+- **Don't ask** (`dontAsk`) — auto-denies anything not pre-approved.
+- **Bypass permissions** (`bypassPermissions`) — runs everything; no prompts or
+  safety checks.
+
+Only the four modes that Claude Code's own shift+tab cycle can reach — **Manual**,
+**Auto**, **Accept edits**, and **Plan** — can be switched on a running session.
+**Don't ask** and **Bypass permissions** are launch-only, so they appear in the
+new-chat picker but not in the in-session switcher.
+
+The in-session switch and Claude's terminal stay in sync both ways: choosing a
+mode in the web picker drives the live session's shift+tab cycle, and pressing
+shift+tab in the Claude TUI updates the web picker to match. A web switch is
+confirmed against the mode the terminal actually lands on, so a switch that
+can't be reached surfaces an error rather than silently reporting the wrong mode.
+When the current mode can't be determined — for example a mode set via
+`permissions.defaultMode` in a Claude settings file, which never appears in the
+launch flags — the in-session **Permissions** row is hidden instead of guessing.
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:

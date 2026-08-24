@@ -200,56 +200,24 @@ learns them — see the `remy` example agent for a worked prompt.
 
 ## Python function tools
 
-Expose any Python callable as a tool. The function is referenced by its fully qualified
-import path:
+Put Python functions under `tools/python/` in the agent bundle. Omnigent
+discovers each public function and generates its tool schema from the signature
+and type annotations:
 
-```
-tools:
-  summarize_file:
-    type: function
-    description: Summarize a local text file.
-    callable: my_package.tools.summarize_file
-    parameters:
-      type: object
-      properties:
-        path:
-          type: string
-      required: [path]
+```python
+# tools/python/summarize_file.py
+def summarize_file(path: str) -> str:
+    """Summarize a local text file."""
+    return open(path).read()
 ```
 
-The JSON Schema under `parameters` is optional. If you omit it, Omnigent
-auto-generates the schema from the function's type annotations and signature.
+TypeScript tools follow the same pattern under `tools/typescript/`.
 
 ## Sub-agent tools
 
-Declare agents as tools so a supervisor agent can delegate work to them. You can define a
-sub-agent inline, or keep it in its own directory and reference it by name.
-
-### Inline definition
-
-Define the sub-agent's full spec directly in the `tools` block:
-
-```
-tools:
-  reviewer:
-    type: agent
-    description: Review proposed code changes.
-    prompt: |
-      You are a careful code reviewer. Focus on correctness,
-      tests, security, and maintainability.
-    executor:
-      harness: claude-sdk
-      model: claude-sonnet-4-6
-    os_env: inherit
-    pass_history: true
-    max_sessions: 2
-```
-
-### External directory
-
-For a sub-agent that is complex, shared across parents, or maintained
-independently, give it its own directory under the parent's `agents/`
-folder and list it by name under `tools.agents`. Omnigent discovers every
+Declare agents as tools so a supervisor can delegate work to them. Give each
+sub-agent its own directory under the parent's `agents/` folder and list it by
+name under `tools.agents`. Omnigent discovers every
 `agents/<name>/config.yaml` at load time:
 
 ```
@@ -276,29 +244,11 @@ Entries under `tools.agents` are just names (strings) matching a
 subdirectory of `agents/`. Each referenced file is a full agent config that
 can define its own tools, skills, harness, and policies.
 
-A sub-agent (inline or external) can have its own
-[harness](/docs/build/harnesses), model, tools, and
-[policies](/docs/policies/overview). On an inline sub-agent the
-`pass_history` flag controls whether the parent's conversation history is
-forwarded, and `max_sessions` limits concurrent invocations.
+A sub-agent can have its own [harness](/docs/build/harnesses), model, tools, and
+[policies](/docs/policies/overview).
 
-## Tool inheritance
-
-Use `inherit` to pass one of the parent's tools down to a sub-agent:
-
-```
-tools:
-  researcher:
-    type: agent
-    prompt: Research and summarize.
-    tools:
-      word_count: inherit    # gets word_count from parent
-```
-
-The sub-agent receives the same tool definition the parent has, with no duplication.
-
-Use `spec: self` for a sub-agent that clones the entire parent spec. It gets the
-same tools, prompt, and configuration as the parent agent.
+Each child bundle is isolated and sees only the tools it declares. Tool
+inheritance and `spec: self` are not supported in `spec_version: 1`.
 
 ## Hindsight integration
 

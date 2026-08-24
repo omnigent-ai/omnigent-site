@@ -24,15 +24,17 @@ omni pi
 
 See [Terminal](/docs/interact/terminal) for more launch commands.
 
-To select a harness in agent YAML, swap one line:
+To select a harness in agent YAML, set `executor.config.harness`:
 
 ```
 executor:
-  harness: claude-sdk
+  type: omnigent
+  config:
+    harness: claude-sdk
 ```
 
-Tools, policies, prompts, and models stay the same across harnesses — only the
-runtime underneath changes.
+Prompts and declared tools remain portable, but model, authentication, policy
+elicitation, resume, and fork support vary by harness.
 
 ## Next steps
 

@@ -84,7 +84,8 @@ instructions: AGENTS.md
 
 ### [MCP & Tools](/docs/build/tools)
 
-Wire in MCP servers, Python functions, or sub-agents.
+Wire in MCP servers, Python functions, or sub-agents. Put local Python tools in
+`tools/python/`; Omnigent discovers them from their signatures.
 
 ```
 tools:
@@ -92,9 +93,6 @@ tools:
     type: mcp
     command: uv
     args: [run, python, -m, github_mcp]
-  summarize:
-    type: function
-    callable: my_package.tools.summarize_file
 ```
 
 ### [Policies](/docs/policies/overview)
@@ -102,12 +100,13 @@ tools:
 Declarative guardrails in YAML.
 
 ```
-policies:
-  rate_limit:
-    type: function
-    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
-    factory_params:
-      limit: 50
+guardrails:
+  policies:
+    rate_limit:
+      type: function
+      handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+      factory_params:
+        limit: 50
 ```
 
 ## Putting it all together
@@ -132,15 +131,14 @@ os_env:
     write_paths: [.]
     allow_network: true
 
-tools:
-  repo_search:
-    type: function
-    callable: my_package.tools.repo_search
-
-policies:
-  rate_limit:
-    type: function
-    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
-    factory_params:
-      limit: 50
+guardrails:
+  policies:
+    rate_limit:
+      type: function
+      handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+      factory_params:
+        limit: 50
 ```
+
+Add local functions as Python files under `tools/python/`, for example
+`tools/python/repo_search.py`.

@@ -84,7 +84,9 @@ in the web harness picker. Select it like any other builtin — in the picker, v
 
 ```
 executor:
-  harness: hermes
+  type: omnigent
+  config:
+    harness: hermes
   model: hermes-4-405b
 ```
 
@@ -163,7 +165,9 @@ acp:
 
 ```yaml
 executor:
-  harness: acp:gemini-cli
+  type: omnigent
+  config:
+    harness: acp:gemini-cli
 ```
 
 The agent runs its own agent loop, tools, and context window; Omnigent renders

@@ -101,7 +101,7 @@
   },
   "/docs/interact/desktop": {
     "title": "Desktop App",
-    "description": "The Omnigent desktop app brings the full web UI to a native window, with notifications, a dock badge, and multiple windows.",
+    "description": "The Omnigent desktop app brings the full web UI to a native window, with notifications, platform badges, and multiple windows.",
     "eyebrow": "Interact"
   },
   "/docs/interact/mobile": {
@@ -186,7 +186,7 @@
   },
   "/quickstart/coding-agent": {
     "title": "Tutorial: Coding Agent",
-    "description": "Tutorial: see what Omnigent adds on top of Claude Code or Codex, including a web UI, mobile access, session sharing, and mid-conversation agent switching.",
+    "description": "Tutorial: see what Omnigent adds on top of Claude Code or Codex, including a web UI, mobile access, persistent sessions, and session sharing.",
     "eyebrow": "Quickstart"
   },
   "/quickstart/collaborate": {

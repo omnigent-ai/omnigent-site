@@ -60,6 +60,7 @@ than hosting sessions itself.
 
 ### Requirements
 
+- **iOS 26 or newer.**
 - **A reachable server.** The app connects to an Omnigent [server](/docs/deploy/overview); it
   doesn't run one on the device. The server must be reachable from your phone's network.
 - **HTTPS.** The app requires `https://` server URLs. A plain `http://` address (such as a
@@ -99,13 +100,9 @@ phone:
 **From anywhere.** Deploy the Omnigent server beyond localhost. See
 [the deployment docs](/docs/deploy/overview) for options.
 
-If you want a more app-like experience without the App Store, the web UI is an installable
-PWA: use your browser's **Add to Home Screen** option to launch Omnigent in its own standalone
-window. See [Install as an app](/docs/interact/web-ui#install-as-an-app) for details.
-
 ## Managed configuration (org-preset servers)
 
-On the native **Android app**, an organization can preconfigure the server URLs
+On the native Android and iOS apps, an organization can preconfigure the server URLs
 users see, so people don't have to type one. The app publishes an [Android
 managed configuration](https://developer.android.com/work/managed-configurations)
 that any EMM/MDM console (Intune, Jamf, Workspace ONE, Google Workspace, the
@@ -133,8 +130,8 @@ How the app treats presets:
 - **Sanitized.** Unparseable entries are dropped, an entry without a scheme gets
   `https://`, same-origin duplicates collapse, and the list is capped at 8.
 
-The iOS app has no equivalent yet; when it lands it will reuse the same
-`serverUrls` key via Managed App Configuration.
+On iOS, use Managed App Configuration with `serverUrls` as an array of strings,
+most preferred first. iOS validates the entries and allows at most 10.
 
 ## What works on mobile
 

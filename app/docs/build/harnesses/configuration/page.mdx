@@ -189,6 +189,32 @@ acp:
       omnigent_mcp: false
 ```
 
+#### Skip the system-prompt injection
+
+ACP has no dedicated system-prompt field, so by default Omnigent folds its
+system prompt into the first ACP turn — prepending the spec instructions to
+your opening user message so the agent's model sees them. Set
+`inject_system_prompt: false` on an `acp:` entry to skip that injection and
+leave the first turn as plain user content, letting the agent's own system
+prompt take effect unmodified.
+
+This is recommended for agents that fully own their own system prompt — such as
+Pi forks like `omp`. For those agents, prepending Omnigent's text can confuse
+their internal Claude model into emitting stray XML tool-call fragments
+(`</function></tool_call>`) when there is no MCP relay backing the described
+tools. When you also set `omnigent_mcp: false` and the agent manages its own
+context, setting `inject_system_prompt: false` is strongly recommended. The
+value must be a boolean; `omnigent setup` reports an error if it isn't.
+
+```yaml
+acp:
+  agents:
+    - name: omp
+      command: omp acp
+      omnigent_mcp: false
+      inject_system_prompt: false
+```
+
 <div className="note">
 
 **Note:** The generic ACP harness has no fixed binary — each agent owns its own

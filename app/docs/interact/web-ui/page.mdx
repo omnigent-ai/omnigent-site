@@ -113,13 +113,26 @@ empty and the harness default is used.
 
 ### Shared sessions
 
-On a multi-user server the sidebar splits your session list across two tabs:
+On a multi-user server the sidebar's session filter (the funnel menu) narrows
+your list to one of four slices:
 
-- **My sessions** — the sessions you own. This tab keeps the full sidebar
+- **My sessions** — the sessions you own. This slice keeps the full sidebar
   structure: the `Pinned` section, `Project` folders, and the `Sessions`
   list.
-- **Shared with me** — a flat list of sessions other people have
+- **Shared sessions** — a flat list of sessions other people have
   [shared with you](/docs/collaborate).
+- **All sessions** — everything you can see, your own and shared, together.
+- **Archived** — your archived sessions.
+
+The filter defaults to **My sessions**, so you land on your own work first
+rather than the full list. Your pick is remembered per-device (in the browser's
+`localStorage`), so a reload keeps you on the slice you were last viewing
+instead of snapping back to the default. Switching slices changes only what this
+browser shows — no account or session state is touched.
+
+On a single-user server the **Shared sessions** slice is dropped from the menu
+(there's no one to share with), and **My sessions** and **All sessions** show
+the same set — so the default is a safe landing there too.
 
 ### Browser-first mode
 

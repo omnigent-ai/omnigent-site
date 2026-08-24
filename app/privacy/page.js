@@ -29,12 +29,14 @@ export default function Page() {
             <h1>Privacy Notice</h1>
 
             <p className="muted">
-              Omnigent collects anonymized usage data (telemetry) by default.
-              This data contains no sensitive or personally identifiable
-              information. If you&apos;re using Omnigent through a managed
-              service or distribution, please consult your managed service
-              agreement to determine any data collection that may impact your
-              use of the service. To opt out, follow our instructions in{" "}
+              Omnigent collects pseudonymous usage telemetry by default. Events
+              include installation, session, and hashed user identifiers plus
+              product usage metadata, but not prompts, message content, tool
+              arguments, file contents, or credentials. If you&apos;re using
+              Omnigent through a managed service or distribution, please consult
+              your managed service agreement to determine any data collection
+              that may impact your use of the service. To opt out, follow our
+              instructions in{" "}
               <a href="/docs/deploy/telemetry">Usage Telemetry</a>.
             </p>
 

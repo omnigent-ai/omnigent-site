@@ -100,15 +100,16 @@ export default function Home() {
 
             <h2>Architecture</h2>
             <p className="arch-outro">
-              A runner wraps any agent in a sandboxed, uniform session. A server
-              adds policies and shared history, and exposes every session over
-              the terminal, the web, a native app, mobile, and a REST API.
+              A runner wraps each agent in a uniform session with configurable
+              sandboxing. A server adds policies and shared history, and exposes
+              every session over the terminal, the web, a native app, mobile,
+              and a REST API.
             </p>
             <figure className="section-graphic">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/architecture.svg"
-                alt="Omnigent architecture: CLI agents and custom agents run through a runner (on your machine, Modal, or Daytona), then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API."
+                alt="Omnigent architecture: CLI agents and custom agents run through a runner on local or cloud infrastructure, then a server that adds policies and history, reachable from a terminal, the web, native and mobile apps, and a REST API."
                 width={1541}
                 height={700}
               />

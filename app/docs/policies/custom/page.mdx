@@ -111,9 +111,13 @@ ways to apply it (chat, Omnigent YAML, or server config).
 Every policy receives a `PolicyEvent` dict. Use the `type` field to
 filter which events you care about:
 
-| Event type    | When it fires                                  | Key data fields                                                                        |
-| ------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `tool_call`   | Omnigent is about to call a tool               | `name`, `arguments`                                                                    |
-| `llm_request` | Omnigent is about to send a message to the LLM | `model`, `messages_count`, `tools_count`, `system_prompt_preview`, `last_user_message` |
+| Event type     | When it fires                                  |
+| -------------- | ---------------------------------------------- |
+| `request`      | A user request enters the session              |
+| `tool_call`    | Omnigent is about to call a tool               |
+| `tool_result`  | A tool returns a result                        |
+| `response`     | Omnigent produces an assistant response        |
+| `llm_request`  | Omnigent is about to send a request to the LLM |
+| `llm_response` | The LLM returns a response                     |
 
 Return `None` for event types you don't handle.

@@ -115,3 +115,29 @@ Model names are prefixed with `databricks-` so Omnigent routes them through your
 workspace automatically. See the
 [Databricks Foundation Model API docs](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/supported-models)
 for the full list of available models.
+
+### Claude Code managed settings
+
+If Claude Code is configured through its enterprise **managed settings** — a
+gateway `env.ANTHROPIC_BASE_URL` plus a credential (a top-level `apiKeyHelper`
+command that prints a bearer token, or a truthy `env.CLAUDE_CODE_USE_GATEWAY`) —
+Omnigent detects it and routes Claude sessions through that same gateway. Nothing
+goes in your agent YAML: Claude Code applies its managed settings itself at
+launch, so Omnigent just names the credential and stays out of the way.
+
+`omni setup` reads Claude Code's managed-settings chain, highest precedence first:
+
+| Platform | Path |
+| --- | --- |
+| macOS | `/Library/Application Support/ClaudeCode/managed-settings.json` |
+| Linux | `/etc/claude-code/managed-settings.json` |
+| Windows | `%PROGRAMDATA%\ClaudeCode\managed-settings.json` |
+
+When the first readable file pins both an endpoint and a way to authenticate, the
+wizard offers a one-tap option under the **Anthropic** family (labeled *from your
+Claude Code settings*). A recognized [Databricks AI Gateway](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/)
+is named accordingly and adopted as `claude-databricks`; any other gateway is
+named after its hostname. This is the Claude counterpart of the
+`~/.codex/config.toml` provider detection Codex already supports — the endpoint
+and its credential live entirely in the CLI's own config, so the harness reads as
+ready even with nothing in `config.yaml`.

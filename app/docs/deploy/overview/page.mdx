@@ -136,6 +136,29 @@ service is not available in your region, or when you need something it does
 not expose yet — custom YAML policies, bring-your-own provider API keys, or
 custom egress controls.
 
+<div className="note">
+
+**Deploying without OpenTelemetry.** The default deploy runs the app under
+`opentelemetry-instrument` with `OTEL_TRACES_SAMPLER=always_on` and exports
+spans, logs, and metrics to Unity Catalog tables. A workspace with no OTel
+collector and no UC OTel tables can't deploy cleanly this way — every span
+export fails `DEADLINE_EXCEEDED` against `localhost:4317`. Pass `--no-otel` to
+run `python app.py` uninstrumented, drop `OTEL_TRACES_SAMPLER`, and drop the
+platform export:
+
+```
+uv run python deploy/databricks/deploy.py --no-otel ...
+```
+
+`--no-otel` auto-switches the default `--target prod` to the `prod-no-otel`
+target, which shares `prod`'s workspace and state but overrides the OTel
+variables off. If you deploy to a custom `--target`, copy the OTel-off variable
+overrides (`app_command`, `app_env`, `otel_export_destinations`) from the
+`prod-no-otel` block in `databricks.yml` into that target too — otherwise the
+flag is a no-op and the deploy warns that OTel stays on.
+
+</div>
+
 ### Kubernetes
 
 Deploy the Omnigent server to a Kubernetes cluster with the kustomize manifests

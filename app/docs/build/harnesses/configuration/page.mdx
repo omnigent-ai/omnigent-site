@@ -127,6 +127,27 @@ row. To sign out, delete the credential file:
 rm ~/.kimi-code/credentials/kimi-code.json
 ```
 
+## Qwen Code
+
+Qwen Code (`qwen`, alias `qwen-code`; native TUI `qwen-native`) ships as a
+builtin harness. Under the hood it drives `qwen --acp` over the
+[Agent Client Protocol](https://agentclientprotocol.com) — Omnigent renders its
+streaming output, reasoning, and tool cards (Qwen runs its own tools internally
+and Omnigent surfaces each call and its result), routes its permission requests
+through your [contextual policies](/docs/policies/overview), and honors mid-turn
+interrupts (Omnigent sends Qwen's ACP `session/cancel`, falling back to
+terminating the process when the session isn't set up yet).
+
+Like the ACP agents, Qwen Code brings **its own auth** — Omnigent stores no
+credential. Install the Qwen Code CLI and sign in through it first.
+
+Unlike the generic ACP agents, a `/model` pick **is** honored for Qwen Code. The
+model you declare in YAML or switch to mid-session is applied live to the running
+ACP session (through Qwen's `model` config option), so the switch takes effect
+**without respawning** the `qwen` subprocess and the transcript stays in the
+existing session. If the running Qwen build doesn't advertise a switchable
+`model` option, Omnigent leaves the current model in place and continues.
+
 ## Custom ACP agents
 
 Beyond the built-in harnesses, the generic `acp` harness drives *any* agent that

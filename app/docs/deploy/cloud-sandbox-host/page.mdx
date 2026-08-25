@@ -303,3 +303,43 @@ before `create` — never include `BL_API_KEY` or `BL_CLIENT_CREDENTIALS`. Blaxe
 does not expose local callback port forwarding, so the in-sandbox browser login
 is skipped automatically. Stopping `connect` leaves the sandbox running; delete
 it with `bl delete sandbox <id>` or from the Blaxel console.
+
+## Provision a sandbox from an uploaded agent bundle (API)
+
+You can upload a custom agent bundle **and** have the server provision a sandbox
+host to run it in a single `POST /v1/sessions` call, instead of connecting a
+runner yourself. Pass `host_type: "managed"` in the multipart create metadata;
+the server provisions a sandbox for the just-uploaded agent exactly as it does
+for a web-UI **New Sandbox** launch. Omit `host_type` (or set it to `"external"`,
+the default) to keep the existing behaviour of running the uploaded bundle on a
+caller-managed runner.
+
+| Metadata field     | Managed create                                                                                             |
+| ------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `host_type`        | `"managed"` to provision a sandbox; `"external"` (default) runs on a caller-managed runner.                |
+| `sandbox_provider` | Which configured provider to provision (e.g. `modal`). Omit to use the server's first. Managed-only.       |
+| `workspace`        | A git repository URL (optionally `#<branch>`) the server clones into the sandbox. Omit for an empty sandbox. |
+| `host_id`          | Must **not** be set — the server provisions the host.                                                      |
+
+For a managed create the `workspace` is a git repository URL, not a filesystem
+path — the sandbox doesn't exist yet, so there's nothing to point a path at. A
+filesystem-path workspace on a managed create (or a repository-URL workspace on
+an external create) is rejected. `sandbox_provider` only applies to
+`host_type: "managed"`; setting it on an external create is rejected. The
+managed host and provider must be [configured on the server](#3-configure-the-cloud-sandbox-host).
+
+With the Python client, `sessions.create` takes matching `host_type` and
+`sandbox_provider` arguments:
+
+```python
+session = await client.sessions.create(
+    bundle,                                     # gzipped agent tarball bytes
+    host_type="managed",
+    sandbox_provider="modal",                   # optional; omit for the server's first
+    workspace="https://github.com/org/repo#main",  # optional; cloned into the sandbox
+)
+```
+
+The provisioning runs in the background — the create call returns as soon as the
+session is recorded, and the session page shows a `provisioning` stage while the
+sandbox comes up.

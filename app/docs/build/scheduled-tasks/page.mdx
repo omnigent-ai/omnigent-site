@@ -50,8 +50,48 @@ is not enumerable.
   agent default.
 - **`reasoning_effort`** (optional) — a per-run reasoning-effort hint, e.g.
   `high`. Omit for the agent default.
+- **`permission_mode`** (optional) — a per-run permission mode for native coding
+  agents that support one (Claude Code). Omit for the agent default. See
+  [Permission mode](#permission-mode).
+- **`max_cost_usd`** (optional) — a per-firing cost budget in USD. Must be
+  greater than 0. When set, each fired session is capped at this spend: a
+  [`cost_budget`](/docs/policies/builtin#cost-control) policy is attached to the
+  spawned session and all models are blocked once cumulative spend reaches the
+  limit. Omit for no per-firing cap (the session runs unconstrained unless the
+  agent spec or server-wide defaults impose one).
 
 Once created, the task fires automatically on its schedule until you delete it.
+
+## Permission mode
+
+Native coding agents built on the Claude Code (`claude-native`) harness accept a
+per-task **permission mode** that maps to the runner's `--permission-mode` launch
+argument. Because each firing launches a fresh session, the whole launch
+vocabulary is valid — including the launch-only `dontAsk` and `bypassPermissions`
+modes:
+
+| Mode | Type |
+| --- | --- |
+| `default` | Prompting (Manual) |
+| `plan` | Prompting (Plan) |
+| `auto` | Auto-running |
+| `acceptEdits` | Auto-running |
+| `dontAsk` | Auto-running |
+| `bypassPermissions` | Auto-running |
+
+These are Claude Code's own permission modes; Omnigent passes the chosen value
+through to the CLI unchanged as `--permission-mode <value>`. Omit
+`permission_mode` (or leave the dialog control on **Default**) to use the agent's
+configured default.
+
+> **Automations run unattended.** A prompting mode (`default` or `plan`) stalls
+> waiting for an approval that never comes. Prefer an auto-running mode such as
+> `acceptEdits` or `bypassPermissions` for scheduled tasks.
+
+`permission_mode` is only accepted for `claude-native` agents. Setting it on an
+agent whose harness has no such flag (e.g. codex or cursor) is rejected with an
+`invalid input` error when the task is created or updated. A value outside the
+list above is likewise rejected.
 
 ## Recurrence rules
 
@@ -73,7 +113,8 @@ minutes.
 
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
 untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
-`model_override`, `reasoning_effort`, `workspace`, `host_id`, and `state`.
+`model_override`, `reasoning_effort`, `permission_mode`, `workspace`, `host_id`,
+and `state`. Passing `max_cost_usd` as `null` clears the cap.
 
 The `state` field accepts `active` or `paused`:
 
@@ -91,10 +132,15 @@ workspace**. When a task is due, Omnigent:
 1. Re-reads the task row — a task that was deleted or paused since the timer was
    armed is skipped.
 2. Creates a session bound to the task's agent, carrying the stored `workspace`,
-   `host_id`, `model_override`, and `reasoning_effort`.
-3. Grants the task's owner ownership of the new session so the run is visible.
-4. Launches the runner and dispatches the prompt so the agent actually runs.
-5. Records the run — stamping the task's last-run time and the run's
+   `host_id`, `model_override`, and `reasoning_effort`. For a `claude-native`
+   agent with a `permission_mode` set, it derives the runner's
+   `--permission-mode` launch argument from it.
+3. Attaches a [`cost_budget`](/docs/policies/builtin#cost-control) policy to the
+   session when `max_cost_usd` is set. This step is non-fatal: if attaching the
+   policy fails, the run proceeds uncapped rather than dying.
+4. Grants the task's owner ownership of the new session so the run is visible.
+5. Launches the runner and dispatches the prompt so the agent actually runs.
+6. Records the run — stamping the task's last-run time and the run's
    conversation id.
 
 A few scheduling guarantees:

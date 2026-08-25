@@ -281,9 +281,12 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 
 - **Name** — a label for the task (for example, `Nightly triage`).
 - **Prompt** — the instruction the agent receives on every run.
-- **Runs with** — the agent or harness to run. Scheduled tasks use that agent's
-  default model, effort, and permission settings; there are no per-task model or
-  effort overrides in this dialog.
+- **Runs with** — the agent or harness to run. For native coding agents that
+  support it (Claude Code), the dialog also exposes **Model**, **Effort**, and
+  **Permission mode** controls; leave each on **Default** to use the agent's
+  configured settings. Because automations run unattended, a prompting permission
+  mode (**Manual** or **Plan**) will wait for an approval that never comes —
+  prefer an auto-running mode.
 - **Frequency** — one of four presets: **Hourly**, **Daily**, **Weekdays**, or
   **Weekly**. Hourly fires once an hour and asks only for the **minute** of the
   hour; Daily and Weekdays ask for a **time**; Weekly adds a weekday

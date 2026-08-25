@@ -108,20 +108,64 @@ dialog actually confines the Hermes run.
 
 Kimi Code (`kimi`, alias `kimi-code`) brings **its own auth** — Omnigent stores
 no credential. Kimi ships via a curl installer (no npm package), so install the
-CLI and sign in through it first:
+CLI first:
 
 ```
 curl -fsSL https://code.kimi.com/kimi-code/install.sh | bash
-kimi login   # Moonshot OAuth, or paste a Moonshot API key
+```
+
+How you authenticate depends on your Moonshot account type. Both paths live
+entirely in kimi's own config directory — `$KIMI_CODE_HOME`, default
+`~/.kimi-code` — since Omnigent stores no kimi credential.
+
+### Membership accounts
+
+Run the OAuth device flow:
+
+```
+kimi login   # OAuth device flow — grants membership benefits
 ```
 
 `kimi login` writes its credential to `~/.kimi-code/credentials/kimi-code.json`.
-`omni setup` detects that file and shows Kimi as **Signed in** once a login has
-completed; while the CLI is installed but no credential is present it shows
-**Not configured** with a "Sign in with `kimi login`" hint.
+
+### Pay-per-use accounts (API credit, no membership)
+
+`kimi login` is **rejected** for accounts without an active membership (it
+reports "unable to verify your membership benefits"). Configure an API-key
+provider instead, choosing the variant for wherever your credit lives:
+
+- **Moonshot open platform** (keys from `platform.moonshot.ai`) — import the
+  catalog provider, which supplies the type, base URL, and model. Run
+  `kimi provider catalog list` to find the Moonshot provider id (e.g.
+  `moonshotai`) and a model id, then:
+
+  ```
+  kimi provider catalog add moonshotai --api-key <key> --default-model <model>
+  ```
+
+- **Kimi Code coding endpoint** (keys from the Kimi API platform,
+  `api.kimi.com`) — add a provider block to `~/.kimi-code/config.toml`:
+
+  ```toml
+  [providers."kimi-code"]
+  type = "kimi"
+  base_url = "https://api.kimi.com/coding/v1"
+  api_key = "sk-…"
+  ```
+
+### Detection and sign-out
+
+`omni setup` shows Kimi as **Signed in** when it detects either a `kimi login`
+credential (`~/.kimi-code/credentials/kimi-code.json`) **or** a configured Kimi
+API-key provider in `~/.kimi-code/config.toml` (an inline `api_key`, or a
+`KIMI_API_KEY` / `MOONSHOT_API_KEY` entry under the provider's `env` table).
+While the CLI is installed but neither is present it shows **Not configured**
+with a "Sign in with `kimi login`, or (pay-per-use) set a Kimi API key in
+`~/.kimi-code/config.toml`" hint.
 
 Kimi has **no** `kimi logout` subcommand, so `omni setup` offers no sign-out
-row. To sign out, delete the credential file:
+row. To sign out, delete the credential file (and any API-key provider you
+added to `~/.kimi-code/config.toml`):
 
 ```
 rm ~/.kimi-code/credentials/kimi-code.json
@@ -187,6 +231,32 @@ acp:
     - name: OpenClaw
       command: openclaw acp --url <gateway-url> --token-file <token-file>
       omnigent_mcp: false
+```
+
+#### Skip the system-prompt injection
+
+ACP has no dedicated system-prompt field, so by default Omnigent folds its
+system prompt into the first ACP turn — prepending the spec instructions to
+your opening user message so the agent's model sees them. Set
+`inject_system_prompt: false` on an `acp:` entry to skip that injection and
+leave the first turn as plain user content, letting the agent's own system
+prompt take effect unmodified.
+
+This is recommended for agents that fully own their own system prompt — such as
+Pi forks like `omp`. For those agents, prepending Omnigent's text can confuse
+their internal Claude model into emitting stray XML tool-call fragments
+(`</function></tool_call>`) when there is no MCP relay backing the described
+tools. When you also set `omnigent_mcp: false` and the agent manages its own
+context, setting `inject_system_prompt: false` is strongly recommended. The
+value must be a boolean; `omnigent setup` reports an error if it isn't.
+
+```yaml
+acp:
+  agents:
+    - name: omp
+      command: omp acp
+      omnigent_mcp: false
+      inject_system_prompt: false
 ```
 
 <div className="note">

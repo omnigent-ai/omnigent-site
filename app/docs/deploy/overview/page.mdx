@@ -252,6 +252,34 @@ This is why your local Claude Code or Codex installation "just works." Runners
 started on your laptop have direct access to your machine's tools, files, and
 credentials.
 
+### Run the host as a background service
+
+`omni host` runs in the foreground and stops when you close the terminal. To
+keep your machine registered across logins and reboots, install the host as a
+per-user operating-system service:
+
+```
+omni host enable                       # local mode
+omni host enable --server <server-url> # remote server
+```
+
+`enable` installs and starts a per-user service — a **launchd** user agent on
+macOS (`ai.omnigent.host`) or a **systemd** user service on Linux
+(`omnigent-host.service`) — that runs the host and restarts it on failure. It
+prints the service definition path and, on macOS, the log file path. Pass
+`--non-interactive` to fail instead of opening browser sign-in while preparing
+the service (useful for headless setups); a Databricks-fronted server still
+requires you to be signed in first.
+
+Remove the service with:
+
+```
+omni host disable
+```
+
+`disable` stops and removes the current user's host service. Host services are
+supported on macOS and Linux only.
+
 However, moving the runner to a
 [cloud sandbox host](/docs/deploy/cloud-sandbox-host) gives you:
 

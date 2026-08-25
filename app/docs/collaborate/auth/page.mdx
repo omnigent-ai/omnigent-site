@@ -52,6 +52,21 @@ boot, or keep the service private until you've completed setup.
 
 </div>
 
+### CLI login and unattended hosts
+
+Signing in from the terminal with `omni login <server-url>` requests a
+**refresh token** in addition to the short-lived session JWT. The CLI persists
+it locally (in `~/.omnigent/auth_tokens.json`) so an unattended host can renew
+its access past session-JWT expiry — by exchanging the refresh token at
+`/oauth/token` with `grant_type=refresh_token` — without a human re-running
+`omni login`. Login-issued grants do not rotate: the same refresh token keeps
+working across renewals.
+
+Browser logins never receive a refresh token. Only the CLI opts in (by sending
+`issue_refresh: true` on `/auth/login`); the web form never sends that field, so
+a browser session can never obtain long-lived unattended credentials, even under
+XSS or form-hijack.
+
 ## Single sign-on (OIDC)
 
 Let your team sign in with Google, GitHub, Okta, or Microsoft. Adding an OIDC issuer flips

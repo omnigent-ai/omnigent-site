@@ -53,6 +53,38 @@ stripped automatically. When set, Omnigent forwards it to the bundled Copilot
 CLI as the `COPILOT_GH_HOST` environment variable and fetches your `gh` token
 for that host. With no host configured, Copilot uses its default `github.com`.
 
+## Devin
+
+Devin (Cognition's `devin` CLI) ships as a builtin harness with the id `devin`.
+Under the hood it drives `devin acp` over the
+[Agent Client Protocol](https://agentclientprotocol.com) — Omnigent renders its
+streaming output, reasoning, and tool cards and routes its permission requests
+through your [contextual policies](/docs/policies/overview), just like the
+generic `acp` harness below. The difference is that it's built in: you select
+the `devin` harness id directly instead of registering a launch command.
+
+```
+omni run --harness devin
+```
+
+Like the generic ACP agents, Devin brings **its own auth and model** — Omnigent
+stores no credential and a `/model` pick is rejected up front. Devin runs its
+account-default model; to pin a specific model, register a
+[custom ACP agent](#custom-acp-agents) whose command passes `--model`. Install
+the CLI and log in through Devin first:
+
+```
+curl -fsSL https://cli.devin.ai/install.sh | bash
+devin auth login   # writes a credential file Devin reads back at spawn
+```
+
+Devin delegates work to parallel sub-agents. Omnigent mints an Omnigent child
+session for each one, so the web **Subagents** panel lists a row per sub-agent
+that you can open to watch the delegated task and its result. The child inherits
+Devin's harness identity rather than being mislabeled as another vendor. This
+sub-agent surfacing is specific to Devin among the ACP harnesses — a generic
+`acp` agent runs its own loop in a single session and surfaces no sub-agent rows.
+
 ## Grok Build
 
 Grok Build (xAI's `grok` CLI) ships as a builtin harness with the id `grok`

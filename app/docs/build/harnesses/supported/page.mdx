@@ -71,8 +71,14 @@ than having a separate support designation.
 
 | Harness | IDs and aliases | Direct execution | Native TUI |
 | --- | --- | --- | --- |
+| Devin | `devin` | Yes | No |
 | Goose | `goose`, `goose-native` | Yes | Yes |
 | Grok Build | `grok` (`grok-build`) | Yes | No |
+
+Devin delegates work to parallel sub-agents, and Omnigent surfaces each one as a
+child session so the web **Subagents** panel lists one row per sub-agent — see
+[Devin](/docs/build/harnesses/configuration#devin). Other ACP agents run their
+own agent loop in a single session and surface no sub-agent rows.
 
 See [Custom ACP agents](/docs/build/harnesses/configuration#custom-acp-agents)
 for ACP configuration details.

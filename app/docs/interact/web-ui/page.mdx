@@ -111,6 +111,30 @@ the selected model rides along as the launch override and the runner uses it at
 launch. Under a sandbox launch, where no host catalog is resolved, the picker is
 empty and the harness default is used.
 
+### Choose the reasoning effort
+
+Harnesses that expose reasoning effort carry an **Effort** picker in their launch
+config, next to the model picker. Claude Code (`claude-native`), Codex
+(`codex-native`), and Pi (`pi`, `pi-native`) surface it. Each harness offers its
+own ladder; Pi's is:
+
+- **None** — thinking off (Pi runs with `--thinking off`).
+- **Minimal**, **Low**, **Medium**, **High**, **xHigh**, **Max** — increasing
+  thinking budgets.
+
+You can also change effort mid-session with `/effort <level>` in the composer; it
+applies to the running Pi session without a restart. As with the model picker,
+your choice is remembered per harness.
+
+Two Pi-specific behaviors to know:
+
+- **Per-model clamping.** If the chosen model doesn't offer the requested rung,
+  Pi clamps to the nearest level it does support (ties resolve downward), rather
+  than failing the turn.
+- **Gateway-routed models.** When Pi runs against a gateway-routed model,
+  thinking is forced off and the effort selection is ignored so the model's text
+  keeps surfacing. Omnigent surfaces a notice in this case.
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:

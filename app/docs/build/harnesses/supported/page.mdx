@@ -62,7 +62,10 @@ Most coding agents can run in one of two modes:
 | Rovo Dev | `rovo` (`rovo-cli`) | Yes | No | Community-supported | [shbhmrzd/omnigent-rovo](https://github.com/shbhmrzd/omnigent-rovo) |
 
 Pi is a headless multi-model worker that runs on any gateway model — ideal for
-review, exploration, and read-heavy tasks delegated by a supervisor agent.
+review, exploration, and read-heavy tasks delegated by a supervisor agent. Pi
+also supports [reasoning-effort control](/docs/interact/web-ui#choose-the-reasoning-effort):
+an effort ladder of `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and
+`max` (canonical `none` maps to Pi's `off`), selectable at launch and mid-session.
 
 ## Harnesses supported via ACP
 

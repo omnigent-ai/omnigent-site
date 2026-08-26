@@ -234,6 +234,30 @@ the Pod from starting.
 
 </div>
 
+#### Pod-start wait budget
+
+Before a managed session goes online, Omnigent waits for the runner Pod to
+schedule, pull its image, clone its repo, and reach `Running`. This wait is
+bounded so a Pod that can't schedule or pull fails fast with a clear reason
+instead of a generic online timeout. The budget defaults to **90 seconds**.
+
+Deployments whose runner image regularly takes longer to pull can raise it with
+`sandbox.kubernetes.pod_ready_timeout_s`:
+
+```
+sandbox:
+  provider: kubernetes
+  kubernetes:
+    pod_ready_timeout_s: 300   # Pod-start wait budget in seconds (default 90)
+```
+
+The value must be a positive integer; a `0`, a quoted string like `"90"`, or a
+YAML boolean fails at server startup rather than silently changing how long
+launches may take. The budget bounds the entire readiness wait — Pod discovery,
+re-discovery after a replacement (eviction, preemption, node drain), API read
+errors, and time spent `Pending` — so a Pod that never becomes ready surfaces a
+timeout naming the configured deadline.
+
 ## Runner
 
 The **runner** is the per-session process that executes Omnigent loops. It

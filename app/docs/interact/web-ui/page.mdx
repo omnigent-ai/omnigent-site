@@ -299,6 +299,14 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+Editing an existing task uses the same dialog, including the **Runs with**
+picker: you can switch the task to a different agent or harness in place without
+recreating it, so the task keeps its id and run history. The picker is prefilled
+with the task's current agent. When you switch to a different agent, future runs
+use the new one while past runs keep the agent they ran with; per-agent model,
+effort, and permission settings don't carry across the switch (they reset to the
+new agent's defaults).
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

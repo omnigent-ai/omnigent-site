@@ -72,16 +72,39 @@ minutes.
 ## Pausing, updating, and deleting
 
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
-untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
-`model_override`, `reasoning_effort`, `workspace`, `host_id`, and `state`.
+untouched. You can update `name`, `prompt`, `rrule`, `agent_id`, `timezone`,
+`model_override`, `reasoning_effort`, `max_cost_usd`, `workspace`, `host_id`,
+and `state`.
 
 The `state` field accepts `active` or `paused`:
 
 - Pass `state=paused` to stop a task firing without deleting it.
 - Pass `state=active` to resume it.
 
+Passing `max_cost_usd` sets a per-firing cost budget in USD that each fired
+session is capped at.
+
 To remove a task permanently, use `sys_scheduled_task_delete` — deletion is not
 done through `update`.
+
+### Switching the agent (and harness)
+
+Pass `agent_id` to rebind an existing task to a different agent, switching the
+harness its future firings run with (for example, Cursor to Pi). This edits the
+task in place: the task keeps its id and its run history rather than being
+recreated. The fire path reads `agent_id` fresh on every firing and each firing
+owns its own conversation, so **past runs keep the agent they actually ran
+with** — only future occurrences use the new agent.
+
+Per-agent settings do **not** carry across a switch, because they are bound to
+the harness they were set for: a model id is provider-bound and `permission_mode`
+is Claude-only. When you change `agent_id`, Omnigent clears `model_override`,
+`reasoning_effort`, and `permission_mode` unless you resend them in the same
+update. Any setting you resend is validated against the **new** agent — sending
+a Claude-only `permission_mode` while switching to an agent that doesn't support
+it is rejected (HTTP 400) rather than persisted, and switching to a nonexistent
+agent is rejected (HTTP 404). On a switch, a pinned `workspace` is also
+re-checked against the new agent's OS-environment boundary, which is per-agent.
 
 ## How a firing runs
 

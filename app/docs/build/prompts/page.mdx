@@ -40,6 +40,44 @@ directory for context files in this order:
 
 The first file found becomes the system prompt. No merge, first wins.
 
+## How instructions reach the harness
+
+Whether your `prompt`/`instructions` actually reach the underlying agent depends
+on the [harness](/docs/build/harnesses). Omnigent classifies each harness by how
+it delivers authored instructions and reports that as `instruction_delivery` in
+the `/v1/harnesses` catalog.
+
+**Direct execution.** When Omnigent drives the model itself, your instructions
+are composed into the prompt sent to the model (either each turn or as a session
+snapshot). This applies to `claude-sdk`, `codex`, `pi`, `openai-agents`,
+`copilot`, `cursor`, `antigravity`, `hermes`, `qwen`, and `goose`. Kimi (`kimi`)
+is the exception — it does not deliver authored instructions.
+
+**Native TUIs.** A native harness runs the vendor's own agent, which owns its
+system prompt, so delivery varies by harness:
+
+| Native harness | Delivers `instructions`? | How |
+| --- | --- | --- |
+| `claude-native` | Yes | Appended to Claude Code's system prompt at launch (`--append-system-prompt`) |
+| `codex-native` | Yes | Written to Codex's `developer_instructions` at launch |
+| `opencode-native` | Yes | Sent with each turn |
+| `cursor-native`, `antigravity-native`, `goose-native`, `qwen-native`, `kimi-native`, `kiro-native`, `hermes-native` | No | Not delivered to the vendor agent |
+
+For `claude-native` and `codex-native`, instructions are applied once when the
+terminal launches (and on a cold resume) — they are not re-sent on every turn or
+duplicated when reattaching to a running terminal.
+
+When an agent has authored `instructions` but the bound harness has no delivery
+channel for them, Omnigent still accepts them and logs a warning that they were
+not delivered — so prefer a harness that delivers instructions if your agent
+relies on a custom system prompt.
+
+### Per-request instructions
+
+A REST response request can also carry a per-request `instructions` field. It is
+composed **additively**: appended after the agent's own instructions rather than
+replacing them.
+
 ## Skills
 
 Skills are reusable instruction bundles that your agent can load at runtime via the

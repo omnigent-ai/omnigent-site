@@ -8,7 +8,7 @@ For a single-file expanded context, use [llms-full.txt](https://omnigent.ai/llms
 
 ## Quickstart
 
-- [Install Omnigent](https://omnigent.ai/quickstart/install): Requirements, installation, credentials, launching Debby, and adding the macOS app.
+- [Install Omnigent](https://omnigent.ai/quickstart/install): Requirements, installation, credentials, launching Debby, and adding the desktop app.
 - [Tutorial: Coding Agent](https://omnigent.ai/quickstart/coding-agent): Start a coding agent, give it a task, use comments, edit files, paste images, fork sessions, and add policies.
 - [Tutorial: Polly](https://omnigent.ai/quickstart/polly): Run Polly, Omnigent's multi-AI coding orchestrator, and follow progress in the UI.
 - [Tutorial: Collaborate](https://omnigent.ai/quickstart/collaborate): Deploy a shared server, connect from laptop and phone, share a session, and run a cloud sandbox host.

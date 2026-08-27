@@ -77,14 +77,12 @@ like `What came first, the chicken or the egg?` and watch the models
 challenge each other. See the [Debby reference](/docs/use/builtin-agents/debby)
 for more.
 
-## Add the macOS app
+## Install the desktop app
 
-Prefer a native experience? The macOS app gives you a full UI, session
-history, and the ability to connect to a local or remote server — on top
-of the install you just set up. It's optional; everything above already
-works from the terminal.
+The desktop app gives you the full UI in a native window, and adds OS features a
+browser can't, like notifications and a dock badge.
 
-[Download macOS App for Apple silicon](https://omnigent.ai/download/mac) · [Download macOS App for Intel](https://omnigent.ai/download/mac-x64)
+[Download for Apple silicon](https://omnigent.ai/download/mac) · [Download for Windows](https://omnigent.ai/download/windows) · [Download for Linux](https://omnigent.ai/download/linux-deb)
 
 Open the downloaded app — it will ask for a server URL. The `omni debby`
 command above prints that URL when it launches the web UI. By default it is
@@ -1953,7 +1951,7 @@ The Omnigent desktop app gives you the full
 a browser can't provide: notifications when your agent needs attention, a dock badge
 showing how many sessions are waiting, and multiple independent windows.
 
-[Download macOS App for Apple silicon](https://omnigent.ai/download/mac) · [Download macOS App for Intel](https://omnigent.ai/download/mac-x64)
+[Download for Apple silicon](https://omnigent.ai/download/mac) · [Download for Windows](https://omnigent.ai/download/windows) · [Download for Linux](https://omnigent.ai/download/linux-deb)
 
 ![Omnigent native desktop app showing the session chat and file workspace](/images/docs/desktop-app.png)
 

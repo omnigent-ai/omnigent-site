@@ -10,7 +10,7 @@ const docsRoutes = [
     label: "Install Omnigent",
     source: "app/quickstart/install/page.mdx",
     description:
-      "Requirements, installation, credentials, launching Debby, and adding the macOS app.",
+      "Requirements, installation, credentials, launching Debby, and adding the desktop app.",
     priority: "0.9",
   },
   {
@@ -352,8 +352,8 @@ function cleanMdx(sourcePath) {
       ].join("\n"),
     )
     .replace(
-      /<MacDownloadButton \/>/g,
-      "[Download macOS App for Apple silicon](https://omnigent.ai/download/mac) · [Download macOS App for Intel](https://omnigent.ai/download/mac-x64)",
+      /<DesktopDownloadButtons \/>/g,
+      "[Download for Apple silicon](https://omnigent.ai/download/mac) · [Download for Windows](https://omnigent.ai/download/windows) · [Download for Linux](https://omnigent.ai/download/linux-deb)",
     )
     .replace(
       /<ProviderKeyTable \/>/g,

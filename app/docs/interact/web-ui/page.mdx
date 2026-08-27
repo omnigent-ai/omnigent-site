@@ -71,7 +71,10 @@ project folder's `⋯` menu and choose `Project settings`, then set any of:
 - **Working directory** the agent starts in.
 - **Default agent** for the session.
 - **Random worktree**, which branches each new session into its own fresh git
-  worktree.
+  worktree. This overrides the global default in **Settings › Git** in either
+  direction: turn it on to force worktrees for the project, or off to opt out
+  even when the global default is on. Left unset, the project inherits the
+  global default.
 
 New sessions started in that project pre-fill the composer from these defaults.
 Nothing is locked in: every field is still editable before you send, any default
@@ -89,6 +92,16 @@ from. Leave it blank to branch off the workspace's current branch.
 To avoid retyping the same base, set a **Default base branch** under
 **Settings › Git**. The composer then auto-fills that value whenever you name a
 new worktree branch; leave the setting blank to turn auto-fill off.
+
+To always start new sessions in a fresh worktree, turn on **Always use a random
+worktree** under **Settings › Git**. When it's on, the composer seeds a fresh
+randomly-named worktree branch for any new session that lands in a git
+workspace, so you don't have to name a branch each time. It's off by default.
+
+A project's own **Random worktree** setting overrides this global default in
+either direction — a project can force worktrees on, or opt out even when the
+global default is on. Only projects that leave the setting unset inherit the
+global default.
 
 ![Setting a default base branch for worktrees](/images/docs/git_worktree_setting.gif)
 

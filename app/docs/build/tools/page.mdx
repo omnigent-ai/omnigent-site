@@ -198,6 +198,37 @@ Because these tools only persist and recall when the model actually calls them,
 prompt the agent to recall before answering and to retain durable facts as it
 learns them — see the `remy` example agent for a worked prompt.
 
+### Nimble web research and extraction
+
+Two builtins reach the live web through [Nimble](https://www.nimbleway.com/).
+`nimble_research` hands a research task to a Nimble Web Search Agent and returns
+a cited answer with a confidence signal for each claim. Use `nimble_extract`
+when you have a Nimble extract template to run against a page; it returns the
+parsed result as structured JSON.
+
+`nimble_research` needs the optional `nimble` extra:
+
+```
+pip install 'omnigent[nimble]'
+```
+
+Enable them in your agent's `config.yaml`, under `tools.builtins`:
+
+```
+tools:
+  builtins:
+    - name: nimble_research
+      api_key: ${NIMBLE_API_KEY}
+    - name: nimble_extract
+      api_key: ${NIMBLE_API_KEY}
+      template: my_template_name   # one of your account's extract templates
+```
+
+Nimble is also a [`web_search`](#websearch) provider for quick lookups that
+don't need a research run. For the full config reference (polling, agent
+instances, extract templates, and where to get an API key), see
+[Nimble's Omnigent connector docs](https://docs.nimbleway.com/integrations/connectors/omnigent).
+
 ## Python function tools
 
 Expose any Python callable as a tool. The function is referenced by its fully qualified

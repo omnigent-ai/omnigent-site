@@ -45,7 +45,18 @@ and returns the parsed result as structured JSON in a single call.
 Both resolve inside the runner, so they work with any agent you run in Omnigent,
 not just one model family.
 
-{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an agent answering a research question with the cited sources it returned, then an extract call returning structured JSON from a page. */}
+<video
+  src="/images/blog/nimble-web-research-extract-builtins-demo.mp4"
+  poster="/images/blog/nimble-web-research-extract-builtins-poster.png"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="A Claude-SDK agent picks nimble_research to find five in-stock single-origin coffees on Intelligentsia's live storefront, runs it over several minutes, then returns a structured table of name, price, bag size, processing, and product URL, with per-claim citations, a high-confidence signal, and caveats for the listings it excluded as out of stock"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+_The agent chooses `nimble_research`, reads Intelligentsia's live product pages, and returns a cited, structured result with its confidence and the listings it ruled out._
 
 Enable them under `tools.builtins` in your agent spec and pass your Nimble API
 key. `nimble_research` needs the optional `nimble` extra

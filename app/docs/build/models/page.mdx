@@ -96,6 +96,36 @@ and the OpenAI-agents harness, use the OpenAI-compatible `.../api/v1`.
 
 </div>
 
+#### Advertise context and output limits
+
+Gateway models with a large context window (for example a 1M-token GLM) need
+their real limits declared, or [Pi](/docs/build/harnesses/supported) falls back
+to its own defaults — **128k context / 16k output** — and silently truncates.
+Set `context_window` and `max_output_tokens` (both token counts) on the gateway
+provider family in `~/.omnigent/config.yaml`:
+
+```yaml
+providers:
+  litellm:
+    kind: gateway
+    openai:
+      base_url: https://your-gateway.example.com/v1
+      api_key_ref: env:LITELLM_API_KEY
+      wire_api: chat
+      models:
+        default: glm-5.2
+      context_window: 1048576
+      max_output_tokens: 65536
+    default: true
+```
+
+Both fields are optional and must be **positive integers** (a zero or negative
+value is rejected at startup). When set, pi-native sessions advertise these
+limits in their generated `models.json` so Pi uses the full window instead of
+its 128k/16k defaults. When you omit them, Omnigent makes a best-effort match
+against its model catalog to fill in the limits, so a well-known model id often
+gets the right values automatically.
+
 ### Databricks
 
 Route models through your Databricks workspace using the

@@ -286,6 +286,98 @@ Start a new session and select **New Sandbox** in the host picker. The server
 provisions the cloud host, starts the runner, and connects it back automatically. This works
 the same on both hosting platforms.
 
+## Community sandbox providers
+
+The providers above ship with Omnigent. Beyond them, the server discovers
+additional sandbox providers at startup through a plugin registry, so a new
+hosting platform can be added as a **separate package** without changing the
+core `omnigent` package.
+
+An installed provider behaves like a built-in once it's registered: its name is
+accepted in the `sandbox.provider` field, its `sandbox.<provider>` config block
+is validated at server startup, and it's offered as a working option in the web
+UI host picker (managed launch is enabled). If the server config names a
+provider whose optional package is missing, the server still starts — the
+failure surfaces on the launch that needs it, naming the provider.
+
+### Configure a contributed provider
+
+Set `sandbox.provider` to the contributed name and, if the provider declares a
+config model, add a matching `sandbox.<provider>` block:
+
+```
+sandbox:
+  provider: acme
+  server_url: https://your-server.example.com
+  acme:
+    namespace: sandboxes
+```
+
+The block is validated against the provider's declared config model when the
+server starts, so a typo or a wrong type fails loudly at startup — with the
+provider named — rather than erroring on the first managed session. A provider
+that declares no config model takes no block.
+
+### Build a provider plugin
+
+A sandbox provider plugin is a Python package that declares an entry point in
+the `omnigent.sandbox_providers` group. The entry point resolves to a callable
+returning a `SandboxProviderContribution`. Launcher and config-model classes
+must live under the `omnigent.community.sandbox.*` namespace.
+
+```toml
+# pyproject.toml
+[project]
+name = "omnigent-acme"
+dependencies = ["omnigent"]
+
+[project.entry-points."omnigent.sandbox_providers"]
+acme = "omnigent.community.sandbox.acme.plugin:get_contribution"
+```
+
+```python
+# omnigent/community/sandbox/acme/plugin.py
+from pydantic import BaseModel
+
+from omnigent.onboarding.sandboxes.registry import (
+    SandboxProviderContribution,
+    SandboxProviderMetadata,
+)
+
+
+class AcmeConfig(BaseModel):
+    namespace: str = "default"
+
+
+def get_contribution() -> SandboxProviderContribution:
+    return SandboxProviderContribution(
+        name="omnigent-acme",
+        providers={
+            "acme": SandboxProviderMetadata(
+                name="acme",
+                launcher_class="omnigent.community.sandbox.acme.launcher:AcmeSandboxLauncher",
+                config_model=AcmeConfig,       # optional
+                managed_token_ttl_s=1234,      # optional; falls back to the Modal TTL
+            ),
+        },
+    )
+```
+
+The launcher subclasses `SandboxHostLauncher` and, when a `config_model` is
+declared, receives the validated config as a `config=` keyword argument.
+Providers that declare no model keep a zero-argument constructor. When a
+provider omits `managed_token_ttl_s`, its managed-token lifetime falls back to
+the conservative Modal default.
+
+<div className="note">
+
+**Note:** A plugin can't shadow a built-in provider name, and its launcher class
+must resolve under the `omnigent.community.sandbox.*` namespace — the registry
+rejects it otherwise. A malformed plugin is recorded and skipped rather than
+crashing server startup.
+
+</div>
+
 ## CLI
 
 Create and manage cloud sandbox hosts from the command line. The commands are the same across

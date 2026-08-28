@@ -23,6 +23,35 @@ between them. Switch agents mid-conversation directly from the UI.
 
 Sessions persist across browser refreshes and server restarts.
 
+### Session titles
+
+Every session gets a title so it's easy to find in the sidebar. Titles come
+from two places:
+
+- **Automatic titles.** A background title generator names each new session
+  from your first message. Default generated titles are limited to **100
+  characters**; a generated title over that limit is rejected, leaving the
+  first-message fallback title in place.
+- **Manual titles.** Rename a session at any time from its `⋯` menu (or the
+  header menu). Manually assigned titles may be up to **200 characters** —
+  the rename field stops accepting input at that limit.
+
+You can steer the automatic generator with your own natural-language
+requirements by setting `session_title_instructions` on the local server:
+
+```
+omnigent config set --global \
+  'session_title_instructions=Prefix titles with the current date as lowercase mon-dd. Use PR-number-short-name for pull requests, issue-number-short-description for issues, and a short snake_case activity otherwise.'
+```
+
+The generator receives the current date as `YYYY-MM-DD`, then applies your
+requirements to the first user message. When custom requirements are set,
+generated titles may use up to **200 characters**, and a title over that limit
+is truncated with a trailing ellipsis rather than discarded. The setting is
+server-owned, does not alter an agent's portable instructions, and applies to
+new sessions after the local Omnigent server restarts. For longer instructions,
+edit `~/.omnigent/config.yaml` directly with a YAML block scalar.
+
 ### Hide unconfigured harnesses
 
 By default the new-chat picker lists every harness and badges the ones that

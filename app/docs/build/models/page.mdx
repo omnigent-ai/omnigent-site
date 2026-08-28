@@ -50,7 +50,7 @@ logged-in CLIs, and local servers) so you can confirm them with one tap.
 | Type | What it is |
 | --- | --- |
 | **API key** | A first-party provider key (Anthropic, OpenAI, OpenRouter, and more) |
-| **Subscription** | A Claude Pro/Max or ChatGPT Plus/Pro plan, via the official `claude` / `codex` CLIs |
+| **Subscription** | A Claude Pro/Max or ChatGPT Plus/Pro plan, via the official `claude` / `codex` CLIs — or **Pi original auth**, which lets the Pi harness use its own login |
 | **Gateway** | Bring your own proxy or local model. Just paste a base URL and key. |
 | **Databricks** | A Databricks workspace profile, routing through the [Foundation Model API](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/) |
 
@@ -73,6 +73,20 @@ codex login          # for ChatGPT
 ```
 
 `omni setup` auto-detects an active CLI login and offers it as a one-tap option.
+
+#### Pi original auth
+
+The **Pi** harness manages its own authentication. Choosing **Pi — original auth**
+in `omni setup` tells Omnigent to leave Pi's credentials alone: Pi reads from its
+own `~/.pi/agent` as-is, and Omnigent does not manage a provider or write a
+`models.json` for it. Unlike the Claude and ChatGPT subscriptions, this option
+has no login step — Pi handles its own auth.
+
+Use this when you already sign in to Pi directly and want that login to drive the
+`pi` / `pi-native` harness. Any Omnigent-managed credential Pi can consume (an
+Anthropic or OpenAI API key, a gateway, or a Databricks workspace) remains an
+alternative; the Claude and ChatGPT subscriptions cannot drive Pi, since a CLI
+login is unusable outside its own CLI.
 
 ### Gateway
 

@@ -43,7 +43,10 @@ the policy, and filling in its settings.
 As you can see in the clip, the cost policy gives you two kinds of guardrails:
 
 - **Soft limits**: a list of spend thresholds that act as gentle warnings. When the session cost crosses one, you get a heads-up on the next tool call and can decide whether to keep going. For the demo we'll set a soft limit of `0.01`.
-- **Hard limit**: a ceiling paired with a list of **expensive models**. Once spend passes the hard limit, the session blocks any of those pricey models until you downgrade to a cheaper one. We'll set the hard limit to `0.2` and keep the default expensive-model list (Opus, GPT-5.5).
+- **Hard limit**: a ceiling that blocks all models by default once spend reaches
+  it. To make it a downgrade gate instead, provide an explicit list of expensive
+  model name fragments, such as `opus` or `gpt-5`. We'll set the hard limit to
+  `0.2`.
 
 Once you fill in the values and click **Add**, the policy goes live on the
 session right away: you'll see it listed under **Policies** in the panel.
@@ -63,9 +66,9 @@ Approve to keep going, or reject to stop the call.
 
 ### Hit the hard limit
 
-When spend reaches the hard limit, the policy blocks every following tool
-call that would use an expensive model. The agent tells you what happened
-and waits. Switch to a cheaper model and you're free to continue.
+When spend reaches the hard limit, the default policy blocks subsequent turns
+and tool calls. If you configured an expensive-model list, switching to a model
+outside that list lets you continue.
 
 ![Expensive models blocked after the session hits the hard cost limit, then unblocked by downgrading](/images/docs/policy-hard-limit-blocked.gif)
 

@@ -2,7 +2,7 @@ import { pageMeta } from "@/lib/og";
 
 export const metadata = pageMeta(
   "Usage Telemetry",
-  "What anonymous usage telemetry the Omnigent server collects, and every way to turn it off.",
+  "What pseudonymous usage telemetry the Omnigent server collects, and how to turn it off.",
   {
     eyebrow: "Deploy",
     path: "/docs/deploy/telemetry",
@@ -11,14 +11,15 @@ export const metadata = pageMeta(
 
 # Usage Telemetry
 
-Starting with **v0.6.0**, the Omnigent server collects a small amount of _anonymous
-usage data_ to help us understand whether Omnigent is working correctly and which
+Starting with **v0.6.0**, the Omnigent server collects a small amount of
+_pseudonymous usage data_ to help us understand whether Omnigent is working correctly and which
 features and configuration options are being used.
 
 Telemetry is best-effort: it never blocks, delays, or disrupts your server, and
-any error while collecting or sending data is silently ignored. It does not
-collect your personal data, prompts, message content, tool arguments, file
-contents, or credentials.
+any error while collecting or sending data is silently ignored. Events include
+persistent installation and session identifiers, a hashed user identifier, and
+product usage metadata. They do not include prompts, message content, tool
+arguments, file contents, or credentials.
 
 ## Turning telemetry off
 
@@ -27,8 +28,12 @@ Any one of the following opts you out:
 | Method                                          | Scope          |
 | ----------------------------------------------- | -------------- |
 | `OMNIGENT_ANALYTICS=0`                          | Server process |
+| `OMNIGENT_DISABLE_TELEMETRY=true`               | Server process |
+| `DISABLE_TELEMETRY=true`                        | Server process |
 | `DO_NOT_TRACK=1`                                | Server process |
 | `telemetry: false` in `~/.omnigent/config.yaml` | Server process |
+
+Recognized CI environments also disable usage telemetry automatically.
 
 For example, to run a server with telemetry off:
 

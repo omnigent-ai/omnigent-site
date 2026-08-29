@@ -2,7 +2,7 @@ import { pageMeta } from "@/lib/og";
 
 export const metadata = pageMeta(
   "Contextual Policies",
-  "Policies control what your Omnigent can do, intercepting every action to allow, ask for approval, or deny it in real time.",
+  "Policies govern requests, model calls, and tool activity to allow, ask for approval, or deny operations in real time.",
   {
     eyebrow: "Policies",
     path: "/docs/policies/overview",
@@ -11,8 +11,9 @@ export const metadata = pageMeta(
 
 # Contextual Policies
 
-Policies control what your Omnigent can and cannot do. They intercept every
-action (tool calls, LLM requests, file operations) and decide in real time
+Policies control what your Omnigent can and cannot do. They evaluate requests,
+LLM calls, responses, and governed tool activity, including file operations
+represented as tool calls, and decide in real time
 whether to **allow**, **ask for approval**, or **deny**.
 
 ## Why “contextual”?
@@ -29,8 +30,9 @@ This is what enables policies that static systems simply cannot express:
 - **Risk scoring.** Accumulate a risk score from sensitive operations (accessing credentials, modifying production data). Escalate to human approval once the score crosses a threshold.
 - **Model routing.** Classify tasks as trivial or complex and redirect trivial ones away from expensive models, based on conversation context.
 
-Every policy evaluation receives the full session context: cumulative cost,
-tool call history, data classification labels, and custom state you define.
+Every policy evaluation receives the current event plus selected session
+metadata, such as usage, model, labels, and custom state. Policies do not
+automatically receive the complete conversation or tool-call history.
 This makes Omnigent's policy system fundamentally more powerful than the
 static security controls built into individual coding agents.
 
@@ -50,8 +52,8 @@ Each policy returns one of three decisions:
 | **ASK**   | The action pauses until the user approves or rejects it. |
 | **DENY**  | The action is blocked with an error message.             |
 
-Policies are checked in order. The first policy to return a decision wins. No opinion
-(`None`) passes to the next policy.
+Policies are checked in order. `ALLOW` and no opinion continue to later
+policies, `ASK` decisions accumulate, and `DENY` stops evaluation immediately.
 
 ### Available policies
 

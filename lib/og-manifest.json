@@ -24,6 +24,16 @@
     "description": "Type follow-ups while a turn is running: they queue in a strip above the composer and send in order when the agent goes idle, or you can steer, edit, reorder, and delete them.",
     "eyebrow": "Blog"
   },
+  "/docs/build/harnesses/community": {
+    "title": "Community Harnesses",
+    "description": "Package and register a new Omnigent harness as a community plugin.",
+    "eyebrow": "Harnesses"
+  },
+  "/docs/build/harnesses/configuration": {
+    "title": "Configuration",
+    "description": "Configure built-in and custom ACP harnesses, authentication, runtime selection, and launch overrides.",
+    "eyebrow": "Harnesses"
+  },
   "/docs/build/harnesses": {
     "title": "Harnesses",
     "description": "Understand the runtime layer that executes your agent loop and how to launch or select a harness.",
@@ -34,16 +44,6 @@
     "description": "See every harness available in Omnigent, including its ids, aliases, execution modes, and support status.",
     "eyebrow": "Harnesses"
   },
-  "/docs/build/harnesses/configuration": {
-    "title": "Configuration",
-    "description": "Configure built-in and custom ACP harnesses, authentication, runtime selection, and launch overrides.",
-    "eyebrow": "Harnesses"
-  },
-  "/docs/build/harnesses/community": {
-    "title": "Community Harnesses",
-    "description": "Package and register a new Omnigent harness as a community plugin.",
-    "eyebrow": "Harnesses"
-  }
   "/docs/build/models": {
     "title": "Models & Credentials",
     "description": "Declare your model in agent YAML and let Omnigent manage the credentials that authenticate to each provider.",
@@ -96,7 +96,7 @@
   },
   "/docs/deploy/telemetry": {
     "title": "Usage Telemetry",
-    "description": "What anonymous usage telemetry the Omnigent server collects, and every way to turn it off.",
+    "description": "What pseudonymous usage telemetry the Omnigent server collects, and how to turn it off.",
     "eyebrow": "Deploy"
   },
   "/docs/interact/desktop": {
@@ -146,7 +146,7 @@
   },
   "/docs/policies/overview": {
     "title": "Contextual Policies",
-    "description": "Policies control what your Omnigent can do, intercepting every action to allow, ask for approval, or deny it in real time.",
+    "description": "Policies govern requests, model calls, and tool activity to allow, ask for approval, or deny operations in real time.",
     "eyebrow": "Policies"
   },
   "/docs/use/builtin-agents/debby": {

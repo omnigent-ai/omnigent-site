@@ -37,7 +37,7 @@ const PILLARS = [
     body: "Stateful, data-centric policies that track agent actions and enforce guardrails like cost budgets and access controls at the meta-harness layer, not via prompts.",
     icon: {
       src: "/images/sandbox.png",
-      alt: "Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent.",
+      alt: "Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating configurable OS-level isolation.",
       width: 600,
       height: 473,
     },

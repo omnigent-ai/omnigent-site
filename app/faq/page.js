@@ -45,9 +45,10 @@ export default function Page() {
 
             <h3>Is it safe to let an agent run on my machine?</h3>
             <p className="muted">
-              Every command runs in an OS-level sandbox (bwrap on Linux,
-              seatbelt on macOS), and policies can pause, block, or cap what an
-              agent does.
+              Omnigent can run governed tools in an OS-level sandbox (bwrap on
+              Linux, Seatbelt on macOS), and policies can pause, block, or cap
+              what an agent does. Sandboxing can be disabled, and some native
+              harness paths use their own isolation and approval controls.
             </p>
 
             <h3>Do I need Databricks?</h3>

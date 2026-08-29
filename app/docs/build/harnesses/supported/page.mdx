@@ -34,18 +34,19 @@ the Omnigent team.
 
 ## Execution modes
 
-Most coding agents can run in one of two modes:
+Coding agents use several execution modes. This table groups in-process, CLI,
+and ACP subprocess integrations under **Integrated** and lists vendor terminal
+interfaces separately:
 
-- **Direct** — Omnigent drives the agent's model and tools itself. You get the
-  full platform: web UI, streaming, [contextual policies](/docs/policies/overview),
-  persistent sessions, and mobile.
+- **Integrated** — Omnigent runs the harness through an SDK, CLI subprocess, or
+  ACP connection. Model ownership and supported features vary by harness.
 - **Native TUI** — Omnigent boots the vendor's own terminal UI in a pane and
   mirrors it back. You get the exact native experience, wrapped with Omnigent's
   collaboration and policy layer. These ids end in `-native`.
 
 ## Harnesses
 
-| Harness | IDs and aliases | Direct execution | Native TUI | Support | Repository |
+| Harness | IDs and aliases | Integrated | Native TUI | Support | Repository |
 | --- | --- | --- | --- | --- | --- |
 | Claude Code | `claude-sdk` (`claude`), `claude-native` | Yes | Yes | Fully supported | — |
 | Codex | `codex`, `codex-native` | Yes | Yes | Fully supported | — |
@@ -69,10 +70,11 @@ review, exploration, and read-heavy tasks delegated by a supervisor agent.
 Some built-in harnesses use Omnigent's ACP integration under the hood rather
 than having a separate support designation.
 
-| Harness | IDs and aliases | Direct execution | Native TUI |
+| Harness | IDs and aliases | Integrated | Native TUI |
 | --- | --- | --- | --- |
 | Goose | `goose`, `goose-native` | Yes | Yes |
 | Grok Build | `grok` (`grok-build`) | Yes | No |
+| Devin | `devin` | Yes | No |
 
 See [Custom ACP agents](/docs/build/harnesses/configuration#custom-acp-agents)
 for ACP configuration details.

@@ -2,15 +2,17 @@ import { pageMeta } from "@/lib/og";
 import GatewayLogos from "@/components/GatewayLogos";
 import ProviderKeyTable from "@/components/ProviderKeyTable";
 
-export const metadata = pageMeta("Models & Credentials", "Declare your model in agent YAML and let Omnigent manage the credentials that authenticate to each provider.", {
+export const metadata = pageMeta("Models & Credentials", "Configure models and credentials for Omnigent-managed and vendor-authenticated harnesses.", {
   eyebrow: "Build",
   path: "/docs/build/models",
 });
 
 # Models & Credentials
 
-Every harness needs a model to run and credentials to reach it. You declare the model in
-your agent YAML, and Omnigent manages the credentials that authenticate to each provider.
+Model and credential ownership depends on the harness. Omnigent-managed
+harnesses use the model and provider credentials you configure. Own-auth
+harnesses such as Devin and Grok Build use the vendor CLI's login and model
+selection instead.
 
 ## Choose a model
 
@@ -18,7 +20,9 @@ Declare the model in your agent YAML:
 
 ```
 executor:
-  harness: claude-sdk
+  type: omnigent
+  config:
+    harness: claude-sdk
   model: claude-sonnet-4-6
 ```
 
@@ -30,8 +34,10 @@ omni run agent.yaml --model claude-sonnet-4-6
 
 ### Switch models mid-session
 
-Use the `/model` command inside any running session to switch models on the fly.
-The agent keeps its conversation history and tool state – only the underlying model changes.
+Use `/model` in a session whose harness supports live model overrides. The agent
+keeps its conversation history and tool state; only the model changes. Own-auth
+built-in ACP harnesses such as Devin and Grok Build choose their own model and
+reject `/model`.
 
 ## Credentials
 

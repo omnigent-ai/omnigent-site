@@ -255,6 +255,27 @@ Paste images, screenshots, diagrams, and mockups directly into the conversation.
 Omnigent sees them alongside your text. Useful for frontend work where describing a layout
 issue in words is slower than screenshotting it.
 
+## Sending messages
+
+By default, pressing **Enter** in the composer sends your message and
+**Shift + Enter** inserts a newline. If you write longer, multi-line prompts and
+would rather not risk sending on a stray Enter, flip the behavior under
+**Settings › General › Composer** with the **Submit with ⌘/Ctrl + Enter on
+desktop** toggle (the modifier shows as **⌘** on macOS and **Ctrl** elsewhere):
+
+- **Off** (default) — Enter submits; Shift + Enter inserts a newline. ⌘/Ctrl +
+  Enter also submits.
+- **On** — Enter inserts a newline; ⌘/Ctrl + Enter submits.
+
+The preference applies to both the in-chat composer and the new-chat landing
+composer. The Send button's tooltip and the keyboard-shortcuts dialog
+(**⌘/Ctrl + /**) both reflect whichever shortcut is currently active.
+
+This is a per-device browser preference, off by default, and is included when
+you export or import your settings. It applies to desktop keyboards only: on
+touch-primary or mobile devices, Enter always inserts a newline and sending
+stays an explicit tap on the Send button, regardless of this toggle.
+
 ## Message queue and steering
 
 Type a follow-up while the agent is still working and it's held in a client-side

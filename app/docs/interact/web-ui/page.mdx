@@ -271,6 +271,23 @@ Each queued row has inline actions:
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
 
+### Always steer
+
+If you'd rather never queue, turn on **Settings › General › Composer › Always
+steer**. With it on, a follow-up typed while the agent is working skips the
+queue and is sent immediately — steered into the running turn where the harness
+supports live injection, and folded in at the next turn boundary otherwise.
+
+This is a per-device UI preference, off by default: with it off, mid-turn
+follow-ups park in the queue strip as described above. Turning it on changes
+only how this browser dispatches busy-session sends — no account or session
+state is touched.
+
+One ordering guard still holds even with Always steer on: once this
+conversation already has a queued message, further sends keep queuing so the
+backlog drains in order — a direct send can't overtake a still-queued earlier
+one.
+
 ## Scheduled tasks
 
 Run an agent on a recurring schedule instead of starting each session by hand. A

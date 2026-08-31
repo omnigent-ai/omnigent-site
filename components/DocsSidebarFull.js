@@ -120,10 +120,28 @@ const SECTIONS = [
   },
   {
     title: "Reference",
-    pages: [
-      { href: "/docs/reference/configuration", label: "Configuration" },
-      { href: "/reference", label: "REST API" },
-      { href: "/docs/deploy/telemetry", label: "Usage Telemetry" },
+    pages: [],
+    subsections: [
+      {
+        title: "Configuration",
+        collapsed: true,
+        pages: [
+          {
+            href: "/docs/reference/configuration",
+            label: "Server Settings",
+          },
+          {
+            href: "/docs/reference/configuration/kubernetes",
+            label: "Kubernetes Sandbox",
+          },
+        ],
+      },
+      { title: "REST API", href: "/reference", pages: [] },
+      {
+        title: "Usage Telemetry",
+        href: "/docs/deploy/telemetry",
+        pages: [],
+      },
     ],
   },
 ];

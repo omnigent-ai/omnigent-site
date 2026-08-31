@@ -149,6 +149,11 @@
     "description": "Policies control what your Omnigent can do, intercepting every action to allow, ask for approval, or deny it in real time.",
     "eyebrow": "Policies"
   },
+  "/docs/reference/configuration/kubernetes": {
+    "title": "Kubernetes Sandbox Configuration",
+    "description": "Configure storage and Secret mounts for Kubernetes managed sandbox runner Pods.",
+    "eyebrow": "Reference"
+  },
   "/docs/reference/configuration": {
     "title": "Configuration Reference",
     "description": "Reference for Omnigent user, project, and server configuration.",

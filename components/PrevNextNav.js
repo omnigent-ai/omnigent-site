@@ -151,7 +151,12 @@ const ALL_PAGES = [
   },
   {
     href: "/docs/reference/configuration",
-    label: "Configuration",
+    label: "Server Settings",
+    section: "Reference",
+  },
+  {
+    href: "/docs/reference/configuration/kubernetes",
+    label: "Kubernetes Sandbox",
     section: "Reference",
   },
 ];

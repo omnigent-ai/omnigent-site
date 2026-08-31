@@ -68,12 +68,46 @@ omni run --harness grok
 ```
 
 Like the generic ACP agents, Grok Build brings **its own auth and model** —
-Omnigent stores no credential and a `/model` pick is rejected up front. Install
-the CLI and log in through xAI first:
+Omnigent stores no credential and a `/model` pick is rejected up front (rather
+than silently dropped), so it always runs its account-default model. To pin one,
+configure an [`acp:` agent](#custom-acp-agents) whose command passes the `grok`
+CLI's own model flag. Install the CLI and log in through xAI first:
 
 ```
 curl -fsSL https://x.ai/cli/install.sh | bash
-grok login --device-auth   # xAI OAuth (device-code capable); or set XAI_API_KEY
+grok login --device-auth   # xAI OAuth (device-code capable)
+```
+
+Use the vendor login rather than an API key. The builtin `grok` row has no
+`env_passthrough` of its own, and `XAI_API_KEY` is not in the host-to-runner
+credential allowlist, so exporting it in your shell does **not** reach the
+agent. If you need the key route, pass it explicitly with
+`OMNIGENT_RUNNER_ENV_PASSTHROUGH=XAI_API_KEY`, or configure an
+[`acp:` agent](#custom-acp-agents) that declares the passthrough.
+
+## Devin
+
+Devin (Cognition) ships as a builtin harness with the id `devin`. Like Grok
+Build, it drives its vendor CLI over the
+[Agent Client Protocol](https://agentclientprotocol.com) over stdio — Omnigent
+renders its streaming output, reasoning, and tool cards and routes its
+permission requests through your [contextual policies](/docs/policies/overview).
+It's built in, so you select the `devin` harness id directly instead of
+registering a launch command.
+
+```
+omni run --harness devin
+```
+
+Devin brings **its own auth and model** — Omnigent stores no credential, and a
+`/model` pick is refused rather than silently dropped, so it runs its
+account-default model. To pin one, configure an [`acp:` agent](#custom-acp-agents)
+whose command passes the Devin CLI's own model flag. Install the CLI and log in
+through Cognition first:
+
+```
+curl -fsSL https://cli.devin.ai/install.sh | bash
+devin auth login
 ```
 
 ## Hermes

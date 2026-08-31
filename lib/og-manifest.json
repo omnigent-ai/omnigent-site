@@ -43,7 +43,7 @@
     "title": "Community Harnesses",
     "description": "Package and register a new Omnigent harness as a community plugin.",
     "eyebrow": "Harnesses"
-  }
+  },
   "/docs/build/models": {
     "title": "Models & Credentials",
     "description": "Declare your model in agent YAML and let Omnigent manage the credentials that authenticate to each provider.",
@@ -148,6 +148,11 @@
     "title": "Contextual Policies",
     "description": "Policies control what your Omnigent can do, intercepting every action to allow, ask for approval, or deny it in real time.",
     "eyebrow": "Policies"
+  },
+  "/docs/reference/configuration": {
+    "title": "Configuration Reference",
+    "description": "Reference for Omnigent user, project, and server configuration.",
+    "eyebrow": "Reference"
   },
   "/docs/use/builtin-agents/debby": {
     "title": "Debby",

@@ -149,6 +149,11 @@ const ALL_PAGES = [
     label: "Omnibox",
     section: "Contextual Policies",
   },
+  {
+    href: "/docs/reference/configuration",
+    label: "Configuration",
+    section: "Reference",
+  },
 ];
 
 export default function PrevNextNav() {

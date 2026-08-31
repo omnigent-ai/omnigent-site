@@ -1,0 +1,31 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Configuration Reference",
+  "Reference for Omnigent user, project, and server configuration.",
+  {
+    eyebrow: "Reference",
+    path: "/docs/reference/configuration",
+  },
+);
+
+# Configuration reference
+
+Omnigent configuration controls the CLI, local server, harnesses, and managed
+sandboxes. These settings are separate from an agent's portable YAML spec and
+from the [REST API](/reference).
+
+## Configuration scopes
+
+| Scope           | File or command                                                   | Use                                                                     |
+| --------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Project         | `.omnigent/config.yaml` or `omni config set KEY=VALUE`            | Defaults for the current project. Project values override user values.  |
+| User            | `~/.omnigent/config.yaml` or `omni config set --global KEY=VALUE` | Defaults shared across projects and settings owned by the local server. |
+| Deployed server | `omni server --config /path/to/config.yaml`                       | Server-wide settings for every user and session on that deployment.     |
+
+Run `omni config list` to inspect the effective user and project configuration.
+Use `omni config unset KEY` or `omni config unset --global KEY` to remove a
+value from the corresponding scope.
+
+Not every key is valid in every scope. Each setting below identifies its scope,
+type, default, and validation behavior.

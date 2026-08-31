@@ -44,6 +44,34 @@ state.
 The value must be a positive YAML integer. Values such as `0`, `"90"`, and
 `true` fail server startup.
 
+## Sandboxed container runtime (`runtime_class`)
+
+| Setting | Value                                 |
+| ------- | ------------------------------------- |
+| Key     | `sandbox.kubernetes.runtime_class`    |
+| Type    | String (DNS-1123 subdomain)           |
+| Default | Unset — the cluster's default runtime |
+
+Set `runtime_class` to schedule every runner Pod onto a sandboxed container
+runtime your cluster exposes through a `RuntimeClass` object — for example
+[Kata Containers](https://katacontainers.io/) micro-VMs or
+[gVisor](https://gvisor.dev/). Omnigent writes the value verbatim to the Pod's
+`spec.runtimeClassName`:
+
+```yaml
+sandbox:
+  provider: kubernetes
+  kubernetes:
+    runtime_class: kata
+```
+
+Leaving `runtime_class` unset keeps the Pod on the cluster's default runtime —
+today's behaviour, byte-for-byte. The name must be a DNS-1123 subdomain and
+must match a `RuntimeClass` you pre-created in the cluster; a malformed value
+(for example `Not_A_DNS_Name`) fails server startup rather than the first
+launch. Omnigent only references the `RuntimeClass` — provisioning it and the
+underlying node runtime is an out-of-band operator step.
+
 ## Persistent storage for runner Pods
 
 Runner Pods are ephemeral: the workspace lives on an `emptyDir` and is

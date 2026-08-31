@@ -77,8 +77,6 @@ them automatically, so the API key is the only required runtime credential:
 
 ```
 export ISLO_API_KEY=islo_key_…
-# export ISLO_BASE_URL=https://api.islo.dev      # optional, non-default API endpoint
-# export ISLO_COMPUTE_URL=…                       # optional, non-default compute endpoint
 ```
 
 **Blaxel:** log in to your workspace with the Blaxel CLI (`bl login your-workspace`),
@@ -89,202 +87,31 @@ export BL_WORKSPACE=your-workspace
 export BL_API_KEY=your-api-key
 ```
 
-Blaxel control credentials must stay on the launching process (your shell for a
-CLI launch, the server for a managed launch) and never enter the sandbox. Web
-users log in to Omnigent, not Blaxel.
+Provider control credentials stay on the launching process and never enter the
+sandbox. Web users log in to Omnigent, not the sandbox provider.
 
-### 3. Configure the cloud sandbox host
+### 3. Configure a provider
 
 Add a `sandbox` section to your server config YAML (`~/.omnigent/config.yaml` on a laptop,
-`/data/config.yaml` in Docker). This is the same file where you define
-[server-wide policies](/docs/policies/overview).
+`/data/config.yaml` in Docker). A typical Modal configuration looks like this:
 
-Only `provider` and `server_url` are required. The provider block is optional.
-
-**Modal:**
-
-```
+```yaml
 sandbox:
   provider: modal
   server_url: https://your-server.example.com
   modal:
-    image: ghcr.io/omnigent-ai/omnigent-host:latest  # optional, official image by default
-    secrets: [omnigent-llm]                        # Modal secrets with LLM API keys
+    image: ghcr.io/omnigent-ai/omnigent-host:latest # optional, official image by default
+    secrets: [omnigent-llm] # Modal secrets with LLM API keys
 ```
 
-`secrets` injects [Modal secrets](https://modal.com/docs/guide/secrets)
-(API keys, gateway URLs) into the cloud sandbox host. Values stay in Modal's secret
-store.
-
-**Daytona:**
-
-```
-sandbox:
-  provider: daytona
-  server_url: https://your-server.example.com
-  daytona:
-    image: docker.io/you/omnigent-host:latest      # optional, official image by default
-    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]        # server env vars to copy into sandbox
-```
-
-`env` lists env var names to copy from the server's environment into each
-cloud sandbox host. Values never live in the config file. A listed variable that isn't set fails the
-launch loudly.
-
-**Islo:**
-
-```
-sandbox:
-  provider: islo
-  server_url: https://your-server.example.com
-  islo:
-    image: ghcr.io/omnigent-ai/omnigent-host:latest  # optional, official image by default
-    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]         # server env vars to copy into sandbox
-    idle_pause_after_s: 900                          # optional; null disables idle pause
-```
-
-**Blaxel:**
-
-```
-sandbox:
-  provider: blaxel
-  server_url: https://your-server.example.com    # must be a public URL Blaxel can reach
-  blaxel:
-    image: blaxel/omnigent-host:TAG                # optional; default: blaxel/omnigent-host:latest
-    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]       # server env vars to copy into sandbox
-    region: us-was-1                               # optional; default: BL_REGION or Blaxel default
-    memory_mb: 4096                                # optional; default: 4096
-    ttl: 24h                                       # optional; default maximum age: 24h
-```
-
-Blaxel uses the public `blaxel/omnigent-host:latest` image, which combines the
-standard Omnigent host runtime with Blaxel's required `sandbox-api`. Pin a fixed
-published tag with `image` or the `OMNIGENT_BLAXEL_HOST_IMAGE` env var. All
-managed sandboxes use the server process's Blaxel workspace and credentials;
-Omnigent users are not mapped to individual Blaxel workspaces.
-
-**OpenShell:**
-
-```
-sandbox:
-  provider: openshell
-  server_url: https://your-server.example.com
-  openshell:
-    image: ghcr.io/omnigent-ai/omnigent-host:latest  # optional, official image by default
-    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]         # server env vars to copy into sandbox
-    cluster: my-gateway                              # optional OpenShell gateway name
-    workspace: team-alpha                            # optional; defaults to "default"
-```
-
-`cluster` selects the OpenShell gateway to connect to; omit it to use the
-active gateway (`$OPENSHELL_GATEWAY` or `~/.config/openshell/active_gateway`).
-`workspace` is the OpenShell workspace used for sandbox lifecycle operations
-(create, get, delete). Omit it to resolve `$OMNIGENT_OPENSHELL_WORKSPACE`, then
-fall back to `"default"`.
-
-**Boxlite:**
-
-```
-sandbox:
-  provider: boxlite
-  server_url: https://your-server.example.com
-  boxlite:
-    image: docker.io/me/omnigent-host:latest     # optional, official image by default
-    env: [OPENAI_API_KEY, GIT_TOKEN]             # server env vars to copy into sandbox
-    disk_size_gb: 100                            # optional; box disk size in GB
-    cloud:
-      endpoint: https://boxlite.example.com:8100 # selects CLOUD mode
-    # local: {home_dir: /data/boxlite, registry: {...}}  # LOCAL mode (default if omitted)
-```
-
-`env` lists env var names to copy from the server's environment into each box;
-values never live in the config file. Provide exactly one mode: a `cloud` block
-with an `endpoint` (CLOUD mode, authenticated with the `BOXLITE_API_KEY` env
-var), or a `local` block with `home_dir` / `registry` (LOCAL mode, used by
-default when neither is set).
-
-`disk_size_gb` sets the box disk size in gigabytes and must be a positive
-integer. Omit it to use the Boxlite SDK's own default disk size.
-
-<div className="note">
-
-**Islo idle pause and resume:** server-managed Islo sandboxes pause after 15
-idle minutes by default (`idle_pause_after_s: 900`). When a new message arrives
-for a session bound to a paused Islo host, Omnigent resumes the same sandbox in
-place — reusing its id and workspace — and restarts the runner. Set
-`idle_pause_after_s: null` to opt out and manage sandbox lifetime yourself. The
-policy is applied when the sandbox is created, so changing it affects new
-managed sandboxes, not existing ones. Deleting the session still deletes the
-sandbox.
-
-</div>
-
-<div className="note">
-
-**Daytona free-tier egress:** Daytona Tier 1/2 organizations restrict outbound
-traffic to a [fixed allowlist](https://www.daytona.io/docs/en/network-limits).
-Your `server_url` and model endpoints must be reachable from Daytona's
-cloud. **Tier 3+** ($500 usage top-up) lifts the restriction. On free tier,
-use a Cloudflare Worker relay on the allowlisted `*.workers.dev` domain (see
-`deploy/daytona/` in the repo). Modal has full egress on its entry tier.
-
-</div>
-
-<div className="note">
-
-**Blaxel `ttl` sizes the session:** `ttl` is the maximum age of a managed Blaxel
-sandbox measured from creation — not an idle timeout — so Blaxel deletes the
-sandbox at that age even while the session is active. It defaults to `24h`; raise
-it (for example `7d`) for sessions that must run longer. Durations accept `w`,
-`d`, `h`, `m`, and `s`, alone or combined (`1h30m`). The launch token is minted
-for `ttl + 1h` so it never outlives the sandbox by more than the reconnect
-margin. Process output through the provider API is capped at 4 MiB per command.
-The Blaxel SDK's telemetry is off by default; set `DO_NOT_TRACK=1` on the server
-to keep it disabled.
-
-</div>
-
-### Inject provider config into sandboxes (optional)
-
-An optional top-level `host_config` under `sandbox:` (provider-agnostic — not
-inside a provider block like `modal:` or `daytona:`) holds verbatim in-sandbox
-`~/.omnigent/config.yaml` content that the server installs into each sandbox
-before `omnigent host` starts. The common use is a `providers:` block that
-routes a harness through a self-hosted gateway (for example LiteLLM or vLLM):
-
-```
-sandbox:
-  provider: modal
-  server_url: https://your-server.example.com
-  host_config:
-    providers:
-      litellm:
-        kind: gateway
-        default: [pi]
-        openai:
-          base_url: http://litellm.litellm.svc.cluster.local/v1
-          api_key_ref: env:LITELLM_API_KEY
-          wire_api: chat
-```
-
-The block is **server-managed**: entries injected by a previous launch are
-replaced or removed on the next launch or resume, so each sandbox always
-reflects the current config. Config created inside the sandbox under names the
-server never injects survives untouched.
-
-**Keep secrets out of `host_config`.** Reference credentials with
-`api_key_ref: env:VAR` — the variable is resolved inside the sandbox against its
-own environment (the provider's credential lane, such as Modal secrets or copied
-env vars), never on the server. An inline `api_key` is rejected at server
-startup. The `host_config` block (and its `providers:` shape) is validated when
-the server starts, so a typo fails loudly instead of degrading silently inside
-the sandbox.
+See the [cloud sandbox configuration reference](/docs/reference/configuration/cloud-sandbox)
+for every provider block, image and environment options, lifecycle settings, and
+`host_config` behavior.
 
 ### 4. Launch from the web UI
 
 Start a new session and select **New Sandbox** in the host picker. The server
-provisions the cloud host, starts the runner, and connects it back automatically. This works
-the same on both hosting platforms.
+provisions the cloud host, starts the runner, and connects it back automatically.
 
 ## Community sandbox providers
 
@@ -381,7 +208,7 @@ crashing server startup.
 ## CLI
 
 Create and manage cloud sandbox hosts from the command line. The commands are the same across
-hosting platforms, just switch the `--provider` flag.
+hosting platforms; switch the `--provider` flag:
 
 ```
 omni sandbox create --provider modal          # or --provider daytona / blaxel / islo
@@ -390,8 +217,9 @@ omni sandbox connect --provider modal \
 ```
 
 For a Blaxel CLI launch, list any credentials the host or agent needs in
-`OMNIGENT_BLAXEL_SANDBOX_ENV` (a comma-separated list of server env var names)
-before `create` — never include `BL_API_KEY` or `BL_CLIENT_CREDENTIALS`. Blaxel
-does not expose local callback port forwarding, so the in-sandbox browser login
-is skipped automatically. Stopping `connect` leaves the sandbox running; delete
-it with `bl delete sandbox <id>` or from the Blaxel console.
+`OMNIGENT_BLAXEL_SANDBOX_ENV` before `create`. Never include `BL_API_KEY` or
+`BL_CLIENT_CREDENTIALS`. Blaxel does not expose local callback port forwarding,
+so the in-sandbox browser login is skipped automatically.
+
+Stopping `connect` leaves the sandbox running. Delete it with the provider's
+CLI or console when you no longer need it.

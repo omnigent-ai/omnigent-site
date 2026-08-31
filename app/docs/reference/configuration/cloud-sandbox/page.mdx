@@ -1,0 +1,201 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Cloud Sandbox Configuration",
+  "Reference for configuring managed cloud sandbox providers, lifecycle settings, credentials, and host configuration.",
+  {
+    eyebrow: "Reference",
+    path: "/docs/reference/configuration/cloud-sandbox",
+  },
+);
+
+# Cloud sandbox configuration
+
+The server can provision remote runner hosts through several sandbox providers.
+See [Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host) for installation,
+provider authentication, and launch steps.
+
+## Common settings
+
+Add the top-level `sandbox` block to the server configuration:
+
+```yaml
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+```
+
+| Field         | Required | Description                                                                                          |
+| ------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `openshell`, or `boxlite`.                        |
+| `server_url`  | Yes      | Public Omnigent server URL that the remote runner connects back to.                                  |
+| `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration). |
+
+Provider-specific blocks are optional. Omit one to use that provider's defaults.
+
+## Modal
+
+```yaml
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+  modal:
+    image: ghcr.io/omnigent-ai/omnigent-host:latest
+    secrets: [omnigent-llm]
+```
+
+- `image` defaults to the official Omnigent host image.
+- `secrets` names [Modal secrets](https://modal.com/docs/guide/secrets) to inject
+  into the runner. Values remain in Modal's secret store.
+
+## Daytona
+
+```yaml
+sandbox:
+  provider: daytona
+  server_url: https://your-server.example.com
+  daytona:
+    image: docker.io/you/omnigent-host:latest
+    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]
+```
+
+- `image` defaults to the official Omnigent host image.
+- `env` lists server environment variables copied into each sandbox. A listed
+  variable that is not set fails the launch.
+
+Daytona Tier 1 and 2 organizations restrict outbound traffic to a
+[fixed allowlist](https://www.daytona.io/docs/en/network-limits). The
+`server_url` and model endpoints must be reachable from Daytona. Tier 3 and
+higher lift that restriction. On the free tier, use a Cloudflare Worker relay
+on the allowlisted `*.workers.dev` domain; the repository includes an example
+under `deploy/daytona/`. Modal has full egress on its entry tier.
+
+## Islo
+
+```yaml
+sandbox:
+  provider: islo
+  server_url: https://your-server.example.com
+  islo:
+    image: ghcr.io/omnigent-ai/omnigent-host:latest
+    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]
+    idle_pause_after_s: 900
+```
+
+- `image` defaults to the official Omnigent host image.
+- `env` lists server environment variables copied into each sandbox. A listed
+  variable that is not set fails the launch.
+- `idle_pause_after_s` defaults to `900`. Set it to `null` to disable idle
+  pause.
+
+When a new message arrives for a paused Islo host, Omnigent resumes the same
+sandbox and restarts the runner. Changing `idle_pause_after_s` affects new
+sandboxes, not existing ones. Deleting the session still deletes the sandbox.
+
+The provider uses `ISLO_API_KEY`. `ISLO_BASE_URL` and `ISLO_COMPUTE_URL` can
+override its service endpoints.
+
+## Blaxel
+
+```yaml
+sandbox:
+  provider: blaxel
+  server_url: https://your-server.example.com
+  blaxel:
+    image: blaxel/omnigent-host:latest
+    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]
+    region: us-was-1
+    memory_mb: 4096
+    ttl: 24h
+```
+
+- `image` defaults to `blaxel/omnigent-host:latest`.
+- `env` lists server environment variables copied into each sandbox.
+- `region` defaults to `BL_REGION` or the Blaxel default.
+- `memory_mb` defaults to `4096`.
+- `ttl` defaults to `24h` and accepts `w`, `d`, `h`, `m`, and `s`, alone or
+  combined, such as `1h30m`.
+
+`ttl` is the sandbox's maximum age from creation, not an idle timeout. Blaxel
+deletes the sandbox at that age even while its session is active. The launch
+token lasts for `ttl + 1h`; provider command output is capped at 4 MiB.
+
+The default image combines the Omnigent host runtime with Blaxel's required
+`sandbox-api`. Pin a published tag with `image` when deployments must remain
+stable across releases.
+
+Managed sandboxes use the server process's Blaxel workspace and credentials.
+Omnigent users are not mapped to individual Blaxel workspaces. Set
+`OMNIGENT_BLAXEL_HOST_IMAGE` to override the default image without changing the
+configuration. The Blaxel SDK's telemetry is disabled; keep `DO_NOT_TRACK=1`
+set on the server to preserve that behavior.
+
+## OpenShell
+
+```yaml
+sandbox:
+  provider: openshell
+  server_url: https://your-server.example.com
+  openshell:
+    image: ghcr.io/omnigent-ai/omnigent-host:latest
+    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]
+    cluster: my-gateway
+    workspace: team-alpha
+```
+
+- `image` defaults to the official Omnigent host image.
+- `env` lists server environment variables copied into each sandbox.
+- `cluster` defaults to the active OpenShell gateway from
+  `$OPENSHELL_GATEWAY` or `~/.config/openshell/active_gateway`.
+- `workspace` defaults to `$OMNIGENT_OPENSHELL_WORKSPACE`, then `default`.
+
+## Boxlite
+
+```yaml
+sandbox:
+  provider: boxlite
+  server_url: https://your-server.example.com
+  boxlite:
+    image: docker.io/me/omnigent-host:latest
+    env: [OPENAI_API_KEY, GIT_TOKEN]
+    disk_size_gb: 100
+    cloud:
+      endpoint: https://boxlite.example.com:8100
+```
+
+- `image` defaults to the official Omnigent host image.
+- `env` lists server environment variables copied into each sandbox.
+- `disk_size_gb` must be a positive integer. Omit it to use the SDK default.
+
+Provide one mode: `cloud.endpoint` selects cloud mode and uses
+`BOXLITE_API_KEY`; `local.home_dir` and `local.registry` configure local mode.
+Local mode is used when neither block is set.
+
+## Host configuration
+
+The provider-independent `host_config` block contains the
+`~/.omnigent/config.yaml` content installed inside each sandbox before
+`omnigent host` starts:
+
+```yaml
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+  host_config:
+    providers:
+      litellm:
+        kind: gateway
+        default: [pi]
+        openai:
+          base_url: http://litellm.litellm.svc.cluster.local/v1
+          api_key_ref: env:LITELLM_API_KEY
+          wire_api: chat
+```
+
+On launch or resume, the server replaces or removes entries that it previously
+injected. Configuration created inside the sandbox under other names remains
+untouched.
+
+Do not put secrets in `host_config`. Use `api_key_ref: env:VAR`; the variable
+is resolved inside the sandbox from its provider-specific credential source.
+Inline `api_key` values are rejected. The server validates the block at startup.

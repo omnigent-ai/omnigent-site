@@ -169,6 +169,11 @@
     "description": "Reference for configuring managed cloud sandbox providers, lifecycle settings, credentials, and host configuration.",
     "eyebrow": "Reference"
   },
+  "/docs/reference/configuration/routing": {
+    "title": "Smart Routing Configuration",
+    "description": "Reference for enabling built-in or external smart routing and configuring the external routing service.",
+    "eyebrow": "Reference"
+  },
   "/docs/use/builtin-agents/debby": {
     "title": "Debby",
     "description": "Debby asks two models the same question and runs a multi-round debate where each critiques and refines the other's answer.",

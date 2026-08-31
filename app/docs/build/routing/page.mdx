@@ -63,35 +63,12 @@ routing:
   provider: external
   base_url: https://gateway.example.com/ai-gateway/routing/v1
   router_name: task_v0
-  # Optional: strip a prefix from catalog model ids before sending them to
-  # the router (and restore it on the answer). Accepts a string or a list.
   model_prefix: databricks-
-  # Optional auth, see "Authentication" below.
   api_key: ${ROUTING_API_KEY}
 ```
 
-| Field          | Required | Description                                                                                                                                           |
-| -------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `provider`     | yes      | Must be `external` to select the external routing API. Any other value (or omitting the block) falls back to the built-in judge.                       |
-| `base_url`     | yes      | Base URL of the routing service. The server appends `/routes:select` to it.                                                                           |
-| `router_name`  | yes      | The routing strategy the gateway should apply, e.g. `task_v0`. Sent as `route_selector.router_name`.                                                   |
-| `model_prefix` | no       | A prefix (or list of prefixes) stripped from catalog model ids before they are sent to the router, and restored on its answer. Example: `databricks-`. |
-| `api_key`      | no       | Static bearer token. `${ENV}` references are expanded. Takes precedence over `profile`.                                                                |
-| `profile`      | no       | Databricks CLI profile. The server mints a fresh bearer per call (OAuth refresh), so a long-lived server never sends an expired token.                 |
-
-If `base_url` or `router_name` is missing, the external provider is skipped and a
-warning is logged: routing stays off rather than failing the server.
-
-### Authentication
-
-Auth mirrors the `llm:` block, in precedence order:
-
-1. **`api_key`**: an explicit, provider-agnostic bearer token (`${ENV}` expanded).
-   Sent as `Authorization: Bearer <token>`.
-2. **`profile`**: a Databricks CLI profile. The server resolves a fresh token per
-   request via the Databricks SDK, so tokens that expire (~1h) are refreshed
-   automatically.
-3. **Neither**: requests are sent unauthenticated.
+See the [Smart Routing configuration reference](/docs/reference/configuration/routing)
+for all fields, authentication options, precedence, and validation behavior.
 
 ## External routing API spec
 

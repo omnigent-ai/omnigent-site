@@ -169,6 +169,11 @@ const ALL_PAGES = [
     label: "Cloud Sandbox",
     section: "Reference",
   },
+  {
+    href: "/docs/reference/configuration/routing",
+    label: "Smart Routing",
+    section: "Reference",
+  },
 ];
 
 export default function PrevNextNav() {

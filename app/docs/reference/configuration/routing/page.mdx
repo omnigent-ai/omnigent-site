@@ -1,0 +1,58 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Smart Routing Configuration",
+  "Reference for enabling built-in or external smart routing and configuring the external routing service.",
+  {
+    eyebrow: "Reference",
+    path: "/docs/reference/configuration/routing",
+  },
+);
+
+# Smart Routing configuration
+
+Smart Routing selects a harness and model from the session's first message. See
+[Smart Routing](/docs/build/routing) for the user workflow and behavior.
+
+## Built-in routing
+
+Configure a server-level `llm:` block to use the built-in judge. No `routing:`
+block is required. With neither an `llm:` block nor an external `routing:`
+block, Smart Routing is disabled and the **Auto** picker option is hidden.
+
+## External routing
+
+Add a top-level `routing:` block to delegate selection to an external service:
+
+```yaml
+routing:
+  provider: external
+  base_url: https://gateway.example.com/ai-gateway/routing/v1
+  router_name: task_v0
+  model_prefix: databricks-
+  api_key: ${ROUTING_API_KEY}
+```
+
+| Field          | Required | Description                                                                                                                       |
+| -------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `provider`     | Yes      | Must be `external`. Any other value, or an omitted block, falls back to the built-in judge when `llm:` is configured.             |
+| `base_url`     | Yes      | Routing service base URL. The server appends `/routes:select`.                                                                    |
+| `router_name`  | Yes      | Routing strategy, such as `task_v0`. Sent as `route_selector.router_name`.                                                        |
+| `model_prefix` | No       | Prefix or list of prefixes removed from catalog model ids before the request and restored on the response, such as `databricks-`. |
+| `api_key`      | No       | Static bearer token. `${ENV}` references are expanded. Takes precedence over `profile`.                                           |
+| `profile`      | No       | Databricks CLI profile. The server resolves a fresh OAuth token for every request.                                                |
+
+If `base_url` or `router_name` is missing, the provider is skipped and routing
+stays off rather than preventing the server from starting.
+
+## Authentication precedence
+
+The first configured option wins:
+
+1. `api_key`: sends `Authorization: Bearer <token>` after expanding `${ENV}`.
+2. `profile`: uses the Databricks SDK to resolve a fresh token for every call,
+   so long-running servers do not retain an expired token.
+3. Neither: sends requests without authentication.
+
+The request and response contract is documented in the
+[external routing API specification](/docs/build/routing#external-routing-api-spec).

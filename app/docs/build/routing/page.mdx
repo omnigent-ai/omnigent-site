@@ -40,7 +40,7 @@ Smart routing is enabled by configuration alone:
 - Configure a server `llm:` block and the server uses the **built-in judge** backed
   by it, with no `routing:` block required.
 - Or add a `routing:` block with `provider: external` to delegate to an
-  **external routing API** (see below).
+  **external routing API**.
 
 Start the server with your config file:
 
@@ -70,44 +70,11 @@ routing:
 See the [Smart Routing configuration reference](/docs/reference/configuration/routing)
 for all fields, authentication options, precedence, and validation behavior.
 
-## External routing API spec
+## Implement an external router
 
-The server calls a single endpoint:
-
-```
-POST <base_url>/routes:select
-Content-Type: application/json
-```
-
-The request and response bodies follow the `omnigent.api.routing.v1` schema
-(proto3, serialized as JSON with snake_case field names). This schema is versioned
-independently of any gateway so the contract can evolve without coupling to a
-gateway's release cycle.
-
-### Request: `SelectRouteRequest`
-
-| Field             | Type              | Description                                                                                    |
-| ----------------- | ----------------- | ---------------------------------------------------------------------------------------------- |
-| `route_options`   | `RouteOption[]`   | Candidate destinations the router may choose from. One entry per (model, harness) pair.        |
-| `task`            | `Task`            | The unit of work to route. Carries the user's `prompt` (truncated to 4000 chars).              |
-| `route_selector`  | `RouteSelector`   | The routing strategy to apply. Required in practice; a gateway rejects a request that omits it. |
-| `session_history` | `SessionHistory`  | Prior turns in the session, when available. Routers may use it to keep turns consistent.        |
-
-**`RouteOption`**
-
-| Field     | Type     | Description                                                                                     |
-| --------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `model`   | `string` | Model id to serve the request, e.g. `gpt-5-5`.                                                   |
-| `harness` | `string` | Harness that drives the model. May be omitted for a native harness; required for a meta-harness. |
-
-**`RouteSelector`**
-
-| Field         | Type     | Description                                                                                       |
-| ------------- | -------- | ------------------------------------------------------------------------------------------------- |
-| `router_name` | `string` | Name of the routing strategy to invoke (from the `router_name` config field).                     |
-| `config`      | `Struct` | Optional router-specific configuration, interpreted by the selected router (gateway-defined).      |
-
-Example request body:
+The server calls `POST <base_url>/routes:select` with the candidate harness and
+model combinations, the task, and the requested routing strategy. A typical
+request looks like this:
 
 ```json
 {
@@ -121,21 +88,7 @@ Example request body:
 }
 ```
 
-### Response: `SelectRouteResponse`
-
-| Field             | Type                | Description                                                    |
-| ----------------- | ------------------- | -------------------------------------------------------------- |
-| `route_selection` | `RouteSelection[]`  | The routing decision(s). The server uses the first entry.     |
-| `rationale`       | `string`            | Human-readable explanation of why this route was selected.    |
-
-**`RouteSelection`**
-
-| Field          | Type          | Description                                                              |
-| -------------- | ------------- | ------------------------------------------------------------------------ |
-| `route_option` | `RouteOption` | The chosen destination (model + harness).                                |
-| `params`       | `Struct`      | Optional router-specific parameters emitted alongside the decision.      |
-
-Example response body:
+Return one of the offered model and harness combinations:
 
 ```json
 {
@@ -148,8 +101,8 @@ Example response body:
 }
 ```
 
-The server maps the chosen `model` (and `harness`, when present) back to the
-matching catalog entry, restoring any stripped `model_prefix`. A model the server
-did not offer in `route_options` is rejected, and the session falls back to its
-default harness. On any error (HTTP 4xx/5xx, unparseable body, empty selection) the
-server surfaces the reason and degrades gracefully rather than blocking the session.
+Implement the [external routing API contract](/docs/reference/routing-api) for
+the complete schema, matching rules, and error behavior.
+
+If the service returns an error or an invalid selection, the server surfaces the
+reason and falls back to the session's default harness rather than blocking it.

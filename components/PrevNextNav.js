@@ -174,6 +174,11 @@ const ALL_PAGES = [
     label: "Smart Routing",
     section: "Reference",
   },
+  {
+    href: "/docs/reference/routing-api",
+    label: "Routing Provider API",
+    section: "Reference",
+  },
 ];
 
 export default function PrevNextNav() {

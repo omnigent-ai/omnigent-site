@@ -1,0 +1,97 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "External Routing API",
+  "Request and response contract for services that provide Smart Routing decisions to an Omnigent server.",
+  {
+    eyebrow: "Reference",
+    path: "/docs/reference/routing-api",
+  },
+);
+
+# External routing API
+
+An Omnigent server can delegate Smart Routing decisions to an external service.
+See [Smart Routing](/docs/build/routing) for the workflow and
+[Smart Routing configuration](/docs/reference/configuration/routing) for the
+server settings.
+
+The server calls one endpoint:
+
+```
+POST <base_url>/routes:select
+Content-Type: application/json
+```
+
+The request and response bodies follow the `omnigent.api.routing.v1` schema
+(proto3, serialized as JSON with snake_case field names). This schema is
+versioned independently of any gateway.
+
+## Request: `SelectRouteRequest`
+
+| Field             | Type             | Description                                                                                     |
+| ----------------- | ---------------- | ----------------------------------------------------------------------------------------------- |
+| `route_options`   | `RouteOption[]`  | Candidate destinations. One entry is sent for each model and harness pair.                      |
+| `task`            | `Task`           | Work to route. Its `prompt` contains the user's message, truncated to 4,000 characters.         |
+| `route_selector`  | `RouteSelector`  | Routing strategy. A gateway rejects a request that omits it.                                    |
+| `session_history` | `SessionHistory` | Prior turns when available. Routers can use them to maintain consistency across a conversation. |
+
+### `RouteOption`
+
+| Field     | Type     | Description                                                                                       |
+| --------- | -------- | ------------------------------------------------------------------------------------------------- |
+| `model`   | `string` | Model id, such as `gpt-5-5`.                                                                      |
+| `harness` | `string` | Harness for the model. It can be omitted for native harnesses and is required for meta-harnesses. |
+
+### `RouteSelector`
+
+| Field         | Type     | Description                                                                  |
+| ------------- | -------- | ---------------------------------------------------------------------------- |
+| `router_name` | `string` | Strategy from the server's `routing.router_name` setting.                    |
+| `config`      | `Struct` | Optional router-specific configuration interpreted by the selected strategy. |
+
+Example:
+
+```json
+{
+  "route_options": [
+    { "model": "claude-opus-4-8", "harness": "claude-sdk" },
+    { "model": "gpt-5-5", "harness": "codex" },
+    { "model": "gpt-5-4-mini", "harness": "pi" }
+  ],
+  "task": { "prompt": "Refactor the auth module and add tests" },
+  "route_selector": { "router_name": "task_v0" }
+}
+```
+
+## Response: `SelectRouteResponse`
+
+| Field             | Type               | Description                                              |
+| ----------------- | ------------------ | -------------------------------------------------------- |
+| `route_selection` | `RouteSelection[]` | Routing decisions. The server uses the first entry.      |
+| `rationale`       | `string`           | Human-readable explanation for the selected destination. |
+
+### `RouteSelection`
+
+| Field          | Type          | Description                                                     |
+| -------------- | ------------- | --------------------------------------------------------------- |
+| `route_option` | `RouteOption` | Selected model and harness.                                     |
+| `params`       | `Struct`      | Optional router-specific parameters returned with the decision. |
+
+Example:
+
+```json
+{
+  "route_selection": [
+    {
+      "route_option": { "model": "claude-opus-4-8", "harness": "claude-sdk" }
+    }
+  ],
+  "rationale": "Multi-file refactor with tests: favor the most capable model."
+}
+```
+
+The server restores any configured `model_prefix`, then matches the selected
+model and harness to an offered `route_options` entry. A selection that was not
+offered is rejected. HTTP errors, malformed responses, and empty selections
+surface an error and fall back to the session's default harness.

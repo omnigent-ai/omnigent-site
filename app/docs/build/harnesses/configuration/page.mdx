@@ -127,6 +127,38 @@ row. To sign out, delete the credential file:
 rm ~/.kimi-code/credentials/kimi-code.json
 ```
 
+## Antigravity
+
+The native Antigravity harness (`antigravity-native`) wraps Google's `agy` CLI.
+It requires **agy 1.1.13 or newer** and accepts either of two credentials:
+
+- **Gemini API key** — set a non-empty `GEMINI_API_KEY` in the environment.
+  Omnigent selects agy's direct Gemini provider (`modelProvider: "gemini"` in
+  the session's isolated agy settings) for you. When `GEMINI_API_KEY` is set it
+  takes precedence over any saved OAuth login; clear it to fall back to OAuth.
+- **Google OAuth login** — run `agy` once and complete the browser sign-in. The
+  `agy` CLI has no `agy login` / `agy auth status` subcommand: the token is
+  written on its first interactive run. Omnigent recognizes it at
+  `~/.gemini/oauth_creds.json` (macOS), `~/.gemini/antigravity-cli/antigravity-oauth-token`
+  (Linux), or the macOS Keychain (agy 1.1.7+).
+
+Install the CLI first, then supply one of those credentials:
+
+```
+curl -fsSL https://antigravity.google/cli/install.sh | bash
+```
+
+`omni setup` shows the harness as configured once the `agy` binary is present
+and either the API key or an OAuth login is detected.
+
+<div className="note">
+
+**Note:** The in-process `antigravity` SDK harness is a separate integration
+that resolves its own Gemini API key at runtime. The `GEMINI_API_KEY` behavior
+above applies to the native `agy`-wrapping `antigravity-native` harness.
+
+</div>
+
 ## Custom ACP agents
 
 Beyond the built-in harnesses, the generic `acp` harness drives *any* agent that

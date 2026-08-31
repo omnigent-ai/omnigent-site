@@ -17,6 +17,33 @@ each managed session. Configure it under `sandbox.kubernetes` in the
 
 See [Shared Server](/docs/deploy/overview#kubernetes) for the deployment steps.
 
+## Pod-start wait budget
+
+| Setting | Value                                    |
+| ------- | ---------------------------------------- |
+| Key     | `sandbox.kubernetes.pod_ready_timeout_s` |
+| Type    | Positive integer, in seconds             |
+| Default | `90`                                     |
+
+Before a managed session goes online, Omnigent waits for the runner Pod to
+schedule, pull its image, clone its repository, and reach `Running`. Increase
+the wait budget when cold image pulls regularly take longer than the default:
+
+```yaml
+sandbox:
+  provider: kubernetes
+  kubernetes:
+    pod_ready_timeout_s: 300
+```
+
+The budget covers Pod discovery, replacement Pod discovery after an eviction
+or node drain, Kubernetes API read errors, and time spent `Pending`. When it
+expires, the launch error reports the configured deadline and last observed Pod
+state.
+
+The value must be a positive YAML integer. Values such as `0`, `"90"`, and
+`true` fail server startup.
+
 ## Persistent storage for runner Pods
 
 Runner Pods are ephemeral: the workspace lives on an `emptyDir` and is

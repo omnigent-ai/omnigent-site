@@ -114,10 +114,7 @@ const SECTIONS = [
   },
   {
     title: "Omnibox",
-    pages: [
-      { href: "/docs/omnibox", label: "Overview" },
-      { href: "/docs/policies/os-sandbox", label: "OS Sandbox Config" },
-    ],
+    pages: [{ href: "/docs/omnibox", label: "Overview" }],
   },
   {
     title: "Reference",
@@ -134,6 +131,10 @@ const SECTIONS = [
           {
             href: "/docs/reference/configuration/kubernetes",
             label: "Kubernetes Sandbox",
+          },
+          {
+            href: "/docs/reference/configuration/os-sandbox",
+            label: "OS Sandbox",
           },
         ],
       },

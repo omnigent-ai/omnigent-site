@@ -1,0 +1,88 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Give your agents built-in structured web research and extraction",
+  "Enable nimble_research and nimble_extract by name in your agent spec: your agents can run cited web research and pull structured data off live pages, no glue code required.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/nimble-web-research-extract-builtins",
+  },
+);
+
+export const meta = {
+  title: "Give your agents built-in structured web research and extraction",
+  date: "2026-08-28",
+  category: "Tools",
+  author: "omnigent",
+  heroArt: "/images/blog/nimble-web-research-extract-builtins.png",
+};
+
+<BlogPostHeader slug="nimble-web-research-extract-builtins" />
+
+If you build agents that need real information from the live web, you can now
+turn on two ready-made tools instead of wiring up your own scraping and search
+code. Add `nimble_research` and `nimble_extract` to an agent spec by name and
+your agent can run a cited research task or pull structured data straight off a
+page.
+
+Getting good web data into an agent usually means gluing together a search API,
+a scraper, and your own parsing, then keeping all of it working.
+
+`nimble_research` hands a task to a Nimble Web Search Agent. The agent plans the
+search itself and browses in a real browser, so JavaScript-rendered and
+interactive pages still resolve. It cross-checks what it finds across sources and
+returns an answer with per-claim citations and a confidence signal for each one.
+Pass an `output_schema` to get typed JSON instead of prose. Pass `input_data` and
+it enriches the records you give it instead of answering a question, which is
+what you want when the job is a few thousand records rather than one lookup. Each
+run also stores its sources and the retrieval paths that worked, so an agent that
+runs this kind of task repeatedly builds on earlier runs instead of starting
+cold.
+
+`nimble_extract` runs one of your Nimble extract templates against the live web
+and returns the parsed result as structured JSON in a single call.
+
+Both resolve inside the runner, so they work with any agent you run in Omnigent,
+not just one model family.
+
+<video
+  src="/images/blog/nimble-web-research-extract-builtins-demo.mp4"
+  poster="/images/blog/nimble-web-research-extract-builtins-poster.png"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="A Claude-SDK agent picks nimble_research to find five in-stock single-origin coffees on Intelligentsia's live storefront, runs it over several minutes, then returns a structured table of name, price, bag size, processing, and product URL, with per-claim citations, a high-confidence signal, and caveats for the listings it excluded as out of stock"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+_The agent chooses `nimble_research`, reads Intelligentsia's live product pages, and returns a cited, structured result with its confidence and the listings it ruled out._
+
+Enable them under `tools.builtins` in your agent spec and pass your Nimble API
+key. `nimble_research` needs the optional `nimble` extra
+(`pip install 'omnigent[nimble]'`); `nimble_extract` names one of your
+account's extract templates.
+
+```yaml
+tools:
+  builtins:
+    - name: nimble_research
+      api_key: ${NIMBLE_API_KEY}
+    - name: nimble_extract
+      api_key: ${NIMBLE_API_KEY}
+      template: my_template_name # one of your account's extract templates
+```
+
+For a quick lookup rather than a full research run, Nimble is also a
+[`web_search`](/docs/build/tools#websearch) provider, and has been since that
+tool shipped. Set `search_provider: nimble` and results come back in seconds
+instead of the minutes a research run can take, with no extra to install.
+
+See the [built-in tools guide](/docs/build/tools#built-in-tools) for how builtins
+are configured, and [Nimble's Omnigent connector
+docs](https://docs.nimbleway.com/integrations/connectors/omnigent) for the full
+config reference on all three capabilities, including where to get an API key.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

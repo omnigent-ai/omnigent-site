@@ -19,11 +19,12 @@ See [Shared Server](/docs/deploy/overview#kubernetes) for the deployment steps.
 
 ## Pod-start wait budget
 
-| Setting | Value                                    |
-| ------- | ---------------------------------------- |
-| Key     | `sandbox.kubernetes.pod_ready_timeout_s` |
-| Type    | Positive integer, in seconds             |
-| Default | `90`                                     |
+| Setting     | Value                                                     |
+| ----------- | --------------------------------------------------------- |
+| Key         | `sandbox.kubernetes.pod_ready_timeout_s`                  |
+| Env var     | `OMNIGENT_K8S_POD_READY_TIMEOUT_S`                        |
+| Type        | Positive integer, in seconds                              |
+| Default     | `90`                                                      |
 
 Before a managed session goes online, Omnigent waits for the runner Pod to
 schedule, pull its image, clone its repository, and reach `Running`. Increase
@@ -43,6 +44,22 @@ state.
 
 The value must be a positive YAML integer. Values such as `0`, `"90"`, and
 `true` fail server startup.
+
+### Setting the budget from the environment
+
+You can also set the wait budget with the `OMNIGENT_K8S_POD_READY_TIMEOUT_S`
+environment variable, which is handy when the same bundle runs across
+deployments with different image-pull times:
+
+```bash
+export OMNIGENT_K8S_POD_READY_TIMEOUT_S=300
+```
+
+Precedence: the explicit `sandbox.kubernetes.pod_ready_timeout_s` config key
+always wins when set; the env var is only consulted when that key is unset, and
+it overrides the built-in `90`-second default. A non-numeric env value (for
+example `not-a-number`) fails fast with a clear error; a float-looking value
+such as `120.0` is accepted and truncated to a whole number of seconds.
 
 ## Persistent storage for runner Pods
 

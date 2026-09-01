@@ -2,7 +2,7 @@ import { pageMeta } from "@/lib/og";
 
 export const metadata = pageMeta(
   "Custom Policies",
-  "When built-in policies aren't enough, write your own in Python, register them on the server, and use them like builtins.",
+  "Extend Omnigent with custom policy logic — use cel_policy for most cases, or write a Python policy when CEL's non-Turing-complete expressions aren't enough.",
   {
     eyebrow: "Policies",
     path: "/docs/policies/custom",
@@ -11,16 +11,69 @@ export const metadata = pageMeta(
 
 # Custom Policies
 
-When the [builtin policies](/docs/policies/builtin) don't cover your
-use case, you can write your own in Python, register them on the server, and your Omnigent
-can use them just like builtins.
+When the [builtin policies](/docs/policies/builtin) don't cover your use case, you have two
+options:
 
-## 1. Write a policy function
+1. **`cel_policy`** — write a [CEL](https://cel.dev) expression directly in your config. No
+   code to deploy. Start here.
+2. **Python policy** — a full Python function registered on the server. Use this only when
+   your logic requires state, external calls, or anything else CEL's non-Turing-complete
+   expressions cannot express.
+
+## Using `cel_policy`
+
+`cel_policy` is a [builtin policy](/docs/policies/builtin) that evaluates a
+[CEL](https://cel.dev) expression against every event. CEL is a safe, sandboxed expression
+language — no loops, no I/O, no side effects — which makes it the right default for most
+custom rules.
+
+The expression receives an `event` object with `type` and `data` fields (the same
+[`PolicyEvent`](#reference-policyevent) every policy sees). Return `true` to deny the
+action.
+
+### Examples
+
+**Deny a specific tool:**
+
+```yaml
+policies:
+  no_dangerous_tool:
+    type: function
+    handler: omnigent.policies.builtins.safety.cel_policy
+    factory_params:
+      expression: "event.type == 'tool_call' && event.data.name == 'dangerous_tool'"
+      reason: "dangerous_tool is not allowed in this session."
+```
+
+**Block writes outside a specific directory:**
+
+```yaml
+policies:
+  confine_writes:
+    type: function
+    handler: omnigent.policies.builtins.safety.cel_policy
+    factory_params:
+      expression: >
+        event.type == 'tool_call' &&
+        event.data.name in ['sys_os_write', 'sys_os_edit'] &&
+        !event.data.arguments.path.startsWith('/home/user/project/')
+      reason: "Writes are only allowed inside /home/user/project/."
+```
+
+Use `cel_policy` whenever your rule can be expressed as a boolean over the event fields. You
+get the same policy lifecycle (ALLOW / ASK / DENY) without writing or deploying any code.
+
+## Python policies
+
+Use a Python policy when `cel_policy` isn't enough — for example, when your rule needs
+accumulated state across calls, a database lookup, or control flow that CEL cannot express.
+
+### 1. Write a policy function
 
 A policy is a Python function that receives an event and returns `ALLOW`,
 `ASK`, `DENY`, or `None` (no opinion):
 
-```
+```python
 from omnigent.policies.schema import PolicyEvent, PolicyResponse
 
 def my_policy(event: PolicyEvent) -> PolicyResponse | None:
@@ -34,7 +87,7 @@ def my_policy(event: PolicyEvent) -> PolicyResponse | None:
 If your policy needs parameters, use the factory pattern. The function takes config and
 returns the evaluator:
 
-```
+```python
 def block_domains(blocked_domains: list[str]) -> callable:
     blocked = frozenset(d.lower() for d in blocked_domains)
 
@@ -50,13 +103,13 @@ def block_domains(blocked_domains: list[str]) -> callable:
     return evaluate
 ```
 
-## 2. Register on the server
+### 2. Register on the server
 
 To make your policy discoverable by your Omnigent and visible in the UI, do two things:
 
 **Export a `POLICY_REGISTRY`** from your module:
 
-```
+```python
 # myorg/policies.py
 
 POLICY_REGISTRY = [
@@ -82,7 +135,7 @@ POLICY_REGISTRY = [
 
 **Add the module to your server config:**
 
-```
+```yaml
 # config.yaml
 policy_modules:
   - myorg.policies
@@ -90,7 +143,7 @@ policy_modules:
 
 Then start the server with that config:
 
-```
+```bash
 omnigent server -c config.yaml
 ```
 
@@ -100,7 +153,7 @@ Once registered, your custom policies appear alongside the builtins. Your Omnige
 select them when you ask it to add a policy in chat, and they show up in the UI settings
 panel.
 
-## 3. Use it
+### 3. Use it
 
 Once registered, your custom policy works the same as any builtin. See
 [Adding a policy](/docs/policies/overview#adding-a-policy) for all the

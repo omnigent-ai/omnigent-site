@@ -640,6 +640,9 @@ figure {
   margin: 1.75rem 0;
   text-align: center;
 }
+figure[data-rehype-pretty-code-figure] {
+  text-align: left;
+}
 figure img {
   max-width: 100%;
   height: auto;

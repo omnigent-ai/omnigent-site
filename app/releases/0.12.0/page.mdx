@@ -1,0 +1,69 @@
+{/* Auto-generated from the GitHub Release for v0.12.0. Edit the GitHub Release, not this file. */}
+
+# v0.12.0
+
+_Released 2026-09-01_ · 3 min read · Omnigent maintainers
+
+Omnigent 0.12.0 is a major release focused on meeting your existing tools and workflows where they already live, from pulling your current CLI conversations into the web UI to running your host as an always-on background service. Projects now shape every new session with their own agent, workspace, and git defaults; the mobile and wide-screen UI gets a top-to-bottom refresh; and a wave of new harnesses and model controls give you finer say over which model runs and how hard it thinks.
+
+## 1. Import your existing local CLI sessions
+
+![TODO: add a demo screenshot or GIF for "Import your existing local CLI sessions"](TODO)
+
+If you already have a trail of conversations in Claude Code, Codex, or another CLI, you no longer have to leave them behind. From the web UI you can pull your recent CLI conversations straight into Omnigent, and each one keeps its original title so you can find it again.
+
+This means the work you've already done comes with you — pick up an earlier session in Omnigent instead of starting from scratch.
+
+_Learn more in the [Import existing chats](/docs/use/coding-agents#import-existing-chats)._
+
+## 2. Projects that drive new sessions
+
+![TODO: add a demo screenshot or GIF for "Projects that drive new sessions"](TODO)
+
+Projects now shape the sessions you start inside them. Name a `project_id` when you create a session and it inherits that project's agent, workspace, and git defaults, so a new session starts already pointed at the right code and configuration.
+
+You can also move an existing session into a project straight from the folder tag in its title. And when a session is started from a project, it now uses the project's configured agent and directory instead of silently swapping to something else.
+
+_Learn more in the [Projects](/docs/interact/web-ui#projects)._
+
+## 3. Refreshed mobile and wide-screen UI
+
+![TODO: add a demo screenshot or GIF for "Refreshed mobile and wide-screen UI"](TODO)
+
+The interface has been reworked to feel right on every screen size. On mobile you get a ChatGPT-style drawer and full-screen search; on ultra-wide displays, Omnigent now makes better use of all that horizontal space.
+
+You also get more control over how it looks and behaves: export and import your appearance settings, switch to a heavier code font, jump around long messages with a markdown table of contents, and choose whether Enter or ⌘-Enter sends your message.
+
+_Learn more in the [Appearance settings](/docs/interact/web-ui#appearance-settings)._
+
+## 4. More harnesses and finer model control
+
+![TODO: add a demo screenshot or GIF for "More harnesses and finer model control"](TODO)
+
+Omnigent 0.12.0 broadens what you can run and how you run it. Antigravity arrives with the `omni agy` shortcut and `agy-native` aliases, while Devin and Grok Build now show up in the New Chat picker. Setup also offers a "Pi — use own login" option.
+
+On the model side, the pi harness takes a reasoning-effort setting that you can even change mid-session with `/effort`, self-hosted models like Ollama and vLLM support custom per-token pricing, and when you fork a session you can give the fork its own model, effort level, and approval mode.
+
+_Learn more in the [Models & Credentials](/docs/build/models)._
+
+## 5. Run your host as a service
+
+![TODO: add a demo screenshot or GIF for "Run your host as a service"](TODO)
+
+Your host can now run as a proper background service. Use `omni host enable` and `omni host disable` to install a per-user service on macOS or Linux, so your host is there whenever you need it. Running `omnigent host` or `omnigent start` opens the web UI for you automatically.
+
+ACP sub-agents such as Devin now appear as their own child sessions, with their tool calls shown right in the transcript, so you can see exactly what each one is doing.
+
+Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
+
+## What's Next
+
+Install or upgrade Omnigent:
+
+```bash
+uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
+```
+
+- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
+- Join the conversation on our [Discord](https://discord.gg/omnigent).
+- Browse the [docs](https://omnigent.ai/docs) to go deeper.

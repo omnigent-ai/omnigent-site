@@ -60,6 +60,31 @@ policies:
       reason: "Writes are only allowed inside /home/user/project/."
 ```
 
+**Track calls with `state_updates`:**
+
+Return a `state_updates` list to accumulate counters or flags in session state. The engine
+applies the mutations after the policy fires, so later events can read the updated values
+via `event.session_state`.
+
+```yaml
+policies:
+  track_tool_calls:
+    type: function
+    handler: omnigent.policies.builtins.safety.cel_policy
+    factory_params:
+      expression: >
+        event.type == 'tool_call'
+          ? {"result": "ALLOW",
+             "state_updates": [
+               {"key": "tool_count", "action": "increment", "value": 1},
+               {"key": "last_tool",  "action": "set",       "value": event.data.name}
+             ]}
+          : {"result": "ALLOW"}
+```
+
+State persists across the whole session. A companion policy can read
+`event.session_state.tool_count` to gate on the accumulated total.
+
 Use `cel_policy` whenever your rule can be expressed as a boolean over the event fields. You
 get the same policy lifecycle (ALLOW / ASK / DENY) without writing or deploying any code.
 
@@ -164,9 +189,90 @@ ways to apply it (chat, Omnigent YAML, or server config).
 Every policy receives a `PolicyEvent` dict. Use the `type` field to
 filter which events you care about:
 
-| Event type    | When it fires                                  | Key data fields                                                                        |
-| ------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `tool_call`   | Omnigent is about to call a tool               | `name`, `arguments`                                                                    |
-| `llm_request` | Omnigent is about to send a message to the LLM | `model`, `messages_count`, `tools_count`, `system_prompt_preview`, `last_user_message` |
+| Event type     | When it fires                                      | Key `data` fields                                                                                         |
+| -------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `request`      | User sends a message                               | `user_content` (typed text), `attachments` (list of `{filename, content_type, text}`)                    |
+| `tool_call`    | Omnigent is about to call a tool                   | `name` (tool name), `arguments` (dict)                                                                    |
+| `tool_result`  | A tool has returned a result                       | `result` (tool output); `event["request_data"]` carries the original `tool_call` payload                  |
+| `response`     | Omnigent is about to deliver an assistant message  | The assistant message text                                                                                |
+| `llm_request`  | About to send a round-trip to the LLM              | `model`, `messages_count`, `tools_count`, `system_prompt_preview`, `last_user_message`                   |
+| `llm_response` | LLM round-trip returned                            | `model`, `text_preview`, `tool_calls_count`; optional `usage` with `input_tokens` / `output_tokens`      |
 
 Return `None` for event types you don't handle.
+
+Every event also carries:
+
+- **`event["target"]`** — tool name on `tool_call` / `tool_result`; `None` otherwise.
+- **`event["session_state"]`** — read-only dict of per-session key/value pairs accumulated by earlier policies. Mutate it via `state_updates` in the return value, not by modifying this dict.
+- **`event["context"]`** — metadata about the session (see below).
+
+### EventContext
+
+`event["context"]` is a dict with the following fields:
+
+| Field                       | Type           | Description                                                                                        |
+| --------------------------- | -------------- | -------------------------------------------------------------------------------------------------- |
+| `actor.run_as`              | `str`          | Authenticated user email, e.g. `"alice@example.com"`. Empty string when unknown.                  |
+| `actor.client_id`           | `str`          | OAuth client ID. Empty string when unknown.                                                        |
+| `usage.input_tokens`        | `float`        | Cumulative input tokens consumed this session.                                                     |
+| `usage.output_tokens`       | `float`        | Cumulative output tokens consumed this session.                                                    |
+| `usage.total_cost_usd`      | `float`        | Cumulative LLM cost in USD. `0.0` until the first LLM call or when pricing is unavailable.        |
+| `model`                     | `str \| None`  | Active model, e.g. `"databricks-claude-sonnet-4-6"`. `None` when unknown.                         |
+| `harness`                   | `str \| None`  | Active harness, e.g. `"codex-native"`. `None` on web / API paths.                                 |
+| `labels`                    | `dict`         | Read-only snapshot of the conversation's guardrail labels.                                         |
+
+## Reference: PolicyResponse
+
+A policy callable returns `None` (abstain) or a dict with the following fields:
+
+| Field           | Type              | Required | Description                                                                                                      |
+| --------------- | ----------------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| `result`        | `str`             | Yes      | `"ALLOW"`, `"DENY"`, or `"ASK"` (case-insensitive).                                                             |
+| `reason`        | `str`             | No       | Human-readable explanation. Shown to the user on `ASK`; logged on `DENY`. Optional on `ALLOW`.                  |
+| `data`          | any               | No       | Replacement payload. When present on `ALLOW`, the enforcement site substitutes this value for the original event content — useful for returning a PII-redacted version of tool arguments.  |
+| `state_updates` | list              | No       | Ordered list of session state mutations. Applied on `ALLOW` and `DENY`; withheld on `ASK` pending approval. See [StateUpdateEntry](#reference-stateupdateentry). |
+| `set_labels`    | `dict[str, str]`  | No       | Label key-value writes. Filtered through the policy's declared `set_labels` allowlist.                           |
+
+Returning `None` is treated as abstain (equivalent to `{"result": "ALLOW"}`).
+
+```python
+# minimal
+{"result": "ALLOW"}
+
+# full
+{
+    "result": "DENY",
+    "reason": "Blocked.",
+    "data": <transformed-content>,
+    "state_updates": [
+        {"key": "call_count", "action": "increment", "value": 1},
+    ],
+    "set_labels": {"integrity": "0"},
+}
+```
+
+## Reference: StateUpdateEntry
+
+Each entry in `state_updates` is a dict:
+
+| Field    | Type  | Required                       | Description                                                             |
+| -------- | ----- | ------------------------------ | ----------------------------------------------------------------------- |
+| `key`    | `str` | Yes                            | The state key to mutate, e.g. `"call_count"`.                          |
+| `action` | `str` | Yes                            | One of `"set"`, `"increment"`, `"delete"`, `"append"`.                 |
+| `value`  | any   | Yes (except `"delete"`)        | The operand. Required for `set`, `increment`, and `append`; ignored for `delete`. |
+
+The engine applies updates to `event["session_state"]` so subsequent policy evaluations see the new values.
+
+```python
+# overwrite
+{"key": "status",     "action": "set",       "value": "escalated"}
+
+# numeric delta (initializes to 0 if absent)
+{"key": "call_count", "action": "increment",  "value": 1}
+
+# append to a list (initializes to [] if absent)
+{"key": "seen_tools", "action": "append",     "value": "sys_os_shell"}
+
+# remove the key entirely
+{"key": "temp_flag",  "action": "delete"}
+```

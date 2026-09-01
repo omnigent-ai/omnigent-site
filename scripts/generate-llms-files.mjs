@@ -361,7 +361,7 @@ function cleanMdx(sourcePath) {
     )
     .replace(
       /<GatewayLogos \/>/g,
-      "Supported OpenAI- or Anthropic-compatible gateways include OpenRouter, LiteLLM, Ollama, Azure, vLLM, and similar providers.",
+      "Supported OpenAI- or Anthropic-compatible gateways include OpenRouter, LiteLLM, Portkey, Gravitee, Cloudflare, Kong, Ollama, Azure, vLLM, and similar providers.",
     )
     .replace(/^<ContentTabs[^\n]*>\n?/gm, "")
     .replace(/^<\/ContentTabs>\n?/gm, "")

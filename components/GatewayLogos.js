@@ -8,6 +8,7 @@ const gateways = [
   { logo: "helicone", name: "Helicone" },
   { logo: "cloudflare", name: "Cloudflare AI Gateway" },
   { logo: "kong", name: "Kong AI Gateway" },
+  { logo: "gravitee", name: "Gravitee AI Gateway" },
   { logo: "vercel", name: "Vercel AI Gateway" },
   { logo: "azure", name: "Azure OpenAI" },
   { logo: "ollama", name: "Ollama" },

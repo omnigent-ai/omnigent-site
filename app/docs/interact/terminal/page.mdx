@@ -51,6 +51,12 @@ coding agent with Omnigent's UI. No YAML needed. See the
 `omni run` starts a custom omnigent from a YAML config. See
 [Custom Agents](/docs/use/custom-agents) for how to write one.
 
+A bare `omni` with no arguments does **not** launch an agent. On an
+interactive terminal it starts the local server / host in the background and
+returns; to launch an agent, name it (`omni polly`, `omni claude`, …) or use
+`omni run`. In a non-interactive shell (a pipe or CI, with no TTY), bare `omni`
+prints `--help` instead of blocking on a sign-in prompt.
+
 ### CLI overrides
 
 Override executor values at runtime without editing the YAML:

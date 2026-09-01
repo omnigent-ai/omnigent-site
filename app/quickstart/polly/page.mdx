@@ -25,18 +25,23 @@ looks in practice.
 omni polly
 ```
 
-This starts Polly and opens a web UI at `http://localhost:6767`
-(bare `omni` starts Polly too, when a Claude credential is configured).
+This starts Polly and opens a web UI at `http://localhost:6767`.
+Polly is also the default agent `omni run` launches when a Claude
+credential is configured. (A bare `omni` with no arguments starts the
+local server / host in the background instead — use `omni polly` or
+`omni run` to launch an agent.)
 
 <figure>
   {/* eslint-disable-next-line @next/next/no-img-element */}
+  {/* TODO(doc-drafter): screenshot may be stale — bare `omni` now starts the local server/host, not Polly; the GIF should show `omni polly` / `omni run`. */}
   <img
     src="/images/docs/polly-default-launch.gif"
-    alt="Running omni from the terminal launches Polly"
+    alt="Running omni polly from the terminal launches Polly"
     style={{ width: "100%", borderRadius: "8px" }}
   />
   <figcaption>
-    Start Polly with <code>omni polly</code>, or just <code>omni</code>.
+    Start Polly with <code>omni polly</code>, or <code>omni run</code> when a
+    Claude credential is configured.
   </figcaption>
 </figure>
 

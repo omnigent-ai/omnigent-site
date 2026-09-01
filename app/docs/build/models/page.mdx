@@ -33,6 +33,39 @@ omni run agent.yaml --model claude-sonnet-4-6
 Use the `/model` command inside any running session to switch models on the fly.
 The agent keeps its conversation history and tool state – only the underlying model changes.
 
+## Reasoning effort
+
+Set a default reasoning level for the agent alongside the model:
+
+```
+executor:
+  harness: claude-sdk
+  model: claude-sonnet-4-6
+  reasoning_effort: high    # low | medium | high | xhigh
+```
+
+`executor.reasoning_effort` is optional. When unset, the harness CLI's own
+default applies. The accepted values are `low`, `medium`, `high`, and `xhigh`;
+which ones a given harness actually honors is harness-dependent, and the value
+is validated against the harness's effort vocabulary at launch (an unknown value
+is also rejected up front when the spec is validated).
+
+The spec-level default applies to the main session **and** to every sub-agent
+dispatch that doesn't pass its own effort. Precedence, highest first:
+
+1. A per-dispatch argument on `sys_session_send` / `sys_session_create`.
+2. `executor.reasoning_effort` from the spec.
+3. The harness CLI default.
+
+<div className="note">
+
+**Back-compat:** the older `llm.reasoning_effort` key is still accepted and is
+lifted to `executor.reasoning_effort` when the spec is parsed. Prefer
+`executor.reasoning_effort` in new specs; when both are set,
+`executor.reasoning_effort` wins.
+
+</div>
+
 ## Credentials
 
 Omnigent needs credentials to talk to a model provider.

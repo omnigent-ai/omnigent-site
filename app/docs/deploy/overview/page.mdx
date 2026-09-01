@@ -84,9 +84,13 @@ Deploy the server to a cloud platform with managed infrastructure.
 | **Fly.io**              | SQLite on volume   | `fly deploy` from CLI                                                                      |
 | **Hugging Face Spaces** | SQLite (ephemeral) | Docker Space                                                                               |
 
-**Railway & Render.** On Railway, import the repo and it handles the
-rest, including managed Postgres; Render provisions the app and managed Postgres over
-HTTPS via [one-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent).
+**Railway & Render.** On Railway, import the repo and add a Postgres plugin.
+Adding the plugin does **not** wire its `DATABASE_URL` into the app on its own:
+open the omnigent service's **Variables**, add a `DATABASE_URL` variable, and
+set it to a reference to the Postgres service (`${{Postgres.DATABASE_URL}}`).
+Until that reference is set, the deploy errors with `DATABASE_URL is required` on
+every boot; add it, then redeploy. Render provisions the app and managed Postgres
+over HTTPS via [one-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent).
 Both default to built-in `accounts` auth, so multi-user works out of the box.
 
 **Fly.io.** Deploy with `fly deploy` using SQLite on a persistent

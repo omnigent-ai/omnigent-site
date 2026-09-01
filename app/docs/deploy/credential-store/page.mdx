@@ -1,0 +1,100 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Credential Store",
+  "Encrypt integration credentials at rest with a pluggable cipher backend. Choose AWS KMS or HashiCorp Vault Transit per server.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/credential-store",
+  },
+);
+
+# Credential Store
+
+The Omnigent server can persist per-user integration credentials encrypted at
+rest. Encryption is handled by a pluggable **cipher backend**, selected per
+server. Two backends ship:
+
+- **AWS KMS** — for deployments on AWS.
+- **HashiCorp Vault Transit** — the provider-agnostic alternative for
+  deployments that don't run on AWS.
+
+Each secret is bound to the identity that owns it — `(workspace_id, user_id,
+provider, account_id)` — so a stored credential only decrypts under the same
+identity. AWS KMS enforces this with its encryption context; Vault Transit
+enforces it with a derived key. When no backend is configured, the credential
+store is disabled.
+
+## Choosing a backend
+
+Set `OMNIGENT_CREDENTIAL_CIPHER` to pick a backend explicitly:
+
+| Value   | Backend                | Install extra     |
+| ------- | ---------------------- | ----------------- |
+| `kms`   | AWS KMS                | `omnigent[kms]`   |
+| `vault` | HashiCorp Vault Transit | `omnigent[vault]` |
+
+When the selector is set, the chosen backend's key environment variable is
+required — a mismatch raises rather than silently disabling the store. An
+unknown value also raises.
+
+Leave `OMNIGENT_CREDENTIAL_CIPHER` unset to auto-detect the single configured
+backend as a zero-config convenience. Configuring more than one backend without
+the selector is an error (there is no silent precedence); configuring none
+disables the credential store.
+
+Both SDKs — boto3 for KMS, hvac for Vault — are imported lazily, only when the
+matching backend is selected. The backend-agnostic base store needs neither
+dependency, and a deployment that uses one backend never installs the other.
+
+## AWS KMS
+
+Install the extra and point the store at a KMS key:
+
+```
+pip install 'omnigent[kms]'
+```
+
+| Variable                         | Purpose                                            |
+| -------------------------------- | -------------------------------------------------- |
+| `OMNIGENT_CREDENTIAL_KMS_KEY_ID` | KMS key id or alias used to encrypt credentials.   |
+| `OMNIGENT_CREDENTIAL_CIPHER`     | Set to `kms` to select this backend explicitly (optional when it is the only backend configured). |
+
+boto3 resolves AWS credentials and region from the standard AWS environment. No
+SDK import or AWS call happens until the first encrypt or decrypt.
+
+## HashiCorp Vault Transit
+
+Install the extra and point the store at a Vault Transit key:
+
+```
+pip install 'omnigent[vault]'
+```
+
+| Variable                          | Purpose                                                                 |
+| --------------------------------- | ----------------------------------------------------------------------- |
+| `OMNIGENT_CREDENTIAL_VAULT_KEY`   | Name of the Transit key used to encrypt credentials.                    |
+| `OMNIGENT_CREDENTIAL_VAULT_MOUNT` | Transit mount path. Optional; defaults to `transit`.                    |
+| `OMNIGENT_CREDENTIAL_CIPHER`      | Set to `vault` to select this backend explicitly (optional when it is the only backend configured). |
+| `VAULT_ADDR`                      | Vault address, from the standard Vault environment.                     |
+| `VAULT_TOKEN`                     | Vault token, from the standard Vault environment.                       |
+
+<div className="note">
+
+The Transit key must be created with `derived=true`. Per-identity binding relies
+on Vault deriving a per-context key, so a non-derived key will not enforce it.
+
+</div>
+
+## Reading and rotation
+
+A ciphertext that can't be read under its identity — a wrong or corrupt
+blob, or a mismatched encryption context — degrades to "reconnect" (the
+affected integration reads as disconnected until reconnected) rather than
+returning a wrong value.
+
+Store-wide misconfigurations are surfaced, not masked. In particular, if
+`OMNIGENT_CREDENTIAL_VAULT_KEY` is repointed to a different key, the Vault
+backend refuses to read credentials written under the old key rather than
+treating them as per-user disconnects — which would re-encrypt them under the
+wrong key and overwrite still-recoverable ciphertext.

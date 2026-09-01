@@ -1,0 +1,59 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = {
+  ...pageMeta(
+    "Cap spend and lock down autonomy on every scheduled agent run",
+    "Scheduled agent tasks can now carry a per-firing cost budget that stops spend at your limit, plus a Claude Code permission mode so each unattended run behaves exactly as you intend.",
+    {
+      eyebrow: "Blog",
+      path: "/blog/govern-scheduled-agent-runs",
+    },
+  ),
+  alternates: {
+    canonical: "/blog/govern-scheduled-agent-runs",
+  },
+};
+
+export const meta = {
+  title: "Cap spend and lock down autonomy on every scheduled agent run",
+  date: "2026-08-24",
+  category: "Governance",
+  author: "omnigent",
+  heroArt: "/images/blog/govern-scheduled-agent-runs.png",
+};
+
+<BlogPostHeader slug="govern-scheduled-agent-runs" />
+
+If you run agents on a schedule (a nightly triage, a recurring report, a
+weekday cleanup), you can now put two guardrails on each run: a cost cap and a
+permission mode. Both live on the scheduled task itself, so every firing
+inherits them without you watching the clock.
+
+Unattended runs are where surprises hurt most. A loop that misbehaves at 3am
+can burn through spend before anyone notices, and a coding agent left to its
+own devices might take actions you never wanted it to take on its own. Setting
+a per-firing budget stops a run once its cumulative spend reaches your limit,
+and setting a permission mode decides up front how much the agent may do
+without asking.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: creating a scheduled task with a cost budget set and a Claude Code permission mode chosen, then a fired run showing the cap in effect. */}
+
+Set a budget with `max_cost_usd` when you create or update a scheduled task.
+Once a firing reaches that number, all models are blocked for the rest of that
+run; leave it unset for no cap, or clear it later to remove the cap. For a
+Claude Code task you can also set `permission_mode` per task, choosing from
+`default`, `auto`, `acceptEdits`, `plan`, `dontAsk`, and `bypassPermissions`,
+so an unattended run can proceed on its own or hold back exactly as you decide.
+
+```
+max_cost_usd: 5.0
+permission_mode: acceptEdits
+```
+
+The permission mode applies to Claude Code tasks; other agents keep their own
+defaults. See the [scheduled tasks guide](/docs/build/scheduled-tasks) for how
+to create and manage a task.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

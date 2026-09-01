@@ -118,6 +118,27 @@ desktop app to be running with the session open. If no desktop window is subscri
 the action fails cleanly with `browser action timed out — is the session open in the
 Omnigent desktop app?` rather than hanging.
 
+### Links and the context menu
+
+The pane is a sandboxed view that never spawns its own windows. When a page tries
+to open a new window — a `window.open` call or a `target=_blank` link — the pane
+does not pop a window and does not hand the URL off to your real browser. Instead:
+
+- An `http`/`https` target **navigates the same pane in place**, so a clicked link
+  goes somewhere instead of dying silently. On an agent-locked view this in-place
+  navigation is still checked against the agent-navigation allowlist; a blocked
+  target surfaces the same navigation-blocked notice and does not load.
+- Any other scheme (for example `file:` or `javascript:`) is ignored.
+
+Right-clicking inside the pane opens a context menu with the actions available for
+what you clicked:
+
+- Over a link: **Open Link in Browser** (for `http`/`https` links only) opens the
+  target in your real browser — this is safe because you chose it explicitly — and
+  **Copy Link Address** copies the URL.
+- Over selected text: **Copy** copies the selection.
+- Over empty space: no menu appears.
+
 ## Prerequisites
 
 - **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.

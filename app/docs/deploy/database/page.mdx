@@ -18,7 +18,7 @@ artifacts. Two backends are supported. Both use the same schema and migrations.
 
 Postgres is the production choice. It is required if you run more than one server instance.
 
-- Auto-provisioned on [Render and Railway](/docs/deploy/overview#cloud-platforms).
+- Provisioned on [Render and Railway](/docs/deploy/overview#cloud-platforms). Render wires it automatically; on Railway you add a Postgres plugin and set a `DATABASE_URL` reference variable (`${{Postgres.DATABASE_URL}}`) on the app service yourself.
 - For other platforms, bring your own. The fastest option is [Neon](https://pg.new): create a database and set `DATABASE_URL`.
 - Any `postgres://` or `postgresql://` URL works. The entrypoint normalizes it automatically.
 

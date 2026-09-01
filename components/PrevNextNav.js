@@ -149,6 +149,16 @@ const ALL_PAGES = [
     label: "Omnibox",
     section: "Contextual Policies",
   },
+  {
+    href: "/docs/reference/configuration",
+    label: "Server Settings",
+    section: "Reference",
+  },
+  {
+    href: "/docs/reference/configuration/kubernetes",
+    label: "Kubernetes Sandbox",
+    section: "Reference",
+  },
 ];
 
 export default function PrevNextNav() {

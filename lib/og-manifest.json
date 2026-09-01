@@ -154,6 +154,16 @@
     "description": "Policies control what your Omnigent can do, intercepting every action to allow, ask for approval, or deny it in real time.",
     "eyebrow": "Policies"
   },
+  "/docs/reference/configuration/kubernetes": {
+    "title": "Kubernetes Sandbox Configuration",
+    "description": "Configure storage and Secret mounts for Kubernetes managed sandbox runner Pods.",
+    "eyebrow": "Reference"
+  },
+  "/docs/reference/configuration": {
+    "title": "Configuration Reference",
+    "description": "Reference for Omnigent user, project, and server configuration.",
+    "eyebrow": "Reference"
+  },
   "/docs/use/builtin-agents/debby": {
     "title": "Debby",
     "description": "Debby asks two models the same question and runs a multi-round debate where each critiques and refines the other's answer.",

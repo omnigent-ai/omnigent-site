@@ -1,0 +1,73 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Configuration Reference",
+  "Reference for Omnigent user, project, and server configuration.",
+  {
+    eyebrow: "Reference",
+    path: "/docs/reference/configuration",
+  },
+);
+
+# Configuration reference
+
+Omnigent configuration controls the CLI, local server, harnesses, and managed
+sandboxes. These settings are separate from an agent's portable YAML spec and
+from the [REST API](/reference).
+
+## Configuration scopes
+
+| Scope           | File or command                                                   | Use                                                                     |
+| --------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Project         | `.omnigent/config.yaml` or `omni config set KEY=VALUE`            | Defaults for the current project. Project values override user values.  |
+| User            | `~/.omnigent/config.yaml` or `omni config set --global KEY=VALUE` | Defaults shared across projects and settings owned by the local server. |
+| Deployed server | `omni server --config /path/to/config.yaml`                       | Server-wide settings for every user and session on that deployment.     |
+
+Run `omni config list` to inspect the effective user and project configuration.
+Use `omni config unset KEY` or `omni config unset --global KEY` to remove a
+value from the corresponding scope.
+
+Not every key is valid in every scope. Each setting below identifies its scope,
+type, default, and validation behavior.
+
+## Automatic session titles
+
+| Setting | Value                                                |
+| ------- | ---------------------------------------------------- |
+| Key     | `session_title_instructions`                         |
+| Scope   | User or deployed server; project values are rejected |
+| Type    | String, up to 4,000 characters                       |
+| Default | No additional instructions                           |
+
+Use natural-language instructions to control the format of titles generated
+from the first message in a session:
+
+```
+omni config set --global \
+  'session_title_instructions=Prefix pull request titles with the PR number and use a short snake_case name.'
+```
+
+This setting belongs to the server, not an agent's portable instructions. It
+must use the global scope for a local server. On a deployed server, set the same
+key in the YAML passed to `omni server --config`:
+
+```yaml
+session_title_instructions: |
+  Prefix pull request titles with the PR number.
+  Use a short snake_case name for other work.
+```
+
+The generator receives the current date as `YYYY-MM-DD` along with the first
+message. Default generated titles are limited to 100 characters; output beyond
+that limit is rejected in favor of the first-message fallback. When custom
+instructions are set, generated titles may use up to 200 characters and longer
+output is truncated with an ellipsis. Manually assigned titles also have a
+200-character limit.
+
+The setting applies to new titles after the local server restarts. An empty
+value removes the additional guidance. A non-string value or a string longer
+than 4,000 characters is ignored and the default title prompt is used.
+
+## Managed sandboxes
+
+- [Kubernetes sandbox configuration](/docs/reference/configuration/kubernetes)

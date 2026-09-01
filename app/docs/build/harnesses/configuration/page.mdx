@@ -68,12 +68,46 @@ omni run --harness grok
 ```
 
 Like the generic ACP agents, Grok Build brings **its own auth and model** —
-Omnigent stores no credential and a `/model` pick is rejected up front. Install
-the CLI and log in through xAI first:
+Omnigent stores no credential and a `/model` pick is rejected up front (rather
+than silently dropped), so it always runs its account-default model. To pin one,
+configure an [`acp:` agent](#custom-acp-agents) whose command passes the `grok`
+CLI's own model flag. Install the CLI and log in through xAI first:
 
 ```
 curl -fsSL https://x.ai/cli/install.sh | bash
-grok login --device-auth   # xAI OAuth (device-code capable); or set XAI_API_KEY
+grok login --device-auth   # xAI OAuth (device-code capable)
+```
+
+Use the vendor login rather than an API key. The builtin `grok` row has no
+`env_passthrough` of its own, and `XAI_API_KEY` is not in the host-to-runner
+credential allowlist, so exporting it in your shell does **not** reach the
+agent. If you need the key route, pass it explicitly with
+`OMNIGENT_RUNNER_ENV_PASSTHROUGH=XAI_API_KEY`, or configure an
+[`acp:` agent](#custom-acp-agents) that declares the passthrough.
+
+## Devin
+
+Devin (Cognition) ships as a builtin harness with the id `devin`. Like Grok
+Build, it drives its vendor CLI over the
+[Agent Client Protocol](https://agentclientprotocol.com) over stdio — Omnigent
+renders its streaming output, reasoning, and tool cards and routes its
+permission requests through your [contextual policies](/docs/policies/overview).
+It's built in, so you select the `devin` harness id directly instead of
+registering a launch command.
+
+```
+omni run --harness devin
+```
+
+Devin brings **its own auth and model** — Omnigent stores no credential, and a
+`/model` pick is refused rather than silently dropped, so it runs its
+account-default model. To pin one, configure an [`acp:` agent](#custom-acp-agents)
+whose command passes the Devin CLI's own model flag. Install the CLI and log in
+through Cognition first:
+
+```
+curl -fsSL https://cli.devin.ai/install.sh | bash
+devin auth login
 ```
 
 ## Hermes
@@ -126,6 +160,38 @@ row. To sign out, delete the credential file:
 ```
 rm ~/.kimi-code/credentials/kimi-code.json
 ```
+
+## Antigravity
+
+The native Antigravity harness (`antigravity-native`) wraps Google's `agy` CLI.
+It requires **agy 1.1.13 or newer** and accepts either of two credentials:
+
+- **Gemini API key** — set a non-empty `GEMINI_API_KEY` in the environment.
+  Omnigent selects agy's direct Gemini provider (`modelProvider: "gemini"` in
+  the session's isolated agy settings) for you. When `GEMINI_API_KEY` is set it
+  takes precedence over any saved OAuth login; clear it to fall back to OAuth.
+- **Google OAuth login** — run `agy` once and complete the browser sign-in. The
+  `agy` CLI has no `agy login` / `agy auth status` subcommand: the token is
+  written on its first interactive run. Omnigent recognizes it at
+  `~/.gemini/oauth_creds.json` (macOS), `~/.gemini/antigravity-cli/antigravity-oauth-token`
+  (Linux), or the macOS Keychain (agy 1.1.7+).
+
+Install the CLI first, then supply one of those credentials:
+
+```
+curl -fsSL https://antigravity.google/cli/install.sh | bash
+```
+
+`omni setup` shows the harness as configured once the `agy` binary is present
+and either the API key or an OAuth login is detected.
+
+<div className="note">
+
+**Note:** The in-process `antigravity` SDK harness is a separate integration
+that resolves its own Gemini API key at runtime. The `GEMINI_API_KEY` behavior
+above applies to the native `agy`-wrapping `antigravity-native` harness.
+
+</div>
 
 ## Custom ACP agents
 

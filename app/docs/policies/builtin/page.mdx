@@ -25,7 +25,7 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `ask_on_os_tools`                 | ASKs before any file or shell operation.                                                                                                                                                                                                                                                                                                                                                                                                                                               | None                                                                                                                                                                                                           |
 | `block_skills`                    | Prevents specific skills from loading.                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `blocked` (string[], required)                                                                                                                                                                                 |
 | `block_working_dir_changes`       | Blocks shell commands that change the working directory.                                                                                                                                                                                                                                                                                                                                                                                                                               | `block_cd` (bool), `block_worktree` (bool), `allowed_dirs` (string[]), `action` (`"deny"` or `"ask"`)                                                                                                          |
-| `cel_policy`                      | Write custom policy logic using CEL (Common Expression Language), a safe, non-Turing-complete expression language.                                                                                                                                                                                                                                                                                                                                                                     | `expression` (CEL expression string), `reason` (deny message)                                                                                                                                                  |
+| `cel_policy`                      | Write custom policy logic using CEL (Common Expression Language), a safe, non-Turing-complete expression language. The expression returns a map with `result` (`"DENY"`, `"ASK"`, or `"ALLOW"`) plus optional `reason` and `state_updates` keys, so a single expression can both decide and mutate session state.                                                                                                                                                                        | `expression` (CEL expression string), `reason` (deny message)                                                                                                                                                  |
 | `deny_pii_in_llm_request`         | Scans outgoing messages for PII and blocks or flags them.                                                                                                                                                                                                                                                                                                                                                                                                                              | `pii_types` (string[]), `action` (`"DENY"` or `"ASK"`)                                                                                                                                                         |
 | `detect_thrashing`                | Detects when an agent is failing repeatedly by tracking tool-result outcomes in a rolling window. Fires when consecutive errors cross a threshold or the window error rate is too high. Error detection is heuristic — no server LLM required.                                                                                                                                                                                                                                         | `consecutive_threshold` (int, default `5`; `0` disables), `window` (int, default `10`), `window_error_rate` (number `0.0`–`1.0`, default `0.8`; `0` disables), `action` (`"ASK"` or `"DENY"`, default `"ASK"`) |
 | `detect_loop`                     | ASKs when the agent is stuck retrying the same tool call. Hashes each `(tool, arguments)` pair and, when an identical call repeats `threshold` times within a sliding `window` of recent calls, routes it to human approval. Catches a token-waste pattern `max_tool_calls_per_session` can't see, since that policy only counts total calls.                                                                                                                                          | `window` (int, default `10`, min `1`), `threshold` (int, default `3`, min `1`)                                                                                                                                 |
@@ -123,6 +123,59 @@ policies:
 Both checks are independent — set `consecutive_threshold: 0` to rely purely on
 the window error rate, or `window_error_rate: 0` to rely purely on the
 consecutive-error run.
+
+#### Track custom state from a CEL expression
+
+`cel_policy` evaluates a CEL (Common Expression Language) expression
+against every policy event. The expression must return a map with a `result`
+key (`"DENY"`, `"ASK"`, or `"ALLOW"`) and may add an optional `reason`. A
+non-map return (or a map without a valid `result`) abstains, passing to the
+next policy. Because CEL is non-Turing-complete and side-effect-free, the
+expression itself can't mutate anything.
+
+To let a CEL policy accumulate its own [session state](/docs/policies/overview#why-contextual)
+across turns, the returned map may also include a `state_updates` key. It must
+be a list of maps, each shaped:
+
+```
+{ "key": string, "action": "set" | "increment" | "delete" | "append", "value": any }
+```
+
+The `action` values behave as follows, and `value` is required for `set`,
+`increment`, and `append` and ignored for `delete`:
+
+| Action      | Effect                                                        |
+| ----------- | ------------------------------------------------------------- |
+| `set`       | Store `value` at `key`, replacing any existing value.         |
+| `increment` | Add `value` to the number stored at `key`.                    |
+| `append`    | Append `value` to the list stored at `key`.                   |
+| `delete`    | Remove `key` from session state (`value` is ignored).         |
+
+For example, this policy allows every tool call while counting them and
+recording the last tool name in session state:
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  count_tool_calls:
+    type: function
+    handler: omnigent.policies.builtins.cel.cel_policy
+    factory_params:
+      expression: |
+        event.type == "tool_call"
+          ? {
+              "result": "ALLOW",
+              "state_updates": [
+                {"key": "call_count", "action": "increment", "value": 1},
+                {"key": "last_tool", "action": "set", "value": event.data.name}
+              ]
+            }
+          : {"result": "ALLOW"}
+```
+
+State written this way is shared session state, so a later policy (or a later
+evaluation of the same CEL expression) can read it back and branch on it, just
+like the stateful builtin policies do.
 
 #### Make spend visible before you restrict it
 

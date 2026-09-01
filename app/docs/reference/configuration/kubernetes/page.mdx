@@ -1,0 +1,166 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Kubernetes Sandbox Configuration",
+  "Configure storage and Secret mounts for Kubernetes managed sandbox runner Pods.",
+  {
+    eyebrow: "Reference",
+    path: "/docs/reference/configuration/kubernetes",
+  },
+);
+
+# Kubernetes sandbox configuration
+
+The `kubernetes` managed sandbox provider starts a dedicated runner Pod for
+each managed session. Configure it under `sandbox.kubernetes` in the
+[server configuration](/docs/reference/configuration).
+
+See [Shared Server](/docs/deploy/overview#kubernetes) for the deployment steps.
+
+## Pod-start wait budget
+
+| Setting     | Value                                                     |
+| ----------- | --------------------------------------------------------- |
+| Key         | `sandbox.kubernetes.pod_ready_timeout_s`                  |
+| Env var     | `OMNIGENT_K8S_POD_READY_TIMEOUT_S`                        |
+| Type        | Positive integer, in seconds                              |
+| Default     | `90`                                                      |
+
+Before a managed session goes online, Omnigent waits for the runner Pod to
+schedule, pull its image, clone its repository, and reach `Running`. Increase
+the wait budget when cold image pulls regularly take longer than the default:
+
+```yaml
+sandbox:
+  provider: kubernetes
+  kubernetes:
+    pod_ready_timeout_s: 300
+```
+
+The budget covers Pod discovery, replacement Pod discovery after an eviction
+or node drain, Kubernetes API read errors, and time spent `Pending`. When it
+expires, the launch error reports the configured deadline and last observed Pod
+state.
+
+The value must be a positive YAML integer. Values such as `0`, `"90"`, and
+`true` fail server startup.
+
+## Sandboxed container runtime (`runtime_class`)
+
+| Setting | Value                                 |
+| ------- | ------------------------------------- |
+| Key     | `sandbox.kubernetes.runtime_class`    |
+| Type    | String (DNS-1123 subdomain)           |
+| Default | Unset — the cluster's default runtime |
+
+Set `runtime_class` to schedule every runner Pod onto a sandboxed container
+runtime your cluster exposes through a `RuntimeClass` object — for example
+[Kata Containers](https://katacontainers.io/) micro-VMs or
+[gVisor](https://gvisor.dev/). Omnigent writes the value verbatim to the Pod's
+`spec.runtimeClassName`:
+
+```yaml
+sandbox:
+  provider: kubernetes
+  kubernetes:
+    runtime_class: kata
+```
+
+Leaving `runtime_class` unset keeps the Pod on the cluster's default runtime —
+today's behaviour, byte-for-byte. The name must be a DNS-1123 subdomain and
+must match a `RuntimeClass` you pre-created in the cluster; a malformed value
+(for example `Not_A_DNS_Name`) fails server startup rather than the first
+launch. Omnigent only references the `RuntimeClass` — provisioning it and the
+underlying node runtime is an out-of-band operator step.
+
+### Setting the budget from the environment
+
+You can also set the wait budget with the `OMNIGENT_K8S_POD_READY_TIMEOUT_S`
+environment variable, which is handy when the same bundle runs across
+deployments with different image-pull times:
+
+```bash
+export OMNIGENT_K8S_POD_READY_TIMEOUT_S=300
+```
+
+Precedence: the explicit `sandbox.kubernetes.pod_ready_timeout_s` config key
+always wins when set; the env var is only consulted when that key is unset, and
+it overrides the built-in `90`-second default. A non-numeric env value (for
+example `not-a-number`) fails fast with a clear error; a float-looking value
+such as `120.0` is accepted and truncated to a whole number of seconds.
+
+## Persistent storage for runner Pods
+
+Runner Pods are ephemeral: the workspace lives on an `emptyDir` and is
+destroyed with the Pod. To expose durable data (datasets, model caches, shared
+output directories), mount pre-created PersistentVolumeClaims into every runner
+Pod with `sandbox.kubernetes.pvc_mounts`:
+
+```
+sandbox:
+  provider: kubernetes
+  kubernetes:
+    pvc_mounts:
+      - claim_name: omnigent-datasets
+        mount_path: /mnt/datasets
+        read_only: true       # default true; set false only for shared scratch
+```
+
+Each entry is a `{claim_name, mount_path, read_only?}` mapping. `read_only`
+defaults to `true`. Omnigent only **references** the claim — you pre-create the
+PV/PVC in the runner namespace (`omnigent-sandboxes`) out of band, so the server
+RBAC stays unchanged. Mounts land on the host container only; the init container
+that clones the repo never sees them.
+
+Keep these caveats in mind:
+
+- **Mount paths are validated at server startup.** A `mount_path` may not
+  overlap `/home/omnigent`, Secret projections, or the image's OS directories
+  (e.g. `/home`, `/var`, `/run`, `/tmp`, `/etc`, `/opt`); a malformed or
+  reserved path fails startup rather than the first launch. Paths must be
+  absolute and normalized, and may not duplicate or nest within each other.
+- **Writable claims are shared across concurrent runners.** Use a
+  `ReadWriteMany`-capable backend (NFS/SMB/CephFS) for anything writable, and
+  prefer `read_only: true` everywhere else — a writable shared mount lets one
+  session read and modify what another wrote, and its contents outlive the Pod.
+- **`ReadWriteOnce` claims pin all runners to one node** — combine with
+  `node_selector` deliberately, or later Pods sit `Pending`.
+- A mount visible in the Pod is **not** automatically visible to a harness's own
+  OS-level sandbox ([Omnibox](/docs/omnibox) path grants are separate).
+
+See `deploy/kubernetes/README.md` and
+`deploy/kubernetes/overlays/sandbox-runners/README.md` in the repo for the full
+guide.
+
+## Rotation-friendly credentials (`secret_mounts`)
+
+Under `sandbox.kubernetes`, an optional `secret_mounts` list projects Kubernetes
+Secrets you pre-created in the runner namespace as read-only files on each
+runner Pod. Each entry is a `{ secret_name, mount_path }` mapping:
+
+```
+sandbox:
+  provider: kubernetes
+  server_url: https://your-server.example.com
+  kubernetes:
+    secret_mounts:
+      - secret_name: git-token          # a Secret in the runner namespace
+        mount_path: /mnt/secrets/git     # absolute, non-reserved in-Pod path
+      - secret_name: npm-token
+        mount_path: /mnt/secrets/npm
+```
+
+Unlike credentials injected via `envFrom` (read once at container start), a
+Secret projected as a volume is refreshed in place by the kubelet, so a
+long-lived runner picks up a **rotated** credential without a restart. The
+refresh is eventually consistent (kubelet sync, up to ~1 min), so the
+in-sandbox consumer must re-read the file on each use — a value cached at start
+defeats the rotation.
+
+Each volume mounts read-only on the host container only (never the clone-time
+init container), so a Secret volume has no `read_only` knob. Entries are
+validated at server startup: `secret_name` must be a DNS-1123 subdomain and
+`mount_path` an absolute, normalized path that isn't reserved and doesn't
+duplicate, nest with, or overlap another `secret_mounts` or `pvc_mounts` path —
+an operator typo fails startup, not the first launch. A missing Secret keeps
+the Pod from starting.

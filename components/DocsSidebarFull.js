@@ -84,6 +84,7 @@ const SECTIONS = [
       { href: "/docs/deploy/overview", label: "Shared Server" },
       { href: "/docs/collaborate/auth", label: "Auth & SSO" },
       { href: "/docs/deploy/database", label: "Database" },
+      { href: "/docs/deploy/credential-store", label: "Credential Store" },
       { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host" },
     ],
   },
@@ -120,9 +121,28 @@ const SECTIONS = [
   },
   {
     title: "Reference",
-    pages: [
-      { href: "/reference", label: "REST API" },
-      { href: "/docs/deploy/telemetry", label: "Usage Telemetry" },
+    pages: [],
+    subsections: [
+      {
+        title: "Configuration",
+        collapsed: true,
+        pages: [
+          {
+            href: "/docs/reference/configuration",
+            label: "Server Settings",
+          },
+          {
+            href: "/docs/reference/configuration/kubernetes",
+            label: "Kubernetes Sandbox",
+          },
+        ],
+      },
+      { title: "REST API", href: "/reference", pages: [] },
+      {
+        title: "Usage Telemetry",
+        href: "/docs/deploy/telemetry",
+        pages: [],
+      },
     ],
   },
 ];

@@ -56,14 +56,16 @@ docker compose up -d    # Omnigent server + Postgres
 
 Key variables in `.env` (See [Auth & SSO](/docs/collaborate/auth) for details on multi-user auth):
 
-| Variable                      | Purpose                                         |
-| ----------------------------- | ----------------------------------------------- |
-| `DATABASE_URL`                | Postgres connection string                      |
-| `OMNIGENT_AUTH_ENABLED`       | Enable multi-user auth (default: `1` in Docker) |
-| `OMNIGENT_OIDC_COOKIE_SECRET` | Session cookie secret                           |
-| `OMNIGENT_OIDC_ISSUER`        | OIDC issuer URL (enables SSO)                   |
-| `OMNIGENT_OIDC_CLIENT_ID`     | OIDC client ID                                  |
-| `OMNIGENT_OIDC_CLIENT_SECRET` | OIDC client secret                              |
+| Variable                          | Purpose                                         |
+| --------------------------------- | ----------------------------------------------- |
+| `DATABASE_URL`                    | Postgres connection string                      |
+| `OMNIGENT_AUTH_ENABLED`           | Enable multi-user auth (default: `1` in Docker) |
+| `OMNIGENT_ACCOUNTS_COOKIE_SECRET` | Built-in accounts cookie secret                 |
+| `OMNIGENT_ACCOUNTS_BASE_URL`      | Public server URL for built-in accounts         |
+| `OMNIGENT_OIDC_COOKIE_SECRET`     | OIDC session cookie secret                      |
+| `OMNIGENT_OIDC_ISSUER`            | OIDC issuer URL (enables SSO)                   |
+| `OMNIGENT_OIDC_CLIENT_ID`         | OIDC client ID                                  |
+| `OMNIGENT_OIDC_CLIENT_SECRET`     | OIDC client secret                              |
 
 <div className="note">
 
@@ -84,8 +86,8 @@ Deploy the server to a cloud platform with managed infrastructure.
 | **Fly.io**              | SQLite on volume   | `fly deploy` from CLI                                                                      |
 | **Hugging Face Spaces** | SQLite (ephemeral) | Docker Space                                                                               |
 
-**Railway & Render.** On Railway, import the repo and it handles the
-rest, including managed Postgres; Render provisions the app and managed Postgres over
+**Railway & Render.** On Railway, import the repo, add the Postgres plugin, and
+verify its `DATABASE_URL` reference before deploying. Render provisions the app and managed Postgres over
 HTTPS via [one-click deploy](https://render.com/deploy?repo=https://github.com/omnigent-ai/omnigent).
 Both default to built-in `accounts` auth, so multi-user works out of the box.
 
@@ -142,7 +144,8 @@ Deploy the Omnigent server to a Kubernetes cluster with the kustomize manifests
 in `deploy/kubernetes/` in the repo. The `overlays/sandbox-runners/` overlay
 additionally turns on the **`kubernetes`** managed sandbox provider
 (`sandbox.provider: kubernetes`): a `host_type: managed` session spawns a
-dedicated runner Pod that runs `omnigent host` and dials back to the server.
+dedicated Kubernetes Job whose child Pod runs `omnigent host` and dials back to
+the server. Failed host containers restart automatically with bounded retries.
 
 That provider imports a Kubernetes client the base server image omits, so the
 overlay pulls the official `ghcr.io/omnigent-ai/omnigent-server-kubernetes`
@@ -244,7 +247,7 @@ machine you register with the server.
 By default, the host is your laptop. Register it with:
 
 ```
-omni login <server-url>  // if auth is enabled
+omni login <server-url>  # if auth is enabled
 omni host <server-url>
 ```
 
@@ -260,9 +263,9 @@ However, moving the runner to a
 - **Isolation.** Each Omnigent runs in its own container, separate from your local environment.
 - **Scalability.** Run many Omnigents in parallel without taxing your machine.
 
-We currently support the [Modal](https://modal.com), [Daytona](https://www.daytona.io),
-and [Blaxel](https://blaxel.ai) platforms, with more integrations on the way. Check out the
-[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host) page for more detailed setup instructions.
+Managed hosts support Modal, Daytona, Blaxel, Islo, Boxlite, CoreWeave Sandbox,
+E2B, OpenShell, and Kubernetes. See [Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)
+for setup instructions.
 
 ## UI
 

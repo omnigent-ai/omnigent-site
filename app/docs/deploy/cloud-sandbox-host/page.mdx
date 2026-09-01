@@ -28,9 +28,8 @@ That's [Omnibox](/docs/omnibox).
 | **Environment**  | Local files              | Isolated, reproducible |
 | **Best for**     | Interactive work         | Long-running tasks     |
 
-Omnigent currently supports [Modal](https://modal.com), [Daytona](https://www.daytona.io),
-[Blaxel](https://blaxel.ai), and [Islo](https://islo.dev) as hosting platforms for cloud sandbox
-hosts, with more on the way.
+Omnigent supports Modal, Daytona, Blaxel, Islo, Boxlite, CoreWeave Sandbox,
+E2B, OpenShell, and Kubernetes as server-managed sandbox providers.
 
 |                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) | [Blaxel](https://blaxel.ai)              | [Islo](https://islo.dev)                       |
 | ------------------------ | ---------------------------------- | --------------------------------- | ---------------------------------------- | ---------------------------------------------- |
@@ -50,6 +49,11 @@ pip install 'omnigent[modal]'       # for Modal
 pip install 'omnigent[daytona]'     # for Daytona
 pip install 'omnigent[blaxel]'      # for Blaxel
 pip install 'omnigent[islo]'        # for Islo
+pip install 'omnigent[boxlite]'     # for Boxlite
+pip install 'omnigent[cwsandbox]'   # for CoreWeave Sandbox
+pip install 'omnigent[e2b]'         # for E2B
+pip install 'omnigent[openshell]'   # for OpenShell
+pip install 'omnigent[kubernetes]'  # for Kubernetes
 ```
 
 The Islo launcher uses the Islo Python SDK, which ships in the `omnigent[islo]`
@@ -284,7 +288,7 @@ the sandbox.
 
 Start a new session and select **New Sandbox** in the host picker. The server
 provisions the cloud host, starts the runner, and connects it back automatically. This works
-the same on both hosting platforms.
+the same across providers.
 
 ## CLI
 
@@ -292,7 +296,7 @@ Create and manage cloud sandbox hosts from the command line. The commands are th
 hosting platforms, just switch the `--provider` flag.
 
 ```
-omni sandbox create --provider modal          # or --provider daytona / blaxel / islo
+omni sandbox create --provider modal
 omni sandbox connect --provider modal \
   --sandbox-id <id> --server <url>
 ```

@@ -18,25 +18,32 @@ native window? Add the [desktop app](#install-the-desktop-app).
 
 ## Requirements
 
-- **Python 3.12+**
-- **Node.js 22 LTS** and npm
-- **tmux**
+- **macOS or Linux** for the installer script. Windows users should install
+  directly with `uv`.
+- **git**. The installer can install `uv` and provision Python 3.12 for you.
+- **tmux** for native terminal harnesses such as Claude Code and Codex.
+- **bubblewrap** for native terminal harnesses on Linux.
+
+Node.js is needed only for source builds and some harness CLIs, not the base
+wheel.
 
 ## Install Omnigent
 
 The base install covers everyday use. Extra integrations are opt-in at install
-time. Run the same command to upgrade an existing installation.
+time. Upgrade any supported installation with `omni upgrade`; rerunning the
+installer tab also upgrades an installer-script installation.
 
 <InstallCommandTabs />
 
 Available extras:
 
-| Category           | Extras                                                                                 |
-| ------------------ | -------------------------------------------------------------------------------------- |
-| Model providers    | `databricks`, `bedrock`, `vertex`                                                      |
-| Sandbox providers  | `modal`, `daytona`, `blaxel`, `boxlite`, `cwsandbox`, `e2b`, `openshell`, `kubernetes` |
-| SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                                       |
-| Storage and memory | `s3`, `hindsight`                                                                      |
+| Category           | Extras                                                                                         |
+| ------------------ | ---------------------------------------------------------------------------------------------- |
+| Model providers    | `databricks`, `bedrock`, `vertex`                                                              |
+| Sandbox providers  | `modal`, `daytona`, `blaxel`, `boxlite`, `cwsandbox`, `e2b`, `islo`, `openshell`, `kubernetes` |
+| SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                                               |
+| Storage and memory | `s3`, `hindsight`                                                                              |
+| Other integrations | `tracing`, `dictation`, `nimble`, `slack`                                                      |
 
 ## Set up credentials
 
@@ -111,7 +118,7 @@ compose with `--nightly`:
 - `--check` — report the newest nightly and exit non-zero if upgrading would
   change the install, without changing anything.
 - `--dry-run` — print the command that would run and exit.
-- `--extra` — keep or add extras (comma-separate to add several).
+- `--extra` — keep or add an extra; repeat the flag to add several.
 
 `--pre` and `--target-version` do **not** apply to `--nightly` — it always
 tracks the newest nightly tag. To install one specific nightly, run your

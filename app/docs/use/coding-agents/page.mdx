@@ -52,13 +52,25 @@ omnigent import --harness codex --session <session-id>
 
 Or import a batch of your most recent chats with `--last N`, which imports the
 `N` most recently modified parent sessions (oldest first, up to a maximum of
-50):
+100):
 
 ```
 omnigent import --harness claude --last 10
 ```
 
 Provide exactly one of `--session` or `--last` — they are mutually exclusive.
+
+To pull recent chats from every supported harness at once, pass
+`--harness all` together with `--last N`. This merges all harnesses into a
+single global recency order and imports the `N` most recent sessions in total
+(not `N` per harness), each tagged with its own source:
+
+```
+omnigent import --harness all --last 25
+```
+
+`--harness all` requires `--last` — a single `--session` ID belongs to exactly
+one harness, so combining `all` with `--session` is a usage error.
 
 Re-importing a source session that was already imported is rejected by default.
 Pass `--force` to replace the previous import instead — Omnigent deletes the old
@@ -73,3 +85,19 @@ When importing a batch, sessions that were already imported are skipped and a
 session that fails to import doesn't stop the rest. Omnigent prints a summary of
 how many sessions were imported, already imported, and failed, and exits with a
 non-zero status if any failed.
+
+### Import from the web UI
+
+You can also import from the web UI without touching the terminal. Open
+**Settings › Import sessions**, pick one of your online machines, choose a
+harness (or **All harnesses**) and how many recent sessions to pull (25, 50, or
+100), then click **Import**. The transcripts live on your machine, so the read
+happens on that connected machine over its tunnel — the server never sees your
+local files. Sessions already imported are skipped, and each newly imported
+session is linked in the result so you can jump straight into it.
+
+A brand-new account with no sessions yet also gets a one-click **Import your 25
+most recent sessions** button on the empty home screen (importing across all
+harnesses from your online machine), plus a **Choose what to import** link into
+the Settings picker. Importing from the web UI requires an online machine —
+start one with `omnigent host` from your terminal if none are connected.

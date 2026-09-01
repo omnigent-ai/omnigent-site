@@ -2426,6 +2426,12 @@
             "title": "Phase",
             "type": "string"
           },
+          "policy_name": {
+            "default": "",
+            "description": "Name of the policy that issued the DENY, as declared in the agent spec, e.g. `\"block_domains\"`. Empty string when the policy name is unavailable.",
+            "title": "Policy Name",
+            "type": "string"
+          },
           "reason": {
             "default": "",
             "description": "Human-readable deny reason from the deciding policy, e.g. `\"Blocked by policy.\"`.",

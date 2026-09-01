@@ -27,9 +27,13 @@ def my_policy(event: PolicyEvent) -> PolicyResponse | None:
     if event["type"] != "tool_call":
         return None
     if event["data"]["name"] == "dangerous_tool":
-        return {"result": "DENY", "reason": "Blocked."}
+        return {"result": "DENY", "reason": "my_policy: dangerous_tool is not allowed."}
     return {"result": "ALLOW"}
 ```
+
+The `reason` string is surfaced directly to users in the error banner. Include the policy
+name at the start of the `reason` so they can identify the source without
+inspecting the full event stream.
 
 If your policy needs parameters, use the factory pattern. The function takes config and
 returns the evaluator:
@@ -44,7 +48,7 @@ def block_domains(blocked_domains: list[str]) -> callable:
         url = event["data"]["arguments"].get("url", "")
         for domain in blocked:
             if domain in url.lower():
-                return {"result": "DENY", "reason": f"Domain {domain} blocked."}
+                return {"result": "DENY", "reason": f"block_domains: {domain} is blocked."}
         return {"result": "ALLOW"}
 
     return evaluate
@@ -117,3 +121,26 @@ filter which events you care about:
 | `llm_request` | Omnigent is about to send a message to the LLM | `model`, `messages_count`, `tools_count`, `system_prompt_preview`, `last_user_message` |
 
 Return `None` for event types you don't handle.
+
+## What observers see on a DENY
+
+When your policy returns `DENY`, Omnigent emits a `response.policy_denied` event on the
+session stream. The event carries:
+
+| Field         | Value                                                    |
+| ------------- | -------------------------------------------------------- |
+| `policy_name` | The name your policy was registered under, e.g. `"block_domains"`. |
+| `phase`       | The phase that triggered the check, e.g. `"tool_call"`. |
+| `reason`      | The `reason` string you returned.                        |
+
+The `reason` is also shown verbatim in the web-UI error banner. Include enough
+context — at minimum the policy name — so users and tool observers can identify
+the source without inspecting raw events:
+
+```
+# good — source is unambiguous
+return {"result": "DENY", "reason": "block_domains: example.com is blocked."}
+
+# avoid — source is hidden
+return {"result": "DENY", "reason": "Blocked."}
+```

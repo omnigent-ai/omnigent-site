@@ -44,11 +44,11 @@ restrict access to repos or services, block PII, or route models. See
 
 Each policy returns one of three decisions:
 
-| Decision  | What happens                                             |
-| --------- | -------------------------------------------------------- |
-| **ALLOW** | The action proceeds.                                     |
-| **ASK**   | The action pauses until the user approves or rejects it. |
-| **DENY**  | The action is blocked with an error message.             |
+| Decision  | What happens                                                                                                |
+| --------- | ----------------------------------------------------------------------------------------------------------- |
+| **ALLOW** | The action proceeds.                                                                                        |
+| **ASK**   | The action pauses until the user approves or rejects it.                                                    |
+| **DENY**  | The action is blocked. An error banner shows the policy name and the reason string returned by the policy. |
 
 Policies are checked in order. The first policy to return a decision wins. No opinion
 (`None`) passes to the next policy.

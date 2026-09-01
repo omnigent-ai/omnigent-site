@@ -129,6 +129,54 @@ and the OpenAI-agents harness, use the OpenAI-compatible `.../api/v1`.
 
 </div>
 
+#### Cost tracking for self-hosted models
+
+Self-hosted and gateway models (Ollama, vLLM, custom endpoints) often aren't in
+Omnigent's pricing catalog, so their sessions show no cost. Add a `pricing`
+block to a provider family in your config to tell Omnigent what the model costs,
+and it will track spend for those sessions like any catalog model.
+
+```yaml
+# ~/.omnigent/config.yaml
+providers:
+  ollama-local:
+    kind: local
+    openai:
+      base_url: http://localhost:11434/v1
+      api_key: ollama
+      pricing:
+        input_per_million: 0.0
+        output_per_million: 0.0
+```
+
+Prices are specified **per million tokens** in USD. `input_per_million` and
+`output_per_million` are required; `cache_read_per_million` and
+`cache_write_per_million` are optional. When the cache rates are omitted,
+Omnigent derives them from the input rate using standard fallback ratios
+(cache read ≈ 0.10×, cache write ≈ 1.25×). All values must be `>= 0`.
+
+```yaml
+      pricing:
+        input_per_million: 0.25
+        output_per_million: 1.0
+        cache_read_per_million: 0.025
+        cache_write_per_million: 0.3125
+```
+
+Configured pricing takes **precedence** over the catalog, so a gateway that
+serves a catalog-known model id (for example `claude-sonnet-4-6`) under its own
+rates is priced with your configured values rather than the vendor's. Pricing is
+attached to the provider family (`anthropic` or `openai`) that the session's
+harness uses.
+
+<div className="note">
+
+**Note:** Custom pricing is resolved from the default provider for the
+session's harness. Sessions that select a named provider differing from the
+default may not be priced with these rates.
+
+</div>
+
 ### Databricks
 
 Route models through your Databricks workspace using the

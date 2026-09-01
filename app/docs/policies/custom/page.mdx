@@ -85,7 +85,7 @@ accumulated state across calls, a database lookup, or control flow that CEL cann
 A policy is a Python function that receives an event and returns `ALLOW`,
 `ASK`, `DENY`, or `None` (no opinion):
 
-```
+```python
 from omnigent.policies.schema import PolicyEvent, PolicyResponse
 
 def my_policy(event: PolicyEvent) -> PolicyResponse | None:
@@ -99,7 +99,7 @@ def my_policy(event: PolicyEvent) -> PolicyResponse | None:
 If your policy needs parameters, use the factory pattern. The function takes config and
 returns the evaluator:
 
-```
+```python
 def block_domains(blocked_domains: list[str]) -> callable:
     blocked = frozenset(d.lower() for d in blocked_domains)
 
@@ -121,7 +121,7 @@ To make your policy discoverable by your Omnigent and visible in the UI, do two 
 
 **Export a `POLICY_REGISTRY`** from your module:
 
-```
+```python
 # myorg/policies.py
 
 POLICY_REGISTRY = [

@@ -20,7 +20,7 @@ options:
    your logic requires state, external calls, or anything else CEL's non-Turing-complete
    expressions cannot express.
 
-## Using `cel_policy` (recommended)
+## Using `cel_policy`
 
 `cel_policy` is a [builtin policy](/docs/policies/builtin) that evaluates a
 [CEL](https://cel.dev) expression against every event. CEL is a safe, sandboxed expression
@@ -58,18 +58,6 @@ policies:
         event.data.name in ['sys_os_write', 'sys_os_edit'] &&
         !event.data.arguments.path.startsWith('/home/user/project/')
       reason: "Writes are only allowed inside /home/user/project/."
-```
-
-**Block a specific LLM model:**
-
-```yaml
-policies:
-  no_expensive_model:
-    type: function
-    handler: omnigent.policies.builtins.safety.cel_policy
-    factory_params:
-      expression: "event.type == 'llm_request' && event.data.model == 'claude-opus-5'"
-      reason: "Opus is not permitted in this environment."
 ```
 
 Use `cel_policy` whenever your rule can be expressed as a boolean over the event fields. You
@@ -147,7 +135,7 @@ POLICY_REGISTRY = [
 
 **Add the module to your server config:**
 
-```
+```yaml
 # config.yaml
 policy_modules:
   - myorg.policies
@@ -155,7 +143,7 @@ policy_modules:
 
 Then start the server with that config:
 
-```
+```bash
 omnigent server -c config.yaml
 ```
 

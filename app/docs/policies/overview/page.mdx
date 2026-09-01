@@ -60,7 +60,7 @@ budgets, approval gates, access controls, PII blocking, model routing). You can 
 your own [custom policies](/docs/policies/custom) in Python and register
 them on the server to make them available:
 
-```
+```yaml
 # server config (config.yaml)
 policy_modules:
   - myorg.policies
@@ -68,7 +68,7 @@ policy_modules:
 
 Start the server with that file:
 
-```
+```bash
 omnigent server -c config.yaml
 ```
 
@@ -119,7 +119,7 @@ UI without typing anything in chat.
 For policies that should always apply, declare them in the `policies` block of
 your Omnigent config. These take effect every time the Omnigent starts.
 
-```
+```yaml
 policies:
   approve_file_ops:
     type: function
@@ -143,7 +143,7 @@ Policies without parameters use just `handler`. Configurable policies add
 Server-wide policies apply to every session on your deployed server. Add them
 to a config file and pass it with `-c` (`--config` is the long form):
 
-```
+```yaml
 policies:
   session_cost_guard:
     type: function
@@ -161,7 +161,7 @@ policies:
         max_cost_usd: 50.0
 ```
 
-```
+```bash
 omnigent server -c config.yaml
 ```
 

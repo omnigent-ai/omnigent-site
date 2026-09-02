@@ -164,6 +164,11 @@ const ALL_PAGES = [
     label: "OS Sandbox",
     section: "Reference",
   },
+  {
+    href: "/docs/reference/configuration/cloud-sandbox",
+    label: "Cloud Sandbox",
+    section: "Reference",
+  },
 ];
 
 export default function PrevNextNav() {

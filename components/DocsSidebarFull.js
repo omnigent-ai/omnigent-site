@@ -136,6 +136,10 @@ const SECTIONS = [
             href: "/docs/reference/configuration/os-sandbox",
             label: "OS Sandbox",
           },
+          {
+            href: "/docs/reference/configuration/cloud-sandbox",
+            label: "Cloud Sandbox",
+          },
         ],
       },
       { title: "REST API", href: "/reference", pages: [] },

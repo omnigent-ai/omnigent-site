@@ -20,6 +20,24 @@ Configure a server-level `llm:` block to use the built-in judge. No `routing:`
 block is required. With neither an `llm:` block nor an external `routing:`
 block, Smart Routing is disabled and the **Auto** picker option is hidden.
 
+```yaml
+llm:
+  model: openai/gpt-5.5
+  connection:
+    api_key: ${OPENAI_API_KEY}
+```
+
+| Field             | Required | Description                                                                                                                                                                                              |
+| ----------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `model`           | Yes      | Provider-prefixed model id used by the judge, such as `openai/gpt-5.5`.                                                                                                                                  |
+| `connection`      | No       | Provider-specific connection overrides, such as `api_key` and `base_url` for an OpenAI-compatible endpoint. `${ENV}` references are expanded. Omit it to use the provider's usual environment variables. |
+| `profile`         | No       | Databricks CLI profile from `~/.databrickscfg`. `connection` takes precedence when both are set.                                                                                                         |
+| `fallback_models` | No       | Ordered provider-prefixed models to try if the primary model fails. The same connection is shared across the list, so use same-provider fallbacks or environment-based credentials.                      |
+
+The built-in judge caps the entire routing call at 9 seconds, including fallback
+attempts. The server-level `llm.request_timeout` setting does not extend this
+routing-specific limit.
+
 ## External routing
 
 Add a top-level `routing:` block to delegate selection to an external service:

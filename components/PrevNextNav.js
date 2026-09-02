@@ -145,9 +145,9 @@ const ALL_PAGES = [
     section: "Contextual Policies",
   },
   {
-    href: "/docs/policies/os-sandbox",
+    href: "/docs/omnibox",
     label: "Omnibox",
-    section: "Contextual Policies",
+    section: "Omnibox",
   },
   {
     href: "/docs/reference/configuration",
@@ -157,6 +157,11 @@ const ALL_PAGES = [
   {
     href: "/docs/reference/configuration/kubernetes",
     label: "Kubernetes Sandbox",
+    section: "Reference",
+  },
+  {
+    href: "/docs/reference/configuration/os-sandbox",
+    label: "OS Sandbox",
     section: "Reference",
   },
 ];

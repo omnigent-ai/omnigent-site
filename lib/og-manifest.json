@@ -144,10 +144,10 @@
     "description": "When built-in policies aren't enough, write your own in Python, register them on the server, and use them like builtins.",
     "eyebrow": "Policies"
   },
-  "/docs/policies/os-sandbox": {
-    "title": "Omnibox (OS Sandbox)",
+  "/docs/reference/configuration/os-sandbox": {
+    "title": "OS Sandbox Configuration",
     "description": "Omnibox is Omnigent's secure OS sandbox: restrict filesystem and network access and hide credentials for unattended, locked-down agents.",
-    "eyebrow": "Policies"
+    "eyebrow": "Reference"
   },
   "/docs/policies/overview": {
     "title": "Contextual Policies",

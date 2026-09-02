@@ -10,6 +10,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: "/docs/policies/os-sandbox",
+        destination: "/docs/reference/configuration/os-sandbox",
+        permanent: true,
+      },
+      {
         source: "/docs/deploy/cloud-sandbox",
         destination: "/docs/deploy/cloud-sandbox-host",
         permanent: true,

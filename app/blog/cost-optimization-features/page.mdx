@@ -45,10 +45,21 @@ This blog post covers **features available today** in Omnigent's cost optimizati
 
 **Real-world impact:**
 
-- **10-person startup**: $500/month → $150/month (70% reduction with project-level model defaults)
-- **50-person team**: Prevented $10,000+ runaway session via thrashing detection
-- **Enterprise deployment**: 30-40% reduction in Opus usage with zero productivity loss
-- **Self-hosted team**: Eliminated "unpriced spend" warnings, enabled accurate budget enforcement
+**10-person startup**  
+$500/month → $150/month (70% reduction)  
+*Project-level model defaults alone*
+
+**50-person team**  
+Prevented $10,000+ runaway session  
+*Thrashing detection caught infinite retry loop*
+
+**Enterprise deployment**  
+30-40% reduction in Opus usage  
+*Zero productivity loss from smart routing*
+
+**Self-hosted team**  
+Eliminated "unpriced spend" warnings  
+*Custom pricing enabled budget enforcement*
 
 ---
 
@@ -346,12 +357,25 @@ Omnigent's cost optimization features address LLM expenses at multiple layers:
 
 ### Deployment Roadmap
 
-| Phase | Timeline | Features | Expected Impact |
-|-------|----------|----------|-----------------|
-| **Phase 1: Observe** | Week 1 | Usage page, project-level model defaults | Visibility, 50-80% reduction from defaults |
-| **Phase 2: Prevent** | Week 2 | Smart routing, custom pricing | 30-40% additional reduction, budget enforcement |
-| **Phase 3: Control** | Month 2 | Progressive budgets (session & daily) | Predictable spend, soft warnings |
-| **Phase 4: Optimize** | Month 3+ | Thrashing detection, archived cleanup, tuning | Eliminate waste, prevent runaway costs |
+**Phase 1: Observe** (Week 1)
+- **Deploy**: Usage page, project-level model defaults
+- **Impact**: Visibility + 50-80% reduction from defaults
+- **Effort**: Low — configuration changes only
+
+**Phase 2: Prevent** (Week 2)  
+- **Deploy**: Smart routing, custom pricing for self-hosted models
+- **Impact**: 30-40% additional reduction, budget enforcement enabled
+- **Effort**: Medium — policy configuration
+
+**Phase 3: Control** (Month 2)  
+- **Deploy**: Progressive budgets (session & daily)
+- **Impact**: Predictable spend, soft warnings before limits
+- **Effort**: Low — tune thresholds based on Phase 1 data
+
+**Phase 4: Optimize** (Month 3+)  
+- **Deploy**: Thrashing detection, archived session cleanup, ongoing tuning
+- **Impact**: Eliminate waste, prevent runaway costs
+- **Effort**: Ongoing — monthly review and adjustment
 
 ### Getting Started
 

@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GitHubIcon, DiscordIcon } from "./icons";
-import { GITHUB_URL, DISCORD_URL } from "./links";
+import { GitHubIcon, DiscordIcon, LinkedInIcon } from "./icons";
+import { GITHUB_URL, DISCORD_URL, LINKEDIN_URL } from "./links";
 import DocSearch from "./DocSearch";
 
 export default function Nav({ menuToggle }) {
@@ -79,6 +79,15 @@ export default function Nav({ menuToggle }) {
             aria-label="Discord"
           >
             <DiscordIcon size={20} />
+          </a>
+          <a
+            href={LINKEDIN_URL}
+            className="nav-icon"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="LinkedIn"
+          >
+            <LinkedInIcon size={20} />
           </a>
         </nav>
         <div className="nav-right">
@@ -160,6 +169,14 @@ export default function Nav({ menuToggle }) {
               className="nav-mobile-icon"
             >
               <DiscordIcon size={20} /> Discord
+            </a>
+            <a
+              href={LINKEDIN_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="nav-mobile-icon"
+            >
+              <LinkedInIcon size={20} /> LinkedIn
             </a>
           </div>
         </div>

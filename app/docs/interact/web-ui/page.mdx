@@ -78,6 +78,11 @@ project folder's `⋯` menu and choose `Project settings`, then set any of:
 - **Host** the new session runs on.
 - **Working directory** the agent starts in.
 - **Default agent** for the session.
+- **Default model**, shown only when the default agent is a native coding
+  harness that takes a model choice (Claude Code or Codex). It pins the model
+  new sessions start on — e.g. "Opus for this repo" — the same way the project
+  pins an agent. The pre-filled model is still editable in the composer, and an
+  explicit pick you make there wins over the project default.
 - **Random worktree**, which branches each new session into its own fresh git
   worktree. This overrides the global default in **Settings › Git** in either
   direction: turn it on to force worktrees for the project, or off to opt out
@@ -131,6 +136,14 @@ the model remembered for Claude Code (and vice versa). When you start the sessio
 the selected model rides along as the launch override and the runner uses it at
 launch. Under a sandbox launch, where no host catalog is resolved, the picker is
 empty and the harness default is used.
+
+A project's stored **Default model** (see
+[Project settings and defaults](#project-settings-and-defaults)) outranks the
+remembered per-harness pick while the composer sits on the project's default
+agent, so a project can pin its own launch model. It only applies when the
+stored model is still a valid choice for that harness; a retired or unknown id
+falls back to your remembered pick. An explicit model you pick in the composer
+always wins for that session.
 
 ### Shared sessions
 

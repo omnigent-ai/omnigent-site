@@ -4,7 +4,7 @@
     "description": "Point Omnigent at any agent that speaks the Agent Client Protocol and run it with your session tools, sub-agents, skills, and policies already wired in.",
     "eyebrow": "Blog"
   },
-  "/blog/cost-optimization-features": {
+  "/blog/stop-surprise-llm-bills": {
     "title": "Stop $50k Surprise Bills: Cut LLM Costs 30-80% Without Sacrificing Productivity",
     "description": "How Omnigent's shipped cost control features help teams maintain LLM budget predictability through smart routing, progressive budgets, custom pricing, and comprehensive visibility.",
     "eyebrow": "Blog"

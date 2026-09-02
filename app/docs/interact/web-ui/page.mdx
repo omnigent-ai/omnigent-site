@@ -228,6 +228,41 @@ reads the on-disk file directly (no upload). This button shows only for native
 coding-agent sessions, since those harnesses run in the workspace and resolve
 the referenced file themselves.
 
+## GitHub
+
+Coding-agent sessions gain a **GitHub** tab in the right workspace rail. It's a
+read-only view of how the session's branch relates to GitHub, backed by the
+`gh` CLI and `git` running against the workspace on disk — nothing is pushed or
+mutated.
+
+The tab shows two things:
+
+- **The associated pull request**, when the branch has one: its number, title,
+  state (including draft), author, and a CI check summary bucketed into
+  **passing**, **failing**, and **pending** counts, with a link out to the PR on
+  GitHub.
+- **The branch-vs-base diff**, laid out like GitHub's "Files changed" view —
+  every changed file's diff stacked in one scroll, with a sidebar to jump
+  between files. The diff is computed against the base branch's merge-base
+  (three-dot semantics), so it matches what GitHub shows.
+
+The tab appears whenever the session has a git checkout on disk. It renders a
+plain message rather than an error for the states where there's nothing to show:
+the workspace isn't a git repo, the `gh` CLI isn't installed, `gh` isn't signed
+in (run `gh auth login`), or the branch has no open PR. The branch-vs-base diff
+relies only on `git`, so it still renders when `gh` is missing or
+unauthenticated — you just don't get the PR metadata layered on top.
+
+Because the data comes from the workspace on disk, the tab keeps working through
+the host when the session's runner is offline.
+
+When a session's branch has a PR, its number also appears as a `#<number>` link
+above the composer; clicking it opens the GitHub tab.
+
+Operators can tune the `gh` subprocess timeout (metadata calls reach the GitHub
+API) with the `OMNIGENT_GH_TIMEOUT_SECONDS` environment variable on the runner
+host; it defaults to `15` seconds.
+
 ## Mentioning workspace files
 
 In a coding-agent session, type `@` in the composer to browse and attach

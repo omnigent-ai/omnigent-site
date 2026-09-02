@@ -40,10 +40,14 @@ tools:
 tools:
   docs-api:
     type: mcp
-    url: https://example.com/mcp
+    url: ${DOCS_API_URL}                     # env vars expanded at runtime
     headers:
       Authorization: "Bearer ${API_TOKEN}"   # env vars expanded at runtime
 ```
+
+Because `url` and `headers` are both expanded, a remote server's config can be
+committed to version control with neither the endpoint nor the credential
+hardcoded — each user supplies their own at run time.
 
 The optional `tools` list filters which MCP tools are exposed to the agent. It
 works the same on both transports — list the tool names you want to allow, and
@@ -66,6 +70,7 @@ As shown in the examples above, custom MCP servers accept credentials through:
 
 - **`env`**: environment variables passed to stdio server processes (e.g., `API_KEY: ${MY_API_KEY}`)
 - **`headers`**: HTTP headers for remote servers, with `${...}` env var expansion (e.g., `Authorization: "Bearer ${API_TOKEN}"`)
+- **`url`**: the remote server's endpoint also supports `${...}` expansion (e.g., `url: ${DOCS_API_URL}`), so the endpoint doesn't have to be hardcoded either
 - **`auth:` with `type: databricks`**: resolves an OAuth token from a profile in your `~/.databrickscfg`. `databricks` is the only supported `auth` type; inside it, `profile` is required. Other servers don't use `auth:` — they authenticate via `env` or `headers` above:
 
 ```

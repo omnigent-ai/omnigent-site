@@ -246,6 +246,22 @@ Set the `serverUrls` key to an array of server URLs, most-preferred first:
         <code>https://</code>. At most 10.
       </td>
     </tr>
+    <tr>
+      <td>
+        <code>databricksInternalFeaturesEnabled</code>
+      </td>
+      <td>Boolean</td>
+      <td>No</td>
+      <td>
+        <code>false</code>
+      </td>
+      <td>
+        Enables Databricks-internal features (such as the <strong>Run on
+        Arca</strong> host option) on windows connected to a
+        Databricks-managed server. Fails closed — anything but an explicit
+        boolean <code>true</code> reads as disabled.
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -271,6 +287,33 @@ screen and in the in-app server switcher. They are offered, not enforced:
   applying or removing a profile takes effect the next time the connect screen
   loads or the server switcher opens.
 
+### Databricks-internal features
+
+When `databricksInternalFeaturesEnabled` is `true` **and** the window is
+connected to a Databricks-managed server (a workspace mount on
+`*.databricks.com` / `*.azuredatabricks.net`, or a Databricks App on
+`*.databricksapps.com`, `https` only), the new-session host picker offers
+**Run on Arca** — connecting the user's Arca dev instance to the current server
+as a host. On any other server the flag reads as disabled.
+
+Selecting **Run on Arca** opens a connect console owned by the desktop shell
+that shows the exact command it will run — `arca ssh` with a remote
+`isaac omni host --background --non-interactive` — and, after confirmation,
+streams the command's live output into an embedded terminal pane so enrollment
+is fully transparent. The Arca instance authenticates with its own Databricks
+credentials, so no secret leaves the machine, and no local process outlives the
+connect — the enrolled host keeps its own outbound tunnel from the Arca box.
+Starting a stopped instance can take a few minutes; the run has a hard timeout
+so a wedged connection always settles.
+
+Once connected, the **Run on Arca** option disappears and the box's host row in
+the picker is tagged **Arca instance** (recognized by the host id remembered at
+connect time). Like the server list, the flag is read from macOS on demand, so
+profile changes apply without a restart.
+
+Run on Arca is a Databricks-internal, macOS-only feature and requires the
+`arca` CLI to be installed on the machine.
+
 ### Example MDM profile
 
 Use the standard `com.apple.ManagedClient.preferences` payload with the
@@ -290,6 +333,8 @@ this as a custom settings or managed preferences payload):
           <string>https://omnigent.corp.example.com</string>
           <string>https://my-workspace.cloud.databricks.com/ml/omnigents</string>
         </array>
+        <key>databricksInternalFeaturesEnabled</key>
+        <false/>
       </dict>
     </dict>
   </array>

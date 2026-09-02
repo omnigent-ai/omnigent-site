@@ -189,12 +189,12 @@ ways to apply it (chat, Omnigent YAML, or server config).
 Every policy receives a `PolicyEvent` dict. Use the `type` field to
 filter which events you care about:
 
-| Event type     | When it fires                                     | Key `data` fields                                                                                   |
-| -------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `request`      | User sends a message                              | `user_content` (typed text), `attachments` (list of `{filename, content_type, text}`)               |
-| `tool_call`    | Omnigent is about to call a tool                  | `name` (tool name), `arguments` (dict)                                                              |
-| `tool_result`  | A tool has returned a result                      | `result` (tool output); `event["request_data"]` carries the original `tool_call` payload            |
-| `response`     | Omnigent is about to deliver an assistant message | The assistant message text                                                                          |
+| Event type    | When it fires                                     | Key `data` fields                                                                        |
+| ------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `request`     | User sends a message                              | `user_content` (typed text), `attachments` (list of `{filename, content_type, text}`)    |
+| `tool_call`   | Omnigent is about to call a tool                  | `name` (tool name), `arguments` (dict)                                                   |
+| `tool_result` | A tool has returned a result                      | `result` (tool output); `event["request_data"]` carries the original `tool_call` payload |
+| `response`    | Omnigent is about to deliver an assistant message | The assistant message text                                                               |
 
 Return `None` for event types you don't handle.
 

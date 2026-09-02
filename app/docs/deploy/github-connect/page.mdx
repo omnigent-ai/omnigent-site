@@ -1,0 +1,169 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Connect GitHub",
+  "Wire a GitHub App so signed-in users can connect their GitHub account and their managed sandboxes authenticate git and gh as them.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/github-connect",
+  },
+);
+
+# Connect GitHub
+
+Omnigent supports **per-user GitHub connect**: once a server admin wires a
+GitHub App, a signed-in user can go to **Settings → Sandbox Integrations →
+Connect GitHub**, and their managed sandboxes then authenticate `git` and `gh`
+as them — cloning private repos, pushing branches, and opening PRs — using a
+short-lived, per-user token instead of a shared personal access token.
+
+<div className="note">
+
+This feature is only wired when the [Credential Store](/docs/deploy/credential-store)
+is configured (`OMNIGENT_CREDENTIAL_*` / KMS). Tokens are persisted encrypted at
+rest by the credential store; without it, GitHub connect logs a warning and
+stays disabled.
+
+</div>
+
+## How it works
+
+- **Connect (user OAuth).** The server signs a short-lived, user-bound `state`
+  and redirects the user to GitHub's authorize screen. GitHub redirects back to
+  `…/v1/connections/github/callback`, which exchanges the code for a
+  **user-to-server** access token (plus a refresh token) and stores it encrypted
+  in the credential store.
+- **Use (in the sandbox).** On sandbox launch the server vends that user's fresh
+  token to the runner, which materializes `git` / `gh` credentials and injects
+  the user's public SSH keys. A refresh token keeps long sessions authenticated.
+- **App, not OAuth App or PAT.** A GitHub App is an org-ownable, least-privilege
+  identity. Per-repo content access requires the App to be **installed** on the
+  account or org that owns the repo, so access is auditable and revocable per
+  install, with no long-lived personal secret to leak.
+
+<div className="note">
+
+**The one gotcha:** user OAuth alone lets Omnigent _list_ the repos a user can
+see, but reading a **private** repo's contents or branches requires the App to
+be **installed** on that repo's owner. A connected-but-not-installed App returns
+`404` on private repo content.
+
+</div>
+
+## Register the GitHub App
+
+Register a new App under **Settings → Developer settings → GitHub Apps → New
+GitHub App** (`https://github.com/settings/apps/new`; for an org use
+`https://github.com/organizations/<org>/settings/apps/new`).
+
+1. **Name / Homepage URL.** Any unique name (e.g. `omnigent-connect`); set the
+   homepage to your Omnigent origin.
+2. **Callback URL.** Set it to
+   `https://<your-omnigent-origin>/v1/connections/github/callback`. This **must**
+   equal `OMNIGENT_GITHUB_APP_REDIRECT_URI` (or the value Omnigent derives from
+   `OMNIGENT_DOMAIN`, which is exactly this shape).
+3. **Expire user authorization tokens.** Leave **checked** — Omnigent uses the
+   refresh token to keep long sessions alive.
+4. **Request user authorization (OAuth) during installation** and **Enable
+   Device Flow.** Leave both **unchecked**.
+5. **Webhook.** Omnigent does not consume webhooks — **uncheck "Active"** and
+   leave the URL blank.
+6. **Permissions.** Under **Repository permissions**, grant only what sandboxes
+   need. The user-to-server token inherits exactly these scopes, so this list is
+   the ceiling on what a connected sandbox can do as the user.
+
+   | Permission        | Access             | Why                                                                                     |
+   | ----------------- | ------------------ | --------------------------------------------------------------------------------------- |
+   | **Contents**      | Read and write     | Clone repos and push branches for PRs. Use **Read-only** if sandboxes should only clone. |
+   | **Metadata**      | Read-only          | Auto-selected; required by GitHub.                                                      |
+   | **Pull requests** | Read and write     | Open PRs from the sandbox. **Read-only** if you never create PRs.                       |
+
+   Leave everything else **No access**. No **Account** or **Organization**
+   permissions are needed.
+
+7. **Where can this App be installed?** Pick **Only on this account** for a
+   single-account or dev instance, or **Any account** if other orgs will install
+   it. Click **Create GitHub App**.
+
+## Collect credentials
+
+From the App's **General** page:
+
+- **Client ID** — non-secret; maps to `OMNIGENT_GITHUB_APP_CLIENT_ID`.
+- **Client secret** — click **Generate a new client secret** and copy it once
+  (GitHub only shows it once). Maps to `OMNIGENT_GITHUB_APP_CLIENT_SECRET`.
+- **App ID** _(optional)_ — the numeric id near the top; maps to
+  `OMNIGENT_GITHUB_APP_ID`. Only needed for app-level JWT calls, not the per-user
+  connect flow.
+- **Private key** _(optional)_ — **Generate a private key** downloads a `.pem`.
+  Only needed for app-level (installation-token) calls. Maps to
+  `OMNIGENT_GITHUB_APP_PRIVATE_KEY` (PEM contents) or
+  `OMNIGENT_GITHUB_APP_PRIVATE_KEY_PATH` (a file path).
+
+Treat the client secret and private key like passwords — never commit them; put
+them in the same secret store the server already reads.
+
+## Install the App
+
+Open the App's **Install App** tab (or
+`https://github.com/apps/<slug>/installations/new`) and install it on the
+account or org whose repositories users will access — **All repositories** or a
+selected set. This step is **required for private-repo content**: without an
+installation on the repo's owner, cloning or listing branches of a private repo
+returns `404` even for a correctly connected user.
+
+Set `OMNIGENT_GITHUB_APP_SLUG` to the App's slug (from its URL,
+`github.com/apps/<slug>`) so Omnigent can render the in-product **Install** link.
+
+## Wire it into the server
+
+Set these on the **server**. The feature enables itself once a client id +
+secret + a resolvable redirect URI are present (and the credential store is
+configured):
+
+```
+# Required.
+OMNIGENT_GITHUB_APP_CLIENT_ID=Iv23li...           # App "Client ID"
+OMNIGENT_GITHUB_APP_CLIENT_SECRET=<generated>     # from "Generate a new client secret"
+
+# Redirect URI — set explicitly, OR let Omnigent derive it from OMNIGENT_DOMAIN
+# as https://$OMNIGENT_DOMAIN/v1/connections/github/callback (same shape).
+OMNIGENT_GITHUB_APP_REDIRECT_URI=https://<your-origin>/v1/connections/github/callback
+
+# Optional.
+OMNIGENT_GITHUB_APP_SLUG=omnigent-connect          # for the in-product Install link
+OMNIGENT_GITHUB_APP_ID=1234567                     # only for app-level JWT calls
+OMNIGENT_GITHUB_APP_PRIVATE_KEY_PATH=/etc/omnigent/github-app.pem   # or _PRIVATE_KEY=<PEM>
+```
+
+| Variable                               | Required | Purpose                                                              |
+| -------------------------------------- | -------- | -------------------------------------------------------------------- |
+| `OMNIGENT_GITHUB_APP_CLIENT_ID`        | Yes      | App client id used for the user authorization flow.                  |
+| `OMNIGENT_GITHUB_APP_CLIENT_SECRET`    | Yes      | App client secret.                                                   |
+| `OMNIGENT_GITHUB_APP_REDIRECT_URI`     | Yes\*    | OAuth callback URL. \*Derived from `OMNIGENT_DOMAIN` if unset.       |
+| `OMNIGENT_GITHUB_APP_SLUG`             | No       | App slug, used to build the in-product install link.                 |
+| `OMNIGENT_GITHUB_APP_ID`               | No       | Numeric App ID; only for app-level JWT calls.                        |
+| `OMNIGENT_GITHUB_APP_PRIVATE_KEY`      | No       | RSA private key PEM contents, for app-level calls.                   |
+| `OMNIGENT_GITHUB_APP_PRIVATE_KEY_PATH` | No       | Path to the private key PEM file (alternative to the inline value).  |
+
+Restart the server. If the client id and secret are set but no redirect URI can
+be resolved (neither `OMNIGENT_GITHUB_APP_REDIRECT_URI` nor `OMNIGENT_DOMAIN`),
+the feature logs a warning and stays disabled. Both the CLI (`omnigent server`)
+and the Docker image read the same env vars.
+
+## Verify
+
+1. Sign in to Omnigent as a real user and open **Settings → Sandbox
+   Integrations**. The **Connect GitHub** control appears — the nav item only
+   shows when a connection provider is wired (surfaced via `enabled_connections`
+   in `/v1/info`).
+2. Click **Connect GitHub** → GitHub's authorize screen → back to Omnigent. The
+   panel now shows **Connected as `<login>`**. **Disconnect** revokes the stored
+   token.
+3. Start a sandbox session on a **private** repo owned by an account where the
+   App is **installed**; confirm the sandbox can `git clone`, push a branch, and
+   (if enabled) open a PR.
+
+If step 3 returns `404` on a private repo while the connect flow succeeded, the
+App is connected but **not installed** on that repo's owner — revisit
+[Install the App](#install-the-app).

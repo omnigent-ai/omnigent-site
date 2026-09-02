@@ -94,6 +94,18 @@ listed in `cwd_allow_hidden`. This makes broad read grants safe: granting
 `~` doesn't expose `~/.aws/credentials` or `~/.ssh/id_rsa`. On macOS, `~/Library` is also
 denied by default.
 
+To disable dotpath masking entirely for a trusted root, use the explicit wildcard
+entry `cwd_allow_hidden: ["*"]`. This lets every dotfile and dotdir pass through — useful
+for a trusted workspace whose agent-created dotpaths (caches, tool state) must persist
+across helper invocations. The escaping-symlink defense stays active even with the
+wildcard: a symlink whose target resolves outside the granted roots is still masked. Only
+use `["*"]` for roots you trust, since it exposes all hidden files by name.
+
+```
+sandbox:
+  cwd_allow_hidden: ["*"]                    # allow every dotpath in a trusted root
+```
+
 By default the dotfile mask is **non-recursive** — it scans only the top level of
 `cwd` and each `read_paths` root. Top-level secrets (`.env`, `.git/`, `.aws/`,
 `.ssh/`) are still hidden, but a dotfile nested below the first level (for example
@@ -317,7 +329,7 @@ Omnigent errors instead of quietly running unsandboxed. The only opt-out is
 | `write_files`                       | string[] | `[]`             | Individual writable files                                                                                                     |
 | `read_paths`                        | string[] | none             | Read-only grants outside `cwd`                                                                                                |
 | `allow_network`                     | bool     | `true`           | Network access on/off                                                                                                         |
-| `cwd_allow_hidden`                  | string[] | `[".venv"]`      | Dotfile basenames to allow                                                                                                    |
+| `cwd_allow_hidden`                  | string[] | `[".venv"]`      | Dotfile basenames to allow. `["*"]` allows every dotpath in trusted roots (escaping symlinks still masked)                     |
 | `cwd_hidden_scan_recursive`         | bool     | `false`          | Recurse subdirectories when masking dotfiles. `false` scans top level only.                                                   |
 | `mask_paths`                        | string[] | none             | Explicit files/dirs to hide by any path/name, on top of the dotfile mask                                                      |
 | `cwd_hidden_scan_max_entries`       | int      | `50000`          | Max entries for dotfile mask walk (recursive mode)                                                                            |

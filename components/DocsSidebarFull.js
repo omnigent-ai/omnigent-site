@@ -148,6 +148,11 @@ const SECTIONS = [
       },
       { title: "REST API", href: "/reference", pages: [] },
       {
+        title: "Routing Provider API",
+        href: "/docs/reference/routing-api",
+        pages: [],
+      },
+      {
         title: "Usage Telemetry",
         href: "/docs/deploy/telemetry",
         pages: [],

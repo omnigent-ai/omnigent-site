@@ -104,6 +104,7 @@ const ALL_PAGES = [
   { href: "/docs/interact/web-ui", label: "Web UI", section: "Interact" },
   { href: "/docs/interact/mobile", label: "Mobile", section: "Interact" },
   { href: "/docs/interact/desktop", label: "Desktop App", section: "Interact" },
+  { href: "/docs/interact/slack", label: "Slack", section: "Interact" },
   {
     href: "/docs/collaborate",
     label: "Pair Programming",
@@ -122,6 +123,11 @@ const ALL_PAGES = [
   {
     href: "/docs/deploy/database",
     label: "Database",
+    section: "Collaboration",
+  },
+  {
+    href: "/docs/deploy/credential-store",
+    label: "Credential Store",
     section: "Collaboration",
   },
   {
@@ -175,8 +181,18 @@ const ALL_PAGES = [
     section: "Reference",
   },
   {
+    href: "/reference",
+    label: "REST API",
+    section: "Reference",
+  },
+  {
     href: "/docs/reference/routing-api",
     label: "Routing Provider API",
+    section: "Reference",
+  },
+  {
+    href: "/docs/deploy/telemetry",
+    label: "Usage Telemetry",
     section: "Reference",
   },
 ];

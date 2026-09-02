@@ -42,6 +42,19 @@ Smart routing is enabled by configuration alone:
 - Or add a `routing:` block with `provider: external` to delegate to an
   **external routing API**.
 
+For example, this enables the built-in judge with an OpenAI model:
+
+```yaml
+llm:
+  model: openai/gpt-5.5
+  connection:
+    api_key: ${OPENAI_API_KEY}
+```
+
+The API key may also come from the provider's usual environment variables. See
+[built-in routing settings](/docs/reference/configuration/routing#built-in-routing)
+for custom endpoints, Databricks profiles, and fallback models.
+
 Start the server with your config file:
 
 ```

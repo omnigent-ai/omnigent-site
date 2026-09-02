@@ -1,7 +1,7 @@
 import { pageMeta } from "@/lib/og";
 
 export const metadata = pageMeta(
-  "Stop $50k Surprise Bills: Cut LLM Costs 30-80% Without Sacrificing Productivity",
+  "Stop Surprise LLM Bills With Production-Ready Cost Controls",
   "How Omnigent's shipped cost control features help teams maintain LLM budget predictability through smart routing, progressive budgets, custom pricing, and comprehensive visibility.",
   {
     eyebrow: "Blog",
@@ -10,7 +10,7 @@ export const metadata = pageMeta(
 );
 
 export const meta = {
-  title: "Stop $50k Surprise Bills: Cut LLM Costs 30-80% Without Sacrificing Productivity",
+  title: "Stop Surprise LLM Bills With Production-Ready Cost Controls",
   date: "2026-09-03",
   category: "Cost Optimization",
   author: "Yuan Tang",
@@ -19,9 +19,9 @@ export const meta = {
 
 <BlogPostHeader slug="stop-surprise-llm-bills" />
 
-> **TL;DR**: Omnigent reduces LLM costs by 30-80% through smart routing (blocks trivial tasks from expensive models), progressive budgets (soft warnings before hard limits), custom pricing for self-hosted models, and comprehensive usage tracking. Deploy in phases: visibility first, then routing, then budgets.
+> **TL;DR**: Omnigent provides production-ready cost controls through smart routing (blocks trivial tasks from expensive models), progressive budgets (soft warnings before hard limits), custom pricing for self-hosted models, and comprehensive usage tracking. Deploy in phases: visibility first, then routing, then budgets.
 
-As AI coding assistants become essential development tools, organizations face a growing challenge: **surprise $50,000 LLM bills**. One debugging session, one multi-agent workflow gone wrong, and your monthly budget evaporates.
+As AI coding assistants become essential development tools, organizations face a growing challenge: **surprise LLM bills that blow through monthly budgets**. One debugging session, one multi-agent workflow gone wrong, and costs spiral out of control.
 
 Unlike traditional software costs that scale linearly with users or compute, LLM expenses scale with *token consumption*. Every character sent to and received from the model translates directly into API charges.
 
@@ -43,23 +43,23 @@ This blog post covers **features available today** in Omnigent's cost optimizati
 
 ---
 
-**Real-world impact:**
+**Example impact scenarios:**
 
-**10-person startup**  
-$500/month → $150/month (70% reduction)  
-*Project-level model defaults alone*
+**Small team using project-level defaults**  
+Switching default model from Opus to Sonnet  
+*80% cost reduction on routine coding tasks*
 
-**50-person team**  
-Prevented $10,000+ runaway session  
-*Thrashing detection caught infinite retry loop*
+**Team with thrashing detection**  
+Catches runaway sessions early  
+*Prevents infinite retry loops from consuming budget*
 
-**Enterprise deployment**  
-30-40% reduction in Opus usage  
-*Zero productivity loss from smart routing*
+**Organization using smart routing**  
+Blocks trivial tasks from expensive models  
+*Maintains productivity while reducing waste*
 
-**Self-hosted team**  
-Eliminated "unpriced spend" warnings  
-*Custom pricing enabled budget enforcement*
+**Self-hosted infrastructure**  
+Custom pricing for internal models  
+*Enables accurate budget tracking and enforcement*
 
 ---
 
@@ -99,7 +99,7 @@ User: "What's the current time?"
 → User switches to Haiku
 ```
 
-Teams deploying this policy report **30-40% reduction in Opus/Fable usage** with no loss in quality for complex work. Learn more in the [Omnigent Routing documentation](https://omnigent.ai/docs/build/routing).
+By preventing trivial tasks from using expensive models, smart routing can **significantly reduce Opus/Fable usage** with no loss in quality for complex work. Learn more in the [Omnigent Routing documentation](https://omnigent.ai/docs/build/routing).
 
 ## Progressive Budget Policies
 
@@ -270,7 +270,7 @@ Configurable auto-cleanup of archived sessions (7/30/60/90 days) via Settings �
 
 ### Cost Reduction Strategies
 
-**1. Enable smart routing first** (30-40% reduction):
+**1. Enable smart routing first** to reduce expensive model usage:
 
 ```yaml
 policies:
@@ -325,8 +325,8 @@ scheduled_task_cost_budget:
 Omnigent's cost optimization features address LLM expenses at multiple layers:
 
 **Prevention (Layer 0):**
-- Smart routing prevents 30-40% of expensive model calls on trivial tasks
-- Project-level default models enforce cheaper tiers organization-wide (80% savings)
+- Smart routing blocks trivial tasks from expensive models
+- Project-level default models enforce cheaper tiers organization-wide (e.g., Opus→Sonnet = 80% cost reduction)
 - No workflow changes required
 
 **Control (Layer 1):**
@@ -359,12 +359,12 @@ Omnigent's cost optimization features address LLM expenses at multiple layers:
 
 **Phase 1: Observe** (Week 1)
 - **Deploy**: Usage page, project-level model defaults
-- **Impact**: Visibility + 50-80% reduction from defaults
+- **Impact**: Cost visibility + immediate reduction from cheaper default models
 - **Effort**: Low (configuration changes only)
 
 **Phase 2: Prevent** (Week 2)  
 - **Deploy**: Smart routing, custom pricing for self-hosted models
-- **Impact**: 30-40% additional reduction, budget enforcement enabled
+- **Impact**: Reduced expensive model usage, budget enforcement enabled
 - **Effort**: Medium (policy configuration)
 
 **Phase 3: Control** (Month 2)  

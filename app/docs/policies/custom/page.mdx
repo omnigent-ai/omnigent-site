@@ -195,8 +195,6 @@ filter which events you care about:
 | `tool_call`    | Omnigent is about to call a tool                  | `name` (tool name), `arguments` (dict)                                                              |
 | `tool_result`  | A tool has returned a result                      | `result` (tool output); `event["request_data"]` carries the original `tool_call` payload            |
 | `response`     | Omnigent is about to deliver an assistant message | The assistant message text                                                                          |
-| `llm_request`  | About to send a round-trip to the LLM             | `model`, `messages_count`, `tools_count`, `system_prompt_preview`, `last_user_message`              |
-| `llm_response` | LLM round-trip returned                           | `model`, `text_preview`, `tool_calls_count`; optional `usage` with `input_tokens` / `output_tokens` |
 
 Return `None` for event types you don't handle.
 

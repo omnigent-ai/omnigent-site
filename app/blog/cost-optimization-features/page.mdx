@@ -19,7 +19,7 @@ export const meta = {
 
 <BlogPostHeader slug="cost-optimization-features" />
 
-As AI coding assistants become essential development tools, organizations face a growing challenge: how to harness the productivity benefits of large language models without breaking the budget. Unlike traditional software costs that scale linearly with users or compute, LLM expenses scale with *token consumption*—every character sent to and received from the model translates directly into API charges.
+As AI coding assistants become essential development tools, organizations face a growing challenge: how to harness the productivity benefits of large language models without breaking the budget. Unlike traditional software costs that scale linearly with users or compute, LLM expenses scale with *token consumption*, every character sent to and received from the model translates directly into API charges.
 
 The problem compounds quickly:
 - **Long conversations accumulate context**: A productive debugging session can consume tens of thousands of tokens as context grows with each exchange
@@ -93,7 +93,7 @@ policies:
         expensive_models: ["opus", "fable", "gpt-5"]
 ```
 
-**Soft thresholds** provide progressive warnings at $1 and $2.50. **Each checkpoint prompts at most once**—after approval, future turns don't re-prompt until the next threshold.
+**Soft thresholds** provide progressive warnings at $1 and $2.50. **Each checkpoint prompts at most once** after approval, future turns don't re-prompt until the next threshold.
 
 **Hard limit** at $5 is a **smart downgrade gate**: blocks expensive models but allows work to continue on cheaper tiers (Sonnet, Haiku).
 
@@ -145,7 +145,7 @@ This eliminates "unpriced spend" warnings while enabling accurate budget enforce
 
 ### Project-Level Default Model
 
-Previously, every new session started on the harness's default model—often the most expensive tier (Opus). Now, **projects can set a default model** for Claude Code and Codex agents.
+Previously, every new session started on the harness's default model - often the most expensive tier (Opus). Now, **projects can set a default model** for Claude Code and Codex agents.
 
 **Example impact:**
 
@@ -206,7 +206,7 @@ Interactive approval popups rendered via `tmux display-popup`:
 └───────────────────────────────────────────────┘
 ```
 
-Multi-surface approval: popup and web UI resolve the same elicitation—whichever answers first wins.
+Multi-surface approval: popup and web UI resolve the same elicitation, whichever answers first wins.
 
 ### Scheduled Task Cost Budgets
 

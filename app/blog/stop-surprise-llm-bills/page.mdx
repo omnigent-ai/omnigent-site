@@ -23,7 +23,7 @@ export const meta = {
 
 As AI coding assistants become essential development tools, organizations face a growing challenge: **surprise $50,000 LLM bills**. One debugging session, one multi-agent workflow gone wrong, and your monthly budget evaporates.
 
-Unlike traditional software costs that scale linearly with users or compute, LLM expenses scale with *token consumption*—every character sent to and received from the model translates directly into API charges.
+Unlike traditional software costs that scale linearly with users or compute, LLM expenses scale with *token consumption*. Every character sent to and received from the model translates directly into API charges.
 
 The problem compounds quickly:
 - **Long conversations accumulate context**: A productive debugging session can consume tens of thousands of tokens as context grows with each exchange
@@ -171,7 +171,7 @@ This eliminates "unpriced spend" warnings while enabling accurate budget enforce
 
 ### Project-Level Default Model
 
-Previously, every new session started on the harness's default model—often the most expensive tier (Opus). Now, **[projects can set a default model](/blog/first-class-projects-with-defaults)** for Claude Code and Codex agents.
+Previously, every new session started on the harness's default model, which was often the most expensive tier (Opus). Now, **[projects can set a default model](/blog/first-class-projects-with-defaults)** for Claude Code and Codex agents.
 
 **Example impact:**
 
@@ -360,22 +360,22 @@ Omnigent's cost optimization features address LLM expenses at multiple layers:
 **Phase 1: Observe** (Week 1)
 - **Deploy**: Usage page, project-level model defaults
 - **Impact**: Visibility + 50-80% reduction from defaults
-- **Effort**: Low — configuration changes only
+- **Effort**: Low (configuration changes only)
 
 **Phase 2: Prevent** (Week 2)  
 - **Deploy**: Smart routing, custom pricing for self-hosted models
 - **Impact**: 30-40% additional reduction, budget enforcement enabled
-- **Effort**: Medium — policy configuration
+- **Effort**: Medium (policy configuration)
 
 **Phase 3: Control** (Month 2)  
 - **Deploy**: Progressive budgets (session & daily)
 - **Impact**: Predictable spend, soft warnings before limits
-- **Effort**: Low — tune thresholds based on Phase 1 data
+- **Effort**: Low (tune thresholds based on Phase 1 data)
 
 **Phase 4: Optimize** (Month 3+)  
 - **Deploy**: Thrashing detection, archived session cleanup, ongoing tuning
 - **Impact**: Eliminate waste, prevent runaway costs
-- **Effort**: Ongoing — monthly review and adjustment
+- **Effort**: Ongoing (monthly review and adjustment)
 
 ### Getting Started
 
@@ -437,10 +437,10 @@ As AI coding assistants become integral to development workflows, cost awareness
 **Learn more about Omnigent's cost optimization features:**
 
 *Documentation:*
-- [Builtin Policies](https://omnigent.ai/docs/policies/builtin) — Complete reference for cost budget, routing, and thrashing detection policies
-- [Smart Routing](https://omnigent.ai/docs/build/routing) — Configure built-in or external routing to match tasks to models
-- [Contextual Policies Overview](https://omnigent.ai/docs/policies/overview) — How policies intercept and control agent actions
+- [Builtin Policies](https://omnigent.ai/docs/policies/builtin) - Complete reference for cost budget, routing, and thrashing detection policies
+- [Smart Routing](https://omnigent.ai/docs/build/routing) - Configure built-in or external routing to match tasks to models
+- [Contextual Policies Overview](https://omnigent.ai/docs/policies/overview) - How policies intercept and control agent actions
 
 *Related blog posts:*
-- [Allow, ask, deny: contextual policies in Omnigent](/blog/omnigent-policies) — Deep dive into how Omnigent's policy system works
-- [Organize your sessions into projects](/blog/first-class-projects-with-defaults) — Learn about project-level defaults mentioned in this post
+- [Allow, ask, deny: contextual policies in Omnigent](/blog/omnigent-policies) - Deep dive into how Omnigent's policy system works
+- [Organize your sessions into projects](/blog/first-class-projects-with-defaults) - Learn about project-level defaults mentioned in this post

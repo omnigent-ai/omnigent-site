@@ -40,9 +40,9 @@ for read and write grants, denied paths, and path expansion behavior.
 
 ## Network isolation
 
-All HTTP(S) traffic goes through a default-deny proxy with an explicit allow-list of
-methods, hosts, and paths. Data can't leave except to hosts you chose, which shuts down
-exfiltration even if the agent is prompt-injected.
+When you configure `egress_rules`, HTTP(S) traffic goes through a default-deny proxy
+with an explicit allow-list of methods, hosts, and paths. Data can't leave except to
+hosts you chose, which shuts down exfiltration even if the agent is prompt-injected.
 
 Private IPs and cloud metadata endpoints are blocked by default, so the agent can't
 reach your internal services.

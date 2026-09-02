@@ -29,8 +29,13 @@ That's [Omnibox](/docs/omnibox).
 | **Best for**     | Interactive work         | Long-running tasks     |
 
 Omnigent currently supports [Modal](https://modal.com), [Daytona](https://www.daytona.io),
-[Blaxel](https://blaxel.ai), and [Islo](https://islo.dev) as hosting platforms for cloud sandbox
-hosts, with more on the way.
+[Blaxel](https://blaxel.ai), [Islo](https://islo.dev),
+[NVIDIA OpenShell](https://github.com/NVIDIA/openshell), and
+[Boxlite](https://github.com/boxlite-ai/boxlite) for cloud sandbox hosts.
+
+The hosted-platform comparison below covers Modal, Daytona, Blaxel, and Islo.
+OpenShell connects to your selected gateway; Boxlite can use a local micro-VM runtime
+or a remote `boxlite serve` pool.
 
 |                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) | [Blaxel](https://blaxel.ai)              | [Islo](https://islo.dev)                       |
 | ------------------------ | ---------------------------------- | --------------------------------- | ---------------------------------------- | ---------------------------------------------- |
@@ -50,6 +55,8 @@ pip install 'omnigent[modal]'       # for Modal
 pip install 'omnigent[daytona]'     # for Daytona
 pip install 'omnigent[blaxel]'      # for Blaxel
 pip install 'omnigent[islo]'        # for Islo
+pip install 'omnigent[openshell]'   # for OpenShell
+pip install 'omnigent[boxlite]'     # for Boxlite
 ```
 
 The Islo launcher uses the Islo Python SDK, which ships in the `omnigent[islo]`
@@ -87,6 +94,14 @@ export BL_WORKSPACE=your-workspace
 export BL_API_KEY=your-api-key
 ```
 
+**OpenShell:** select a gateway with `openshell gateway select <name>`, or set
+`OPENSHELL_GATEWAY` on the server. The launcher uses that gateway connection and
+does not require a separate API key.
+
+**Boxlite:** local mode requires KVM on Linux and no provider credential. For a
+remote `boxlite serve` pool, set `BOXLITE_API_KEY` on the server and configure
+the pool endpoint in the [Boxlite settings](/docs/reference/configuration/cloud-sandbox#boxlite).
+
 Provider control credentials stay on the launching process and never enter the
 sandbox. Web users log in to Omnigent, not the sandbox provider.
 
@@ -114,6 +129,27 @@ also covers the other providers and lifecycle settings.
 
 Start a new session and select **New Sandbox** in the host picker. The server
 provisions the cloud host, starts the runner, and connects it back automatically.
+
+## CLI
+
+Create and manage cloud sandbox hosts from the command line. The commands are the same across
+CLI-capable providers; switch the `--provider` flag:
+
+```
+omni sandbox create --provider modal          # or --provider daytona / blaxel / islo / openshell
+omni sandbox connect --provider modal \
+  --sandbox-id <id> --server <url>
+```
+
+Boxlite supports the server-managed flow but not these CLI bootstrap commands.
+
+For a Blaxel CLI launch, list any credentials the host or agent needs in
+`OMNIGENT_BLAXEL_SANDBOX_ENV` before `create`. Never include `BL_API_KEY` or
+`BL_CLIENT_CREDENTIALS`. Blaxel does not expose local callback port forwarding,
+so the in-sandbox browser login is skipped automatically.
+
+Stopping `connect` leaves the sandbox running. Delete it with the provider's
+CLI or console when you no longer need it.
 
 ## Community sandbox providers
 
@@ -206,22 +242,3 @@ rejects it otherwise. A malformed plugin is recorded and skipped rather than
 crashing server startup.
 
 </div>
-
-## CLI
-
-Create and manage cloud sandbox hosts from the command line. The commands are the same across
-hosting platforms; switch the `--provider` flag:
-
-```
-omni sandbox create --provider modal          # or --provider daytona / blaxel / islo
-omni sandbox connect --provider modal \
-  --sandbox-id <id> --server <url>
-```
-
-For a Blaxel CLI launch, list any credentials the host or agent needs in
-`OMNIGENT_BLAXEL_SANDBOX_ENV` before `create`. Never include `BL_API_KEY` or
-`BL_CLIENT_CREDENTIALS`. Blaxel does not expose local callback port forwarding,
-so the in-sandbox browser login is skipped automatically.
-
-Stopping `connect` leaves the sandbox running. Delete it with the provider's
-CLI or console when you no longer need it.

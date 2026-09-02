@@ -35,6 +35,9 @@ agent can't read your SSH keys or write outside the workspace.
 Broad read grants stay safe: granting `~` doesn't expose `~/.ssh` or
 `~/.aws/credentials`, because dotfiles are masked unless you allow them.
 
+See the [filesystem settings](/docs/reference/configuration/os-sandbox#filesystem)
+for read and write grants, denied paths, and path expansion behavior.
+
 ## Network isolation
 
 All HTTP(S) traffic goes through a default-deny proxy with an explicit allow-list of
@@ -44,6 +47,9 @@ exfiltration even if the agent is prompt-injected.
 Private IPs and cloud metadata endpoints are blocked by default, so the agent can't
 reach your internal services.
 
+See the [network settings](/docs/reference/configuration/os-sandbox#network) for
+allowed hosts, methods, paths, and localhost access.
+
 ## Credential injection
 
 The agent holds a fake placeholder token instead of the real secret. When a request
@@ -52,6 +58,9 @@ agent can use a credential but never read it.
 
 Only the placeholder appears in logs, transcripts, and model context. A leaked token is
 worthless, since it only works through the proxy, against allowed hosts.
+
+See [credential injection](/docs/reference/configuration/os-sandbox#credentials-secretless-proxy)
+for placeholder mappings, secret sources, and supported authentication flows.
 
 ## Related
 

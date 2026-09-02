@@ -67,14 +67,16 @@ routing:
   api_key: ${ROUTING_API_KEY}
 ```
 
-See the [Smart Routing configuration reference](/docs/reference/configuration/routing)
-for all fields, authentication options, precedence, and validation behavior.
+See [external routing settings](/docs/reference/configuration/routing#external-routing)
+for all fields and validation behavior, and
+[authentication precedence](/docs/reference/configuration/routing#authentication-precedence)
+for choosing between an API key and a Databricks profile.
 
 ## Implement an external router
 
 The server calls `POST <base_url>/routes:select` with the candidate harness and
 model combinations, the task, and the requested routing strategy. A typical
-request looks like this:
+[request](/docs/reference/routing-api#request-selectrouterequest) looks like this:
 
 ```json
 {
@@ -88,7 +90,8 @@ request looks like this:
 }
 ```
 
-Return one of the offered model and harness combinations:
+Return a [response](/docs/reference/routing-api#response-selectrouteresponse) with
+one of the offered model and harness combinations:
 
 ```json
 {

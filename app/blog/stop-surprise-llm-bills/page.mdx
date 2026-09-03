@@ -45,8 +45,8 @@ This blog post covers **features available today** in Omnigent's cost optimizati
 
 **Example impact scenarios:**
 
-**Small team using project-level defaults**  
-Switching default model from Opus to Sonnet  
+**Small team switching to cheaper models**  
+Team adopts Sonnet for routine work instead of Opus  
 *80% cost reduction on routine coding tasks*
 
 **Team with thrashing detection**  
@@ -167,20 +167,21 @@ providers:
 
 This eliminates "unpriced spend" warnings while enabling accurate budget enforcement. Use cases include cost attribution for self-hosted models, free local development, and internal chargeback.
 
-## Cost Optimization Through Defaults
+## Cost Optimization Through Model Selection
 
-### Project-Level Default Model
+### Sticky Model Choices
 
-Previously, every new session started on the harness's default model, which was often the most expensive tier (Opus). Now, **[projects can set a default model](/blog/first-class-projects-with-defaults)** for Claude Code and Codex agents.
+The composer remembers your model choice per harness, so once you switch from an expensive model to a cheaper one, that choice becomes your default for future sessions with that harness.
 
 **Example impact:**
 
-A 10-developer team working on a microservices project:
-- **Before**: All sessions defaulted to Opus ($15/million output tokens)
-- **After**: Project defaults to Sonnet ($3/million output tokens)
+A 10-developer team working on routine coding tasks:
+- **Before**: Sessions defaulted to Opus ($15/million output tokens)
+- **After**: Team switches to Sonnet ($3/million output tokens) for most work
 - **Result**: **80% cost reduction** for routine coding tasks
+- **Flexibility**: Can still override to Opus for complex tasks when needed
 
-Configure in Project Settings → Model dropdown. The New Chat composer respects the project's preference while allowing individual override for sessions requiring more capability.
+In the New Chat composer, select your model from the dropdown. Your choice is remembered per harness (Claude Code, Codex, etc.), making it easy to establish cost-effective defaults across your team while maintaining flexibility for work that needs more capable models.
 
 ## Cost Visibility: Know Where Tokens Go
 
@@ -326,7 +327,7 @@ Omnigent's cost optimization features address LLM expenses at multiple layers:
 
 **Prevention (Layer 0):**
 - Smart routing blocks trivial tasks from expensive models
-- Project-level default models enforce cheaper tiers organization-wide (e.g., Opus→Sonnet = 80% cost reduction)
+- Sticky model selection makes switching to cheaper tiers persistent (e.g., Opus→Sonnet = 80% cost reduction)
 - No workflow changes required
 
 **Control (Layer 1):**
@@ -349,18 +350,18 @@ Omnigent's cost optimization features address LLM expenses at multiple layers:
 ### What Makes Omnigent Different
 
 1. **Progressive, not binary**: Soft warnings before hard stops, downgrade gates instead of full blocks
-2. **Multi-layered**: Routing + defaults + budgets + visibility working together
+2. **Multi-layered**: Routing + sticky model selection + budgets + visibility working together
 3. **Self-hosted friendly**: Custom pricing for Ollama, vLLM, custom gateways
-4. **Organization-wide control**: Project-level defaults enforce cost-conscious model choices
+4. **Team-friendly**: Per-harness model memory makes cost-conscious choices stick
 5. **Production-tested**: Used by teams from 5 to 500+ developers
 6. **Transparent**: Know exactly where every token was spent
 
 ### Deployment Roadmap
 
 **Phase 1: Observe** (Week 1)
-- **Deploy**: Usage page, project-level model defaults
-- **Impact**: Cost visibility + immediate reduction from cheaper default models
-- **Effort**: Low (configuration changes only)
+- **Deploy**: Usage page, team switches to cheaper models
+- **Impact**: Cost visibility + immediate reduction from cheaper models (Sonnet vs Opus)
+- **Effort**: Low (model selection in composer, one-time per harness)
 
 **Phase 2: Prevent** (Week 2)  
 - **Deploy**: Smart routing, custom pricing for self-hosted models
@@ -379,13 +380,13 @@ Omnigent's cost optimization features address LLM expenses at multiple layers:
 
 ### Getting Started
 
-**Week 1: Visibility & Defaults**
+**Week 1: Visibility & Model Selection**
 
 ```bash
 export OMNIGENT_FEATURES=usage_page
 ```
 
-Set project-level default models in Project Settings → Model (Sonnet/Haiku instead of Opus).
+In the New Chat composer, select Sonnet or Haiku instead of Opus from the Model dropdown. Your choice is remembered per harness for future sessions.
 
 **Week 2: Smart Routing & Custom Pricing**
 
@@ -443,4 +444,4 @@ As AI coding assistants become integral to development workflows, cost awareness
 
 *Related blog posts:*
 - [Allow, ask, deny: contextual policies in Omnigent](/blog/omnigent-policies) - Deep dive into how Omnigent's policy system works
-- [Organize your sessions into projects](/blog/first-class-projects-with-defaults) - Learn about project-level defaults mentioned in this post
+- [Organize your sessions into projects](/blog/first-class-projects-with-defaults) - Keep related sessions organized with optional default settings

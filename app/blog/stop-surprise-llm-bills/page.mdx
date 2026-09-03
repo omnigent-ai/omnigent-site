@@ -23,7 +23,7 @@ export const meta = {
 
 As AI coding assistants become essential, **surprise LLM bills blow through monthly budgets**. One debugging session or multi-agent workflow gone wrong, and costs spiral.
 
-Unlike traditional software, LLM expenses scale with *token consumption*. Every character costs money. Long conversations accumulate context, multi-agent workflows amplify usage, and hard budget caps interrupt productive flow. Many teams discover their bills only after the fact.
+Unlike traditional software, LLM expenses scale with _token consumption_. Every character costs money. Long conversations accumulate context, multi-agent workflows amplify usage, and hard budget caps interrupt productive flow. Many teams discover their bills only after the fact.
 
 **Omnigent's four-layer solution:**
 
@@ -94,7 +94,7 @@ policies:
 
 ### Per-User Daily Cost Budget
 
-For organizations managing multiple developers, **per-user daily budgets** track cumulative spend across *all* sessions for the current UTC day:
+For organizations managing multiple developers, **per-user daily budgets** track cumulative spend across _all_ sessions for the current UTC day:
 
 ```yaml
 policies:
@@ -145,6 +145,7 @@ The composer remembers your model choice per harness, so once you switch from an
 **Example impact:**
 
 A 10-developer team working on routine coding tasks:
+
 - **Before**: Sessions defaulted to Opus ($15/million output tokens)
 - **After**: Team switches to Sonnet ($3/million output tokens) for most work
 - **Result**: **80% cost reduction** for routine coding tasks
@@ -268,26 +269,29 @@ expensive_models: ["opus", "fable"]
 ### Organization Policies by Team Size
 
 **Small teams (5-15 developers)**:
+
 ```yaml
 user_daily_cost_budget:
-  max_cost_usd: 5.0          # ~$150/month per dev
+  max_cost_usd: 5.0 # ~$150/month per dev
   ask_thresholds_usd: [2.0]
 ```
 
 **Mid-size (15-50)**:
+
 ```yaml
 user_daily_cost_budget:
-  max_cost_usd: 10.0         # ~$300/month per dev
+  max_cost_usd: 10.0 # ~$300/month per dev
   ask_thresholds_usd: [3.0, 7.0]
 ```
 
 **Enterprise (50+)**:
+
 ```yaml
 user_daily_cost_budget:
-  max_cost_usd: 25.0         # Higher limits for experienced engineers
+  max_cost_usd: 25.0 # Higher limits for experienced engineers
   ask_thresholds_usd: [10.0, 20.0]
 scheduled_task_cost_budget:
-  max_cost_usd: 2.0          # Strict limits for automation
+  max_cost_usd: 2.0 # Strict limits for automation
 ```
 
 ---
@@ -296,19 +300,19 @@ scheduled_task_cost_budget:
 
 **Small team switching to cheaper models**  
 Team adopts Sonnet for routine work instead of Opus  
-*80% cost reduction on routine coding tasks*
+_80% cost reduction on routine coding tasks_
 
 **Team with thrashing detection**  
 Catches runaway sessions early  
-*Prevents infinite retry loops from consuming budget*
+_Prevents infinite retry loops from consuming budget_
 
 **Organization using smart routing**  
 Blocks trivial tasks from expensive models  
-*Maintains productivity while reducing waste*
+_Maintains productivity while reducing waste_
 
 **Self-hosted infrastructure**  
 Custom pricing for internal models  
-*Enables accurate budget tracking and enforcement*
+_Enables accurate budget tracking and enforcement_
 
 ---
 
@@ -317,22 +321,26 @@ Custom pricing for internal models
 Omnigent's cost optimization features address LLM expenses at multiple layers:
 
 **Prevention (Layer 0):**
+
 - Smart routing blocks trivial tasks from expensive models
 - Sticky model selection makes switching to cheaper tiers persistent (e.g., Opus→Sonnet = 80% cost reduction)
 - No workflow changes required
 
 **Control (Layer 1):**
+
 - Progressive budgets: soft warnings → hard limits → smart downgrade gates
 - Multi-granularity: session-level and user-daily scopes
 - Custom pricing for self-hosted models enables accurate enforcement
 - Scheduled task limits prevent unattended runaway costs
 
 **Visibility (Layer 2):**
+
 - Usage page with daily timelines and breakdowns by harness/model
 - Multi-model and multi-harness session tracking
 - Real-time visibility prevents end-of-month surprises
 
 **Safeguards & Lifecycle (Layer 3):**
+
 - Native terminal popups for in-terminal approval
 - Thrashing detection prevents wasteful retry loops
 - Archived session retention with configurable auto-cleanup
@@ -350,21 +358,25 @@ Omnigent's cost optimization features address LLM expenses at multiple layers:
 ### Deployment Roadmap
 
 **Phase 1: Observe** (Week 1)
+
 - **Deploy**: Usage page, team switches to cheaper models
 - **Impact**: Cost visibility + immediate reduction from cheaper models (Sonnet vs Opus)
 - **Effort**: Low (model selection in composer, one-time per harness)
 
-**Phase 2: Prevent** (Week 2)  
+**Phase 2: Prevent** (Week 2)
+
 - **Deploy**: Smart routing, custom pricing for self-hosted models
 - **Impact**: Reduced expensive model usage, budget enforcement enabled
 - **Effort**: Medium (policy configuration)
 
-**Phase 3: Control** (Month 2)  
+**Phase 3: Control** (Month 2)
+
 - **Deploy**: Progressive budgets (session & daily)
 - **Impact**: Predictable spend, soft warnings before limits
 - **Effort**: Low (tune thresholds based on Phase 1 data)
 
-**Phase 4: Optimize** (Month 3+)  
+**Phase 4: Optimize** (Month 3+)
+
 - **Deploy**: Thrashing detection, archived session cleanup, ongoing tuning
 - **Impact**: Eliminate waste, prevent runaway costs
 - **Effort**: Ongoing (monthly review and adjustment)
@@ -428,11 +440,13 @@ As AI coding assistants become integral to development workflows, cost awareness
 
 **Learn more about Omnigent's cost optimization features:**
 
-*Documentation:*
+_Documentation:_
+
 - [Builtin Policies](https://omnigent.ai/docs/policies/builtin) - Complete reference for cost budget, routing, and thrashing detection policies
 - [Smart Routing](https://omnigent.ai/docs/build/routing) - Configure built-in or external routing to match tasks to models
 - [Contextual Policies Overview](https://omnigent.ai/docs/policies/overview) - How policies intercept and control agent actions
 
-*Related blog posts:*
+_Related blog posts:_
+
 - [Allow, ask, deny: contextual policies in Omnigent](/blog/omnigent-policies) - Deep dive into how Omnigent's policy system works
 - [Organize your sessions into projects](/blog/first-class-projects-with-defaults) - Keep related sessions organized with optional default settings

@@ -1,22 +1,12 @@
 import Link from "next/link";
 import { GitHubIcon, DiscordIcon } from "./icons";
-import { GITHUB_URL, DISCORD_URL, DATABRICKS_URL, NEON_URL } from "./links";
+import { GITHUB_URL, DISCORD_URL } from "./links";
 
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="wrap-wide footer-inner">
-        <span>
-          Built by the{" "}
-          <a href={DATABRICKS_URL} target="_blank" rel="noreferrer">
-            Databricks AI team
-          </a>{" "}
-          and{" "}
-          <a href={NEON_URL} target="_blank" rel="noreferrer">
-            Neon
-          </a>
-          .
-        </span>
+        <span>Built by the Databricks AI team, Neon and the Omnigent Contributors.</span>
         <span className="spacer" />
         <Link href="/quickstart/install">Get Started</Link>
         <Link href="/docs/use/coding-agents">Docs</Link>

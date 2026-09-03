@@ -1694,6 +1694,62 @@ figcaption {
   padding: 2.5rem 1.5rem 4rem;
 }
 
+/* Clear the fixed nav when an in-page anchor (ToC link) jumps to a heading, so
+   the target lands below the nav instead of hidden underneath it. Matches the
+   5rem used for docs headings. */
+.blog-main h1,
+.blog-main h2,
+.blog-main h3 {
+  scroll-margin-top: 5rem;
+}
+
+/* Blog post ToC: the blog has no docs grid, so the nav floats in the right
+   margin beside the centered 60rem column. left = column's right edge (50vw +
+   30rem) + a 2rem gap. It needs the gap + ~14rem width + breathing room in the
+   margin, i.e. 50vw >= 47rem, so it's hidden below 1500px. */
+.blog-toc {
+  position: fixed;
+  top: 6rem;
+  left: calc(50vw + 30rem + 2rem);
+  width: 14rem;
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--border);
+}
+/* "On this page" heading so the rail reads as a labelled ToC, not loose links. */
+.blog-toc::before {
+  content: "On this page";
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-soft);
+}
+/* Top-level sections read as the outline; give them more weight and air, and
+   set subsections (h3) smaller/softer so the two levels are clearly distinct. */
+.blog-toc a {
+  font-size: 0.8rem;
+}
+.blog-toc li:not(.toc-h3) + .toc-h3 {
+  margin-top: 0.05rem;
+}
+.blog-toc li:not(.toc-h3) a {
+  color: var(--fg);
+  font-weight: 550;
+  padding-top: 0.35rem;
+}
+.blog-toc .toc-h3 a {
+  font-size: 0.76rem;
+}
+@media (max-width: 1500px) {
+  .blog-toc {
+    display: none;
+  }
+}
+
 .blog-header {
   margin-bottom: 2rem;
 }

@@ -12,12 +12,20 @@ function slugify(text) {
     .trim();
 }
 
-export default function HeadingAnchors() {
+// `containerSelector` scopes which article's headings get anchor links.
+// `requireSelector` (optional) gates the whole effect so it stays dormant when
+// that element is absent — the blog index shares .blog-main with posts but has
+// no .blog-post-header, so its card titles must not get anchored.
+export default function HeadingAnchors({
+  containerSelector = ".docs-main",
+  requireSelector,
+}) {
   const pathname = usePathname();
 
   useEffect(() => {
+    if (requireSelector && !document.querySelector(requireSelector)) return;
     const headings = document.querySelectorAll(
-      ".docs-main h1, .docs-main h2, .docs-main h3",
+      `${containerSelector} h1, ${containerSelector} h2, ${containerSelector} h3`,
     );
     headings.forEach((h) => {
       const id = h.id || slugify(h.textContent.replace(/#$/, "").trim());
@@ -40,7 +48,7 @@ export default function HeadingAnchors() {
         setTimeout(() => target.scrollIntoView({ behavior: "smooth" }), 100);
       }
     }
-  }, [pathname]);
+  }, [pathname, containerSelector, requireSelector]);
 
   return null;
 }

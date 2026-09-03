@@ -2,7 +2,7 @@ import { pageMeta } from "@/lib/og";
 
 export const metadata = pageMeta(
   "Stop Surprise LLM Bills With Production-Ready Cost Controls",
-  "How Omnigent's shipped cost control features help teams maintain LLM budget predictability through smart routing, progressive budgets, custom pricing, and comprehensive visibility.",
+  "How Omnigent keeps LLM spend predictable: smart routing, progressive budgets, custom pricing for self-hosted models, and per-model usage tracking.",
   {
     eyebrow: "Blog",
     path: "/blog/stop-surprise-llm-bills",
@@ -19,26 +19,26 @@ export const meta = {
 
 <BlogPostHeader slug="stop-surprise-llm-bills" />
 
-> **TL;DR**: Omnigent provides production-ready cost controls through smart routing (blocks trivial tasks from expensive models), progressive budgets (soft warnings before hard limits), custom pricing for self-hosted models, and comprehensive usage tracking. Deploy in phases: visibility first, then routing, then budgets.
+> **TL;DR**: Omnigent controls LLM costs at four points: smart routing keeps trivial tasks off expensive models, progressive budgets warn before they block, custom pricing tracks self-hosted models, and the usage page shows where tokens go. Roll it out in phases: visibility first, then routing, then budgets.
 
-As AI coding assistants become essential, **surprise LLM bills blow through monthly budgets**. One debugging session or multi-agent workflow gone wrong, and costs spiral.
+LLM bills blow through monthly budgets when one debugging session or a runaway multi-agent workflow spirals.
 
-Unlike traditional software, LLM expenses scale with _token consumption_. Every character costs money. Long conversations accumulate context, multi-agent workflows amplify usage, and hard budget caps interrupt productive flow. Many teams discover their bills only after the fact.
+LLM costs scale with token consumption, not with how much software you ship. Every character costs money. Long conversations accumulate context, multi-agent workflows multiply that, and a hard cap that fires mid-task interrupts real work. Most teams see the bill only after the money is spent.
 
-**Omnigent's four-layer solution:**
+Omnigent addresses this at four points:
 
-1. **Prevention**: Smart routing blocks trivial tasks from expensive models
-2. **Control**: Progressive budgets with soft warnings and smart downgrade gates
-3. **Visibility**: Real-time cost tracking with detailed breakdowns
-4. **Safeguards**: Thrashing detection, scheduled task limits, terminal approvals
+1. **Prevention**: Smart routing keeps trivial tasks off expensive models.
+2. **Control**: Progressive budgets warn before they block, then downgrade instead of stopping.
+3. **Visibility**: The usage page tracks spend with per-harness and per-model breakdowns.
+4. **Safeguards**: Thrashing detection, scheduled-task limits, and terminal approvals.
 
-## Smart Task Routing: Prevention First
+## Smart task routing
 
-The most effective cost optimization prevents wasteful spend before it happens. Omnigent's **smart routing policy** classifies user messages as TRIVIAL or COMPLEX and denies trivial tasks from using expensive models.
+The cheapest token is the one you never spend. Omnigent's smart routing policy classifies each user message as TRIVIAL or COMPLEX and denies trivial messages from reaching expensive models.
 
-### How It Works
+### How it works
 
-When a session attempts to use an expensive model (Opus, Fable, GPT-5), Omnigent classifies the user's message using a lightweight LLM:
+When a session tries to use an expensive model (Opus, Fable, GPT-5), Omnigent classifies the user's message with a lightweight LLM:
 
 ```yaml
 policies:
@@ -50,12 +50,12 @@ policies:
         expensive_models: ["opus", "fable", "gpt-5"]
 ```
 
-**Classification categories:**
+The two categories:
 
-- **TRIVIAL tasks** (blocked on expensive models): Simple factual lookups, greetings and status checks, trivial code changes, short Q&A
-- **COMPLEX tasks** (allowed on any model): Multi-step reasoning, complex code analysis, open-ended research, nuanced architecture decisions
+- **TRIVIAL** (blocked on expensive models): factual lookups, greetings and status checks, one-line code changes, short Q&A
+- **COMPLEX** (allowed on any model): multi-step reasoning, code analysis, open-ended research, architecture decisions
 
-**Example flow:**
+An example flow:
 
 ```
 User: "Fix the authentication bug in login.py"
@@ -68,13 +68,13 @@ User: "What's the current time?"
 → User switches to Haiku
 ```
 
-By preventing trivial tasks from using expensive models, smart routing can **significantly reduce Opus/Fable usage** with no loss in quality for complex work. Learn more in the [Omnigent Routing documentation](https://omnigent.ai/docs/build/routing).
+Trivial messages get routed to a cheaper tier, so complex work still runs on Opus or Fable while short lookups do not. See the [routing documentation](https://omnigent.ai/docs/build/routing) for the full policy reference.
 
-## Progressive Budget Policies
+## Progressive budget policies
 
-Smart routing reduces expensive model calls, but production workflows still consume resources. Omnigent's [contextual policy system](/blog/omnigent-policies) provides **progressive cost controls** with soft warnings before hard limits.
+Routing cuts expensive model calls, but real workflows still burn tokens. Omnigent's [contextual policy system](/blog/omnigent-policies) adds budgets that warn before they block.
 
-### Session Cost Budget
+### Session cost budget
 
 ```yaml
 policies:
@@ -88,13 +88,13 @@ policies:
         expensive_models: ["opus", "fable", "gpt-5"]
 ```
 
-**Soft thresholds** provide progressive warnings at $1 and $2.50. **Each checkpoint prompts at most once** after approval, future turns don't re-prompt until the next threshold.
+Soft thresholds warn at $1 and $2.50. Each checkpoint prompts at most once: after you approve it, later turns stay quiet until the next threshold.
 
-**Hard limit** at $5 is a **smart downgrade gate**: blocks expensive models but allows work to continue on cheaper tiers (Sonnet, Haiku).
+The $5 hard limit is a downgrade gate, not a stop. It blocks expensive models but lets work continue on cheaper tiers (Sonnet, Haiku).
 
-### Per-User Daily Cost Budget
+### Per-user daily cost budget
 
-For organizations managing multiple developers, **per-user daily budgets** track cumulative spend across _all_ sessions for the current UTC day:
+Per-user daily budgets track cumulative spend across all of a developer's sessions for the current UTC day:
 
 ```yaml
 policies:
@@ -107,13 +107,11 @@ policies:
 
 A 5-developer startup setting `max_cost_usd: 10.0` caps monthly spend at ~$1,500 (5 × 30 × $10).
 
-Learn more: [Omnigent Cost Budget Policies](https://omnigent.ai/docs/policies/builtin#cost_budget)
+See the [cost budget policy reference](https://omnigent.ai/docs/policies/builtin#cost_budget) for all arguments.
 
-## Custom Pricing for Self-Hosted Models
+## Custom pricing for self-hosted models
 
-Teams running self-hosted models on Ollama, vLLM, or custom inference gateways previously saw "unpriced spend" warnings that disabled budget enforcement.
-
-**Solution: Custom pricing configuration**
+Teams running self-hosted models on Ollama, vLLM, or a custom inference gateway used to see "unpriced spend" warnings, which disabled budget enforcement because Omnigent had no price to meter against. Declare the price yourself:
 
 ```yaml
 providers:
@@ -126,7 +124,7 @@ providers:
         output_per_million: 0.0
 
   vllm-gateway:
-    kind: remote
+    kind: gateway
     openai:
       base_url: "https://inference.company.internal/v1"
       pricing:
@@ -134,63 +132,56 @@ providers:
         output_per_million: 1.0
 ```
 
-This eliminates "unpriced spend" warnings while enabling accurate budget enforcement. Use cases include cost attribution for self-hosted models, free local development, and internal chargeback.
+The warnings go away and budgets meter correctly. This also covers cost attribution for self-hosted models, zero-cost local development, and internal chargeback.
 
-## Cost Optimization Through Model Selection
+## Model selection
 
-### Sticky Model Choices
+### Sticky model choices
 
-The composer remembers your model choice per harness, so once you switch from an expensive model to a cheaper one, that choice becomes your default for future sessions with that harness.
+The composer remembers your model choice per harness. Switch from Opus to Sonnet once, and Sonnet becomes the default for future sessions on that harness until you change it.
 
-**Example impact:**
+The output-token prices differ by 5x: Opus is $15 per million, Sonnet is $3 per million. A team that moves routine coding from Opus to Sonnet pays a fifth as much for that work, and can still pick Opus per session when a task needs it.
 
-A 10-developer team working on routine coding tasks:
+Select the model from the dropdown in the New Chat composer. The choice sticks per harness (Claude Code, Codex, and so on).
 
-- **Before**: Sessions defaulted to Opus ($15/million output tokens)
-- **After**: Team switches to Sonnet ($3/million output tokens) for most work
-- **Result**: **80% cost reduction** for routine coding tasks
-- **Flexibility**: Can still override to Opus for complex tasks when needed
+## Cost visibility
 
-In the New Chat composer, select your model from the dropdown. Your choice is remembered per harness (Claude Code, Codex, etc.), making it easy to establish cost-effective defaults across your team while maintaining flexibility for work that needs more capable models.
+### Usage page
 
-## Cost Visibility: Know Where Tokens Go
+The usage page (`/usage`) breaks down LLM spend:
 
-### Usage Page
+1. **Daily cost timeline**: bar chart, with zero-spend days filled in
+2. **Cost by harness**: which execution environments spend the budget
+3. **Cost by model**: which tiers drive spend (Opus vs Sonnet vs Haiku)
+4. **Sortable session table**: session (with its model as a badge), harness, cost, last active
 
-The Usage page (`/usage`) provides comprehensive LLM spend analytics:
+### Multi-model session display
 
-1. **Daily Cost Timeline**: Bar chart with gap-filling for zero-spend days
-2. **Cost by Harness**: Which execution environments consume budget
-3. **Cost by Model**: Which tiers drive spend (Opus vs Sonnet vs Haiku)
-4. **Sortable Session Table**: Title, harness, model, cost, last active
-
-### Multi-Model Session Display
-
-Sessions that switch models now show **all models used**:
+Sessions that switch models show every model used:
 
 ```
 Session: "Debug authentication flow"
 Model: claude-opus-4 +2
 ```
 
-Hovering `+2` reveals additional models sorted by cost, answering "Why did this cost $3 when I thought I was on Sonnet?"
+Hover `+2` to see the other models, sorted by cost. This answers "Why did this cost $3 when I thought I was on Sonnet?"
 
-### Sub-Agent Harness Visibility
+### Sub-agent harness visibility
 
-Multi-harness workflows display which execution environments were used:
+Multi-harness workflows show which execution environments ran. The primary harness displays with a `+N` badge for the rest; hover it to see the others:
 
 ```
 Harness: claude-code-native +1
-→ Hover: "Sub-agents also used: antigravity"
+→ Hover: "antigravity"
 ```
 
-Essential for organizations using multiple AI providers (Anthropic, OpenAI, Gemini).
+This matters when you run more than one provider (Anthropic, OpenAI, Gemini).
 
-## Safeguards & User Experience
+## Safeguards
 
-### Native Terminal Cost Popups
+### Native terminal cost popups
 
-Interactive approval popups rendered via `tmux display-popup`:
+Approval popups render in the terminal via `tmux display-popup`:
 
 ```
 ┌───────────────────────────────────────────────┐
@@ -203,11 +194,11 @@ Interactive approval popups rendered via `tmux display-popup`:
 └───────────────────────────────────────────────┘
 ```
 
-Multi-surface approval: popup and web UI resolve the same elicitation, whichever answers first wins.
+The terminal popup and the web UI resolve the same approval request; whichever you answer first wins.
 
-### Scheduled Task Cost Budgets
+### Scheduled task cost budgets
 
-Unattended tasks automatically attach cost budgets:
+Unattended tasks attach a cost budget automatically:
 
 ```json
 POST /v1/scheduled-tasks
@@ -218,180 +209,71 @@ POST /v1/scheduled-tasks
 }
 ```
 
-Prevents a single cron run from consuming $50 due to an unexpected large diff.
+This stops a single cron run from spending $50 on an unexpectedly large diff.
 
-### Detect Thrashing Policy
+### Detect thrashing policy
 
-Identifies agents stuck in retry loops via pattern matching:
+The thrashing policy catches agents stuck in retry loops:
 
 - Consecutive errors (default: 5 failures)
 - Error rate (default: 80% over 10 results)
 
-**Cost impact**: Prevented runaway sessions that would have consumed $10+ before exhausting retries.
+When it fires, it ends the session before repeated retries run up the bill. See the [detect thrashing policy reference](https://omnigent.ai/docs/policies/builtin#detect_thrashing).
 
-Learn more: [Omnigent Detect Thrashing Policy](https://omnigent.ai/docs/policies/builtin#detect_thrashing)
+### Archived session retention
 
-### Archived Session Retention
+Auto-cleanup of archived sessions runs on a schedule you set (7, 30, 60, or 90 days) under Settings → Archived sessions, which cuts storage and clears the session list.
 
-Configurable auto-cleanup of archived sessions (7/30/60/90 days) via Settings → Archived sessions. Reduces storage costs and UI clutter for high-volume teams.
+For example, a 50-person team archiving about 200 sessions a month holds steady near 400 sessions at 60-day retention, rather than accumulating 2,400 over a year.
 
-**Example**: A 50-person team archiving ~200 sessions monthly maintains steady state of ~400 sessions (60-day retention) instead of 2,400 accumulating annually.
+## How the layers fit together
 
-## Real-World Deployment
+Omnigent handles LLM cost at four layers:
 
-### Cost Reduction Strategies
+**Prevention:**
 
-**1. Enable smart routing first** to reduce expensive model usage:
+- Smart routing keeps trivial tasks off expensive models.
+- Sticky model selection makes a cheaper default stick per harness.
+- Neither changes how you work.
 
-```yaml
-policies:
-  trivial_gate:
-    arguments:
-      expensive_models: ["opus", "fable"]
-```
+**Control:**
 
-**2. Set progressive budgets** based on observed patterns:
+- Progressive budgets go soft warning, then downgrade gate, then hard limit.
+- Budgets scope to a session or to a user's whole day.
+- Custom pricing lets budgets meter self-hosted models.
+- Scheduled-task limits cap unattended runs.
 
-```yaml
-# Week 1: Awareness only
-ask_thresholds_usd: [1.0, 5.0, 10.0]
+**Visibility:**
 
-# Month 2: Soft cap at 95th percentile
-max_cost_usd: 8.0
-ask_thresholds_usd: [2.0, 5.0]
-expensive_models: ["opus", "fable"]
-```
+- The usage page shows daily timelines and per-harness, per-model breakdowns.
+- Sessions and sub-agents report every model and harness they touched.
+- You see spend as it happens, not at month end.
 
-**3. Monitor weekly** via usage page for anomalies
+**Safeguards:**
 
-**4. Deploy thrashing detection** for high-activity teams
+- Terminal popups approve or decline without leaving the terminal.
+- Thrashing detection ends retry loops before they run up the bill.
+- Archived-session retention cleans up on a schedule you set.
 
-### Organization Policies by Team Size
+What is distinct here: budgets warn and downgrade rather than hard-stop, routing and budgets and visibility work together instead of in isolation, self-hosted models get real prices, and every token is attributed to a model and harness.
 
-**Small teams (5-15 developers)**:
+## Rolling it out
 
-```yaml
-user_daily_cost_budget:
-  max_cost_usd: 5.0 # ~$150/month per dev
-  ask_thresholds_usd: [2.0]
-```
+Deploy in four phases, each building on the last. Turn on visibility first so later thresholds are grounded in real spend, then prevention, then hard control, then ongoing cleanup.
 
-**Mid-size (15-50)**:
+### Phase 1: Observe (Week 1)
 
-```yaml
-user_daily_cost_budget:
-  max_cost_usd: 10.0 # ~$300/month per dev
-  ask_thresholds_usd: [3.0, 7.0]
-```
-
-**Enterprise (50+)**:
-
-```yaml
-user_daily_cost_budget:
-  max_cost_usd: 25.0 # Higher limits for experienced engineers
-  ask_thresholds_usd: [10.0, 20.0]
-scheduled_task_cost_budget:
-  max_cost_usd: 2.0 # Strict limits for automation
-```
-
----
-
-**Example impact scenarios:**
-
-**Small team switching to cheaper models**  
-Team adopts Sonnet for routine work instead of Opus  
-_80% cost reduction on routine coding tasks_
-
-**Team with thrashing detection**  
-Catches runaway sessions early  
-_Prevents infinite retry loops from consuming budget_
-
-**Organization using smart routing**  
-Blocks trivial tasks from expensive models  
-_Maintains productivity while reducing waste_
-
-**Self-hosted infrastructure**  
-Custom pricing for internal models  
-_Enables accurate budget tracking and enforcement_
-
----
-
-## Putting It All Together
-
-Omnigent's cost optimization features address LLM expenses at multiple layers:
-
-**Prevention (Layer 0):**
-
-- Smart routing blocks trivial tasks from expensive models
-- Sticky model selection makes switching to cheaper tiers persistent (e.g., Opus→Sonnet = 80% cost reduction)
-- No workflow changes required
-
-**Control (Layer 1):**
-
-- Progressive budgets: soft warnings → hard limits → smart downgrade gates
-- Multi-granularity: session-level and user-daily scopes
-- Custom pricing for self-hosted models enables accurate enforcement
-- Scheduled task limits prevent unattended runaway costs
-
-**Visibility (Layer 2):**
-
-- Usage page with daily timelines and breakdowns by harness/model
-- Multi-model and multi-harness session tracking
-- Real-time visibility prevents end-of-month surprises
-
-**Safeguards & Lifecycle (Layer 3):**
-
-- Native terminal popups for in-terminal approval
-- Thrashing detection prevents wasteful retry loops
-- Archived session retention with configurable auto-cleanup
-- Date range validation and UX polish
-
-### What Makes Omnigent Different
-
-1. **Progressive, not binary**: Soft warnings before hard stops, downgrade gates instead of full blocks
-2. **Multi-layered**: Routing + sticky model selection + budgets + visibility working together
-3. **Self-hosted friendly**: Custom pricing for Ollama, vLLM, custom gateways
-4. **Team-friendly**: Per-harness model memory makes cost-conscious choices stick
-5. **Production-tested**: Used by teams from 5 to 500+ developers
-6. **Transparent**: Know exactly where every token was spent
-
-### Deployment Roadmap
-
-**Phase 1: Observe** (Week 1)
-
-- **Deploy**: Usage page, team switches to cheaper models
-- **Impact**: Cost visibility + immediate reduction from cheaper models (Sonnet vs Opus)
-- **Effort**: Low (model selection in composer, one-time per harness)
-
-**Phase 2: Prevent** (Week 2)
-
-- **Deploy**: Smart routing, custom pricing for self-hosted models
-- **Impact**: Reduced expensive model usage, budget enforcement enabled
-- **Effort**: Medium (policy configuration)
-
-**Phase 3: Control** (Month 2)
-
-- **Deploy**: Progressive budgets (session & daily)
-- **Impact**: Predictable spend, soft warnings before limits
-- **Effort**: Low (tune thresholds based on Phase 1 data)
-
-**Phase 4: Optimize** (Month 3+)
-
-- **Deploy**: Thrashing detection, archived session cleanup, ongoing tuning
-- **Impact**: Eliminate waste, prevent runaway costs
-- **Effort**: Ongoing (monthly review and adjustment)
-
-### Getting Started
-
-**Week 1: Visibility & Model Selection**
+Turn on the usage page and switch the team to a cheaper default model. Spend becomes visible and the bill drops right away, with no policy config yet.
 
 ```bash
 export OMNIGENT_FEATURES=usage_page
 ```
 
-In the New Chat composer, select Sonnet or Haiku instead of Opus from the Model dropdown. Your choice is remembered per harness for future sessions.
+In the New Chat composer, pick Sonnet or Haiku instead of Opus from the Model dropdown. The choice sticks per harness.
 
-**Week 2: Smart Routing & Custom Pricing**
+### Phase 2: Prevent (Week 2)
+
+Add smart routing to keep trivial requests off expensive models, and set custom pricing so budgets can meter self-hosted spend.
 
 ```yaml
 policies:
@@ -412,7 +294,9 @@ providers:
         output_per_million: 0.0
 ```
 
-**Month 2: Progressive Budgets**
+### Phase 3: Control (Month 2)
+
+Add progressive budgets, tuning the thresholds against what Phase 1 showed you. Warnings fire before any limit, and the hard cap downgrades rather than blocks.
 
 ```yaml
 policies:
@@ -423,30 +307,50 @@ policies:
       expensive_models: ["opus", "fable"]
 ```
 
-**Month 3: Optimize & Clean Up**
+### Phase 4: Optimize (Month 3+)
 
-- Review usage page for cost patterns
-- Tune thresholds based on user feedback
-- Deploy thrashing detection
-- Set archived session retention (30 or 60 days)
+Turn on thrashing detection, set archived-session retention (30 or 60 days), and revisit thresholds monthly as usage shifts.
+
+### Budgets by team size
+
+Scale the daily budget with headcount. These are starting points to tune, not hard rules:
+
+```yaml
+# Small teams (5-15 developers)
+user_daily_cost_budget:
+  max_cost_usd: 5.0 # ~$150/month per dev
+  ask_thresholds_usd: [2.0]
+
+# Mid-size (15-50)
+user_daily_cost_budget:
+  max_cost_usd: 10.0 # ~$300/month per dev
+  ask_thresholds_usd: [3.0, 7.0]
+
+# Enterprise (50+)
+user_daily_cost_budget:
+  max_cost_usd: 25.0 # Higher limits for experienced engineers
+  ask_thresholds_usd: [10.0, 20.0]
+scheduled_task_cost_budget:
+  max_cost_usd: 2.0 # Strict limits for automation
+```
 
 ---
 
-As AI coding assistants become integral to development workflows, cost awareness shifts from "nice-to-have" to **essential infrastructure**. Omnigent's production features give teams the visibility and control to scale AI usage confidently, knowing productivity gains won't come with unexpected bills.
+Coding agents are now part of the daily workflow, and their cost needs the same attention as any other infrastructure. These features give teams the visibility and control to scale that usage without the surprise bill at the end of the month.
 
-**Ready to optimize your LLM costs?** Explore the [documentation](https://omnigent.ai/docs/policies/builtin), configure your first [cost budget policy](https://omnigent.ai/docs/policies/builtin#cost_budget), and deploy [smart routing](https://omnigent.ai/docs/build/routing) to reduce expensive model usage.
+Start with the [documentation](https://omnigent.ai/docs/policies/builtin), set up a [cost budget policy](https://omnigent.ai/docs/policies/builtin#cost_budget), and turn on [smart routing](https://omnigent.ai/docs/build/routing).
 
 ---
 
-**Learn more about Omnigent's cost optimization features:**
+**Learn more:**
 
 _Documentation:_
 
-- [Builtin Policies](https://omnigent.ai/docs/policies/builtin) - Complete reference for cost budget, routing, and thrashing detection policies
-- [Smart Routing](https://omnigent.ai/docs/build/routing) - Configure built-in or external routing to match tasks to models
-- [Contextual Policies Overview](https://omnigent.ai/docs/policies/overview) - How policies intercept and control agent actions
+- [Builtin policies](https://omnigent.ai/docs/policies/builtin): reference for cost budget, routing, and thrashing detection
+- [Smart routing](https://omnigent.ai/docs/build/routing): configure built-in or external routing to match tasks to models
+- [Contextual policies overview](https://omnigent.ai/docs/policies/overview): how policies intercept and control agent actions
 
-_Related blog posts:_
+_Related posts:_
 
-- [Allow, ask, deny: contextual policies in Omnigent](/blog/omnigent-policies) - Deep dive into how Omnigent's policy system works
-- [Organize your sessions into projects](/blog/first-class-projects-with-defaults) - Keep related sessions organized with optional default settings
+- [Allow, ask, deny: contextual policies in Omnigent](/blog/omnigent-policies): how the policy system works
+- [Organize your sessions into projects](/blog/first-class-projects-with-defaults): keep related sessions organized with default settings

@@ -132,6 +132,32 @@ the selected model rides along as the launch override and the runner uses it at
 launch. Under a sandbox launch, where no host catalog is resolved, the picker is
 empty and the harness default is used.
 
+### Codex approval mode
+
+Codex (`codex-native`) sessions carry an **Approvals** row in the composer's
+config gear that switches how much Codex asks before acting — for a session
+that's already running, not just at launch. Open the config gear and pick one
+of Codex's own `/permissions` presets:
+
+- **Ask for approval** — read/edit/run in the workspace; approval for the
+  internet or external edits.
+- **Approve for me** — only asks for actions detected as potentially unsafe.
+- **Full Access** — edit any file and access the internet without approval.
+- **Read Only** — read files only; approval required to edit files or access
+  the internet.
+
+The available presets mirror Codex's `/permissions` popup and are
+codex-version-dependent, so an older build may not offer **Read Only**.
+
+Switching from the web UI drives Codex's own `/permissions` popup on the runner
+and waits for Codex to confirm the change before it's applied — so if the Codex
+terminal isn't running (reconnect the session first) or the build's
+`/permissions` doesn't offer the chosen preset, you get an error instead of the
+picker claiming a mode Codex never entered. The picker also tracks changes you
+make directly through `/permissions` inside the Codex TUI: it updates live, even
+while the config gear is open. Until a switch happens (from either side), the
+picker shows **Set in Codex** rather than a guessed default.
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:

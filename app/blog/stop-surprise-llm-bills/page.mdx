@@ -21,47 +21,16 @@ export const meta = {
 
 > **TL;DR**: Omnigent provides production-ready cost controls through smart routing (blocks trivial tasks from expensive models), progressive budgets (soft warnings before hard limits), custom pricing for self-hosted models, and comprehensive usage tracking. Deploy in phases: visibility first, then routing, then budgets.
 
-As AI coding assistants become essential development tools, organizations face a growing challenge: **surprise LLM bills that blow through monthly budgets**. One debugging session, one multi-agent workflow gone wrong, and costs spiral out of control.
+As AI coding assistants become essential, **surprise LLM bills blow through monthly budgets**. One debugging session or multi-agent workflow gone wrong, and costs spiral.
 
-Unlike traditional software costs that scale linearly with users or compute, LLM expenses scale with *token consumption*. Every character sent to and received from the model translates directly into API charges.
+Unlike traditional software, LLM expenses scale with *token consumption*—every character costs money. Long conversations accumulate context, multi-agent workflows amplify usage, and hard budget caps interrupt productive flow. Many teams discover their bills only after the fact.
 
-The problem compounds quickly:
-- **Long conversations accumulate context**: A productive debugging session can consume tens of thousands of tokens as context grows with each exchange
-- **Multi-agent workflows amplify costs**: Spawning sub-agents for parallel research or implementation multiplies token usage across the agent tree
-- **Traditional cost controls fail**: Hard budget caps that abruptly block work mid-task create frustrating user experiences and interrupt productive flow
+**Omnigent's four-layer solution:**
 
-Many teams discover their LLM bills only after the fact, with limited visibility into *where* tokens were consumed or *which* workflows drove costs.
-
-**Omnigent addresses this with a comprehensive, cost optimization strategy:**
-
-1. **Prevention**: Smart routing reduces expensive model usage before spend occurs
+1. **Prevention**: Smart routing blocks trivial tasks from expensive models
 2. **Control**: Progressive budgets with soft warnings and smart downgrade gates
 3. **Visibility**: Real-time cost tracking with detailed breakdowns
-4. **Safeguards**: Thrashing detection, scheduled task limits, native terminal approvals
-
-This blog post covers **features available today** in Omnigent's cost optimization toolkit.
-
----
-
-**Example impact scenarios:**
-
-**Small team switching to cheaper models**  
-Team adopts Sonnet for routine work instead of Opus  
-*80% cost reduction on routine coding tasks*
-
-**Team with thrashing detection**  
-Catches runaway sessions early  
-*Prevents infinite retry loops from consuming budget*
-
-**Organization using smart routing**  
-Blocks trivial tasks from expensive models  
-*Maintains productivity while reducing waste*
-
-**Self-hosted infrastructure**  
-Custom pricing for internal models  
-*Enables accurate budget tracking and enforcement*
-
----
+4. **Safeguards**: Thrashing detection, scheduled task limits, terminal approvals
 
 ## Smart Task Routing: Prevention First
 
@@ -320,6 +289,28 @@ user_daily_cost_budget:
 scheduled_task_cost_budget:
   max_cost_usd: 2.0          # Strict limits for automation
 ```
+
+---
+
+**Example impact scenarios:**
+
+**Small team switching to cheaper models**  
+Team adopts Sonnet for routine work instead of Opus  
+*80% cost reduction on routine coding tasks*
+
+**Team with thrashing detection**  
+Catches runaway sessions early  
+*Prevents infinite retry loops from consuming budget*
+
+**Organization using smart routing**  
+Blocks trivial tasks from expensive models  
+*Maintains productivity while reducing waste*
+
+**Self-hosted infrastructure**  
+Custom pricing for internal models  
+*Enables accurate budget tracking and enforcement*
+
+---
 
 ## Putting It All Together
 

@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="wrap-wide footer-inner">
-        <span>Built by Omnigent Contributors.</span>
+        <span>Built by the Databricks AI team, Neon and the Omnigent Contributors.</span>
         <span className="spacer" />
         <Link href="/quickstart/install">Get Started</Link>
         <Link href="/docs/use/coding-agents">Docs</Link>

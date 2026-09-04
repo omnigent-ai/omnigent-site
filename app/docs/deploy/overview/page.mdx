@@ -181,6 +181,28 @@ This is why your local Claude Code or Codex installation "just works." Runners
 started on your laptop have direct access to your machine's tools, files, and
 credentials.
 
+<div className="note">
+
+**Registration fails with `HTTP 409: this machine is already registered to a
+different account`?** The server keys host registrations by a persisted host id,
+and this machine's id is already claimed by another identity — commonly an M2M
+service principal picked up from `~/.databrickscfg`, or the single-user `local`
+owner from before the server switched to accounts auth. Mint a fresh host id and
+re-register as a brand-new host under the account you're signed in as:
+
+```
+omni host stop --all   # stop any running host daemon first
+omni host reset-id      # mint a new host id (the host name is preserved)
+omni host <server-url>  # register this machine under the new id
+```
+
+`reset-id` refuses to run while a host daemon is live, so stop it first. Pass
+`--yes` to skip the confirmation prompt. The registration owned by the old id is
+left behind for an administrator to clean up; alternatively, an administrator can
+remove the existing host registration instead of resetting.
+
+</div>
+
 However, moving the runner to a
 [cloud sandbox host](/docs/deploy/cloud-sandbox-host) gives you:
 

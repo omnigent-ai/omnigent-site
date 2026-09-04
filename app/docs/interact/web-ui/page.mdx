@@ -168,6 +168,54 @@ Sign-in still happens in the foreground, before the spawn: pointing
 the browser login in your terminal first, since the detached daemon has no
 terminal to prompt on.
 
+## Keyboard shortcuts
+
+The web UI ships a set of global keyboard shortcuts. Press `⌘/` (`Ctrl+/` on
+Windows/Linux) at any time to open the in-app shortcuts overlay, which lists the
+current bindings for your platform.
+
+### Platform-aware modifiers
+
+Each global shortcut is bound to a single command modifier per platform, and
+only that modifier fires it:
+
+- On **macOS** the shortcuts use **⌘**, and only ⌘ triggers them. The Ctrl
+  variant — and a combined ⌘+Ctrl chord — is inert, so Ctrl-based
+  readline/emacs editing keys (`Ctrl+A`, `Ctrl+K`, …) keep working in the
+  composer and terminal.
+- On **Windows/Linux** the shortcuts use **Ctrl**, and only Ctrl triggers them.
+
+What you see in the shortcuts overlay is what fires: the overlay shows ⌘ on
+macOS and Ctrl elsewhere.
+
+### Switch sessions
+
+Move between sidebar sessions without leaving the composer:
+
+- **Previous session** — `⌘[` (`Ctrl+[`)
+- **Next session** — `⌘]` (`Ctrl+]`)
+
+The selection wraps at the ends of the list. The bracket chords carry no
+text-editing meaning, so they fire even while the composer is focused; inside a
+terminal or the code editor — which bind `⌘[` / `⌘]` themselves (indent/outdent,
+or forwarding to the PTY) — the shortcut yields to that surface.
+
+### Other global shortcuts
+
+| Action | Shortcut |
+| --- | --- |
+| Open the command palette | `⌘K` (`Ctrl+K`) |
+| New session | `⌘N` (`Ctrl+N`) |
+| Toggle the left (Conversations) / right (Workspace) sidebar | `⌘⌥[` / `⌘⌥]` (`Ctrl+Alt+[` / `Ctrl+Alt+]`) |
+| Toggle voice dictation | `⌘⌥V` (`Ctrl+Alt+V`) |
+| Approve a pending request | `⌘↵` (`Ctrl+Enter`) |
+| Show the shortcuts overlay | `⌘/` (`Ctrl+/`) |
+
+Jump straight to a pinned session with the command modifier plus a digit
+(`1`–`9` for the first nine, `0` for the tenth). In a browser tab — where plain
+⌘/Ctrl+digit is reserved for native tab-switching — the binding adds Alt
+(`⌘⌥1`…, `Ctrl+Alt+1`…); the installed desktop app uses the plain `⌘1`… chord.
+
 ## Install as an app
 
 The web UI is an installable [Progressive Web App (PWA)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps).

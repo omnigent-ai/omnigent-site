@@ -286,6 +286,14 @@ Start a new session and select **New Sandbox** in the host picker. The server
 provisions the cloud host, starts the runner, and connects it back automatically. This works
 the same on both hosting platforms.
 
+To start the agent on an existing codebase, fill in the composer's
+**repository** field (and an optional branch) and the server clones that repo
+into the sandbox before the agent runs. When the GitHub App is enabled and you've
+connected your GitHub account, you can pick a repo and branch from a searchable
+list instead of pasting a URL, and private repositories clone authenticated as
+your connected account. See
+[Clone a repo into a sandbox session](/docs/interact/web-ui#clone-a-repo-into-a-sandbox-session).
+
 ## Community sandbox providers
 
 The providers above ship with Omnigent. Beyond them, the server discovers

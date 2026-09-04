@@ -132,6 +132,43 @@ the selected model rides along as the launch override and the runner uses it at
 launch. Under a sandbox launch, where no host catalog is resolved, the picker is
 empty and the harness default is used.
 
+### Clone a repo into a sandbox session
+
+When you start a session on a managed **New Sandbox** host (see
+[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)), the composer shows a
+**repository** field. Give it a repo URL and the server clones that repo into
+the fresh sandbox before the agent starts; leave it blank for an empty
+server-created workspace. An optional **branch** pins the clone to a specific
+branch — leave it blank to clone the repo's default branch.
+
+You can always paste any repo URL into the free-text field
+(`https://github.com/org/repo`). When the server has the GitHub App enabled and
+you've connected your GitHub account, the composer also offers a **searchable
+repo picker** above that field:
+
+- **Pick a repo.** The picker lists the repositories your GitHub account can
+  access, most-recently-pushed first, and filters as you type on `owner/name`.
+  Private repositories are marked with a lock icon. Choosing one fills the clone
+  URL for you.
+- **Pick a branch.** Once a repo is selected, a searchable branch list loads for
+  it. The default entry (labeled `Default (<branch>)`) clones the repo's default
+  branch; pick another to pin it.
+- **Partial lists.** For accounts with very many repositories the picker shows
+  your most recently pushed ones and notes when the list is partial — paste the
+  URL of any repo it doesn't show.
+- **Fallbacks.** If you haven't connected GitHub, only the free-text URL field
+  appears. If the repo list can't be loaded, the composer says so and you can
+  still paste a URL.
+
+Private repositories are cloned into the sandbox authenticated as your connected
+GitHub account, so a private clone works without a shared token.
+
+The last repo (and branch) you launched a sandbox with is remembered in your
+browser and pre-fills the composer on your next visit, so returning to the same
+project doesn't mean re-picking it. If you paste a clone URL that embeds a token
+(`https://x-access-token:…@github.com/…`), the credentials are stripped before
+the URL is remembered.
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:

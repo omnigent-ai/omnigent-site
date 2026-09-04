@@ -22,7 +22,8 @@ shareable session, so you can start work in one place and keep going anywhere.
 
 ## Start a session
 
-The terminal interface requires `tmux`, so install it first if you don't have it:
+Native terminal harnesses require `tmux`, so install it first if you plan to use
+commands such as `omni claude` or `omni codex`:
 
 ```
 # macOS
@@ -37,8 +38,8 @@ Then launch an agent:
 ```
 omni claude                          # Claude Code
 omni codex                           # Codex
-omni goose                           # Goose (native TUI)
-omni hermes                          # Hermes (native TUI)
+omni goose                           # Goose over ACP
+omni hermes                          # Hermes subprocess harness
 omni run agent.yaml                  # custom omnigent
 omni run ./my-agent/                 # directory with config.yaml
 ```
@@ -80,8 +81,8 @@ A session is a conversation. Every message, tool call, and file change lives in 
 continuous thread. Sessions are the core unit of work in Omnigent, and three properties make
 them useful:
 
-- **Agent-independent.** A session belongs to you, not to a specific agent. Switch agents mid-conversation: start with a planner, switch to a coder, bring in a reviewer. The full history carries forward.
-- **Persistent.** Every session has a conversation ID and lives beyond the current terminal window. Close your laptop, come back tomorrow, resume where you left off: `omni resume <conversation_id>`
+- **Agent-independent.** A session belongs to you, not to a specific agent. Compatible APIs can switch its agent while retaining history, although the web UI does not currently expose this action.
+- **Persistent.** Every session has a conversation ID and lives beyond the current terminal window. Native terminal sessions resume with `omni resume <conversation_id>`; other runtimes use `omni run --resume <conversation_id> <agent>`.
 - **Shared.** Any omnigent can read the history of other sessions you have access to. When you spin up a new task, the agent already has context from previous work.
 
 ### Customize automatic session titles

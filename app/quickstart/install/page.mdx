@@ -86,6 +86,19 @@ browser can't, like notifications and a dock badge.
 See the [Desktop app](/docs/interact/desktop) reference for all platforms and
 details.
 
+## Upgrade the CLI
+
+Self-upgrade an existing install to the latest release with:
+
+```
+omni upgrade
+```
+
+Add `--check` to report whether a newer version is available and exit without
+changing anything. The older `omni update` spelling is **deprecated**: it still
+runs the upgrade, but prints a deprecation warning and points you at
+`omni upgrade`. Use `omni upgrade` directly.
+
 ## Nightly builds
 
 Nightly builds are datestamped prereleases (`vX.Y.Z.devYYYYMMDD`) cut from the

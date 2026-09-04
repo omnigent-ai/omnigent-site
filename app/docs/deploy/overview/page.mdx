@@ -140,6 +140,20 @@ service is not available in your region, or when you need something it does
 not expose yet — custom YAML policies, bring-your-own provider API keys, or
 custom egress controls.
 
+The first-party **Canvas** extension is disabled by default. To enable it for
+a specific self-managed app, set the `OMNIGENT_ENABLE_CANVAS=true` deployment
+environment variable when invoking `deploy/databricks/deploy.py`:
+
+```bash
+OMNIGENT_ENABLE_CANVAS=true uv run python deploy/databricks/deploy.py \
+    --app-name <canvas-enabled-app> ...
+```
+
+Leave the variable unset for every other app. `--skip-web-ui` deploys stay
+API-only and ignore the Canvas opt-in. To ship additional extensions, pass
+repeatable `--extension-wheel` arguments; every extension wheel must also fit
+under the 10 MB Databricks Apps source-file cap.
+
 ### Kubernetes
 
 Deploy the Omnigent server to a Kubernetes cluster with the kustomize manifests

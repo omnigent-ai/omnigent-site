@@ -159,9 +159,14 @@ kubectl apply -k deploy/kubernetes/overlays/sandbox-runners
 # then create the omnigent-creds harness Secret (see the overlay README)
 ```
 
+Setting `sandbox.provider: agent_sandbox` instead runs the same runner Pod as a
+self-reclaiming [agent-sandbox](https://github.com/kubernetes-sigs/agent-sandbox)
+`Sandbox` that suspends when idle and wakes on the next message, so abandoned
+sandboxes free their node slot within an hour instead of holding it for a week.
+
 See the [Kubernetes sandbox configuration reference](/docs/reference/configuration/kubernetes)
-for Pod-start timeouts, persistent storage, and rotation-friendly Secret
-mounts.
+for both providers, Pod-start timeouts, persistent storage, and
+rotation-friendly Secret mounts.
 
 ## Runner
 

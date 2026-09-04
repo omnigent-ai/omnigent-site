@@ -17,6 +17,104 @@ each managed session. Configure it under `sandbox.kubernetes` in the
 
 See [Shared Server](/docs/deploy/overview#kubernetes) for the deployment steps.
 
+## Self-reclaiming sandboxes (`agent_sandbox` provider)
+
+The default `kubernetes` provider runs each sandbox as a `batch/v1` Job capped
+by a fixed 7-day `activeDeadlineSeconds`, so an abandoned sandbox holds a node
+slot for the full week whether or not any work ever ran in it.
+
+Set `sandbox.provider: agent_sandbox` to run the identical runner Pod inside an
+[agent-sandbox](https://github.com/kubernetes-sigs/agent-sandbox) `Sandbox`
+custom resource (`agents.x-k8s.io/v1beta1`) instead. Its `spec.shutdownTime` is
+a deadline the server keeps pushing forward for as long as the sandbox has a
+live runner tunnel, which turns the fixed lifetime into an inactivity timeout:
+
+- a busy sandbox lives as long as work keeps arriving;
+- an idle one is reclaimed within one shutdown window;
+- the agent-sandbox controller does the teardown, so the Omnigent server never
+  enumerates or babysits live Pods.
+
+Both providers read the same `sandbox.kubernetes` block, so switching is a
+one-line change — every other key stays put:
+
+```yaml
+sandbox:
+  provider: agent_sandbox      # was: kubernetes
+  server_url: http://omnigent.omnigent.svc.cluster.local
+  kubernetes:
+    namespace: omnigent-sandboxes
+    secret_name: omnigent-creds
+```
+
+**Prerequisites:** install the agent-sandbox controller and its CRDs in the
+cluster, and grant the server's ServiceAccount `create`/`get`/`patch`/`delete`
+on `sandboxes` (the `sandbox-runners` overlay's `role.yaml` already applies
+this rule). Granting it is harmless when the CRD is not installed — the rule
+simply never matches.
+
+### Shutdown window
+
+| Setting | Value                                       |
+| ------- | ------------------------------------------- |
+| Env var | `OMNIGENT_AGENT_SANDBOX_SHUTDOWN_WINDOW_S`  |
+| Type    | Positive integer, in seconds                |
+| Default | `3600` (1 hour)                             |
+| Minimum | `1200` (20 minutes) — lower values clamp up |
+
+`shutdownTime` is always set this many seconds ahead of the last refresh, so
+the window is effectively the sandbox's inactivity timeout. It must stay
+comfortably above the server's per-runner keepalive refresh rate so a couple of
+missed or slow refreshes can't reclaim a busy sandbox; a configured value below
+the `1200`-second floor is clamped up to it, and a non-positive or unparseable
+value falls through to the `3600`-second default.
+
+### Suspend and resume
+
+The `Sandbox` uses `shutdownPolicy: Retain`, so a lapsed deadline **suspends**
+the sandbox rather than deleting it: the Pod is torn down (freeing CPU and
+memory), but the `Sandbox` object and its volumes stay. Sending a new message
+in the session pushes the deadline forward and wakes the sandbox under the same
+id, keeping its host identity and conversation. Deleting the session terminates
+the sandbox for good; a deployment-wide reaper handles ones abandoned
+long-term. `kubectl get sandbox -n omnigent-sandboxes` shows suspended ones
+with `Ready=False`, `Reason=SandboxExpired`.
+
+### Durable workspace
+
+| Setting | Value                                                     |
+| ------- | --------------------------------------------------------- |
+| Env var | `OMNIGENT_AGENT_SANDBOX_WORKSPACE_SIZE`                   |
+| Type    | Kubernetes storage quantity (e.g. `20Gi`)                 |
+| Default | Unset — `$HOME` stays an `emptyDir` that dies with the Pod |
+
+By default `$HOME` is an `emptyDir`, so a woken sandbox keeps its conversation
+and host identity but starts from an empty workspace. Set a size on the
+**server** to move `$HOME` onto a per-sandbox PersistentVolumeClaim instead, so
+the workspace, `~/.omnigent`, and harness caches all survive a suspend:
+
+```yaml
+env:
+  - name: OMNIGENT_AGENT_SANDBOX_WORKSPACE_SIZE
+    value: "20Gi"
+  - name: OMNIGENT_AGENT_SANDBOX_STORAGE_CLASS   # optional
+    value: "fast-ssd"                            # omit for the default class
+```
+
+`OMNIGENT_AGENT_SANDBOX_STORAGE_CLASS` names the `StorageClass` for the claim;
+leave it unset to use the cluster's default class (it is ignored without a
+workspace size). Requirements and caveats:
+
+- The cluster needs a StorageClass with a dynamic provisioner that supports
+  `ReadWriteOnce`. Without one the Pod stays `Pending` on an unbound claim.
+- One claim per sandbox, named `home-<sandbox-id>` and owned by the `Sandbox`,
+  so a session delete cascades it away. Nothing is shared between sessions.
+- The claim template is immutable after a `Sandbox` is created, so enabling or
+  resizing this applies to **new** sandboxes only; existing ones keep the
+  workspace they were born with.
+- This is a different lane from [`pvc_mounts`](#persistent-storage-for-runner-pods),
+  which stays pre-created, deployment-global, and shared. Use `pvc_mounts` for
+  shared datasets and caches, the durable workspace for per-session work.
+
 ## Pod-start wait budget
 
 | Setting | Value                                    |

@@ -137,6 +137,11 @@ const SECTIONS = [
           },
         ],
       },
+      {
+        title: "Browser Extensions",
+        href: "/docs/reference/browser-extensions",
+        pages: [],
+      },
       { title: "REST API", href: "/reference", pages: [] },
       {
         title: "Usage Telemetry",

@@ -286,6 +286,50 @@ Start a new session and select **New Sandbox** in the host picker. The server
 provisions the cloud host, starts the runner, and connects it back automatically. This works
 the same on both hosting platforms.
 
+### Reap stale sandboxes (optional)
+
+By default a managed sandbox lives until its session is deleted (or the
+provider's own lifetime cap reaps it). To automatically terminate sandboxes
+whose hosts have gone offline and stayed offline, add an optional `reaper` block
+to `sandbox:`. It is **deployment-wide** — configure it next to `provider` (or
+`providers:`), never inside an individual provider entry:
+
+```
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+  reaper:                              # optional; disabled by default
+    enabled: true                      # default: false
+    terminate_after_offline_days: 30   # default: 30 days
+    sweep_interval_s: 86400            # default: 1 day
+```
+
+- `enabled` — whether the server starts the reaper loop. Defaults to `false`
+  because terminating user compute is destructive; opt in explicitly.
+- `terminate_after_offline_days` — the minimum number of days since a managed
+  host's last heartbeat before its current sandbox generation may be terminated.
+  Defaults to `30`.
+- `sweep_interval_s` — seconds between complete sweeps. Defaults to `86400`
+  (one day).
+
+Both `terminate_after_offline_days` and `sweep_interval_s` must be positive
+integers. Setting `reaper` inside a `providers:` list entry is rejected at
+startup — one loop covers the whole deployment and dispatches each termination
+through the provider recorded on the managed host it is reaping.
+
+Reaping detaches only the stale sandbox generation: the session transcript and
+the durable host binding stay, so the next message to that session can launch a
+fresh sandbox under the same host identity. A provider termination that fails
+stays pending and is retried on a later sweep.
+
+<div className="note">
+
+The reaper requires a configured host store. If `reaper.enabled` is `true` but
+no host store is configured, the server logs a warning and the reaper does not
+run.
+
+</div>
+
 ## Community sandbox providers
 
 The providers above ship with Omnigent. Beyond them, the server discovers

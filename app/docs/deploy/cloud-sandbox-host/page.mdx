@@ -206,6 +206,34 @@ default when neither is set).
 `disk_size_gb` sets the box disk size in gigabytes and must be a positive
 integer. Omit it to use the Boxlite SDK's own default disk size.
 
+**Microsandbox:**
+
+The `microsandbox` provider runs each managed session in a micro-VM on the
+**same machine as the server**. Because the guest runs untrusted agent code
+next to the server, its default `host` network mode is scoped to an explicit
+TCP port allowlist rather than the whole host.
+
+```
+sandbox:
+  provider: microsandbox
+  server_url: http://host.microsandbox.internal:8317   # dial-back path from the guest
+  microsandbox:
+    host_ports: [8317]                                  # extra host-local ports the guest may reach
+```
+
+`host.microsandbox.internal` is the stable guest hostname for the machine
+running microsandbox. Under `host` network mode:
+
+- The `server_url` port is added to the host allowlist **only when `server_url`
+  targets `host.microsandbox.internal`** (the dial-back path to a locally
+  self-hosted server). A public `server_url` needs only public egress and does
+  **not** implicitly open the matching port on the host machine.
+- List any host-local services the guest legitimately needs in `host_ports`
+  (each an integer in `1`–`65535`) — for example `host_ports: [8317]` for a
+  local LLM gateway the sandbox env reaches at
+  `http://host.microsandbox.internal:8317`. Everything else on the host stays
+  unreachable.
+
 <div className="note">
 
 **Islo idle pause and resume:** server-managed Islo sandboxes pause after 15

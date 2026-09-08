@@ -110,6 +110,39 @@ curl -fsSL https://cli.devin.ai/install.sh | bash
 devin auth login
 ```
 
+## Jcode
+
+Jcode ([jcode.sh](https://jcode.sh)) ships as a builtin harness with the id
+`jcode`. Like Grok Build and Devin, it drives its vendor CLI (`jcode acp`) over
+the [Agent Client Protocol](https://agentclientprotocol.com) over stdio —
+Omnigent renders its streaming output, reasoning, and tool cards and routes its
+permission requests through your [contextual policies](/docs/policies/overview).
+It's built in, so you select the `jcode` harness id directly instead of
+registering a launch command.
+
+```
+omni run --harness jcode
+```
+
+Jcode brings **its own auth and model** — Omnigent stores no credential. Jcode
+ships via a curl installer (no npm package) and owns its provider and model
+selection in `~/.jcode/config.toml`, so install the CLI and configure a provider
+there first:
+
+```
+curl -fsSL https://jcode.sh/install | bash
+```
+
+<div className="note">
+
+**Note:** Unlike most builtin ACP harnesses, Jcode's ACP server does **not**
+support session-scoped MCP — it ignores the `mcpServers` sent in `session/new`.
+Omnigent therefore does not advertise its builtin MCP tools (session, sub-agent,
+skill, and policy tools) to Jcode. Configure any MCP servers Jcode should use in
+its own `~/.jcode/mcp.json` instead.
+
+</div>
+
 ## Hermes
 
 Hermes ships as a builtin harness with the id `hermes` and is offered directly

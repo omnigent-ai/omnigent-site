@@ -148,12 +148,24 @@ bot DMs them a **Set up Omnigent** button. The button opens a modal that:
    server) and a **workspace path** — the absolute directory on the host where
    each session's runner starts. It defaults to the host's home directory.
 
+If the operator's server can provision sandboxes itself (a
+[cloud sandbox host](/docs/deploy/cloud-sandbox-host) is configured), the host
+menu lists a **Managed sandbox** option first — labelled with the backing
+provider when the server names one, e.g. *Managed sandbox (modal)*. Choose it
+and the server creates the sandbox, picks its host, and roots the session in a
+working directory it creates inside the sandbox — so the **workspace path is
+optional and ignored** for a managed sandbox. This lets a user who runs no host
+of their own finish setup instead of dead-ending when nothing is online.
+
 The choice is saved per (Slack workspace, user). Run `/omnigent` any time to
 change agent, host, or workspace, and `/omnigent logout` to revoke your token
 and clear all saved settings.
 
-Each new session launches a **fresh runner** on the chosen host, rooted at the
-configured workspace.
+Each new session on your **own host** launches a **fresh runner** there, rooted
+at the configured workspace. A **managed sandbox** session launches no runner of
+its own — the server provisions the sandbox and binds the session to it. The
+host choice is remembered **per thread**, so a session keeps running where it
+was created even if you later re-run setup and switch host type.
 
 ## Authentication
 
@@ -267,6 +279,7 @@ the conversation.
 - Tool-approval cards and multiple-choice question forms, answerable in Slack or the web UI
 - Per-user identity on `accounts`- and `oidc`-mode servers, and unauthenticated servers
 - Per-user identity on `header`/proxy servers deployed as **Databricks Apps** (via the bot's web-auth flow)
+- **Managed sandbox** sessions on servers that provision one — no host of your own required
 - Live-updating todo/plan messages, policy-denial notices, and produced-file notices
 - `/omnigent` (setup / reconfigure) and `/omnigent logout` slash commands
 
@@ -284,9 +297,10 @@ the conversation.
   `message.im` event subscription are added, then reinstall the app.
 - **It can't reach your server** — the bot replies telling you to run
   `/omnigent` to reconfigure.
-- **No host is online** — the bot replies with the command to run on the
-  machine you want to use: `omni host --server <your-server-url>`, then run
-  `/omnigent` again.
+- **No host is online** — when the server offers a [managed sandbox](#per-user-setup),
+  setup lists it instead of blocking. Otherwise the bot replies with the command
+  to run on the machine you want to use: `omni host --server <your-server-url>`,
+  then run `/omnigent` again.
 - **Login never completes on an accounts-mode server** — check that the server
   sets `OMNIGENT_DEVICE_GRANT_ENABLED=1`.
 - **Events arrive but nothing happens** — set `LOG_LEVEL=DEBUG` in `.env` and

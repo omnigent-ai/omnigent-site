@@ -165,8 +165,14 @@ policies:
 omnigent server -c config.yaml
 ```
 
-Server-wide policies use the `function: {path, arguments}` format (not
-`handler` / `factory_params`). Restart the server after editing.
+Both argument formats are accepted here. The `function: {path, arguments}`
+form shown above and the `handler` + `factory_params` form used in the
+[Omnigent config level](#omnigent-config-level-declare-in-yaml) (and by the
+`/v1/policies` API) are equivalent, so the same policy block works in a
+server config, an Omnigent spec bundle, or the REST API. Supply arguments
+through one of the two — setting both `function.arguments` and a sibling
+`factory_params` on the same policy is rejected. Restart the server after
+editing.
 
 Admins can also manage server-wide policies without touching config files from
 the **Settings** page at `/settings/policies`. Changes take effect immediately

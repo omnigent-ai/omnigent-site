@@ -241,6 +241,44 @@ reads the on-disk file directly (no upload). This button shows only for native
 coding-agent sessions, since those harnesses run in the workspace and resolve
 the referenced file themselves.
 
+## GitHub pull request panel
+
+When a session's workspace is a git checkout, the **GitHub** panel shows the
+pull request for the current branch — the PR title and status, its changed
+files, the whole-PR diff, checks, and review comments. It reads everything
+through the GitHub CLI, so the host holding the workspace needs `gh` installed
+and signed in (`gh auth login`).
+
+The panel resolves the branch's PR even when the pushed branch name doesn't
+match your local checkout — for example a fork or triangular push, or a stack
+created by a tool like `git-stack` (`git pp`) — by matching the pushed commit
+to its PR. The base repository is auto-resolved from the PR; a manual
+`gh repo set-default` is respected and never overridden.
+
+### Choose which GitHub account to use
+
+If the panel can't reach the upstream repo, it shows **Can't reach the upstream
+repo** with an **account selector** — a dropdown of the accounts `gh` is signed
+in to (`gh auth status`), with the currently active one labeled `(active)`.
+Reaching a private repo or a fork often just means running `gh` as a different
+identity, so pick the account that can see the repo and the panel refreshes.
+
+- The selector appears only when more than one `gh` account is configured and
+  only in the repo-unreachable state — once the repo resolves the account is
+  already correct, so the knob is hidden on the header and the "no PR yet" view.
+- Your choice is remembered per workspace and stored in
+  `~/.omnigent/config.yaml` under `github.accounts`, keyed by the repository's
+  main worktree path — so a checkout and its linked worktrees share the
+  preference while separate clones stay independent. From then on the panel runs
+  each `gh` call as that account; clearing the selection falls back to `gh`'s
+  active account.
+- The preference applies only to local (unsandboxed) hosts. Inside a managed
+  cloud sandbox every session shares one broker identity, so there is nothing to
+  choose and the selector does not appear.
+
+The selection is applied through the session's runner when it's online, or over
+the host tunnel when the runner is asleep, so it takes effect either way.
+
 ## Mentioning workspace files
 
 In a coding-agent session, type `@` in the composer to browse and attach

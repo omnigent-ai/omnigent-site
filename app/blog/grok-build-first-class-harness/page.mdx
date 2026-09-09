@@ -1,0 +1,54 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Run xAI's Grok Build alongside Claude Code and Codex",
+  "Grok Build (xAI's grok CLI) is now a first-class harness in Omnigent, so you can drive it from the same web UI as Claude Code and Codex.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/grok-build-first-class-harness",
+  },
+);
+
+export const meta = {
+  title: "Run xAI's Grok Build alongside Claude Code and Codex",
+  date: "2026-08-11",
+  category: "Multi-harness",
+  author: "omnigent",
+  heroArt: "/images/blog/grok-build-first-class-harness.png",
+};
+
+<BlogPostHeader slug="grok-build-first-class-harness" />
+
+If you want to try xAI's Grok Build on your work, you can now pick it in
+Omnigent the same way you pick Claude Code or Codex and drive it from the same
+web UI.
+
+Grok Build ships as xAI's `grok` CLI, and until now running it here meant
+registering it by hand as a custom agent. It is now a first-class harness:
+Omnigent knows how to launch it, renders its streaming output and tool cards,
+and routes its permission requests through your policies as approval cards, so
+it runs inside your governance from the first turn.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: picking Grok Build from the harness picker and running one turn with its tool calls rendered in the web UI. */}
+
+Grok Build brings its own auth, so install and log into the CLI first; Omnigent
+stores no credential. Install it with the xAI installer, then sign in with
+device-code OAuth or an API key:
+
+```bash
+curl -fsSL https://x.ai/cli/install.sh | bash
+grok login --device-auth   # or set XAI_API_KEY
+```
+
+Then select Grok Build in the web harness picker, or launch it straight from
+the CLI:
+
+```bash
+omni run --harness grok
+```
+
+See the [harnesses docs](/docs/build/harnesses) for setup and configuration.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

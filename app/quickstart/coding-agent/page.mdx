@@ -3,7 +3,7 @@ import ContentTabs from "@/components/ContentTabs";
 
 export const metadata = pageMeta(
   "Tutorial: Coding Agent",
-  "Tutorial: see what Omnigent adds on top of Claude Code or Codex, including a web UI, mobile access, session sharing, and mid-conversation agent switching.",
+  "Tutorial: see what Omnigent adds on top of Claude Code or Codex, including a web UI, mobile access, persistent sessions, and session sharing.",
   {
     eyebrow: "Quickstart",
     path: "/quickstart/coding-agent",
@@ -26,9 +26,9 @@ omni claude    # Claude Code
 omni codex     # Codex
 ```
 
-Pick whichever you already use. Either command launches the coding agent
-in your terminal and opens a web UI at `http://localhost:6767`. Both are
-connected to the same session and stream output in real time.
+Pick whichever you already use. Either command launches the coding agent in
+your terminal and prints the web UI URL, normally `http://localhost:6767`. Open
+it to view the same session and stream output in real time.
 
 ## 2. Give it a task
 

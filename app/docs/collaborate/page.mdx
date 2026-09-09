@@ -27,7 +27,8 @@ Great for pairing or handing the keyboard to a domain expert mid-investigation.
 <ul>
   <li>
     In the <Link href="/docs/interact/web-ui">web UI</Link>, hit{" "}
-    <strong>Share</strong> and send the link to your teammate.
+    <strong>Share</strong>, grant your teammate Read or Edit access (or enable
+    public read access), then send the link.
     <ul>
       <li>
         Share grants one of two permission levels: <strong>Read</strong>{" "}
@@ -85,7 +86,7 @@ To hide the labels from the model, set the environment variable before starting
 the server:
 
 ```
-OMNIGENT_SHARED_MESSAGE_ATTRIBUTION_ENABLED=0 omni server start
+OMNIGENT_SHARED_MESSAGE_ATTRIBUTION_ENABLED=0 omni server --background
 ```
 
 The switch is on by default; any of `0`, `false`, `no`, or `off` disables it.

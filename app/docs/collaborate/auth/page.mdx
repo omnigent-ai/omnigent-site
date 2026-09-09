@@ -30,7 +30,7 @@ enabled by default with built-in accounts.
 For non-Docker deploys, enable built-in accounts manually:
 
 ```
-OMNIGENT_AUTH_ENABLED=1 omni server start
+OMNIGENT_AUTH_ENABLED=1 omni server --background
 ```
 
 1. Create the first admin.
@@ -98,8 +98,9 @@ path only; GitHub always requires a verified primary email.
 
 If your server sits behind an existing SSO proxy (e.g. OAuth2 Proxy, Cloudflare Access) that
 injects a trusted header, Omnigent can read the user identity directly from
-`X-Forwarded-Email`. No additional auth configuration is needed on the Omnigent
-side.
+`X-Forwarded-Email`. Set `OMNIGENT_AUTH_PROVIDER=header` on the server. If the
+proxy uses another header, also set `OMNIGENT_AUTH_HEADER`; use
+`OMNIGENT_AUTH_HEADER_STRIP_PREFIX` when its value includes a fixed prefix.
 
 ## Access control
 
@@ -152,7 +153,7 @@ The **sharing mode** has four tiers:
 | `off`                  | Sharing is disabled. No new grants can be created and the **Share** control is hidden.                                                   |
 
 ```
-OMNIGENT_SHARING_MODE=read_only omni server start
+OMNIGENT_SHARING_MODE=read_only omni server --background
 ```
 
 An unset or unrecognized value fails open to `on`. Under
@@ -169,7 +170,7 @@ is independent of the sharing mode — you can keep normal user-to-user sharing
 on while disabling public links.
 
 ```
-OMNIGENT_PUBLIC_SHARING=off omni server start
+OMNIGENT_PUBLIC_SHARING=off omni server --background
 ```
 
 Public access is enabled unless the value is explicitly falsy

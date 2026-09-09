@@ -1,0 +1,237 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta("Extensions", "Operator-installed Python distributions that contribute validated web-UI metadata — namespaced browser pages and primary-sidebar links — through a sandboxed browser SDK.", {
+  eyebrow: "Extensions",
+  path: "/docs/build/extensions",
+});
+
+# Extensions
+
+Omnigent extensions are operator-installed Python distributions that contribute
+validated application metadata. V1 supports namespaced **browser pages** and
+**links in the primary sidebar**.
+
+## Trust model
+
+Installing an extension is a full-code-trust operation: Python entry points
+execute in the Omnigent server process while their manifests are loaded. Only
+administrators should install extension packages.
+
+Browser UI runs behind a separate boundary. It executes in an opaque-origin
+sandboxed iframe, cannot access the parent React tree, cookies, authenticated
+transport, or native bridges, and has no network egress. Privileged actions go
+through the versioned, permission-checked browser SDK over a nonce-bound
+`MessagePort`.
+
+## V1 contribution points
+
+- **`pages`** — one-segment routes served under
+  `/extensions/{extension_id}/{route}`.
+- **`primary_navigation`** — links rendered in the extension-owned slot between
+  **Inbox** and **Usage**. `order` sorts only within that slot.
+
+Command metadata, activation events, and `when` expressions are validated and
+reserved but are **not** executed or evaluated in V1. Arbitrary React
+components, DOM selectors, FastAPI routers, runner tools, and user-installed
+marketplace packages are not supported.
+
+## Manifest
+
+An extension registers a factory under the `omnigent.extensions` Python
+entry-point group:
+
+```toml
+[project.entry-points."omnigent.extensions"]
+review = "acme_review.plugin:get_manifest"
+```
+
+The factory returns immutable values from `omnigent.extensions` and should not
+import runtime or UI implementation modules:
+
+```python
+from omnigent.extensions import (
+    EXTENSION_API_VERSION,
+    ExtensionEntrypoints,
+    ExtensionManifest,
+    ExtensionPermission,
+    PageContribution,
+    PrimaryNavigationContribution,
+)
+
+
+def get_manifest() -> ExtensionManifest:
+    return ExtensionManifest(
+        id="acme.review",
+        display_name="Acme Review",
+        distribution="omnigent-acme-review",
+        version="1.0.0",
+        requires_omnigent=">=0.11,<1",
+        extension_api=EXTENSION_API_VERSION,
+        entrypoints=ExtensionEntrypoints(
+            browser="dist/extension.js",
+            browser_css="dist/extension.css",
+        ),
+        permissions=frozenset({ExtensionPermission.NAVIGATION}),
+        pages=(
+            PageContribution(
+                id="acme.review.dashboard",
+                title="Reviews",
+                route="reviews",
+                view="dashboard",
+            ),
+        ),
+        primary_navigation=(
+            PrimaryNavigationContribution(
+                id="acme.review.primary-nav",
+                label="Reviews",
+                page="acme.review.dashboard",
+                icon="search",
+                order=500,
+            ),
+        ),
+    )
+```
+
+### Rules
+
+- IDs are lowercase, publisher-qualified, immutable, and globally
+  collision-checked. Contribution IDs begin with the owning extension ID.
+- Page routes contain exactly one safe segment and are always namespaced.
+- The manifest `distribution`/`version` must match installed package metadata.
+- `requires_omnigent` is a PEP 440 release-line range.
+- Browser paths are fixed to `dist/extension.js` and optional
+  `dist/extension.css` inside the entry point's verified import package.
+- Built-in IDs are reserved. All community extensions in a collision are
+  disabled deterministically.
+- One invalid field rejects the whole extension; one rejected extension does
+  not prevent others from loading.
+
+Extension packages can run the same manifest and bundle checks in their own
+tests without starting a server:
+
+```python
+from pathlib import Path
+from omnigent.extensions import check_extension_package
+
+check_extension_package(
+    get_manifest(),
+    project_root=Path(__file__).parents[2],
+    package_root=Path(__file__).parent,
+)
+```
+
+## Browser bundle
+
+A V1 browser extension ships these files inside the Python import package that
+owns its entry point:
+
+```text
+dist/extension.js
+# optional
+dist/extension.css
+```
+
+The files must be self-contained. Bundle all dependencies, including
+`@omnigent/extension-sdk`; runtime imports, Node.js APIs, source maps, and
+additional assets are not supported. The SDK is currently a private workspace
+package for internal authors and is not published to npm.
+
+The server reads and hashes each bundle once at startup. Digest URLs provide
+immutable caching and detect a stale catalog across restarts; they are not a
+separate integrity control. Missing, oversized, escaping, or unowned assets
+mark the extension unavailable and suppress its pages and navigation.
+
+### Runtime boundary
+
+The host injects the bundle into a `srcdoc` iframe with
+`sandbox="allow-scripts"` and without `allow-same-origin`. Its CSP denies
+network connections, forms, remote images, ambient fonts, and base URL changes.
+Extensions may use inline styles, `data:`/`blob:` images, and bundled
+frameworks. The parent transfers one nonce-bound `MessagePort`; removing the
+iframe explicitly deactivates the SDK.
+
+### SDK
+
+```ts
+import { defineExtension } from "@omnigent/extension-sdk";
+
+defineExtension({
+  async activate(context) {
+    const theme = await context.theme.getCurrent();
+    const value = await context.storage.user.get("key");
+    await context.navigation.openPage("publisher.extension.page", {
+      tab: "one",
+    });
+  },
+  deactivate() {},
+});
+```
+
+Available V1 methods and the permission each requires:
+
+- **`navigation`** — `openPage`, `openSession`, `openNewSession` (optionally
+  filed under a `projectId`), and `openExternal` (only for URLs the host
+  returned, such as a pull request).
+- No permission — `theme.getCurrent` and `theme.subscribe`.
+- **`storage.user`** — `storage.user.get`, `set`, and `delete`.
+- **`sessions.read`** — `sessions.listPage`, the SDK's `sessions.listAll`
+  helper, and `sessions.pullRequest` (the PR filed from a session's branch, via
+  the same GitHub lookup as the shell's GitHub tab).
+- **`projects.read`** — `projects.list`; **`projects.write`** —
+  `projects.create`.
+
+The sessions API exposes only top-level, non-archived sessions the current user
+can already read. Because operator-installed bundles are trusted code,
+`sessions.read` grants access to session titles and absolute working-directory
+paths visible to that user. Session summaries contain ID, title, status, an
+`unread` flag, a `titleProvisional` flag, working directory, worktree branch,
+project ID, and created/updated timestamps. Pages are capped at 25 rows and the
+SDK drains at most 200 pages or 5,000 sessions. Extensions receive neither raw
+authenticated fetch nor the internal session WebSocket.
+
+The projects API returns the current user's projects as ID, name, and icon.
+`projects.create` makes an empty project from a trimmed name of at most 100
+characters — the same operation as the sidebar's **New project** button — and
+the host refreshes the shell's project list afterwards.
+
+Storage uses parent-owned IndexedDB, not `localStorage`: 32 KB per value,
+256 KB and 128 keys per extension namespace. Writes are paced and quota errors
+are explicit; data is not evicted or automatically removed on uninstall.
+Standalone hosts scope storage by server origin and resolved user; embedded
+hosts must provide a stable `serverIdentity`, or storage reports `Unavailable`.
+
+## Installation and diagnostics
+
+Declare an `omnigent.extensions` entry point, install the wheel in the server's
+Python environment, and restart the server. Installation implies enablement in
+V1 — there is no separate enable switch.
+
+```bash
+omni extensions list
+omni extensions doctor publisher.extension
+```
+
+A broken extension does not stop healthy extensions or the server, and the
+public catalog omits rejected extensions. Administrators can inspect concise
+load and asset errors through `omni extensions doctor` or the
+`/v1/extensions/diagnostics` endpoint.
+
+### Development override
+
+`OMNIGENT_EXTENSION_DEV_BUNDLES` is an operator-only JSON map from extension ID
+to an existing absolute package root. It bypasses installed-package ownership,
+logs a startup warning, and is intended only for local rebuild loops:
+
+```bash
+export OMNIGENT_EXTENSION_DEV_BUNDLES='{"publisher.extension":"/absolute/package/root"}'
+```
+
+## Compatibility
+
+The extension API major is independent of the Omnigent package version. V1
+changes are additive; authors must ignore unknown catalog fields. Breaking
+changes require a new extension API major. Deprecations name the Omnigent
+release in which removal is planned and remain supported through the stated
+window. `activation_events`, `when`, and command records are reserved metadata
+only in V1 — do not rely on them until a later API explicitly documents
+execution.

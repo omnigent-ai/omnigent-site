@@ -68,6 +68,10 @@ const SECTIONS = [
     ],
   },
   {
+    title: "Extensions",
+    pages: [{ href: "/docs/build/extensions", label: "Overview" }],
+  },
+  {
     title: "Interfaces",
     pages: [
       { href: "/docs/interact/terminal", label: "Terminal" },

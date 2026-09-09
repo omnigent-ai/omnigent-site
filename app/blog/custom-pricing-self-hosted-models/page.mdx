@@ -1,0 +1,64 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = {
+  ...pageMeta(
+    "Track cost on your self-hosted Ollama and vLLM models",
+    "Set per-token prices in your provider config so Omnigent tracks cost for Ollama, vLLM, and other self-hosted endpoints that aren't in the pricing catalog.",
+    {
+      eyebrow: "Blog",
+      path: "/blog/custom-pricing-self-hosted-models",
+    },
+  ),
+  alternates: {
+    canonical: "/blog/custom-pricing-self-hosted-models",
+  },
+};
+
+export const meta = {
+  title: "Track cost on your self-hosted Ollama and vLLM models",
+  date: "2026-09-01",
+  category: "Governance",
+  author: "omnigent",
+  heroArt: "/images/blog/custom-pricing-self-hosted-models.png",
+};
+
+<BlogPostHeader slug="custom-pricing-self-hosted-models" />
+
+If you run agents against a self-hosted endpoint like Ollama or vLLM, you can
+now set your own per-token prices in the provider config and get the same cost
+tracking Omnigent already gives you for vendor models.
+
+Until now, cost tracking relied on a pricing catalog, so models served from your
+own hardware or a custom gateway showed up unpriced. That left a blind spot in
+budgets and per-session spend for exactly the models teams run to control cost.
+Now you declare the rates in the config, and Omnigent uses them to price every
+session on that provider. Configured pricing also takes precedence over the
+catalog, so a self-hosted provider serving a catalog-known model id can charge
+its own rate instead.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: a session running against a local Ollama or vLLM provider showing a live cumulative cost total that would previously have read $0.00 */}
+
+Add a `pricing` block to the provider family in your config. Prices are given
+per million tokens; cache rates are optional and derive from the input rate when
+omitted.
+
+```yaml
+providers:
+  vllm-local:
+    kind: local
+    openai:
+      base_url: http://localhost:8000/v1
+      api_key: vllm
+      pricing:
+        input_per_million: 0.25
+        output_per_million: 1.0
+```
+
+For a truly free local model, set both rates to `0.0`. See
+[Models & Credentials](/docs/build/models) for how providers and credentials are
+configured. This works with any agent you run in Omnigent, and it feeds the same
+budget and cost-control policies you already use.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

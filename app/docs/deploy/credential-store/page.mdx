@@ -29,9 +29,9 @@ store is disabled.
 
 Set `OMNIGENT_CREDENTIAL_CIPHER` to pick a backend explicitly:
 
-| Value   | Backend                | Install extra     |
-| ------- | ---------------------- | ----------------- |
-| `kms`   | AWS KMS                | `omnigent[kms]`   |
+| Value   | Backend                 | Install extra     |
+| ------- | ----------------------- | ----------------- |
+| `kms`   | AWS KMS                 | `omnigent[kms]`   |
 | `vault` | HashiCorp Vault Transit | `omnigent[vault]` |
 
 When the selector is set, the chosen backend's key environment variable is
@@ -55,9 +55,9 @@ Install the extra and point the store at a KMS key:
 pip install 'omnigent[kms]'
 ```
 
-| Variable                         | Purpose                                            |
-| -------------------------------- | -------------------------------------------------- |
-| `OMNIGENT_CREDENTIAL_KMS_KEY_ID` | KMS key id or alias used to encrypt credentials.   |
+| Variable                         | Purpose                                                                                           |
+| -------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `OMNIGENT_CREDENTIAL_KMS_KEY_ID` | KMS key id or alias used to encrypt credentials.                                                  |
 | `OMNIGENT_CREDENTIAL_CIPHER`     | Set to `kms` to select this backend explicitly (optional when it is the only backend configured). |
 
 boto3 resolves AWS credentials and region from the standard AWS environment. No
@@ -71,13 +71,13 @@ Install the extra and point the store at a Vault Transit key:
 pip install 'omnigent[vault]'
 ```
 
-| Variable                          | Purpose                                                                 |
-| --------------------------------- | ----------------------------------------------------------------------- |
-| `OMNIGENT_CREDENTIAL_VAULT_KEY`   | Name of the Transit key used to encrypt credentials.                    |
-| `OMNIGENT_CREDENTIAL_VAULT_MOUNT` | Transit mount path. Optional; defaults to `transit`.                    |
+| Variable                          | Purpose                                                                                             |
+| --------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `OMNIGENT_CREDENTIAL_VAULT_KEY`   | Name of the Transit key used to encrypt credentials.                                                |
+| `OMNIGENT_CREDENTIAL_VAULT_MOUNT` | Transit mount path. Optional; defaults to `transit`.                                                |
 | `OMNIGENT_CREDENTIAL_CIPHER`      | Set to `vault` to select this backend explicitly (optional when it is the only backend configured). |
-| `VAULT_ADDR`                      | Vault address, from the standard Vault environment.                     |
-| `VAULT_TOKEN`                     | Vault token, from the standard Vault environment.                       |
+| `VAULT_ADDR`                      | Vault address, from the standard Vault environment.                                                 |
+| `VAULT_TOKEN`                     | Vault token, from the standard Vault environment.                                                   |
 
 <div className="note">
 

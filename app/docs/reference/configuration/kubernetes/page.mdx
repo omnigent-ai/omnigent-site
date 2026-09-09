@@ -19,12 +19,12 @@ See [Shared Server](/docs/deploy/overview#kubernetes) for the deployment steps.
 
 ## Pod-start wait budget
 
-| Setting     | Value                                                     |
-| ----------- | --------------------------------------------------------- |
-| Key         | `sandbox.kubernetes.pod_ready_timeout_s`                  |
-| Env var     | `OMNIGENT_K8S_POD_READY_TIMEOUT_S`                        |
-| Type        | Positive integer, in seconds                              |
-| Default     | `90`                                                      |
+| Setting | Value                                    |
+| ------- | ---------------------------------------- |
+| Key     | `sandbox.kubernetes.pod_ready_timeout_s` |
+| Env var | `OMNIGENT_K8S_POD_READY_TIMEOUT_S`       |
+| Type    | Positive integer, in seconds             |
+| Default | `90`                                     |
 
 Before a managed session goes online, Omnigent waits for the runner Pod to
 schedule, pull its image, clone its repository, and reach `Running`. Increase

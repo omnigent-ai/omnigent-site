@@ -1,0 +1,38 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Approve, answer, and steer your agents from Slack",
+  "Run Omnigent sessions from a Slack thread: mention the bot to start a turn, approve or deny gated tool calls inline, answer the agent's questions, and keep the conversation going without leaving Slack.",
+  { path: "/blog/approve-agents-from-slack" },
+);
+
+export const meta = {
+  title: "Approve, answer, and steer your agents from Slack",
+  date: "2026-07-21",
+  category: "Integration",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="approve-agents-from-slack" />
+
+If your team already lives in Slack, you can now run Omnigent agents from a thread instead of switching to the web UI. Mention the bot to start a session, reply in the same thread to continue it, and handle everything the agent asks for right there: approvals, questions, and follow-up steering.
+
+Long runs used to pause on you the moment an agent hit a gated tool call or needed a decision, and you had to be in the web app to unblock it. Now the turn surfaces in Slack. When the agent needs an approval, the bot posts an Approve / Deny card with a preview of the pending action; click to resume or deny to refuse. When it asks a multiple-choice question, the choices render as radio buttons (or checkboxes for multi-select) with a Submit, and your selection goes back to the agent as its answer, the same as in the web UI. Each thread maps to one Omnigent session, so a reply just continues the conversation.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: mention the bot to kick off a turn, then click Approve on a tool-call card and answer a multiple-choice question, all in one Slack thread. */}
+
+An operator runs the bot as a background daemon with the `omni` CLI, pointing it at a single Omnigent server:
+
+```bash
+uv tool install "omnigent[slack]"
+omni integration slack start     # run in the background (detached)
+omni integration slack status    # is the background bot running?
+omni integration slack logs -f   # follow the log
+```
+
+Each Slack user then runs `/omnigent` to set up once, logging in with their own Omnigent identity (no credential ever passes through Slack) and picking the agent, host, and workspace their sessions run in. After that, mentioning the bot or DMing it starts a session, and `/omnigent` reopens the same modal any time you want to change your agent, host, or workspace.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

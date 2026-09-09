@@ -149,6 +149,17 @@ sandbox:
   `$OPENSHELL_GATEWAY` or `~/.config/openshell/active_gateway`.
 - `workspace` defaults to `$OMNIGENT_OPENSHELL_WORKSPACE`, then `default`.
 
+When a server-managed OpenShell sandbox goes dormant, its persistent volume is
+retained and the session reports a wakeable "asleep" state. The next message
+resumes the same sandbox in place, preserving its name and volume, and waits
+for it to become ready before continuing.
+
+In-place resume requires `SandboxClient.start`, added in `openshell` 0.0.105.
+With an older SDK, the host remains offline instead of advertising an
+unsupported wake action; upgrade with
+`uv pip install --upgrade 'omnigent[openshell]'`. Resume is currently a cold
+restart rather than a warm snapshot restore.
+
 ## Boxlite
 
 ```yaml

@@ -72,11 +72,11 @@ GitHub App** (`https://github.com/settings/apps/new`; for an org use
    need. The user-to-server token inherits exactly these scopes, so this list is
    the ceiling on what a connected sandbox can do as the user.
 
-   | Permission        | Access             | Why                                                                                     |
-   | ----------------- | ------------------ | --------------------------------------------------------------------------------------- |
-   | **Contents**      | Read and write     | Clone repos and push branches for PRs. Use **Read-only** if sandboxes should only clone. |
-   | **Metadata**      | Read-only          | Auto-selected; required by GitHub.                                                      |
-   | **Pull requests** | Read and write     | Open PRs from the sandbox. **Read-only** if you never create PRs.                       |
+   | Permission        | Access         | Why                                                                                      |
+   | ----------------- | -------------- | ---------------------------------------------------------------------------------------- |
+   | **Contents**      | Read and write | Clone repos and push branches for PRs. Use **Read-only** if sandboxes should only clone. |
+   | **Metadata**      | Read-only      | Auto-selected; required by GitHub.                                                       |
+   | **Pull requests** | Read and write | Open PRs from the sandbox. **Read-only** if you never create PRs.                        |
 
    Leave everything else **No access**. No **Account** or **Organization**
    permissions are needed.
@@ -136,15 +136,15 @@ OMNIGENT_GITHUB_APP_ID=1234567                     # only for app-level JWT call
 OMNIGENT_GITHUB_APP_PRIVATE_KEY_PATH=/etc/omnigent/github-app.pem   # or _PRIVATE_KEY=<PEM>
 ```
 
-| Variable                               | Required | Purpose                                                              |
-| -------------------------------------- | -------- | -------------------------------------------------------------------- |
-| `OMNIGENT_GITHUB_APP_CLIENT_ID`        | Yes      | App client id used for the user authorization flow.                  |
-| `OMNIGENT_GITHUB_APP_CLIENT_SECRET`    | Yes      | App client secret.                                                   |
-| `OMNIGENT_GITHUB_APP_REDIRECT_URI`     | Yes\*    | OAuth callback URL. \*Derived from `OMNIGENT_DOMAIN` if unset.       |
-| `OMNIGENT_GITHUB_APP_SLUG`             | No       | App slug, used to build the in-product install link.                 |
-| `OMNIGENT_GITHUB_APP_ID`               | No       | Numeric App ID; only for app-level JWT calls.                        |
-| `OMNIGENT_GITHUB_APP_PRIVATE_KEY`      | No       | RSA private key PEM contents, for app-level calls.                   |
-| `OMNIGENT_GITHUB_APP_PRIVATE_KEY_PATH` | No       | Path to the private key PEM file (alternative to the inline value).  |
+| Variable                               | Required | Purpose                                                             |
+| -------------------------------------- | -------- | ------------------------------------------------------------------- |
+| `OMNIGENT_GITHUB_APP_CLIENT_ID`        | Yes      | App client id used for the user authorization flow.                 |
+| `OMNIGENT_GITHUB_APP_CLIENT_SECRET`    | Yes      | App client secret.                                                  |
+| `OMNIGENT_GITHUB_APP_REDIRECT_URI`     | Yes\*    | OAuth callback URL. \*Derived from `OMNIGENT_DOMAIN` if unset.      |
+| `OMNIGENT_GITHUB_APP_SLUG`             | No       | App slug, used to build the in-product install link.                |
+| `OMNIGENT_GITHUB_APP_ID`               | No       | Numeric App ID; only for app-level JWT calls.                       |
+| `OMNIGENT_GITHUB_APP_PRIVATE_KEY`      | No       | RSA private key PEM contents, for app-level calls.                  |
+| `OMNIGENT_GITHUB_APP_PRIVATE_KEY_PATH` | No       | Path to the private key PEM file (alternative to the inline value). |
 
 Restart the server. If the client id and secret are set but no redirect URI can
 be resolved (neither `OMNIGENT_GITHUB_APP_REDIRECT_URI` nor `OMNIGENT_DOMAIN`),

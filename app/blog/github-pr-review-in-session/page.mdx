@@ -1,0 +1,46 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Review your agent's PR, CI, and diff without leaving the session",
+  "A GitHub tab in the session workspace shows the branch's pull request, its CI checks, and the full diff, and refreshes on its own as the agent pushes so you never leave the chat to check GitHub.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/github-pr-review-in-session",
+  },
+);
+
+export const meta = {
+  title: "Review your agent's PR, CI, and diff without leaving the session",
+  date: "2026-09-09",
+  category: "GitHub",
+  author: "omnigent",
+  heroArt: "/images/blog/github-pr-review-in-session.png",
+};
+
+<BlogPostHeader slug="github-pr-review-in-session" />
+
+If you have an agent open a pull request, you can now read the PR, watch its CI
+checks, and go through the diff in the session itself. A GitHub tab sits in the
+workspace rail next to your files, so reviewing the work no longer means
+switching to a browser tab and hunting for the right branch.
+
+Before, the moment your agent pushed you had to leave the chat to see what
+actually landed on GitHub, and a stale local base ref could make the diff look
+wrong. The tab now sources everything from the pull request itself: a Summary
+view with the PR description and comments, a Changes view with the file diff and
+a folder-tree navigator, the CI check results, and whether the PR is open,
+closed, or merged. It authenticates as your own connected GitHub account, so it
+sees exactly what you would.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an agent pushes a branch and opens a PR, then the GitHub tab auto-refreshes to show the Summary, the live CI checks, and the Changes diff with the folder tree. */}
+
+Open a session whose workspace is a git repo, then select the GitHub tab in the
+workspace rail. Switch between the Summary and Changes tabs to read the PR or
+step through the diff. The tab and the composer's PR indicator refresh on their
+own when the agent pushes or opens a pull request, and CI status updates live
+while the panel is open, so there is no button to click to stay current. See the
+[Web UI guide](/docs/interact/web-ui) for how the workspace rail works.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

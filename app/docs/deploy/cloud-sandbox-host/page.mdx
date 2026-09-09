@@ -30,7 +30,10 @@ That's [Omnibox](/docs/omnibox).
 
 Omnigent currently supports [Modal](https://modal.com), [Daytona](https://www.daytona.io),
 [Blaxel](https://blaxel.ai), and [Islo](https://islo.dev) as hosting platforms for cloud sandbox
-hosts, with more on the way.
+hosts, with more on the way. [microsandbox](https://github.com/superradcompany/microsandbox)
+is also supported as a fully local option — it boots hardware-isolated microVMs
+on the same machine as the server instead of in the cloud (see its section
+below).
 
 |                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) | [Blaxel](https://blaxel.ai)              | [Islo](https://islo.dev)                       |
 | ------------------------ | ---------------------------------- | --------------------------------- | ---------------------------------------- | ---------------------------------------------- |
@@ -46,11 +49,16 @@ web UI.
 ### 1. Install
 
 ```
-pip install 'omnigent[modal]'       # for Modal
-pip install 'omnigent[daytona]'     # for Daytona
-pip install 'omnigent[blaxel]'      # for Blaxel
-pip install 'omnigent[islo]'        # for Islo
+pip install 'omnigent[modal]'        # for Modal
+pip install 'omnigent[daytona]'      # for Daytona
+pip install 'omnigent[blaxel]'       # for Blaxel
+pip install 'omnigent[islo]'         # for Islo
+pip install 'omnigent[microsandbox]' # for microsandbox (local microVMs)
 ```
+
+The `omnigent[microsandbox]` extra ships the microsandbox SDK (pinned to the
+beta `>=0.6.9,<0.7`) with the same lazy-import posture; the wheel bundles the
+libkrun runtime, so no separate install is needed.
 
 The Islo launcher uses the Islo Python SDK, which ships in the `omnigent[islo]`
 extra and is imported lazily, so only users of the Islo provider need to install it.
@@ -92,6 +100,16 @@ export BL_API_KEY=your-api-key
 Blaxel control credentials must stay on the launching process (your shell for a
 CLI launch, the server for a managed launch) and never enter the sandbox. Web
 users log in to Omnigent, not Blaxel.
+
+**microsandbox:** no provider credentials, cloud account, API key, or daemon.
+microsandbox is fully local — the SDK embeds the runtime in the Omnigent server
+(or CLI) process and boots microVMs on that same machine, keeping sandbox state
+under `~/.microsandbox`. It only requires hardware virtualization on the machine
+running the server:
+
+- **macOS:** Apple Silicon (Intel Macs are not supported).
+- **Linux:** KVM enabled and accessible — `/dev/kvm` must exist and the user
+  must be in the `kvm` group (glibc distros only).
 
 ### 3. Configure the cloud sandbox host
 
@@ -205,6 +223,57 @@ default when neither is set).
 
 `disk_size_gb` sets the box disk size in gigabytes and must be a positive
 integer. Omit it to use the Boxlite SDK's own default disk size.
+
+**microsandbox:**
+
+```
+sandbox:
+  provider: microsandbox
+  server_url: http://host.microsandbox.internal:8799  # see note below
+  microsandbox:
+    image: ghcr.io/you/omnigent-host:latest      # optional, official image by default
+    env: [OPENAI_API_KEY, GIT_TOKEN]             # server env vars to copy into sandbox
+    cpus: 2                                       # optional; default 2
+    memory_mib: 4096                             # optional; default 4096
+    idle_timeout_s: 86400                        # optional; default 24h, 0 disables draining
+    network: host                                # optional; host (default) | public-only | all
+    host_ports: [8317]                           # optional; extra guest-to-host TCP ports
+```
+
+`provider` + `server_url` is a complete config: the image defaults to the
+official prebaked host image and VMs run locally. `env` lists server env var
+names to copy into each VM; values never live in the config file. (The
+`OMNIGENT_MICROSANDBOX_HOST_IMAGE` and `OMNIGENT_MICROSANDBOX_SANDBOX_ENV` env
+vars are equivalents for `image` and `env`.)
+
+Because VMs run on the same machine as the server, `localhost` inside a VM is
+the VM itself. When the server is local (the usual setup), point `server_url` at
+`host.microsandbox.internal` — the guest's stable name for its host machine —
+with the server's port, so the in-VM host can dial back. A genuinely public
+`https://…` URL works as-is.
+
+Idle VMs drain themselves after `idle_timeout_s` (default 24h; `0` disables
+draining), releasing CPU and memory while keeping their writable layer, and
+Omnigent resumes them in place — a drained host restarts in about 100ms — on the
+next message.
+
+<div className="note">
+
+**microsandbox network modes:** VMs run untrusted agent code on the same machine
+as the server, so guest-to-host access is scoped to a TCP port allowlist.
+
+| Mode | Guest can reach |
+|------|-----------------|
+| `host` (default) | Public internet plus selected host ports (`server_url` port and any `host_ports`) via `host.microsandbox.internal`, while loopback, private LANs, and cloud metadata stay blocked. |
+| `public-only` | Public internet only — use it when `server_url` is a genuinely public URL that needs no local dial-back. |
+| `all` | Everything, including private LANs. |
+
+List the ports of host-local services agents legitimately need — e.g.
+`host_ports: [8317]` for a local LLM gateway the sandbox env points at via
+`http://host.microsandbox.internal:8317`. Everything else on the host stays
+unreachable.
+
+</div>
 
 <div className="note">
 
@@ -384,10 +453,18 @@ Create and manage cloud sandbox hosts from the command line. The commands are th
 hosting platforms, just switch the `--provider` flag.
 
 ```
-omni sandbox create --provider modal          # or --provider daytona / blaxel / islo
+omni sandbox create --provider modal          # or daytona / blaxel / islo / microsandbox
 omni sandbox connect --provider modal \
   --sandbox-id <id> --server <url>
 ```
+
+A microsandbox CLI launch (`omni sandbox create --provider microsandbox --server <url>`)
+builds your local wheels, boots a VM from the host image, overlays the wheels,
+and attaches. It is the first OSS provider with a working in-sandbox App OAuth
+flow: the OAuth callback binds on the local host and bridges into the guest over
+the SDK exec channel, so it works under every network mode (the official host
+image ships the `python3` it needs). CLI-bootstrap VMs allow only the local
+`--server` port; a public server URL adds no host rule.
 
 For a Blaxel CLI launch, list any credentials the host or agent needs in
 `OMNIGENT_BLAXEL_SANDBOX_ENV` (a comma-separated list of server env var names)

@@ -1,0 +1,60 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Track and budget spend on your own Ollama and vLLM models",
+  "Set per-token prices for self-hosted models in your provider config so Omnigent tracks their spend and your cost budgets apply to them too.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/self-hosted-model-cost-tracking",
+  },
+);
+
+export const meta = {
+  title: "Track and budget spend on your own Ollama and vLLM models",
+  date: "2026-08-31",
+  category: "Governance",
+  author: "omnigent",
+  heroArt: "/images/blog/self-hosted-model-cost-tracking.png",
+};
+
+<BlogPostHeader slug="self-hosted-model-cost-tracking" />
+
+If you run agents against your own Ollama, vLLM, or gateway endpoints, you can
+now give those models a price and have Omnigent track what they cost. Set the
+per-token rates once in your provider config and every session on that provider
+reports spend, just like the vendor-hosted models Omnigent already knows.
+
+Until now, a model that wasn't in the pricing catalog showed no cost, so
+self-hosted runs were a blind spot and your spend caps couldn't see them.
+Configured pricing fills that gap: you tell Omnigent the input and output rates
+your endpoint charges (or the internal rate you want to attribute), and it uses
+those to compute session cost. Configured rates take precedence over the
+catalog, so a gateway serving a known model id at your own price is metered at
+your price. Because this feeds the same usage totals as everything else, cost
+budget policies now hold for self-hosted models too.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: a session running a local Ollama model, showing a running cost total appear once a pricing block is added to the provider config. */}
+
+Add a `pricing` block to the provider family in your provider config with the
+per-million-token rates for input and output. Cache rates are optional and
+default from the input rate when omitted.
+
+```yaml
+providers:
+  ollama-local:
+    kind: local
+    openai:
+      base_url: http://localhost:11434/v1
+      api_key: ollama
+      pricing:
+        input_per_million: 0.25
+        output_per_million: 1.0
+```
+
+See [Models & Credentials](/docs/build/models) for how providers and
+credentials are configured, and [built-in policies](/docs/policies/builtin) for
+the `cost_budget` policy that these prices now feed.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

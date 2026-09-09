@@ -20,7 +20,7 @@ Omnigent 0.13.0 is a major release focused on tightening the loop between your a
 
 A new GitHub panel in the session workspace rail shows the branch's pull request without leaving Omnigent — the summary, comments, CI checks, and a stacked diff with a file-tree navigator, all refreshing live as the agent pushes. You watch the PR take shape in the same window where the work is happening.
 
-To use it, pick a private repo to clone when you start a New Chat, then open the panel and switch between the split Summary and Changes tabs to move from the overview to the file-by-file diff. Git and `gh` authenticate as your own connected account inside the sandbox, so the pushes and PR actions run as you.
+To use it, start a New Chat from a repository with an open pull request, then open the panel and switch between the split Summary and Changes tabs to move from the overview to the file-by-file diff. In managed sandboxes with GitHub Connect configured, private clones and in-session `git` and `gh` authenticate as your connected account, so pushes and PR actions run as you.
 
 ## 2. Canvas as a built-in page
 
@@ -58,11 +58,23 @@ Enterprises get two more building blocks: an opt-in OAuth 2.0 client-credentials
 
 _Learn more in the [Harnesses supported via ACP](/docs/build/harnesses/supported#harnesses-supported-via-acp)._
 
+## Before upgrading
+
+- Managed terminals now require tmux 3.3 or newer. Upgrade tmux before launching a managed terminal.
+- The standalone `omnigent-canvas` extension has been removed. Enable the built-in Canvas page with `OMNIGENT_FEATURES=canvas` instead.
+- `omnigent update` is deprecated. Use `omnigent upgrade` (or `omni upgrade`) instead.
+
 Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
 
 ## What's Next
 
-Install or upgrade Omnigent:
+Upgrade an existing Omnigent installation:
+
+```bash
+omni upgrade
+```
+
+Or install Omnigent for the first time:
 
 ```bash
 uv tool install --python 3.12 omnigent   # or: pip install "omnigent"

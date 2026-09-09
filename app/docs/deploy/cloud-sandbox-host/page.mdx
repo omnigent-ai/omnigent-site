@@ -378,6 +378,61 @@ crashing server startup.
 
 </div>
 
+## Custom host image: bake in extra harness CLIs
+
+Every provider block above accepts an `image:` field, defaulting to the
+official prebaked host image. That image ships a fixed set of harness CLIs
+(Claude, Codex, and Pi from npm, plus pinned Kiro and agy). A harness whose CLI
+isn't in the image **fails closed** with `harness_not_configured` when a
+managed-sandbox session tries to launch it.
+
+To bake in additional harness CLIs without forking the Dockerfile, build the
+host image with the `EXTRA_HARNESS_CLIS` build-arg — a space-separated list of
+harness names, each with an optional `@version` pin — then point the provider's
+`image:` at your copy:
+
+```
+docker build -t omnigent-host:latest --target host \
+             -f deploy/docker/Dockerfile \
+             --build-arg EXTRA_HARNESS_CLIS="goose jcode opencode" .
+```
+
+`EXTRA_HARNESS_CLIS` is empty by default, so the shipped CLI set is unchanged
+unless you pass it. Supported names:
+
+| Name | Installed via |
+| --- | --- |
+| `opencode` | npm (`opencode-ai`) |
+| `qwen` | npm (`@qwen-code/qwen-code`) |
+| `goose` | vendor installer |
+| `agy` | pinned per-arch GitHub release asset + sha256 |
+| `jcode` | vendor installer |
+| `cursor` | vendor installer (always latest — no `@version` pin) |
+| `kimi` | vendor installer |
+
+For a CLI with no row yet, pass an `npm:<pkg-spec>` entry (for example
+`npm:@openai/codex@0.147.0`) to install an arbitrary npm package directly.
+
+<div className="note">
+
+**Supply-chain note:** only the `agy` row is pinned to an immutable per-arch
+release asset with a sha256 check (the same control the baked Kiro CLI gets).
+The other vendor-installer rows run the harness's own `curl | bash` off mutable
+refs and are verified only with a `--version` check — `cursor` can't be pinned
+at all. `npm:<pkg-spec>` entries get no binary smoke check, so confirm the
+binary yourself. A deployment needing stricter integrity should pin and verify
+in its own image.
+
+</div>
+
+<div className="note">
+
+**UBI:** the UBI host image does not bake `agy` by default — add it there with
+`EXTRA_HARNESS_CLIS=agy`. `hermes` has no row: it needs Node ≥ 26 at runtime
+while the host images ship Node 22, so its Node baseline must be raised first.
+
+</div>
+
 ## CLI
 
 Create and manage cloud sandbox hosts from the command line. The commands are the same across

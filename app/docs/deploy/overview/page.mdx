@@ -64,6 +64,7 @@ Key variables in `.env` (See [Auth & SSO](/docs/collaborate/auth) for details on
 | `OMNIGENT_OIDC_ISSUER`        | OIDC issuer URL (enables SSO)                   |
 | `OMNIGENT_OIDC_CLIENT_ID`     | OIDC client ID                                  |
 | `OMNIGENT_OIDC_CLIENT_SECRET` | OIDC client secret                              |
+| `OMNIGENT_BUILTIN_AGENT_DIRS` | Seed extra always-available built-in agents     |
 
 <div className="note">
 
@@ -72,6 +73,56 @@ No admin password is auto-generated. On first boot the server reports
 `OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD` in `.env` to preset it for headless deploys.
 
 </div>
+
+### Extra built-in agents
+
+`OMNIGENT_BUILTIN_AGENT_DIRS` seeds extra agents that are always available to
+every user on the deployment, alongside the packaged built-ins. They are
+registered at server startup, after the server's native agents, configured or
+locally available ACP agents, Debby, and Polly.
+
+The value is a colon-separated (`os.pathsep`) list of paths. Each entry is
+either a single-file agent spec (`some-agent.yaml`) or a bundle directory, and
+the resulting agent's name is that path's file stem or directory name.
+
+Paths are resolved **inside the container**, so bind-mount the host directory
+that holds your spec(s) and point the variable at the mounted path, not the host
+path. Neither the mount nor the variable is wired into `docker-compose.yaml` by
+default — add both yourself:
+
+```yaml
+# In docker-compose.yaml, on the omnigent service:
+    environment:
+      OMNIGENT_BUILTIN_AGENT_DIRS: "${OMNIGENT_BUILTIN_AGENT_DIRS:-}"
+    volumes:
+      - artifact-data:/data
+      - ./agents:/agents:ro    # host directory holding your agent spec(s)
+```
+
+```dotenv
+# In .env:
+OMNIGENT_BUILTIN_AGENT_DIRS=/agents/my-agent.yaml:/agents/my-bundle
+```
+
+A bad or missing path is logged and skipped rather than failing startup — the
+packaged built-ins still seed. Registration runs once, at startup only (there is
+no live reload). After editing a spec in an existing bind mount, restart the
+service so seeding runs again:
+
+```
+docker compose restart omnigent
+```
+
+After adding or changing the mount, variable, or other Compose configuration,
+force-recreate the service instead:
+
+```
+docker compose up -d --force-recreate omnigent
+```
+
+Built-ins are keyed by name. If an extra's file stem or directory name matches
+an existing built-in, startup refreshes that row with your bundle rather than
+creating a second agent — use a distinct name unless that override is intended.
 
 ### Cloud platforms
 

@@ -1,0 +1,69 @@
+{/* Auto-generated from the GitHub Release for v0.11.0. Edit the GitHub Release, not this file. */}
+
+# v0.11.0
+
+_Released 2026-08-25_ · 3 min read · Omnigent maintainers
+
+Omnigent v0.11.0 is a major release focused on giving you tighter control over your agents and a faster everyday flow, from live permission-mode switching on native harnesses to a signed, notarized desktop app. You can now cap what an automation spends on each firing, set a permission mode per scheduled task, drop an emoji on any project, and jump into a new session from anywhere with a single keystroke.
+
+## 1. Full control over native harnesses
+
+![TODO: add a demo screenshot or GIF for "Full control over native harnesses"](TODO)
+
+Native harnesses now behave the way their CLIs do, right inside Omnigent. You can switch Claude Code permission modes on the fly — Manual, Auto, Accept edits, or Plan — with shift+tab or from settings, so you decide how much the agent does before you step in.
+
+The details line up, too. Running `/rename` syncs the new name back to the UI, model pickers show exactly what the claude and codex CLIs report instead of a stale guess, and Codex sessions can run at Max or Ultra reasoning when you want them to think harder.
+
+_Learn more in the [Harnesses](/docs/build/harnesses)._
+
+## 2. Spend caps and permission modes for scheduled tasks
+
+![TODO: add a demo screenshot or GIF for "Spend caps and permission modes for scheduled tasks"](TODO)
+
+Automations now come with real guardrails. Each scheduled task can cap its LLM spend per firing with `max_cost_usd`, so a runaway run can't quietly burn through your budget.
+
+You can also set a Claude Code permission mode per task — for example Accept edits for a task you trust to make changes, or Bypass permissions for a fully hands-off job — so unattended runs behave exactly the way you intend.
+
+_Learn more in the [Scheduled Tasks](/docs/build/scheduled-tasks)._
+
+## 3. A faster web and desktop flow
+
+![TODO: add a demo screenshot or GIF for "A faster web and desktop flow"](TODO)
+
+Getting around Omnigent takes fewer clicks now. Cmd/Ctrl+N starts a new session from anywhere, including the macOS app, and the ⌘K and session-switch hotkeys stay live even when your focus is in the terminal or the composer.
+
+The workspace is tidier as well: the task tracker moves inline as a collapsible "Plan (N/M)" card you can glance at or fold away, and a new session actions menu sits right beside the chat title.
+
+_Learn more in the [Session management](/docs/interact/web-ui#session-management)._
+
+## 4. Emoji icons for projects
+
+![TODO: add a demo screenshot or GIF for "Emoji icons for projects"](TODO)
+
+Projects can now carry an emoji icon so you can tell them apart at a glance. You can set or change it from the New project dialog, the project header, the sidebar, or the Rename modal — wherever you happen to be when the urge strikes.
+
+_Learn more in the [Projects](/docs/interact/web-ui#projects)._
+
+## 5. A sturdier desktop app
+
+![TODO: add a demo screenshot or GIF for "A sturdier desktop app"](TODO)
+
+The desktop app is more solid on macOS: DMG releases are now signed, notarized, and stapled, so the app installs cleanly without security warnings.
+
+Updates are clearer, too — the update prompt now shows your installed version alongside the available one, with copy that makes it obvious what you're moving to.
+
+_Learn more in the [Desktop App](/docs/interact/desktop)._
+
+Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
+
+## What's Next
+
+Install or upgrade Omnigent:
+
+```bash
+uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
+```
+
+- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
+- Join the conversation on our [Discord](https://discord.gg/omnigent).
+- Browse the [docs](https://omnigent.ai/docs) to go deeper.

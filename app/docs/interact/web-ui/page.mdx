@@ -241,6 +241,15 @@ reads the on-disk file directly (no upload). This button shows only for native
 coding-agent sessions, since those harnesses run in the workspace and resolve
 the referenced file themselves.
 
+## GitHub
+
+Coding-agent sessions have a **GitHub** tab in the right workspace rail. It's a
+read-only view of how the session's branch relates to GitHub, backed by the
+`gh` CLI and `git` running against the workspace on disk — nothing is pushed or
+mutated.
+
+The tab shows two things the associated pull request when the branch has one (PR description, CI checks, and diff).
+
 ## Mentioning workspace files
 
 In a coding-agent session, type `@` in the composer to browse and attach

@@ -1,0 +1,45 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Move a running session to another machine without losing your place",
+  "Click the host badge in the composer to move an in-progress session onto another connected machine. Pick the target and a directory, and the session picks up right where it left off.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/move-running-session-another-machine",
+  },
+);
+
+export const meta = {
+  title: "Move a running session to another machine without losing your place",
+  date: "2026-08-19",
+  category: "Cross-device",
+  author: "omnigent",
+  heroArt: "/images/blog/move-running-session-another-machine.png",
+};
+
+<BlogPostHeader slug="move-running-session-another-machine" />
+
+If you start an agent on your laptop and want it to keep going on a bigger box, a
+work desktop, or a machine that sits closer to the code, you can now hand the
+running session off from the web UI without starting over.
+
+The machine a session runs on used to be fixed once it started, so moving work
+meant opening a fresh session and losing the thread you were already in. Now the
+host badge in the composer shows which machine the session is on, and clicking it
+moves that same conversation to another connected machine. The session is
+released from its current runner and relaunched on the one you pick, so it keeps
+its history and picks up right where it left off.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: click the host badge on a running session, pick a second machine and a directory in the Switch host dialog, and show the session continuing on the new host. */}
+
+Click the host badge below the composer to open the Switch host dialog. The next
+available machine is already selected and its directory filled in, so the common
+case is one click on **Switch host**. You always confirm a directory because
+workspaces are per-machine, and the machine the session is already on is left out
+of the list. This works with any agent you run in Omnigent, and for more on
+managing where a session runs, see the
+[Web UI guide](/docs/interact/web-ui#session-management).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

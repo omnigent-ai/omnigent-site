@@ -8,7 +8,15 @@ Omnigent 0.13.0 is a major release focused on tightening the loop between your a
 
 ## 1. GitHub PR panel in the session workspace
 
-![TODO: add a demo screenshot or GIF for "GitHub PR panel in the session workspace"](TODO)
+<video
+  src="/images/releases/0.13.0/github-pr-panel.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Opening a pull request summary and switching to its file-by-file changes in the GitHub panel"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
 
 A new GitHub panel in the session workspace rail shows the branch's pull request without leaving Omnigent — the summary, comments, CI checks, and a stacked diff with a file-tree navigator, all refreshing live as the agent pushes. You watch the PR take shape in the same window where the work is happening.
 
@@ -16,15 +24,17 @@ To use it, pick a private repo to clone when you start a New Chat, then open the
 
 ## 2. Canvas as a built-in page
 
-![TODO: add a demo screenshot or GIF for "Canvas as a built-in page"](TODO)
+<img
+  src="/images/releases/0.13.0/canvas.png"
+  alt="Canvas page organizing live Omnigent sessions into draggable project cards"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
 
 Canvas is now a built-in page rather than a separate extension: a per-project board of draggable session cards, each showing live status, its worktree branch, and a link to its PR. It gives you a spatial, at-a-glance view of everything in flight on a project.
 
 From the board you can open a session's transcript or start a brand-new session in place, so Canvas becomes the launch point for your work rather than just a status display. Enable the built-in page with `OMNIGENT_FEATURES=canvas`.
 
 ## 3. New managed-sandbox providers
-
-![TODO: add a demo screenshot or GIF for "New managed-sandbox providers"](TODO)
 
 Omnigent gains two new ways to run managed sandboxes. You can run each host in a local libkrun microVM by setting `sandbox.provider: microsandbox`, which gives you sub-second boots and in-place resume, or run hosts as self-reclaiming Kubernetes agent-sandbox resources that stay alive while an agent is working, suspend when idle, and resume later with their workspace intact.
 
@@ -34,7 +44,15 @@ _Learn more in the [Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)._
 
 ## 4. Instant session switching
 
-![TODO: add a demo screenshot or GIF for "Instant session switching"](TODO)
+<video
+  src="/images/releases/0.13.0/instant-session-label.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="A newly created session appearing immediately with an optimistic title in the sidebar"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
 
 Sessions now feel instant. New conversations open immediately while the server catches up in the background, and long transcripts virtualize so switching between them stays fast even when history is deep.
 
@@ -43,8 +61,6 @@ The sidebar keeps up too: rows label themselves with your first prompt and highl
 _Learn more in the [Session management](/docs/interact/web-ui#session-management)._
 
 ## 5. More harnesses and enterprise CLIs
-
-![TODO: add a demo screenshot or GIF for "More harnesses and enterprise CLIs"](TODO)
 
 Omnigent adds more ways to bring your preferred agents along. Jcode joins as a first-class ACP harness, and the `EXTRA_HARNESS_CLIS` build-arg bakes extra harness CLIs — goose, jcode, cursor, kimi, and more — into the host image, so you can extend the image without forking the Dockerfile.
 

@@ -1,0 +1,128 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Connect Databricks",
+  "Wire a Databricks OAuth app so signed-in users can connect their workspace and their managed sandboxes reach the Databricks AI Gateway as them.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/databricks-connect",
+  },
+);
+
+# Connect Databricks
+
+Omnigent supports **per-user Databricks connect**: once a server admin registers
+a Databricks OAuth app, a signed-in user can go to **Settings → Sandbox
+Integrations → Connect Databricks**, supply their workspace URL, and authorize
+their Databricks workspace. Their managed sandboxes then reach the workspace's
+**AI Gateway** (MCP + model serving) as them, using a short-lived, per-user
+OAuth token instead of a shared personal access token.
+
+This mirrors [Connect GitHub](/docs/deploy/github-connect): same short-lived,
+user-bound token model, same **Settings → Sandbox Integrations** entry point.
+Because Databricks is multi-workspace, the user supplies their workspace host at
+connect time.
+
+<div className="note">
+
+This feature is only wired when the [Credential Store](/docs/deploy/credential-store)
+is configured (`OMNIGENT_CREDENTIAL_*` / KMS). Tokens are persisted encrypted at
+rest by the credential store, reusing the existing connection storage — no new
+table or migration. Without a KMS key (`OMNIGENT_CREDENTIAL_KMS_KEY_ID`),
+Databricks connect logs an error and stays disabled.
+
+</div>
+
+## How it works
+
+- **Connect (user OAuth).** The server signs a short-lived, user-bound `state`
+  and redirects the user to their workspace's OAuth authorize screen using
+  **OAuth U2M** (authorization-code + PKCE). The workspace redirects back to
+  `…/v1/connections/databricks/callback`, which exchanges the code for a
+  per-user access token (plus a refresh token, from `offline_access`) and stores
+  it encrypted in the credential store.
+- **Per-workspace host.** Databricks is multi-workspace, so the OAuth endpoints
+  are workspace-relative (`https://<workspace-host>/oidc/v1/authorize` and
+  `/oidc/v1/token`). The workspace host the user enters is carried in the signed
+  state and stored in the connection metadata.
+- **Use (in the sandbox).** On sandbox launch the host writes a `~/.databrickscfg`
+  profile pointing at the owner's per-user credential broker (workspace host
+  only — the token is never persisted on sandbox disk). The command-based
+  harnesses (codex, claude, pi) mint a fresh token on demand from the broker and
+  refresh as it nears expiry, so long sessions stay authenticated to the AI
+  Gateway.
+
+## Register a Databricks OAuth app
+
+A Databricks **account admin** must register an OAuth custom app integration to
+obtain a client id / secret and register the callback URL. This is an account
+action and cannot be done from Omnigent (the same way the GitHub App is
+registered externally).
+
+```
+databricks account custom-app-integration create --json '{
+  "name": "omnigent-connect",
+  "redirect_urls": ["https://<your-omnigent-origin>/v1/connections/databricks/callback"],
+  "scopes": ["all-apis", "offline_access"],
+  "confidential": true
+}'
+```
+
+- The `redirect_urls` entry **must** equal `OMNIGENT_DATABRICKS_REDIRECT_URI`
+  (or the value Omnigent derives from `OMNIGENT_DOMAIN`, which is exactly this
+  shape).
+- `offline_access` is required to receive a refresh token for server-side
+  refresh. `all-apis` covers the AI Gateway surface — narrow it once you confirm
+  the specific scopes your gateway needs.
+- `confidential: true` yields a client secret, which Omnigent requires.
+
+## Wire it into the server
+
+Set these on the **server**. The feature enables itself once a client id +
+secret + a resolvable redirect URI are present (and the credential store is
+configured):
+
+```
+# Required.
+OMNIGENT_DATABRICKS_CLIENT_ID=<custom-app-integration id>
+OMNIGENT_DATABRICKS_CLIENT_SECRET=<generated secret>
+
+# Redirect URI — set explicitly, OR let Omnigent derive it from OMNIGENT_DOMAIN
+# as https://$OMNIGENT_DOMAIN/v1/connections/databricks/callback (same shape).
+OMNIGENT_DATABRICKS_REDIRECT_URI=https://<your-origin>/v1/connections/databricks/callback
+
+# Optional.
+OMNIGENT_DATABRICKS_SCOPES="all-apis offline_access"                 # default shown
+OMNIGENT_DATABRICKS_ALLOWED_HOST_SUFFIXES=.databricks.com,.azuredatabricks.net  # default shown
+```
+
+| Variable                                    | Required | Purpose                                                                                          |
+| ------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------ |
+| `OMNIGENT_DATABRICKS_CLIENT_ID`             | Yes      | OAuth client id (the account custom-app-integration id).                                         |
+| `OMNIGENT_DATABRICKS_CLIENT_SECRET`         | Yes      | App client secret; also signs the OAuth state and derives the PKCE verifier.                     |
+| `OMNIGENT_DATABRICKS_REDIRECT_URI`          | Yes\*    | OAuth callback URL. \*Derived from `OMNIGENT_DOMAIN` if unset.                                    |
+| `OMNIGENT_DATABRICKS_SCOPES`                | No       | Space-separated scopes to request. Defaults to `all-apis offline_access`.                        |
+| `OMNIGENT_DATABRICKS_ALLOWED_HOST_SUFFIXES` | No       | Comma-separated, dot-prefixed workspace host suffixes users may connect. Defaults below.         |
+
+The client secret is POSTed to the user-supplied workspace host, so Omnigent
+gates that host to Databricks domains: by default `.databricks.com` and
+`.azuredatabricks.net`. Operators on a private or government region can extend
+the set with `OMNIGENT_DATABRICKS_ALLOWED_HOST_SUFFIXES`.
+
+Restart the server. If the client id and secret are set but no redirect URI can
+be resolved (neither `OMNIGENT_DATABRICKS_REDIRECT_URI` nor `OMNIGENT_DOMAIN`),
+the feature logs a warning and stays disabled. Both the CLI (`omnigent server`)
+and the Docker image read the same env vars.
+
+## Verify
+
+1. Sign in to Omnigent as a real user and open **Settings → Sandbox
+   Integrations**. The **Connect Databricks** control appears — the nav item
+   only shows when a connection provider is wired (surfaced via
+   `enabled_connections` in `/v1/info`).
+2. Enter your workspace URL (e.g. `your-workspace.cloud.databricks.com`) and
+   click **Connect Databricks** → the workspace authorize screen → back to
+   Omnigent. The panel now shows **Connected to `<workspace>` as `<user>`**.
+   **Disconnect** removes the stored token.
+3. Start a sandbox session and confirm the agent's Databricks calls (model
+   serving / MCP) route through the workspace's AI Gateway as you.

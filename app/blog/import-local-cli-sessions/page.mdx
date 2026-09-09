@@ -1,0 +1,52 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Pull your local Claude Code and Codex sessions into Omnigent",
+  "Bring your recent local Claude Code, Codex, and other CLI chats into Omnigent from the web UI or one command, and pick up right where you left off.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/import-local-cli-sessions",
+  },
+);
+
+export const meta = {
+  title: "Pull your local Claude Code and Codex sessions into Omnigent",
+  date: "2026-09-01",
+  category: "Multi-harness",
+  author: "omnigent",
+  heroArt: "/images/blog/import-local-cli-sessions.png",
+};
+
+<BlogPostHeader slug="import-local-cli-sessions" />
+
+If you already run Claude Code or Codex from your terminal, you can now bring
+those recent chats into Omnigent from the web UI, without copying anything by
+hand or leaving your local history behind.
+
+Work you started in a terminal used to be stranded there, out of reach of the
+web UI, persistence, and collaboration that Omnigent adds on top of the agents
+you already use. Now Omnigent reads the recent transcripts on your connected
+host, converts them into ordinary sessions, and files them into your sidebar,
+each keeping the title it had in the original tool (your own rename wins over an
+AI-generated one). A session imports once, so running it again just skips the
+chats that are already in.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: clicking Import sessions in the web UI, picking a host, and watching recent Claude Code and Codex chats stream into the sidebar with their original titles. */}
+
+In the web UI, use the "Import sessions" button, pick the host that holds your
+history, and your recent chats stream in. If you prefer the terminal, import the
+most recent chats from one harness, or pass `all` to pull from every supported
+harness in one pass:
+
+```
+omnigent import --harness claude --last 10
+omnigent import --harness all --last 20
+```
+
+You can still import a single chat by its session ID, and `--last` now reaches
+up to 100 recent sessions. See the [coding agents guide](/docs/use/coding-agents#import-existing-chats)
+for the full set of options.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

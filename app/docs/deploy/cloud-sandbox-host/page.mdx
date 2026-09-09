@@ -221,6 +221,23 @@ sandbox.
 
 <div className="note">
 
+**OpenShell dormant hosts wake in place:** When a server-managed OpenShell
+sandbox goes dormant (stopped while its persistent volume is retained), the
+session's host shows as a wakeable "asleep" state rather than a terminal
+offline one. When the next message arrives for a session bound to a dormant
+OpenShell host, Omnigent resumes the same sandbox in place — keeping its name
+and volume — and waits for it to become ready before continuing. In-place
+resume requires the OpenShell SDK to expose the resume primitive
+(`SandboxClient.start`, added in `openshell` 0.0.105); on an older SDK the host
+stays honestly offline instead of advertising a wake that would fail. Upgrade
+with `uv pip install --upgrade 'omnigent[openshell]'`. Resume is currently a
+cold restart; a warm snapshot restore (dependencies installed and caches warm)
+will be advertised once the OpenShell gateway exposes it through the SDK.
+
+</div>
+
+<div className="note">
+
 **Daytona free-tier egress:** Daytona Tier 1/2 organizations restrict outbound
 traffic to a [fixed allowlist](https://www.daytona.io/docs/en/network-limits).
 Your `server_url` and model endpoints must be reachable from Daytona's

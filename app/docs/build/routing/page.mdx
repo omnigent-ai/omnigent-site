@@ -33,6 +33,75 @@ Two routers are available:
 - **External routing API**: the server delegates the decision to an external
   `routes:select` service that you point it at.
 
+## What smart routing decides
+
+The same router runs at more than the session's opening message. As an agent
+picks up and fans out work, routing applies at three points:
+
+- **Session model + harness** — chosen from the first message and applied for the
+  rest of the session (described above).
+- **Sub-agent tasks** — when an orchestrator spawns workers, each spawn is routed
+  on that task's own description, so a cheap task lands on a cheap model and a
+  hard one on a capable model instead of everyone inheriting the parent's model.
+- **Harness family** — a multi-agent spec can hand its own harness to the router
+  so sub-agents in another family aren't stranded (see
+  [`smart_routing_harness`](#route-a-multi-agent-specs-harness)).
+
+All routing is **advisory**: if the router is unavailable, times out, or returns
+an answer the server can't use, the work runs on its inherited model and harness
+rather than failing.
+
+## Size tasks before fan-out with `sys_advise_models`
+
+An orchestrator that dispatches sub-agents can ask the router to recommend a
+model per task **before** it fans out. When the agent declares `tools.agents`
+_and_ a router is configured, the built-in `sys_advise_models` tool appears in
+its tool list; otherwise it is absent and dispatches use each worker's default
+model.
+
+Pass the tasks you are about to dispatch — one entry per planned
+`sys_session_send` — and use each recommendation's `model` as the `args.model`
+for that dispatch. Each task names one or more `agents` to size, plus an optional
+`models` list to constrain the pick:
+
+```json
+{
+  "tasks": [
+    {
+      "title": "auth-refactor",
+      "agents": [{ "agent": "claude_code", "models": null }],
+      "task": "Refactor the auth module and add tests"
+    }
+  ]
+}
+```
+
+The tool returns `{ "recommendations": [...], "router_on": true|false }`. Each
+recommendation is `{ title, agent, model, tier, rationale }`; `model` is `null`
+when the router is unavailable or the harness is unrecognised, in which case fall
+back to the worker's default. The recommendation is **advisory** — you may
+override it.
+
+## Route a multi-agent spec's harness
+
+A spec that pins `executor.config.harness` also pins the harness **family** every
+sub-agent is routed within, which can strand a cross-family sub-agent on the
+wrong harness. Set `smart_routing_harness: auto` in the spec's `executor.config`
+to keep the pin for ordinary sessions but hand the brain harness to the router
+when smart routing is on:
+
+```yaml
+executor:
+  type: omnigent
+  config:
+    harness: claude-sdk
+    smart_routing_harness: auto
+```
+
+- `auto` is the only accepted value; any other value is rejected at load time.
+- The key applies only to `executor.type: omnigent` agents — the only spec with a
+  swappable brain harness to give away.
+
 ## Enable smart routing
 
 Smart routing is enabled by configuration alone:

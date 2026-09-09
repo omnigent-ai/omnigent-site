@@ -89,6 +89,69 @@ it overrides the built-in `90`-second default. A non-numeric env value (for
 example `not-a-number`) fails fast with a clear error; a float-looking value
 such as `120.0` is accepted and truncated to a whole number of seconds.
 
+## Node-local disk bounds (`resources` ephemeral-storage & `home_size_limit`)
+
+Each runner Pod writes to node-local disk: its container writable layer, logs,
+and the writable-HOME `emptyDir` all live on the node's root filesystem. Left
+unbounded, one busy sandbox (tool caches, clones, build output) can fill a
+node's disk and push it into disk pressure — at which point the kubelet evicts
+by *node-wide* ranking and can kill an innocent, tiny Pod to reclaim space from
+the offender. Two knobs bound this per sandbox.
+
+### Pod resource sizing (`resources`)
+
+The optional `sandbox.kubernetes.resources` block overrides per-Pod `requests`
+and `limits`. Each tier accepts `cpu`, `memory`, and `ephemeral-storage`, each a
+Kubernetes quantity string; every level and field is optional and validated at
+server startup, so an operator typo fails startup instead of the first launch.
+
+```yaml
+sandbox:
+  provider: kubernetes
+  kubernetes:
+    resources:
+      requests: { cpu: "500m", memory: "1Gi", ephemeral-storage: "2Gi" }
+      limits: { cpu: "2", memory: "4Gi", ephemeral-storage: "8Gi" }
+```
+
+An omitted `cpu` / `memory` keeps the built-in default (`0.5`–`2` cpu,
+`1Gi`–`4Gi` memory). `ephemeral-storage` has **no built-in default**: when it is
+unset the field is left off the Pod so a namespace `LimitRange` can default it.
+Set an `ephemeral-storage` request so the scheduler spreads sandboxes across
+nodes by disk, and a limit so the kubelet evicts *only* a sandbox that exceeds
+it rather than ranking every Pod on the node.
+
+### Writable-HOME emptyDir size (`home_size_limit`)
+
+| Setting | Value                                 |
+| ------- | ------------------------------------- |
+| Key     | `sandbox.kubernetes.home_size_limit`  |
+| Type    | Kubernetes quantity string, or `null` |
+| Default | `8Gi`                                 |
+
+Every runner Pod mounts a writable-HOME `emptyDir`. `home_size_limit` sets its
+`sizeLimit` so the kubelet evicts only the sandbox that outgrows its HOME:
+
+```yaml
+sandbox:
+  provider: kubernetes
+  kubernetes:
+    home_size_limit: 20Gi
+```
+
+There are three states, resolved at parse time:
+
+- **key absent** → the `8Gi` default, so a stock deployment is bounded without
+  any config;
+- **explicit `null`** → an unbounded `emptyDir` (the pre-limit behaviour, for
+  operators whose nodes have ample root-disk headroom, accepting node-wide
+  eviction risk);
+- **a quantity string** (`"8Gi"`, `"20Gi"`) → that `sizeLimit`.
+
+The `emptyDir` counts against the Pod's `ephemeral-storage` limit too, so size
+`home_size_limit` above the `ephemeral-storage` limit you expect a session to
+need. A present-but-invalid value (not a quantity string) fails server startup.
+
 ## Persistent storage for runner Pods
 
 Runner Pods are ephemeral: the workspace lives on an `emptyDir` and is

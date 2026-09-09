@@ -1,0 +1,55 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Browser Extensions",
+  "Reference for the Omnigent browser-extension host API's sessions read methods, including the sessions.getCached preview.",
+  {
+    eyebrow: "Reference",
+    path: "/docs/reference/browser-extensions",
+  },
+);
+
+# Browser Extensions
+
+Omnigent browser extensions call a permissioned host API (the V1 SDK) instead of
+reaching the network directly. Extensions receive neither raw authenticated
+fetch nor the internal session WebSocket — every capability is a named method
+gated by a declared permission.
+
+This page documents the **sessions** read API and its cached preview. For the
+full V1 method catalog and manifest format, see the extension SDK reference in
+the Omnigent code repository.
+
+## Reading sessions
+
+The `sessions.read` permission exposes the session-listing methods:
+
+| Method                | Purpose                                                                         |
+| --------------------- | ------------------------------------------------------------------------------- |
+| `sessions.listPage`   | Read one canonical page of session summaries from the server.                   |
+| `sessions.listAll`    | SDK helper that pages through `listPage` and returns every session.             |
+| `sessions.getCached`  | Return an optional preview of cached session summaries for immediate display.   |
+| `sessions.pullRequest`| The PR filed from a session's branch, via the same GitHub lookup as the shell's GitHub tab. |
+
+Session summaries include the working directory, worktree branch, project ID,
+and created/updated timestamps. Pages are bounded — a listing stops at 200 pages
+or 5,000 sessions.
+
+## Cached preview with `sessions.getCached`
+
+`sessions.listPage` always reads canonical server pages. For an immediate
+preview, hosts advertising the `sessions.getCached` capability return an
+optional array of cached summaries (or `null` when unavailable), with the same
+`limit` bounds as `listPage`.
+
+The preview may be incomplete, stale, or out of order, and it has no pagination
+cursor. Use it to fill the UI instantly while the authoritative list loads:
+
+1. Display the `getCached` preview while loading.
+2. Start `listPage` with no `after` cursor.
+3. Merge fetched rows into the view by ID.
+4. Once pagination completes, discard any preview-only rows that the server
+   pages did not confirm.
+
+Because a preview is best-effort, always treat `null` (or an empty array) as
+"no preview available" and fall back to the `listPage` results.

@@ -1,0 +1,51 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "See what every session, harness, and model is costing you",
+  "A new Usage page in the web UI totals your LLM spend, charts it day by day, and breaks it down by session, harness, and model so you can see where the money goes.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/usage-page-session-cost-tracking",
+  },
+);
+
+export const meta = {
+  title: "See what every session, harness, and model is costing you",
+  date: "2026-08-19",
+  category: "Governance",
+  author: "omnigent",
+  heroArt: "/images/blog/usage-page-session-cost-tracking.png",
+};
+
+<BlogPostHeader slug="usage-page-session-cost-tracking" />
+
+If you run agents across several harnesses and models in Omnigent, there is now
+a Usage page in the web UI that shows what all of that is actually costing you.
+
+Until now your spend was scattered across individual sessions, so a question
+like "which harness ran up the bill this week?" meant adding it up by hand. The
+Usage page answers it in one view. It totals your cost over a window you pick,
+charts your daily spend as a timeline, breaks it down by harness and by model,
+and lists every session in a sortable table with its cost, harness, and last
+active time so you can click straight through to the one that stands out.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: open Usage from the sidebar, switch the range from 30 days to All time, hover the daily bars, then sort the session table by cost and click into the priciest session. */}
+
+Open it from the Usage item in the sidebar, then switch between 7 days, 30 days,
+90 days, all time, or a custom date range. The page reads across any agent you
+run in Omnigent, so a session on one harness and a session on another show up
+side by side. It is a deployment-wide release feature that is off by default; an
+operator turns it on for the whole server by setting an environment variable and
+reloading the web app:
+
+```bash
+OMNIGENT_FEATURES=usage_page
+```
+
+The cost data itself is always recorded, so nothing is lost while the page is
+off. See the [Web UI guide](/docs/interact/web-ui) for where it lives in the
+interface.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

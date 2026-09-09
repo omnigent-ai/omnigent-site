@@ -1,0 +1,68 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Catch agents stuck in a loop or about to delete something before they run away",
+  "Three builtin policies watch every agent run: they ask you before an agent burns tokens retrying the same failing call, flag a run that keeps erroring, and block irreversible GitHub deletes by default.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/catch-runaway-agents",
+  },
+);
+
+export const meta = {
+  title:
+    "Catch agents stuck in a loop or about to delete something before they run away",
+  date: "2026-08-03",
+  category: "Governance",
+  author: "omnigent",
+  heroArt: "/images/blog/catch-runaway-agents.png",
+};
+
+<BlogPostHeader slug="catch-runaway-agents" />
+
+If you leave agents running while you work on something else, you can now let
+Omnigent watch for the ways a run goes wrong and pull you in before it wastes
+time or does damage. Three builtin policies handle the most common cases, and
+they work with any agent you run in Omnigent.
+
+The first two catch a stuck run. An agent that keeps retrying the exact same
+tool call with the same arguments is the top way to burn tokens, and a plain
+call cap never notices because it only counts totals. `detect_loop` watches for
+that repeat and asks you to approve before it continues, so you can break the
+loop. `detect_thrashing` watches tool results instead: when a run hits several
+errors in a row, or most calls in a recent window fail, it flags that the agent
+is stuck so you can redirect it or start fresh. Both run locally with no server
+model required. The third case is damage: `github_policy` now denies
+irreversible deletes by default, even on repositories the agent is otherwise
+allowed to write to. That covers deleting a file, branch, or release through
+the GitHub tools, plus a `git push --delete` from the shell.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an agent retrying the same failing command, then the detect_loop approval prompt appearing so the user can stop it. */}
+
+Add the policies to your config's `policies` block and they apply to the whole
+session. To turn deletes back on for a repo, set `allow_destructive: true`.
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  catch_loops:
+    type: function
+    handler: omnigent.policies.builtins.safety.detect_loop
+  catch_thrashing:
+    type: function
+    handler: omnigent.policies.builtins.context.detect_thrashing
+  guard_github:
+    type: function
+    handler: omnigent.policies.builtins.github.github_policy
+    factory_params:
+      write_repos: ["octo/hello"]
+      # allow_destructive defaults to false: deletes are denied
+      # even on allowed repos until you opt in.
+```
+
+For the full parameter list and more examples, see the
+[builtin policies guide](/docs/policies/builtin).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

@@ -1,0 +1,60 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Put your agents on a recurring schedule and let them run unattended",
+  "Schedule any recurring agent run, including research, summaries, and chat-only tasks that touch no code, without pinning a workspace or a host up front.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/schedule-agents-to-run-unattended",
+  },
+);
+
+export const meta = {
+  title: "Put your agents on a recurring schedule and let them run unattended",
+  date: "2026-07-27",
+  category: "Automations",
+  author: "omnigent",
+  heroArt: "/images/blog/schedule-agents-to-run-unattended.png",
+};
+
+<BlogPostHeader slug="schedule-agents-to-run-unattended" />
+
+If you want an agent to run on its own every morning or every week, you can now
+schedule it without wiring up a working directory first. A scheduled automation
+is a saved prompt that fires an agent session on a recurring rule, and it now
+covers the tasks that touch no code at all, like a daily research digest, a
+weekly summary, or a chat-only check-in.
+
+Setting one up used to mean pinning both a connected host and an existing
+workspace on it, even when the run never opened a repo. Now the workspace is
+optional, and so is the host. Leave the workspace off and the run starts in the
+host's home directory. Leave the host off and the automation runs on whichever
+of your machines is online when it fires, so the schedule keeps working as you
+move between devices. If nothing is online at fire time, the run is recorded as
+a failed run so you can see it happened rather than wondering why nothing ran.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: creating a chat-only "daily research digest" automation in the Automations dialog with no workspace or host set, then the row showing "Next run in ..." */}
+
+Open Automations in the sidebar, create a task, and give it a name, a prompt,
+and a recurrence, then pick a model and reasoning effort if you want to override
+the agent's defaults. You can leave the workspace and host fields empty for
+non-code work. Each task row shows when it will next run and offers a "Run now"
+action to fire it immediately. Agents can also manage their own recurring runs
+with the built-in `sys_scheduled_task_create` tool, where `workspace` and
+`host_id` are now optional:
+
+```
+sys_scheduled_task_create(
+  name="daily research digest",
+  prompt="Summarize what's new in my field today.",
+  rrule="FREQ=DAILY;BYHOUR=9;BYMINUTE=0",
+  agent_id="<your agent>",
+)
+```
+
+For the full field reference and recurrence-rule syntax, see the
+[Scheduled Tasks guide](/docs/build/scheduled-tasks).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

@@ -89,9 +89,17 @@ non-zero status if any failed.
 ### Import from the web UI
 
 You can also import from the web UI without touching the terminal. Open
-**Settings › Import sessions**, pick one of your online machines, choose a
-harness (or **All harnesses**) and how many recent sessions to pull (25, 50, or
-100), then click **Import**. The transcripts live on your machine, so the read
+**Settings › Import sessions** and pick one of your online machines. The
+**Import** selector offers two modes:
+
+- **Recent sessions** — choose a harness (or **All harnesses**) and how many
+  recent sessions to pull (25, 50, or 100).
+- **Session by ID** — choose a specific harness and enter one harness-native
+  session ID to import just that transcript, without listing your local
+  history. **All harnesses** isn't available in this mode, since a session ID
+  belongs to exactly one harness.
+
+Then click **Import**. The transcripts live on your machine, so the read
 happens on that connected machine over its tunnel — the server never sees your
 local files. Sessions already imported are skipped, and each newly imported
 session is linked in the result so you can jump straight into it.

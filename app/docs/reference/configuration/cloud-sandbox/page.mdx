@@ -27,7 +27,7 @@ sandbox:
 
 | Field         | Required | Description                                                                                          |
 | ------------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `openshell`, or `boxlite`.                        |
+| `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `openshell`, `boxlite`, or `microsandbox`.        |
 | `server_url`  | Yes      | Public Omnigent server URL that the remote runner connects back to.                                  |
 | `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration). |
 
@@ -148,6 +148,42 @@ sandbox:
 - `cluster` defaults to the active OpenShell gateway from
   `$OPENSHELL_GATEWAY` or `~/.config/openshell/active_gateway`.
 - `workspace` defaults to `$OMNIGENT_OPENSHELL_WORKSPACE`, then `default`.
+
+When a server-managed OpenShell sandbox goes dormant, its persistent volume is
+retained and the session reports a wakeable "asleep" state. The next message
+resumes the same sandbox in place, preserving its name and volume, and waits
+for it to become ready before continuing.
+
+In-place resume requires `SandboxClient.start`, added in `openshell` 0.0.105.
+With an older SDK, the host remains offline instead of advertising an
+unsupported wake action; upgrade with
+`uv pip install --upgrade 'omnigent[openshell]'`. Resume is currently a cold
+restart rather than a warm snapshot restore.
+
+## Microsandbox
+
+The `microsandbox` provider runs each managed session in a micro-VM on the
+same machine as the server. Because the guest runs untrusted agent code next
+to the server, its default `host` network mode exposes only an explicit TCP
+port allowlist rather than the entire host.
+
+```yaml
+sandbox:
+  provider: microsandbox
+  server_url: http://host.microsandbox.internal:8317
+  microsandbox:
+    host_ports: [8317]
+```
+
+`host.microsandbox.internal` is the stable guest hostname for the machine
+running microsandbox. In `host` network mode:
+
+- The `server_url` port is added to the host allowlist only when `server_url`
+  targets `host.microsandbox.internal`. A public `server_url` does not
+  implicitly open the matching port on the host.
+- List any additional host-local services the guest needs in `host_ports`,
+  using integer ports from `1` through `65535`. Everything else on the host
+  remains unreachable.
 
 ## Boxlite
 

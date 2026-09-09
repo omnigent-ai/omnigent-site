@@ -188,6 +188,22 @@ Sign-in still happens in the foreground, before the spawn: pointing
 the browser login in your terminal first, since the detached daemon has no
 terminal to prompt on.
 
+## Canvas
+
+The Canvas page gives you a spatial view of your work: instead of the linear
+sidebar list, your top-level sessions appear as draggable cards you can arrange
+freely on an infinite canvas. Sessions are grouped by project, with one canvas
+per project, so each project keeps its own layout.
+
+![Canvas showing sessions arranged as cards within a project](/images/docs/canvas.png)
+
+Canvas is **off by default**. It's a gated release feature: an operator enables
+it deployment-wide by including `canvas` in the server's release features
+(`OMNIGENT_FEATURES=canvas`, or `--features canvas` on a Databricks deploy —
+combine comma-separated with other features like `usage_page,harness_install`).
+Once enabled, a **Canvas** entry appears in the sidebar navigation and the page
+is served at `/canvas`.
+
 ## Install as an app
 
 The web UI is an installable [Progressive Web App (PWA)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps).

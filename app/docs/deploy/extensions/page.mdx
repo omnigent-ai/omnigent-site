@@ -1,0 +1,85 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Extensions",
+  "Inspect the extensions installed on your Omnigent server — the pages and primary-navigation entries they contribute, and per-extension load diagnostics for administrators.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/extensions",
+  },
+);
+
+# Extensions
+
+Extensions are Python distributions installed alongside the Omnigent server that
+contribute UI to it — namespaced **pages** and **primary-navigation** entries.
+The server discovers installed extensions once at startup and exposes a
+read-only catalog under `/v1/extensions`, plus an administrator diagnostics view
+for entry points that failed to load.
+
+Extensions are a server-operator concern: the current API treats **installation
+as enablement**. There is no per-user or runtime enable/disable — installing,
+removing, or upgrading an extension package requires a **server restart** to
+refresh the catalog snapshot.
+
+## Discovery and isolation
+
+Installed extensions are discovered through their distribution entry points when
+the server boots. Each extension is validated independently, so a single
+malformed extension is rejected on its own without affecting the others. If
+global discovery itself fails (for example, broken distribution metadata), the
+server still starts: the catalog is served empty and the failure is recorded as
+a load error rather than taking the server down.
+
+## Catalog API
+
+Three read-only endpoints are mounted under `/v1`:
+
+| Method & path                     | Access                          | Returns                                              |
+| --------------------------------- | ------------------------------- | ---------------------------------------------------- |
+| `GET /v1/extensions`              | Any authenticated user          | The catalog of installed, enabled extensions.        |
+| `GET /v1/extensions/{id}`         | Any authenticated user          | One extension's metadata (`404` if the id is unknown). |
+| `GET /v1/extensions/diagnostics`  | Administrators (multi-user)     | Accepted extensions **and** load errors.             |
+
+On a multi-user server every endpoint requires authentication, and
+`/v1/extensions/diagnostics` additionally requires an administrator. On a
+single-user server diagnostics is accessible without an admin check.
+
+### Extension metadata
+
+Each catalog entry describes one accepted extension:
+
+- `id` — the extension's stable identifier.
+- `display_name`, `distribution`, `version` — human-facing name, the installed
+  package name, and its version.
+- `extension_api` — the extension API version the server accepts (currently `1`).
+- `status` — always `enabled` in the catalog.
+- `permissions` — the capabilities the extension declared, sorted (for example
+  `navigation`, `storage.user`).
+- `pages` — namespaced page contributions, each with `id`, `title`, `route`, and
+  `view`.
+- `primary_navigation` — primary-sidebar entries, each with `id`, `label`, the
+  `page` it opens, an optional `icon`, an `order`, and an optional `when`
+  condition.
+- `browser` — availability of the extension's browser bundle.
+
+Catalog entries and their nested `pages` and `primary_navigation` lists are
+returned in a stable, id-sorted order.
+
+### Browser bundles
+
+The `browser` object reports whether an extension ships a browser bundle
+(`declared`) and stylesheet (`has_styles`). The asset-serving fields
+(`digest`, `script_url`, `style_url`) are not yet populated — a declared bundle
+is advertised in the catalog but is **not yet runnable** until asset serving
+lands. Treat these fields as informational for now.
+
+## Diagnostics
+
+`GET /v1/extensions/diagnostics` returns the accepted `extensions` alongside a
+`load_errors` list. Each load error names the rejected `entry_point`, a `status`
+of `rejected`, and a concise `error` message. Error text is sanitized
+(non-printable characters stripped, whitespace collapsed) and truncated to 512
+characters before it is returned, so operators get a readable summary without
+leaking noisy internals. Use this view to see why an installed extension did not
+appear in the catalog.

@@ -207,6 +207,41 @@ Provide one mode: `cloud.endpoint` selects cloud mode and uses
 `BOXLITE_API_KEY`; `local.home_dir` and `local.registry` configure local mode.
 Local mode is used when neither block is set.
 
+## Native harness bridge servers
+
+Native harnesses (for example `claude-native`) run small HTTP servers on the
+sandbox host — a tool relay and an MCP control ingress — that the harness's
+hook and helper subprocesses call back into. **By default these bind loopback
+only (`127.0.0.1`)**, so an ordinary host keeps them off every other interface.
+
+A sandbox whose SSRF hardening denies loopback destinations unconditionally
+(the `openshell` provider is one such backend) cannot reach a
+loopback-advertised relay, so every prompt fails closed. Opt into an
+all-interfaces bind by setting `OMNIGENT_BRIDGE_BIND_HOST=0.0.0.0` in the
+sandbox host environment: the servers then listen on all interfaces (loopback
+consumers keep working) and advertise the host's routable address so the
+in-sandbox hooks can reach them.
+
+| Environment variable        | Default          | Description                                                                                                                                                                                                          |
+| --------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OMNIGENT_BRIDGE_BIND_HOST` | loopback-only    | Selects the bind posture. Unset is loopback-only (`127.0.0.1`). `0.0.0.0` binds all interfaces and advertises the detected routable address (falling back to loopback when the host has none). Any other value pins that exact host for both bind and advertisement. |
+| `OMNIGENT_BRIDGE_PORT_POOL` | `28700`–`28715`  | Overrides the server port pool. Accepts comma-separated ports and inclusive ranges, e.g. `28700-28703,29000`.                                                                                                        |
+
+Bridge servers draw their ports from a small stable pool (`28700`–`28715` by
+default) so a sandbox network policy can allowlist them by exact host and port.
+Several servers coexist per host — the MCP ingress plus one tool relay per
+session — so allowlist the **whole** pool, not a single port. When the pool is
+exhausted the servers fall back to an OS-assigned ephemeral port, which an
+exact-port policy cannot cover.
+
+<div className="note">
+
+Every endpoint on these servers (other than `GET /health`) requires a per-relay
+bearer token, so allowlisting their host and ports does not expose
+unauthenticated functionality.
+
+</div>
+
 ## Host configuration
 
 The provider-independent `host_config` block contains the

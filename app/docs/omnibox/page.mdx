@@ -35,14 +35,20 @@ agent can't read your SSH keys or write outside the workspace.
 Broad read grants stay safe: granting `~` doesn't expose `~/.ssh` or
 `~/.aws/credentials`, because dotfiles are masked unless you allow them.
 
+See the [filesystem settings](/docs/reference/configuration/os-sandbox#filesystem)
+for read and write grants, denied paths, and path expansion behavior.
+
 ## Network isolation
 
-All HTTP(S) traffic goes through a default-deny proxy with an explicit allow-list of
-methods, hosts, and paths. Data can't leave except to hosts you chose, which shuts down
-exfiltration even if the agent is prompt-injected.
+When you configure `egress_rules`, HTTP(S) traffic goes through a default-deny proxy
+with an explicit allow-list of methods, hosts, and paths. Data can't leave except to
+hosts you chose, which shuts down exfiltration even if the agent is prompt-injected.
 
 Private IPs and cloud metadata endpoints are blocked by default, so the agent can't
 reach your internal services.
+
+See the [network settings](/docs/reference/configuration/os-sandbox#network) for
+allowed hosts, methods, paths, and localhost access.
 
 ## Credential injection
 
@@ -53,8 +59,11 @@ agent can use a credential but never read it.
 Only the placeholder appears in logs, transcripts, and model context. A leaked token is
 worthless, since it only works through the proxy, against allowed hosts.
 
+See [credential injection](/docs/reference/configuration/os-sandbox#credentials-secretless-proxy)
+for placeholder mappings, secret sources, and supported authentication flows.
+
 ## Related
 
-- [OS sandbox configuration](/docs/policies/os-sandbox): the full reference, covering filesystem grants, egress rules, environment passthrough, and the `bubblewrap`/Seatbelt backends.
+- [OS sandbox configuration](/docs/reference/configuration/os-sandbox): the full reference, covering filesystem grants, egress rules, environment passthrough, and the `bubblewrap`/Seatbelt backends.
 - [Cloud sandbox host](/docs/deploy/cloud-sandbox-host): controls _where_ the runner executes. Omnibox controls _what it can access_. They compose.
 - [Contextual policies](/docs/policies/overview): govern behavior at the tool-call level. Omnibox is the hard boundary underneath.

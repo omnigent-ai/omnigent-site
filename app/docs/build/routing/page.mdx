@@ -40,7 +40,20 @@ Smart routing is enabled by configuration alone:
 - Configure a server `llm:` block and the server uses the **built-in judge** backed
   by it, with no `routing:` block required.
 - Or add a `routing:` block with `provider: external` to delegate to an
-  **external routing API** (see below).
+  **external routing API**.
+
+For example, this enables the built-in judge with an OpenAI model:
+
+```yaml
+llm:
+  model: openai/gpt-5.5
+  connection:
+    api_key: ${OPENAI_API_KEY}
+```
+
+The API key may also come from the provider's usual environment variables. See
+[built-in routing settings](/docs/reference/configuration/routing#built-in-routing)
+for custom endpoints, Databricks profiles, and fallback models.
 
 Start the server with your config file:
 
@@ -63,74 +76,20 @@ routing:
   provider: external
   base_url: https://gateway.example.com/ai-gateway/routing/v1
   router_name: task_v0
-  # Optional: strip a prefix from catalog model ids before sending them to
-  # the router (and restore it on the answer). Accepts a string or a list.
   model_prefix: databricks-
-  # Optional auth, see "Authentication" below.
   api_key: ${ROUTING_API_KEY}
 ```
 
-| Field          | Required | Description                                                                                                                                           |
-| -------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `provider`     | yes      | Must be `external` to select the external routing API. Any other value (or omitting the block) falls back to the built-in judge.                       |
-| `base_url`     | yes      | Base URL of the routing service. The server appends `/routes:select` to it.                                                                           |
-| `router_name`  | yes      | The routing strategy the gateway should apply, e.g. `task_v0`. Sent as `route_selector.router_name`.                                                   |
-| `model_prefix` | no       | A prefix (or list of prefixes) stripped from catalog model ids before they are sent to the router, and restored on its answer. Example: `databricks-`. |
-| `api_key`      | no       | Static bearer token. `${ENV}` references are expanded. Takes precedence over `profile`.                                                                |
-| `profile`      | no       | Databricks CLI profile. The server mints a fresh bearer per call (OAuth refresh), so a long-lived server never sends an expired token.                 |
+See [external routing settings](/docs/reference/configuration/routing#external-routing)
+for all fields and validation behavior, and
+[authentication precedence](/docs/reference/configuration/routing#authentication-precedence)
+for choosing between an API key and a Databricks profile.
 
-If `base_url` or `router_name` is missing, the external provider is skipped and a
-warning is logged: routing stays off rather than failing the server.
+## Implement an external router
 
-### Authentication
-
-Auth mirrors the `llm:` block, in precedence order:
-
-1. **`api_key`**: an explicit, provider-agnostic bearer token (`${ENV}` expanded).
-   Sent as `Authorization: Bearer <token>`.
-2. **`profile`**: a Databricks CLI profile. The server resolves a fresh token per
-   request via the Databricks SDK, so tokens that expire (~1h) are refreshed
-   automatically.
-3. **Neither**: requests are sent unauthenticated.
-
-## External routing API spec
-
-The server calls a single endpoint:
-
-```
-POST <base_url>/routes:select
-Content-Type: application/json
-```
-
-The request and response bodies follow the `omnigent.api.routing.v1` schema
-(proto3, serialized as JSON with snake_case field names). This schema is versioned
-independently of any gateway so the contract can evolve without coupling to a
-gateway's release cycle.
-
-### Request: `SelectRouteRequest`
-
-| Field             | Type              | Description                                                                                    |
-| ----------------- | ----------------- | ---------------------------------------------------------------------------------------------- |
-| `route_options`   | `RouteOption[]`   | Candidate destinations the router may choose from. One entry per (model, harness) pair.        |
-| `task`            | `Task`            | The unit of work to route. Carries the user's `prompt` (truncated to 4000 chars).              |
-| `route_selector`  | `RouteSelector`   | The routing strategy to apply. Required in practice; a gateway rejects a request that omits it. |
-| `session_history` | `SessionHistory`  | Prior turns in the session, when available. Routers may use it to keep turns consistent.        |
-
-**`RouteOption`**
-
-| Field     | Type     | Description                                                                                     |
-| --------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `model`   | `string` | Model id to serve the request, e.g. `gpt-5-5`.                                                   |
-| `harness` | `string` | Harness that drives the model. May be omitted for a native harness; required for a meta-harness. |
-
-**`RouteSelector`**
-
-| Field         | Type     | Description                                                                                       |
-| ------------- | -------- | ------------------------------------------------------------------------------------------------- |
-| `router_name` | `string` | Name of the routing strategy to invoke (from the `router_name` config field).                     |
-| `config`      | `Struct` | Optional router-specific configuration, interpreted by the selected router (gateway-defined).      |
-
-Example request body:
+The server calls `POST <base_url>/routes:select` with the candidate harness and
+model combinations, the task, and the requested routing strategy. A typical
+[request](/docs/reference/routing-api#request-selectrouterequest) looks like this:
 
 ```json
 {
@@ -144,21 +103,8 @@ Example request body:
 }
 ```
 
-### Response: `SelectRouteResponse`
-
-| Field             | Type                | Description                                                    |
-| ----------------- | ------------------- | -------------------------------------------------------------- |
-| `route_selection` | `RouteSelection[]`  | The routing decision(s). The server uses the first entry.     |
-| `rationale`       | `string`            | Human-readable explanation of why this route was selected.    |
-
-**`RouteSelection`**
-
-| Field          | Type          | Description                                                              |
-| -------------- | ------------- | ------------------------------------------------------------------------ |
-| `route_option` | `RouteOption` | The chosen destination (model + harness).                                |
-| `params`       | `Struct`      | Optional router-specific parameters emitted alongside the decision.      |
-
-Example response body:
+Return a [response](/docs/reference/routing-api#response-selectrouteresponse) with
+one of the offered model and harness combinations:
 
 ```json
 {
@@ -171,8 +117,8 @@ Example response body:
 }
 ```
 
-The server maps the chosen `model` (and `harness`, when present) back to the
-matching catalog entry, restoring any stripped `model_prefix`. A model the server
-did not offer in `route_options` is rejected, and the session falls back to its
-default harness. On any error (HTTP 4xx/5xx, unparseable body, empty selection) the
-server surfaces the reason and degrades gracefully rather than blocking the session.
+Implement the [external routing API contract](/docs/reference/routing-api) for
+the complete schema, matching rules, and error behavior.
+
+If the service returns an error or an invalid selection, the server surfaces the
+reason and falls back to the session's default harness rather than blocking it.

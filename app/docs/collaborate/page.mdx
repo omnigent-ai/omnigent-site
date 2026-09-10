@@ -56,6 +56,23 @@ see [Session sharing](/docs/collaborate/auth#session-sharing).
 
 </div>
 
+### Read-only sharing keeps workspace files private
+
+A **Read** (view-only) share gives a teammate the conversation — messages, tool
+calls, and streaming updates — but **not** the session's workspace files. By
+default, view-only viewers don't see the **Files**, **Changes**, or GitHub diff
+surfaces, because a workspace routinely holds secrets like `.env` files and
+keys. **Edit** collaborators always have workspace access.
+
+To let view-only viewers browse the files too, open the **Share** dialog and
+turn on **Workspace files** ("Let people with view access browse this session's
+files"). This toggle appears only for sessions that have a workspace on disk,
+and only the session owner can change it. It's off by default. Turning it off
+again returns view-only viewers to conversation-only access.
+
+The opt-in never widens absolute-path browsing on the host filesystem — that
+stays owner-only regardless of this setting.
+
 <h3 id="code-execution-risk">Co-driving grants code execution on the host</h3>
 
 Only share **Edit** with people you trust to run arbitrary code on your machine.
@@ -67,7 +84,7 @@ To collaborate more safely, share read-only instead, or host the session on a
 [cloud sandbox host](/docs/deploy/cloud-sandbox-host) so the agent runs in
 an isolated remote container rather than on your personal machine. To constrain what the
 agent can touch even on a trusted host, apply an
-[OS sandbox](/docs/policies/os-sandbox) policy.
+[OS sandbox](/docs/reference/configuration/os-sandbox) policy.
 
 ### Who said what
 

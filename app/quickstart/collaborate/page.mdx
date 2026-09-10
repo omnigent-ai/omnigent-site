@@ -22,8 +22,8 @@ hosts that keep working after you close your laptop.
 
 Railway is the quickest way to get a multi-user Omnigent server running.
 
-1. Go to [railway.app](https://railway.app) and import the [Omnigent repo](https://github.com/omnigent-ai/omnigent) from GitHub.
-2. Railway detects the Dockerfile and deploys automatically with a managed Postgres database.
+1. Go to [railway.app](https://railway.app) and import the [Omnigent repo](https://github.com/omnigent-ai/omnigent) from GitHub, then add a Postgres plugin to the project.
+2. Adding the plugin does not wire the database into the app on its own. Open the omnigent service's **Variables**, add a `DATABASE_URL` variable, and set it to a reference to the Postgres service: `${{Postgres.DATABASE_URL}}`. Until this is set, the deploy errors with `DATABASE_URL is required`; add it, then redeploy.
 3. Once deployed, note your server URL (something like `https://omnigent-production-xxxx.up.railway.app`).
 
 ## 2. Connect your laptop

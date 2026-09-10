@@ -1,5 +1,6 @@
 import createMDX from "@next/mdx";
 import remarkGfm from "remark-gfm";
+import rehypePrettyCode from "rehype-pretty-code";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -8,6 +9,11 @@ const nextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx"],
   async redirects() {
     return [
+      {
+        source: "/docs/policies/os-sandbox",
+        destination: "/docs/reference/configuration/os-sandbox",
+        permanent: true,
+      },
       {
         source: "/docs/deploy/cloud-sandbox",
         destination: "/docs/deploy/cloud-sandbox-host",
@@ -26,7 +32,19 @@ const nextConfig = {
       {
         source: "/download/mac",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.10.0-arm64.dmg",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.13.0-arm64.dmg",
+        permanent: false,
+      },
+      {
+        source: "/download/mac/v0.13.0",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.13.0-arm64.dmg",
+        permanent: false,
+      },
+      {
+        source: "/download/mac/v0.12.0",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.12.0-arm64.dmg",
         permanent: false,
       },
       {
@@ -38,7 +56,19 @@ const nextConfig = {
       {
         source: "/download/mac-x64",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.10.0-x64.dmg",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.13.0-x64.dmg",
+        permanent: false,
+      },
+      {
+        source: "/download/mac-x64/v0.13.0",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.13.0-x64.dmg",
+        permanent: false,
+      },
+      {
+        source: "/download/mac-x64/v0.12.0",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.12.0-x64.dmg",
         permanent: false,
       },
       {
@@ -74,19 +104,19 @@ const nextConfig = {
       {
         source: "/download/windows",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/win/Omnigent%20Setup%200.10.0.exe",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/win/Omnigent%20Setup%200.13.0.exe",
         permanent: false,
       },
       {
         source: "/download/linux-deb",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/linux/omnigent-desktop-electron_0.10.0_amd64.deb",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/linux/omnigent-desktop-electron_0.13.0_amd64.deb",
         permanent: false,
       },
       {
         source: "/download/linux-appimage",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/linux/Omnigent-0.10.0.AppImage",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/linux/Omnigent-0.13.0.AppImage",
         permanent: false,
       },
       // Desktop auto-update feed. The manifests (latest-mac.yml /
@@ -143,7 +173,7 @@ const nextConfig = {
 const withMDX = createMDX({
   options: {
     remarkPlugins: [remarkGfm],
-    rehypePlugins: [],
+    rehypePlugins: [[rehypePrettyCode, { theme: "github-dark" }]],
   },
 });
 

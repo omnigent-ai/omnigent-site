@@ -18,13 +18,45 @@ artifacts. Two backends are supported. Both use the same schema and migrations.
 
 Postgres is the production choice. It is required if you run more than one server instance.
 
-- Auto-provisioned on [Render and Railway](/docs/deploy/overview#cloud-platforms).
+- Provisioned on [Render and Railway](/docs/deploy/overview#cloud-platforms). Render wires it automatically; on Railway you add a Postgres plugin and set a `DATABASE_URL` reference variable (`${{Postgres.DATABASE_URL}}`) on the app service yourself.
 - For other platforms, bring your own. The fastest option is [Neon](https://pg.new): create a database and set `DATABASE_URL`.
 - Any `postgres://` or `postgresql://` URL works. The entrypoint normalizes it automatically.
 
 ```
 DATABASE_URL=postgresql://user:pass@host:5432/omnigent
 ```
+
+### Postgres driver
+
+The PostgreSQL driver (`psycopg`) ships in an opt-in extra rather than the base
+install. Install it whenever you point a self-installed Omnigent CLI or server at
+a Postgres database:
+
+```
+pip install 'omnigent[postgres]'
+```
+
+For a `uv tool` install, add the driver with:
+
+```
+uv tool install omnigent --with 'psycopg[binary]'
+```
+
+If the driver is missing when the database URI is Postgres, Omnigent fails to
+start with an actionable error naming these install commands.
+
+Point the CLI or local server at Postgres by setting `OMNIGENT_DATABASE_URI`
+(or passing `--database-uri`) to a `postgresql+psycopg://` URL:
+
+```
+OMNIGENT_DATABASE_URI=postgresql+psycopg://user:pass@host:5432/omnigent
+```
+
+Bare `postgres://` and `postgresql://` URLs are normalized to the psycopg 3
+dialect automatically; when passing a URI directly, prefer the explicit
+`postgresql+psycopg://` scheme. The legacy `psycopg2` dialect is not installed —
+switch the scheme to `postgresql+psycopg://`, or install `psycopg2-binary`
+yourself to keep it.
 
 ## SQLite
 

@@ -84,6 +84,8 @@ const SECTIONS = [
       { href: "/docs/deploy/overview", label: "Shared Server" },
       { href: "/docs/collaborate/auth", label: "Auth & SSO" },
       { href: "/docs/deploy/database", label: "Database" },
+      { href: "/docs/deploy/credential-store", label: "Credential Store" },
+      { href: "/docs/deploy/github-connect", label: "Connect GitHub" },
       { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host" },
     ],
   },
@@ -113,16 +115,49 @@ const SECTIONS = [
   },
   {
     title: "Omnibox",
-    pages: [
-      { href: "/docs/omnibox", label: "Overview" },
-      { href: "/docs/policies/os-sandbox", label: "OS Sandbox Config" },
-    ],
+    pages: [{ href: "/docs/omnibox", label: "Overview" }],
   },
   {
     title: "Reference",
-    pages: [
-      { href: "/reference", label: "REST API" },
-      { href: "/docs/deploy/telemetry", label: "Usage Telemetry" },
+    pages: [],
+    subsections: [
+      {
+        title: "Configuration",
+        collapsed: true,
+        pages: [
+          {
+            href: "/docs/reference/configuration",
+            label: "Server Settings",
+          },
+          {
+            href: "/docs/reference/configuration/kubernetes",
+            label: "Kubernetes Sandbox",
+          },
+          {
+            href: "/docs/reference/configuration/os-sandbox",
+            label: "OS Sandbox",
+          },
+          {
+            href: "/docs/reference/configuration/cloud-sandbox",
+            label: "Cloud Sandbox",
+          },
+          {
+            href: "/docs/reference/configuration/routing",
+            label: "Smart Routing",
+          },
+        ],
+      },
+      { title: "REST API", href: "/reference", pages: [] },
+      {
+        title: "Routing Provider API",
+        href: "/docs/reference/routing-api",
+        pages: [],
+      },
+      {
+        title: "Usage Telemetry",
+        href: "/docs/deploy/telemetry",
+        pages: [],
+      },
     ],
   },
 ];

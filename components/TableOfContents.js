@@ -14,14 +14,23 @@ function slugify(text) {
     .trim();
 }
 
-export default function TableOfContents() {
+// `containerSelector` is the article whose h2/h3 form the ToC. `requireSelector`
+// (optional) gates activation: the ToC only renders when that element exists,
+// which lets the blog reuse this on individual posts without lighting up on the
+// index, where the card grid also contains h2/h3.
+export default function TableOfContents({
+  containerSelector = ".docs-main",
+  requireSelector,
+  className = "docs-toc",
+}) {
   const pathname = usePathname();
   const [items, setItems] = useState([]);
   const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
-    const main = document.querySelector(".docs-main");
+    const main = document.querySelector(containerSelector);
     if (!main) return;
+    if (requireSelector && !document.querySelector(requireSelector)) return;
 
     const scan = () => {
       const headings = Array.from(main.querySelectorAll("h2, h3")).filter(
@@ -46,7 +55,7 @@ export default function TableOfContents() {
     const observer = new MutationObserver(scan);
     observer.observe(main, { childList: true, subtree: true });
     return () => observer.disconnect();
-  }, [pathname]);
+  }, [pathname, containerSelector, requireSelector]);
 
   useEffect(() => {
     if (items.length === 0) return;
@@ -79,7 +88,7 @@ export default function TableOfContents() {
   if (items.length < 2) return null;
 
   return (
-    <nav className="docs-toc" aria-label="On this page">
+    <nav className={className} aria-label="On this page">
       <ul>
         {items.map((item) => (
           <li key={item.id} className={item.level === 3 ? "toc-h3" : undefined}>

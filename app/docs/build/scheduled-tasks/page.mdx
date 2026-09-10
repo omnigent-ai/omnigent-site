@@ -49,7 +49,9 @@ is not enumerable.
 - **`model_override`** (optional) — a per-run model override. Omit for the
   agent default.
 - **`reasoning_effort`** (optional) — a per-run reasoning-effort hint, e.g.
-  `high`. Omit for the agent default.
+  `high`. Omit for the agent default (the spec's
+  [`executor.reasoning_effort`](/docs/build/models#reasoning-effort), or the
+  harness default when the spec sets none).
 
 Once created, the task fires automatically on its schedule until you delete it.
 

@@ -124,3 +124,24 @@ omni run --fork <session_id>
 
 Forking copies the full conversation history up to the fork point. From there, each session
 diverges independently.
+
+### Fork onto a cloud sandbox
+
+By default a fork is created **unbound**: it starts `idle` with no runner, and you attach
+compute afterwards the same way you would when resuming a session. If your server is
+configured with a [cloud sandbox provider](/docs/deploy/cloud-sandbox-host), you can instead
+have the fork land directly on a fresh server-provisioned sandbox host.
+
+In the web UI **Clone Session** dialog, pick a **New Sandbox** target instead of an existing
+host. The server provisions the sandbox, starts the runner, and connects it back
+automatically — the same background launch a new sandbox session uses, so the clone appears
+before the sandbox has finished coming up. The sandbox is registered to you, the forking user,
+so it resolves your credentials rather than the source session owner's.
+
+The sandbox's working directory follows the source by default: leaving the workspace unset
+inherits the git repository the source session recorded, so cloning a sandbox session lands
+the fork in the same checkout. You can point the fork at a different repository
+(`https://github.com/org/repo#branch`), or choose an empty sandbox instead.
+
+See the [fork endpoint](/reference) in the REST API reference for the `host_type`,
+`sandbox_provider`, and `workspace` request fields.

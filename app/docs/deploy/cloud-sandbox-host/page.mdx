@@ -29,13 +29,15 @@ That's [Omnibox](/docs/omnibox).
 | **Best for**     | Interactive work         | Long-running tasks     |
 
 Omnigent currently supports [Modal](https://modal.com), [Daytona](https://www.daytona.io),
-[Blaxel](https://blaxel.ai), [Islo](https://islo.dev),
+[Blaxel](https://blaxel.ai), [Islo](https://islo.dev), [Gensee](https://gensee.ai),
 [NVIDIA OpenShell](https://github.com/NVIDIA/openshell), and
 [Boxlite](https://github.com/boxlite-ai/boxlite) for cloud sandbox hosts.
 
 The hosted-platform comparison below covers Modal, Daytona, Blaxel, and Islo.
 OpenShell connects to your selected gateway; Boxlite can use a local micro-VM runtime
-or a remote `boxlite serve` pool.
+or a remote `boxlite serve` pool. Gensee is a managed-host provider only: its
+control plane starts the host over HTTPS, so it supports the server-managed flow
+but not the CLI bootstrap commands.
 
 |                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) | [Blaxel](https://blaxel.ai)              | [Islo](https://islo.dev)                       |
 | ------------------------ | ---------------------------------- | --------------------------------- | ---------------------------------------- | ---------------------------------------------- |
@@ -58,6 +60,9 @@ pip install 'omnigent[islo]'        # for Islo
 pip install 'omnigent[openshell]'   # for OpenShell
 pip install 'omnigent[boxlite]'     # for Boxlite
 ```
+
+Gensee needs no extra: it talks to the Gensee control plane over HTTPS and
+installs no provider SDK in Omnigent.
 
 The Islo launcher uses the Islo Python SDK, which ships in the `omnigent[islo]`
 extra and is imported lazily, so only users of the Islo provider need to install it.
@@ -97,6 +102,15 @@ export BL_API_KEY=your-api-key
 **OpenShell:** select a gateway with `openshell gateway select <name>`, or set
 `OPENSHELL_GATEWAY` on the server. The launcher uses that gateway connection and
 does not require a separate API key.
+
+**Gensee:** set the API token variable named by `sandbox.gensee.api_token_env`
+(`GENSEE_CONTROLLER_API_TOKEN` by default) on the server. Gensee currently
+provisions endpoints and tokens for contracted organizations; keep the token in
+the server process environment, not in `config.yaml`.
+
+```
+export GENSEE_CONTROLLER_API_TOKEN=…
+```
 
 **Boxlite:** local mode requires KVM on Linux and no provider credential. For a
 remote `boxlite serve` pool, set `BOXLITE_API_KEY` on the server and configure
@@ -141,7 +155,8 @@ omni sandbox connect --provider modal \
   --sandbox-id <id> --server <url>
 ```
 
-Boxlite supports the server-managed flow but not these CLI bootstrap commands.
+Boxlite and Gensee support the server-managed flow but not these CLI bootstrap
+commands.
 
 For a Blaxel CLI launch, list any credentials the host or agent needs in
 `OMNIGENT_BLAXEL_SANDBOX_ENV` before `create`. Never include `BL_API_KEY` or

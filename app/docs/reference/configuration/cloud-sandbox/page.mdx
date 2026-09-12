@@ -27,7 +27,7 @@ sandbox:
 
 | Field         | Required | Description                                                                                          |
 | ------------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `openshell`, `boxlite`, or `microsandbox`.        |
+| `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `openshell`, `boxlite`, or `microsandbox`. |
 | `server_url`  | Yes      | Public Omnigent server URL that the remote runner connects back to.                                  |
 | `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration). |
 
@@ -206,6 +206,68 @@ sandbox:
 Provide one mode: `cloud.endpoint` selects cloud mode and uses
 `BOXLITE_API_KEY`; `local.home_dir` and `local.registry` configure local mode.
 Local mode is used when neither block is set.
+
+## Gensee
+
+[Gensee](https://gensee.ai) is a **managed-host provider only**. The server
+talks to the Gensee control plane over HTTPS; no cloud-provider credentials or
+Gensee implementation packages are installed in Omnigent. Creating a managed
+session allocates one sandbox, has its control plane start `omnigent host`, and
+waits for that host to connect back. Gensee does not implement
+`omnigent sandbox create`, remote exec/file-copy primitives, stopped-sandbox
+resume, or workspace fork/merge.
+
+The production endpoint and standard token variable are defaults, so the
+minimal configuration is just `provider` + `server_url`:
+
+```yaml
+sandbox:
+  provider: gensee
+  server_url: https://your-server.example.com
+```
+
+Use an explicit block for a dedicated or development endpoint:
+
+```yaml
+sandbox:
+  provider: gensee
+  server_url: https://your-server.example.com
+  gensee:
+    endpoint: https://sandbox.gensee.ai
+    api_token_env: GENSEE_CONTROLLER_API_TOKEN
+    workspace_root: /mnt/gensee-tclone/workspaces
+    operation_timeout_s: 900
+    poll_interval_s: 2
+    request_timeout_s: 40
+    retry_timeout_s: 60
+    env: []
+```
+
+| Setting              | Default                          | Purpose                                                                                        |
+| -------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `endpoint`           | `https://sandbox.gensee.ai`      | Gensee HTTPS control-plane base URL.                                                            |
+| `api_token_env`      | `GENSEE_CONTROLLER_API_TOKEN`    | Server environment variable holding the API token.                                             |
+| `workspace_root`     | `/mnt/gensee-tclone/workspaces`  | Absolute workspace root inside each sandbox.                                                    |
+| `operation_timeout_s`| `900`                            | Shared deadline for host-start submission, retries, and polling; late responses are rejected.  |
+| `poll_interval_s`    | `2`                              | Interval between operation-status requests.                                                    |
+| `request_timeout_s`  | `40`                             | HTTP I/O timeout, capped by the remaining operation budget during host startup.                |
+| `retry_timeout_s`    | `60`                             | Retry budget for transport errors and HTTP 500/502/503/504; `0` disables retries.              |
+| `env`                | `[]`                             | Server environment variable names copied into the sandbox secret.                              |
+
+The endpoint must use HTTPS and cannot contain credentials, a query, or a
+fragment. Unknown settings and malformed values stop server startup rather than
+failing on the first user session.
+
+`GENSEE_CONTROLLER_URL` overrides the default endpoint when constructing the
+launcher directly. An explicit `sandbox.gensee.endpoint` takes precedence in the
+server-managed configuration.
+
+The Gensee API token stays in the server and authorizes lifecycle requests. Each
+sandbox receives a separate server-minted Omnigent host token (valid for seven
+days) through Gensee's short-lived secret store; it is not included in the
+durable operation request. By default no model or Git credentials are injected —
+list only variables every sandbox on the server may receive in `env`, or leave
+it empty and let each user sign in from their own sandbox terminal.
 
 ## Host configuration
 

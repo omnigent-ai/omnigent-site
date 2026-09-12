@@ -152,6 +152,34 @@ stored model is still a valid choice for that harness; a retired or unknown id
 falls back to your remembered pick. An explicit model you pick in the composer
 always wins for that session.
 
+### Set what the agent can do without asking
+
+Native coding-agent sessions choose their permission or approval mode from the
+composer's **permissions dropdown** — the hand icon next to the input — not from
+the picker's **Edit** menu. The Edit menu keeps the model and effort choices;
+**Advanced settings** now appears only for agents that have a configurable
+underlying harness (a bundle agent whose brain harness you can override). The
+options in the dropdown depend on the selected harness:
+
+- **Claude Code** (`claude-native`) offers its permission modes (for example
+  **Accept edits** or **Bypass permissions**). The pick rides along as
+  `--permission-mode`.
+- **Codex** (`codex-native`) offers its approval presets — **Default**,
+  **Full access**, and **Read only** — plus the most-permissive
+  **Bypass approvals & sandbox** option. Full access launches Codex with
+  `--sandbox danger-full-access --ask-for-approval never`; the bypass option
+  maps to Codex's `--dangerously-bypass-approvals-and-sandbox` stance and is
+  create-time only (a running Codex session switches approvals through its own
+  `/permissions` popup, which has no bypass row).
+- **Cursor** (`cursor-native`) offers its execution mode, such as **Plan**.
+- **Antigravity** (`antigravity-native`) offers **Ask every time** or
+  **Skip permissions**. Skip permissions is a dangerous bypass that runs the
+  session with all tool prompts disabled; while it's selected the composer shows
+  a red warning banner.
+
+Your choice is remembered and seeds the next new session, the same way the model
+picker is remembered.
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:

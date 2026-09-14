@@ -220,11 +220,26 @@ text-editing meaning, so they fire even while the composer is focused; inside a
 terminal or the code editor — which bind `⌘[` / `⌘]` themselves (indent/outdent,
 or forwarding to the PTY) — the shortcut yields to that surface.
 
+### Find a session by name
+
+Press `⌘⌥S` (`Ctrl+Alt+S` on Windows/Linux) to jump straight to the
+**Switch session** picker — a name-only search over your sessions. Type part of
+a session's title and the list fuzzy-matches it (for example, `fxprs` finds
+“Fix the parser”); press `Enter` to open the top match. The chord fires even
+while the composer is focused and leaves any unsent draft untouched when you
+`Escape` out; inside a terminal it yields to that surface.
+
+This picker lists sessions only — no commands or actions. It complements the
+command palette (`⌘K`), which searches sessions *and* runs commands. The
+search loads more sessions as you narrow the query; when there are more matches
+than fit, a **Search older sessions** control pulls in older pages.
+
 ### Other global shortcuts
 
 | Action                                                      | Shortcut                                    |
 | ----------------------------------------------------------- | ------------------------------------------- |
 | Open the command palette                                    | `⌘K` (`Ctrl+K`)                             |
+| Find a session by name                                      | `⌘⌥S` (`Ctrl+Alt+S`)                        |
 | New session                                                 | `⌘N` (`Ctrl+N`)                             |
 | Toggle the left (Conversations) / right (Workspace) sidebar | `⌘⌥[` / `⌘⌥]` (`Ctrl+Alt+[` / `Ctrl+Alt+]`) |
 | Toggle voice dictation                                      | `⌘⌥V` (`Ctrl+Alt+V`)                        |

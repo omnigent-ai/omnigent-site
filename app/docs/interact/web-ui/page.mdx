@@ -283,6 +283,28 @@ Your mode and palette choices are remembered in the browser and reapplied on
 your next visit. Picking **Omnigent** clears any palette override and returns
 to the default look.
 
+### Default Workspace tab
+
+Choose which tab the right **Workspace** rail opens on first. Under
+**Settings → Appearance → Default Workspace tab**, pick one of:
+
+- **Files** — the default.
+- **Changes**
+- **GitHub**
+- **Agents**
+
+The tab you pick is shown first in the rail; the remaining tabs keep their
+relative order. Changing this default also updates existing chats when they're
+reopened or refreshed, without closing their open file tabs or changing the
+rail layout. Any manual tab choice you make in a session afterwards is
+remembered for that session and wins over the default, and file links still
+open the linked file regardless of the setting.
+
+This is a per-device UI preference stored in your browser. If a chosen default
+tab isn't available in a given session (for example, GitHub only appears in
+coding-agent sessions, and Files/Changes need an on-disk workspace), the rail
+falls back to the first available tab.
+
 ## File editor
 
 A full markdown editor with syntax highlighting for browsing and editing every file your

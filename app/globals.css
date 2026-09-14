@@ -1097,6 +1097,9 @@ figcaption {
   align-self: start;
   position: sticky;
   top: calc(var(--nav-h) + 1rem);
+  max-height: calc(100dvh - var(--nav-h) - 2rem);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
 .docs-side h4 {
   font-size: 0.73rem;
@@ -1430,6 +1433,7 @@ figcaption {
     left: 0;
     width: 16rem;
     height: 100dvh;
+    max-height: none;
     background: var(--bg);
     z-index: 100;
     overflow-y: auto;

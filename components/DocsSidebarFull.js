@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useDocsSidebar } from "./DocsSidebarContext";
+
+const SCROLL_POSITION_KEY = "docs-sidebar-scroll-top";
 
 const SECTIONS = [
   {
@@ -176,6 +178,30 @@ function allHrefs(section) {
 export default function DocsSidebarFull() {
   const path = usePathname();
   const { open: drawerOpen, close: closeDrawer } = useDocsSidebar();
+  const sidebarRef = useRef(null);
+
+  // Docs and Quickstart have separate layouts. Restore the sidebar before
+  // paint when navigation remounts it, without changing the article's scroll.
+  useLayoutEffect(() => {
+    try {
+      sidebarRef.current.scrollTop = Number(
+        sessionStorage.getItem(SCROLL_POSITION_KEY),
+      );
+    } catch {
+      // Navigation still works when browser storage is unavailable.
+    }
+  }, []);
+
+  function saveScrollPosition(event) {
+    try {
+      sessionStorage.setItem(
+        SCROLL_POSITION_KEY,
+        String(event.currentTarget.scrollTop),
+      );
+    } catch {
+      // Storage may be disabled by browser settings.
+    }
+  }
 
   useEffect(() => {
     closeDrawer();
@@ -232,7 +258,11 @@ export default function DocsSidebarFull() {
       {drawerOpen && (
         <div className="docs-sidebar-backdrop" onClick={closeDrawer} />
       )}
-      <aside className={`docs-side ${drawerOpen ? "docs-side-open" : ""}`}>
+      <aside
+        ref={sidebarRef}
+        onScroll={saveScrollPosition}
+        className={`docs-side ${drawerOpen ? "docs-side-open" : ""}`}
+      >
         {SECTIONS.map((section, si) => {
           const isOpen = sectionOpen[si];
 

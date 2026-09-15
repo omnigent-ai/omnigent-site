@@ -38,6 +38,26 @@ Available extras:
 | SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                                       |
 | Storage and memory | `postgres`, `s3`, `hindsight`                                                          |
 
+## Homebrew source builds behind a mirror
+
+The Homebrew tap installs a prebuilt bottle by default. If you build from source
+on a network that requires internal package mirrors, point the build at them with
+two optional environment variables:
+
+```bash
+HOMEBREW_PIP_INDEX_URL='https://pypi.example.com/simple' \
+HOMEBREW_CARGO_INDEX_URL='https://cargo.example.com/index/' \
+  brew install --build-from-source omnigent-ai/tap/omnigent
+```
+
+- `HOMEBREW_PIP_INDEX_URL` routes pip through your mirror, including pip's
+  isolated build dependencies.
+- `HOMEBREW_CARGO_INDEX_URL` takes a sparse registry index URL ending in `/`,
+  without the `sparse+` prefix.
+
+Both overrides are optional and do not affect prebuilt-bottle installs. Replace
+the example URLs with your own mirrors.
+
 ## Set up credentials
 
 The wizard detects credentials in your environment and prompts for

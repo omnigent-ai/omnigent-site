@@ -314,12 +314,47 @@ the referenced file themselves.
 
 ## GitHub
 
-Coding-agent sessions have a **GitHub** tab in the right workspace rail. It's a
-read-only view of how the session's branch relates to GitHub, backed by the
-`gh` CLI and `git` running against the workspace on disk — nothing is pushed or
-mutated.
+Coding-agent sessions have a **GitHub** tab in the right workspace rail. It
+tracks the pull requests associated with the session and shows the selected
+one's summary (PR description and comments), CI checks, and a stacked diff with
+a file-tree navigator. Nothing is pushed or mutated — recording an association
+never touches the remote PR.
 
-The tab shows two things the associated pull request when the branch has one (PR description, CI checks, and diff).
+### Tracked pull requests
+
+Omnigent discovers a session's pull requests automatically by observing the
+agent's completed GitHub work — `gh` CLI commands and GitHub MCP tool calls that
+create, edit, review, merge, or comment on a PR. Each association is tagged with
+how it was found:
+
+- **created** — the session opened the PR.
+- **worked_on** — the session edited, reviewed, merged, or otherwise acted on
+  it.
+- **attached** — you linked it manually (see below).
+- **inferred** — matched from the current branch when the session has no
+  recorded PR yet; shown as `(from branch)` in the selector.
+
+Associations are stored on the host, independent of the current checkout, so
+they stay with the session even as its branch or worktree changes.
+
+When a session tracks more than one PR, a selector at the top of the tab
+switches between them; each entry reads `owner/repo #number` (prefixed with the
+host for GitHub Enterprise). The details, changed files, and diff below are
+always the selected PR's, fetched from GitHub — including fork PRs and renamed
+files — so they match the PR's "Files changed" exactly.
+
+### Link or unlink a PR
+
+Use the **+** (`Link a PR`) button to attach a pull request by URL — paste a
+`https://github.com/owner/repo/pull/123` link (GitHub Enterprise hosts work
+too). The linked PR becomes an `attached` association and is selected. The
+**trash** (`Unlink PR`) button removes the selected association; an unlinked PR
+stays out of the list until you link it again, even if the agent keeps touching
+it. When a session tracks no PRs yet, the tab's empty state offers the same
+`Link a PR` action.
+
+The composer status line mirrors this: it shows `#123` for a single tracked PR
+or `N PRs` when several are tracked, and clicking it opens the GitHub tab.
 
 ## Mentioning workspace files
 

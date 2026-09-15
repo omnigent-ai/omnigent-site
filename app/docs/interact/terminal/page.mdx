@@ -100,12 +100,19 @@ then applies your requirements to the first user message. Generated titles
 longer than 60 characters are rejected, leaving the first-message fallback title
 in place.
 
+Your requirements also apply to later agent-initiated renames through the
+`sys_session_rename` tool, not just the first-message title. When custom
+requirements are set, the agent's proposed title is reformatted to match them
+before the rename lands; if that formatting fails, the current title is kept.
+Without custom requirements, the agent's proposal is used as-is, and manual
+renames you make yourself are never reformatted.
+
 `session_title_instructions` is **server-owned** metadata configuration, not part
 of an agent's portable instructions, so it must be set with `--global`. Setting
 it as a project-local key (`.omnigent/config.yaml`) is rejected, and
 `omni config list` flags any project-local value as an ignored user-level-only
-setting. The setting takes effect for new sessions after the local Omnigent
-server restarts.
+setting. The setting takes effect after the local Omnigent server restarts, for
+both new-session titles and agent renames.
 
 For longer instructions, edit `~/.omnigent/config.yaml` directly and use a YAML
 block scalar:

@@ -75,11 +75,11 @@ underlying node runtime is an out-of-band operator step.
 
 ## Scheduling onto a tainted NodePool (`tolerations`)
 
-| Setting | Value                                                     |
-| ------- | --------------------------------------------------------- |
-| Key     | `sandbox.kubernetes.tolerations`                          |
+| Setting | Value                                                            |
+| ------- | ---------------------------------------------------------------- |
+| Key     | `sandbox.kubernetes.tolerations`                                 |
 | Type    | List of `{key?, operator?, value?, effect?, tolerationSeconds?}` |
-| Default | Unset — no tolerations added                              |
+| Default | Unset — no tolerations added                                     |
 
 Set `tolerations` to let runner Pods schedule onto a tainted NodePool you've
 dedicated to sandboxes. Each entry is a Kubernetes

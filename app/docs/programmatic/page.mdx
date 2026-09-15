@@ -1,0 +1,721 @@
+import { pageMeta } from "@/lib/og";
+import ContentTabs, { ContentTabsProvider } from "@/components/ContentTabs";
+
+export const metadata = pageMeta(
+  "Programmatic Usage",
+  "Run agents from scripts and CI, drive sessions with the Python SDK, and manage sessions through the Omnigent REST API.",
+  {
+    eyebrow: "Programmatic Usage",
+    path: "/docs/programmatic",
+  },
+);
+
+# Programmatic Usage
+
+Integrate Omnigent into your scripts, applications, and CI pipelines. Start
+agent sessions, send them work, and return to the same conversations for
+follow-up tasks. You can also open saved sessions in the Web UI to review
+their progress and results.
+
+- **CLI:** Run a task from the command line and receive the agent's response.
+- **Python SDK:** Send messages and manage sessions from Python.
+- **REST API:** Create sessions, read their history, and manage their lifecycle
+  over HTTP.
+
+<ContentTabsProvider labels={["CLI", "Python", "REST API"]} defaultLabel="CLI">
+
+## Before you start
+
+[Install Omnigent](/quickstart/install) and configure the
+[model credentials](/docs/build/models) your agent needs. The examples use a
+local single-user server at `http://127.0.0.1:6767`. For a shared server,
+replace that URL and configure authentication before sending requests.
+
+See [Shared Server](/docs/deploy/overview) for deployment setup. Local
+single-user servers do not require per-request credentials.
+
+<ContentTabs labels={["CLI", "Python", "REST API"]}>
+  <div />
+  <div>
+
+Install either the full `omnigent` Python package or just `omnigent-client`
+for the SDK. Both provide the `omnigent_client` import used below. Use a
+package version matching your server version.
+
+  </div>
+  <div />
+</ContentTabs>
+
+<details>
+<summary>Authentication for a shared server</summary>
+
+Shared servers support both user authentication and optional machine tokens.
+The credentials you use depend on the server's [authentication setup](/docs/collaborate/auth):
+
+- **Accounts or SSO:** Use your signed-in user's session cookie or CLI login
+  bearer token for API requests. These support scheduled tasks as well as
+  sessions, subject to your user's permissions.
+
+  ```bash
+  omni login "<server-url>"
+  ```
+
+  This prompts for your username and password for built-in accounts, or opens
+  a browser for SSO. It saves credentials for subsequent CLI commands; it does
+  not print a token for use in `curl`.
+
+  For **built-in accounts**, you can also request a token directly:
+
+  ```bash
+  ACCESS_TOKEN=$(curl --fail-with-body "<server-url>/auth/login" \
+    -H 'Content-Type: application/json' \
+    -d '{"username": "<username>", "password": "<password>"}' \
+    | jq -er '.token')
+  ```
+
+  Use it in API requests with `-H "Authorization: Bearer $ACCESS_TOKEN"`.
+  This username/password endpoint does not apply to SSO.
+
+- **Authentication proxy:** Connect through the proxy, which supplies your
+  identity to Omnigent. Follow your proxy provider's authentication method;
+  Omnigent does not issue a token for this mode.
+
+- **Machine tokens:** For unattended scripts, an administrator can enable
+  machine access and provide a client ID and secret. These tokens support
+  agent, host, runner, and session APIs, but cannot access scheduled tasks.
+
+  ```bash
+  curl --fail-with-body "<server-url>/oauth/token" \
+    --data-urlencode grant_type=client_credentials \
+    --data-urlencode "client_id=<client-id>" \
+    --data-urlencode "client_secret=<client-secret>"
+  ```
+
+  Include the returned `access_token` in your API requests or Python SDK headers
+  as `Authorization: Bearer <access_token>`. Tokens expire after one hour by
+  default; run the same command to get a new one.
+
+</details>
+
+## Start a session
+
+<ContentTabs labels={["CLI", "Python", "REST API"]}>
+  <div>
+
+From your repository, run an agent with `-p` to send a prompt, print its response,
+and exit. Use your [agent directory or YAML file](/docs/use/custom-agents) in
+place of `./my-agent/`:
+
+```bash
+omni run ./my-agent/ -p "Review the changes in the latest commit"
+```
+
+Omnigent starts a local server and runner automatically. Sessions are saved
+by default; their URL appears on stderr when they start. Open it to follow
+progress in the Web UI:
+
+```text
+Omnigent session: http://127.0.0.1:6767/c/conv_abc123
+```
+
+Common options:
+
+<div style={{ overflowX: "auto" }}>
+
+| Option                                  | When to use it                                                                                                              |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `-p "<prompt>"` / `--prompt "<prompt>"` | Run a task without an interactive chat; the response goes to stdout.                                                        |
+| `--server "<server-url>"`               | Save the session on a shared server. The agent definition is uploaded, and tools still run on the machine invoking the CLI. |
+| `--no-session`                          | Run a disposable local task with no history to view or resume afterward.                                                    |
+| `--model "<model>"`                     | Override the agent's model. See [Models & Credentials](/docs/build/models).                                                 |
+| `--harness "<harness>"`                 | Override the agent's harness. See [Harnesses](/docs/build/harnesses) for supported configurations.                          |
+| `--continue` / `-c`                     | Continue the most recent conversation for the same agent.                                                                   |
+| `--resume "<conversation_id>"`          | Continue a specific conversation using the ID from its session URL.                                                         |
+
+</div>
+
+These examples use an agent YAML or directory through `omni run`; native
+terminal harnesses have their own CLI behavior. To run tools on another
+machine or in a cloud sandbox, use the REST API's host options.
+
+  </div>
+  <div>
+
+This example creates a native Claude Code session on an existing server.
+You'll need a connected runner configured with your repository, credentials,
+and tools.
+
+```python
+import asyncio
+from omnigent_client import OmnigentClient
+
+async def main():
+    async with OmnigentClient(
+        base_url="http://127.0.0.1:6767",
+        # For a server requiring a bearer token:
+        # headers={"Authorization": "Bearer <access_token>"},
+    ) as client:
+        agent = await client.sessions.resolve_agent("claude-native-ui")
+        runner_id = await client.sessions.resolve_online_runner(harness=agent.harness)
+        if runner_id is None:
+            raise RuntimeError("Connect a runner that supports native Claude Code first")
+
+        session = await client.sessions.create_from_agent_id(agent.id, title="Code review")
+        await client.sessions.bind_runner(session.id, runner_id=runner_id)
+        print(session.id)
+        print(f"http://127.0.0.1:6767/c/{session.id}")
+
+asyncio.run(main())
+```
+
+Use the printed session ID to send a message in the next step, or open the
+URL to view the session.
+
+  </div>
+  <div>
+
+Create a native Claude Code session with `curl` and `jq`. Connect the machine
+containing your repository and keep this command running while you use the
+session:
+
+```bash
+omni host --server http://127.0.0.1:6767
+```
+
+For shared servers, include your authentication credentials in each request,
+such as `-H "Authorization: Bearer $ACCESS_TOKEN"`.
+
+<div style={{ overflowX: "auto" }}>
+<table style={{ tableLayout: "fixed", minWidth: "36rem" }}>
+  <thead>
+    <tr>
+      <th style={{ width: "25%" }}>Use case</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Find an agent</td>
+      <td>
+
+Get the agent ID for native Claude Code:
+
+```bash
+curl -fsS http://127.0.0.1:6767/v1/agents \
+  | jq -r '.data[] | select(.harness == "claude-native") | .id'
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Find a connected host</td>
+      <td>
+
+List host names and IDs:
+
+```bash
+curl -fsS http://127.0.0.1:6767/v1/hosts \
+  | jq '.hosts[] | {name, host_id}'
+```
+
+Get the ID of a specific host:
+
+```bash
+curl -fsS http://127.0.0.1:6767/v1/hosts \
+  | jq -r '.hosts[] | select(.name == "<host-name>") | .host_id'
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Start on a connected host</td>
+      <td>
+
+Use your agent ID, host ID, and repository path. `SESSION_ID` stores the new session's ID:
+
+```bash
+SESSION_ID=$(curl --fail-with-body http://127.0.0.1:6767/v1/sessions \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "agent_id": "ag_reviewer",
+    "host_id": "host_example",
+    "workspace": "/home/ci/my-repository",
+    "title": "Review latest commit"
+  }' | jq -er '.id')
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Start in a cloud sandbox</td>
+      <td>
+
+For a configured [cloud sandbox host](/docs/deploy/cloud-sandbox-host), use
+`host_type: "managed"` instead of `host_id` in the create request above.
+The server provisions the host asynchronously.
+
+      </td>
+    </tr>
+    <tr>
+      <td>Check whether the session is ready</td>
+      <td>
+
+Check that `runner_online` is `true` before sending a message:
+
+```bash
+curl --fail-with-body "http://127.0.0.1:6767/v1/sessions/$SESSION_ID" | jq
+```
+
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+  </div>
+</ContentTabs>
+
+## Send a message or continue a conversation
+
+Use the session ID from the previous step to send a message to that session.
+Saved sessions can also be opened in the [Web UI](/docs/interact/web-ui).
+
+<ContentTabs labels={["CLI", "Python", "REST API"]}>
+  <div>
+
+Use `--continue` (or `-c`) to send a follow-up prompt to the most recent
+conversation for the same agent:
+
+```bash
+omni run ./my-agent/ --continue -p "Now check whether the tests cover those changes"
+```
+
+To continue a specific conversation, use its ID:
+
+```bash
+omni run ./my-agent/ --resume "<conversation_id>" -p "Explain the first finding"
+```
+
+Use `--resume` when your automation runs multiple conversations and needs to
+target a specific one. Use the ID from the CLI's session URL, or look it up
+with `GET /v1/sessions`.
+
+  </div>
+  <div>
+
+This example sends a message to an existing session. Replace `conv_abc123`
+with its ID. The session must have an online runner with access to the
+repository, model credentials, and tools. The SDK does not start a runner for
+you.
+
+```python
+import asyncio
+from omnigent_client import OmnigentClient
+
+async def main():
+    async with OmnigentClient(base_url="http://127.0.0.1:6767") as client:
+        await client.sessions.post_event("conv_abc123", {
+            "type": "message",
+            "data": {
+                "role": "user",
+                "content": [{"type": "input_text", "text": "tell me a joke"}],
+            },
+        })
+
+asyncio.run(main())
+```
+
+The call returns when the server accepts the message; it does not wait for the
+agent's reply. Open the session in the Web UI to follow its progress.
+
+  </div>
+  <div>
+
+Send the first prompt or a follow-up to the same session:
+
+```bash
+curl --fail-with-body "http://127.0.0.1:6767/v1/sessions/$SESSION_ID/events" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "type": "message",
+    "data": {
+      "role": "user",
+      "content": [{"type": "input_text", "text": "Review the changes in the latest commit"}]
+    }
+  }'
+```
+
+The request returns when the server accepts the message, without waiting for
+the reply. Print the URL to follow the review:
+
+```bash
+echo "http://127.0.0.1:6767/c/$SESSION_ID"
+```
+
+  </div>
+</ContentTabs>
+
+## Find sessions and follow their progress
+
+<ContentTabs labels={["CLI", "Python", "REST API"]}>
+  <div>
+
+The CLI prints the session URL to stderr at startup and the collected
+assistant text to stdout when the run finishes. Open that URL to see the
+conversation and its progress.
+
+Use the Python or REST tab to list saved sessions, retrieve history, or monitor
+an agent from your application.
+
+  </div>
+  <div>
+
+List recent sessions, then read a session's status and messages. Replace
+`conv_abc123` with the ID you want to inspect.
+
+```python
+import asyncio
+from omnigent_client import OmnigentClient
+
+async def main():
+    async with OmnigentClient(base_url="http://127.0.0.1:6767") as client:
+        sessions = await client.sessions.list(limit=20, sort_by="updated_at")
+        for session in sessions:
+            print(session.id, session.title, session.status)
+        session_id = "conv_abc123"
+        session = await client.sessions.get(session_id)
+        print(session.status)
+        print(await client.sessions.list_items(session_id))
+
+asyncio.run(main())
+```
+
+For live events, iterate over `client.sessions.stream(session_id)`. Use
+`session.status` to check the session itself and
+`await client.sessions.subtree_busy(session_id)` to check whether any of its
+descendants are busy.
+
+History is paginated. Use the last item's `id` as `after` in the next
+`list_items` call to read further. Live events do not replay history; retrieve
+the snapshot and history again after reconnecting.
+
+  </div>
+  <div>
+
+List sessions on a local single-user server:
+
+```bash
+curl --fail-with-body "http://127.0.0.1:6767/v1/sessions?limit=20&sort_by=updated_at"
+```
+
+Filter by `agent_name`, `agent_id`, or `search_query`. Listings exclude archived
+sessions and child sessions by default; use `include_archived=true` or
+`kind=any` when you need them. Both session and history listings are paginated:
+when `has_more` is true, use the returned `last_id` as the next request's `after`
+cursor.
+
+```bash
+curl --fail-with-body "http://127.0.0.1:6767/v1/sessions/<session_id>/items"
+```
+
+The SSE stream supplies live updates; it does not replay conversation history.
+Use the session snapshot and `/items` to recover state after reconnecting.
+
+  </div>
+</ContentTabs>
+
+## Fork, archive, or stop work
+
+<ContentTabs labels={["CLI", "Python", "REST API"]}>
+  <div>
+
+To fork into an interactive session:
+
+```bash
+omni run ./my-agent/ --fork "<conversation_id>"
+```
+
+`--fork` cannot be combined with `-p`. For scripted forks, archiving, or
+cancellation, use the Python or REST tab.
+
+  </div>
+  <div>
+
+These calls run inside the same `async with OmnigentClient(...) as client`
+block used above. Replace `session_id` with the session you want to manage.
+
+<div style={{ overflowX: "auto" }}>
+
+| Action                      | SDK call                                                         |
+| --------------------------- | ---------------------------------------------------------------- |
+| Cancel active work          | `await client.sessions.interrupt(session_id)`                    |
+| Fork a conversation         | `fork = await client.sessions.fork(session_id)`                  |
+| Archive and retain history  | `await client.sessions.set_archived(session_id, archived=True)`  |
+| Restore an archived session | `await client.sessions.set_archived(session_id, archived=False)` |
+
+</div>
+
+A fork's new ID is `fork["id"]`. Bind a runner before sending it a prompt:
+
+```python
+await client.sessions.bind_runner(fork["id"], runner_id=runner_id)
+```
+
+Forking copies the full history by default. Pass `up_to_response_id` to fork
+from an earlier response. Use the REST tab to permanently delete a session
+and its resources.
+
+  </div>
+  <div>
+
+Use the `SESSION_ID` from the earlier examples.
+
+<div style={{ overflowX: "auto" }}>
+<table style={{ tableLayout: "fixed", minWidth: "36rem" }}>
+  <thead>
+    <tr>
+      <th style={{ width: "25%" }}>Use case</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Cancel active work</td>
+      <td>
+
+Stop the current task without deleting the conversation:
+
+```bash
+curl --fail-with-body "http://127.0.0.1:6767/v1/sessions/$SESSION_ID/events" \
+  -H 'Content-Type: application/json' \
+  -d '{"type": "interrupt"}'
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Fork a session</td>
+      <td>
+
+Copy the conversation and save the new session's ID in `FORK_ID`:
+
+```bash
+FORK_ID=$(curl --fail-with-body "http://127.0.0.1:6767/v1/sessions/$SESSION_ID/fork" \
+  -H 'Content-Type: application/json' \
+  -d '{"title": "Explore another approach"}' | jq -er '.id')
+```
+
+This copies the full history. Add `"up_to_response_id": "<response_id>"` to
+the body to copy history only through that response. Bind a runner to the fork
+before sending another prompt, or request a managed host in the fork body.
+
+      </td>
+    </tr>
+    <tr>
+      <td>Archive a session</td>
+      <td>
+
+Keep its history while hiding it from default listings:
+
+```bash
+curl --fail-with-body -X PATCH "http://127.0.0.1:6767/v1/sessions/$SESSION_ID" \
+  -H 'Content-Type: application/json' \
+  -d '{"archived": true}' | jq
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Restore a session</td>
+      <td>
+
+Make an archived session appear in default listings again:
+
+```bash
+curl --fail-with-body -X PATCH "http://127.0.0.1:6767/v1/sessions/$SESSION_ID" \
+  -H 'Content-Type: application/json' \
+  -d '{"archived": false}' | jq
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Delete a session</td>
+      <td>
+
+Permanently delete the session and its associated resources. Requires owner-level access:
+
+```bash
+curl --fail-with-body -X DELETE "http://127.0.0.1:6767/v1/sessions/$SESSION_ID" | jq
+```
+
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+  </div>
+</ContentTabs>
+
+</ContentTabsProvider>
+
+## API endpoints reference
+
+The server exposes these session endpoints. Replace `{id}` with a session ID.
+
+<div style={{ overflowX: "auto" }}>
+
+| Method   | Path                               | What you can do                               |
+| -------- | ---------------------------------- | --------------------------------------------- |
+| `POST`   | `/v1/sessions`                     | Create a session                              |
+| `GET`    | `/v1/sessions`                     | List and filter sessions                      |
+| `GET`    | `/v1/sessions/{id}`                | Read session details and status               |
+| `PATCH`  | `/v1/sessions/{id}`                | Rename, configure, archive, or unarchive      |
+| `DELETE` | `/v1/sessions/{id}`                | Delete a session and its associated resources |
+| `POST`   | `/v1/sessions/{id}/fork`           | Copy conversation history into a new session  |
+| `GET`    | `/v1/sessions/{id}/items`          | Read conversation history                     |
+| `GET`    | `/v1/sessions/{id}/child_sessions` | List child sessions                           |
+| `GET`    | `/v1/sessions/{id}/stream`         | Receive live events via SSE                   |
+| `POST`   | `/v1/sessions/{id}/events`         | Send a message or interrupt active work       |
+
+</div>
+
+See the [API Reference](/reference) for more details on these and other endpoints.
+
+## Automation features
+
+### Let an agent manage other sessions
+
+You can ask an agent to delegate work to another Omnigent agent. It uses
+built-in session tools to create a child conversation, send instructions, and
+read the results. These are tools the agent calls during a session; you don't
+need to write an API client to use them.
+
+<div style={{ overflowX: "auto" }}>
+
+| Tool                      | What it does                                                                                               |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `sys_agent_list`          | Find available agents and their IDs.                                                                       |
+| `sys_session_create`      | Create a child session from an existing agent ID or a local agent config, optionally with a first message. |
+| `sys_session_send`        | Send a follow-up to a child session, or start a named sub-agent declared by the parent agent.              |
+| `sys_session_list`        | Find child sessions and other sessions you can access.                                                     |
+| `sys_session_get_info`    | Check a session's status, agent, and workspace.                                                            |
+| `sys_session_get_history` | Read a session's recent messages and tool results.                                                         |
+| `sys_session_close`       | Close a finished child session while retaining its history.                                                |
+
+</div>
+
+For example, send this prompt in an Omnigent session:
+
+```text
+Find the native Claude Code agent and create a child session titled
+"Review tests". Ask it to review the test coverage in this repository without
+editing files. Read its findings and summarize the missing coverage for me.
+```
+
+The agent can use `sys_agent_list` to find the agent, then call
+`sys_session_create` with arguments like these:
+
+```json
+{
+  "agent_id": "<agent_id from sys_agent_list>",
+  "title": "Review tests",
+  "message": "Review the test coverage in this repository. Report missing coverage without editing files."
+}
+```
+
+The returned `conversation_id` identifies the child. To continue its work, ask:
+
+```text
+Ask the "Review tests" child session to prioritize its findings by risk.
+```
+
+`sys_session_send` can write only to the calling session's direct children.
+For agents with named sub-agents, reusing the same `agent` and `title` continues
+that child conversation; a different title starts a separate one. Child sessions
+appear in the Web UI, where you can follow their progress.
+
+### Use bundled skills for multi-agent workflows
+
+Skills are reusable instructions that guide how an agent uses its tools.
+The skills available depend on the agent you run. For example,
+[Polly](/docs/use/builtin-agents/polly) bundles these coding workflows:
+
+<div style={{ overflowX: "auto" }}>
+
+| Skill          | When to use it                                                                                      |
+| -------------- | --------------------------------------------------------------------------------------------------- |
+| `investigate`  | Delegate code exploration or debugging, then combine the findings.                                  |
+| `fanout`       | Split independent implementation tasks across workers, each in its own worktree and PR.             |
+| `cross-review` | Have a different vendor's agent review an implementation and send blocking findings back for fixes. |
+
+</div>
+
+Start Polly in your repository:
+
+```bash
+omni polly
+```
+
+Then name the skill in your prompt:
+
+```text
+Use the investigate skill to trace how this repository authenticates API
+requests. Have separate agents examine the server routes and client code,
+then summarize the flow with file references. Do not edit files.
+```
+
+For a change that is ready for review:
+
+```text
+Use cross-review to review PR #123 against its stated requirements.
+```
+
+Polly needs the worker harnesses and their credentials configured. The skills
+coordinate the work; the workers still need access to the repository and models.
+See [Prompts & Skills](/docs/build/prompts) to add your own workflows in an
+agent's `skills/` directory or the project's `.agents/skills/` directory.
+
+### Schedule recurring agent runs
+
+Ask an agent to create a scheduled task when you want the same work repeated.
+Omnigent provides four built-in tools:
+
+<div style={{ overflowX: "auto" }}>
+
+| Tool                        | What it does                                         |
+| --------------------------- | ---------------------------------------------------- |
+| `sys_scheduled_task_create` | Save a prompt, agent, and recurring schedule.        |
+| `sys_scheduled_task_list`   | List your scheduled tasks.                           |
+| `sys_scheduled_task_update` | Change a task's prompt, schedule, or other settings. |
+| `sys_scheduled_task_delete` | Remove a task so it no longer runs.                  |
+
+</div>
+
+For example, replace the host name and repository path in this prompt:
+
+```text
+Create a scheduled task named "Weekday code review". Every weekday at 9am
+Asia/Singapore, run native Claude Code on host "my-host" in
+/home/ci/my-repository. Ask it to review the latest commit and report findings
+without editing files. Look up the agent and host IDs first.
+```
+
+The schedule uses this recurrence rule with `timezone: "Asia/Singapore"`:
+
+```text
+FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0
+```
+
+The chosen host must be online when the task fires, and the agent needs
+credentials and tool permissions suitable for unattended work.
+
+You can later ask, "Move Weekday code review to 10am," or "Delete Weekday code
+review." The agent uses the list and update or delete tools to make the change.
+
+See [Scheduled Tasks](/docs/build/scheduled-tasks) for the full configuration.
+Scripts can also manage tasks through `/v1/scheduled-tasks`; machine
+client-credentials tokens do not grant access to that endpoint.

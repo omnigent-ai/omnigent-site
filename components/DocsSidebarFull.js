@@ -120,6 +120,10 @@ const SECTIONS = [
     pages: [{ href: "/docs/omnibox", label: "Overview" }],
   },
   {
+    title: "Programmatic Usage",
+    pages: [{ href: "/docs/programmatic", label: "Overview" }],
+  },
+  {
     title: "Reference",
     pages: [],
     subsections: [

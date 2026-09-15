@@ -471,7 +471,8 @@ pre .copy-btn {
   opacity: 0;
   transition: opacity 0.15s;
 }
-pre:hover .copy-btn {
+pre:hover .copy-btn,
+pre:focus-within .copy-btn {
   opacity: 1;
 }
 pre .copy-btn:hover {
@@ -1381,6 +1382,10 @@ figcaption {
 }
 .docs-main details > :not(summary) {
   padding: 0 1rem;
+}
+.docs-main details > ul,
+.docs-main details > ol {
+  padding-left: 2.3rem;
 }
 
 @media (max-width: 1100px) {

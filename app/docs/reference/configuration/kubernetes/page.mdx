@@ -27,8 +27,10 @@ See [Shared Server](/docs/deploy/overview#kubernetes) for the deployment steps.
 | Default | `90`                                     |
 
 Before a managed session goes online, Omnigent waits for the runner Pod to
-schedule, pull its image, clone its repository, and reach `Running`. Increase
-the wait budget when cold image pulls regularly take longer than the default:
+schedule, pull its image, clone its repository (or several, in parallel, for a
+[multi-repo session](/docs/deploy/cloud-sandbox-host#4-launch-from-the-web-ui)),
+and reach `Running`. Increase the wait budget when cold image pulls regularly
+take longer than the default:
 
 ```yaml
 sandbox:

@@ -610,8 +610,9 @@ curl --fail-with-body -X PUT "$SERVER_URL/v1/sessions/$SESSION_ID/permissions" \
       <td>Make the session public</td>
       <td>
 
-Grant `__public__` read access so anyone with the URL can view the session
-without signing in. The server must have public sharing enabled.
+Grant `__public__` read access so anyone who can sign in to the server can
+view the session through its URL, without an individual grant. The server
+must have public sharing enabled; this does not bypass sign-in.
 
 ```bash
 curl --fail-with-body -X PUT "$SERVER_URL/v1/sessions/$SESSION_ID/permissions" \

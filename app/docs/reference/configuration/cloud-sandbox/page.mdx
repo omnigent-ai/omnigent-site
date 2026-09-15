@@ -25,11 +25,11 @@ sandbox:
   server_url: https://your-server.example.com
 ```
 
-| Field         | Required | Description                                                                                          |
-| ------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| Field         | Required | Description                                                                                             |
+| ------------- | -------- | ------------------------------------------------------------------------------------------------------- |
 | `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `openshell`, `boxlite`, or `microsandbox`. |
-| `server_url`  | Yes      | Public Omnigent server URL that the remote runner connects back to.                                  |
-| `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration). |
+| `server_url`  | Yes      | Public Omnigent server URL that the remote runner connects back to.                                     |
+| `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).    |
 
 Provider-specific blocks are optional. Omit one to use that provider's defaults.
 
@@ -243,16 +243,16 @@ sandbox:
     env: []
 ```
 
-| Setting              | Default                          | Purpose                                                                                        |
-| -------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `endpoint`           | `https://sandbox.gensee.ai`      | Gensee HTTPS control-plane base URL.                                                            |
-| `api_token_env`      | `GENSEE_CONTROLLER_API_TOKEN`    | Server environment variable holding the API token.                                             |
-| `workspace_root`     | `/mnt/gensee-tclone/workspaces`  | Absolute workspace root inside each sandbox.                                                    |
-| `operation_timeout_s`| `900`                            | Shared deadline for host-start submission, retries, and polling; late responses are rejected.  |
-| `poll_interval_s`    | `2`                              | Interval between operation-status requests.                                                    |
-| `request_timeout_s`  | `40`                             | HTTP I/O timeout, capped by the remaining operation budget during host startup.                |
-| `retry_timeout_s`    | `60`                             | Retry budget for transport errors and HTTP 500/502/503/504; `0` disables retries.              |
-| `env`                | `[]`                             | Server environment variable names copied into the sandbox secret.                              |
+| Setting               | Default                         | Purpose                                                                                       |
+| --------------------- | ------------------------------- | --------------------------------------------------------------------------------------------- |
+| `endpoint`            | `https://sandbox.gensee.ai`     | Gensee HTTPS control-plane base URL.                                                          |
+| `api_token_env`       | `GENSEE_CONTROLLER_API_TOKEN`   | Server environment variable holding the API token.                                            |
+| `workspace_root`      | `/mnt/gensee-tclone/workspaces` | Absolute workspace root inside each sandbox.                                                  |
+| `operation_timeout_s` | `900`                           | Shared deadline for host-start submission, retries, and polling; late responses are rejected. |
+| `poll_interval_s`     | `2`                             | Interval between operation-status requests.                                                   |
+| `request_timeout_s`   | `40`                            | HTTP I/O timeout, capped by the remaining operation budget during host startup.               |
+| `retry_timeout_s`     | `60`                            | Retry budget for transport errors and HTTP 500/502/503/504; `0` disables retries.             |
+| `env`                 | `[]`                            | Server environment variable names copied into the sandbox secret.                             |
 
 The endpoint must use HTTPS and cannot contain credentials, a query, or a
 fragment. Unknown settings and malformed values stop server startup rather than

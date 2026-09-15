@@ -562,24 +562,132 @@ curl --fail-with-body -X DELETE "http://127.0.0.1:6767/v1/sessions/$SESSION_ID" 
 
 </ContentTabsProvider>
 
+## Share a session
+
+Use the permissions API to share a session on a reachable shared server.
+Your credentials need **manage or owner access** to the session, and the
+server's [sharing settings](/docs/collaborate/auth#session-sharing) must allow
+the requested access.
+
+The examples use bearer-token authentication:
+
+```bash
+SERVER_URL="<server-url>"
+SESSION_ID="<session-id>"
+ACCESS_TOKEN="<access-token>"
+```
+
+For a specific user, `level` is **1** for read access, **2** to also send
+messages and interact with the session, or **3** to also manage sharing.
+Public access is always read-only (`level: 1`).
+
+<div style={{ overflowX: "auto" }}>
+<table style={{ tableLayout: "fixed", minWidth: "36rem" }}>
+  <thead>
+    <tr>
+      <th style={{ width: "25%" }}>Use case</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Share with a specific user</td>
+      <td>
+
+Use the recipient's user ID on this server, such as their account username or
+SSO email. Repeating this request updates their existing access level.
+
+```bash
+curl --fail-with-body -X PUT "$SERVER_URL/v1/sessions/$SESSION_ID/permissions" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"user_id": "<user-id>", "level": 1}'
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Make the session public</td>
+      <td>
+
+Grant `__public__` read access so anyone with the URL can view the session
+without signing in. The server must have public sharing enabled.
+
+```bash
+curl --fail-with-body -X PUT "$SERVER_URL/v1/sessions/$SESSION_ID/permissions" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"user_id": "__public__", "level": 1}'
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Inspect current grants</td>
+      <td>
+
+```bash
+curl --fail-with-body "$SERVER_URL/v1/sessions/$SESSION_ID/permissions" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" | jq
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Remove public access</td>
+      <td>
+
+Revoke the public grant; specific users' grants remain. To revoke a specific
+user instead, use their URL-encoded user ID in place of `__public__`.
+
+```bash
+curl --fail-with-body -X DELETE \
+  "$SERVER_URL/v1/sessions/$SESSION_ID/permissions/__public__" \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+```
+
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+Send the recipient the session URL. A specific user must sign in with the
+identity you granted access to:
+
+```bash
+echo "$SERVER_URL/c/$SESSION_ID"
+```
+
+You can also let an agent share sessions through `sys_session_share`. Set
+`agent_session_sharing: non-public` in its agent configuration to allow sharing
+with users, or `agent_session_sharing: public` to also allow public grants.
+The tool accepts `user_id`, `level` (`"read"`, `"edit"`, or `"manage"`), and an
+optional `session_id` that defaults to the calling session. The caller's
+permissions and server sharing settings still apply.
+
 ## API endpoints reference
 
 The server exposes these session endpoints. Replace `{id}` with a session ID.
 
 <div style={{ overflowX: "auto" }}>
 
-| Method   | Path                               | What you can do                               |
-| -------- | ---------------------------------- | --------------------------------------------- |
-| `POST`   | `/v1/sessions`                     | Create a session                              |
-| `GET`    | `/v1/sessions`                     | List and filter sessions                      |
-| `GET`    | `/v1/sessions/{id}`                | Read session details and status               |
-| `PATCH`  | `/v1/sessions/{id}`                | Rename, configure, archive, or unarchive      |
-| `DELETE` | `/v1/sessions/{id}`                | Delete a session and its associated resources |
-| `POST`   | `/v1/sessions/{id}/fork`           | Copy conversation history into a new session  |
-| `GET`    | `/v1/sessions/{id}/items`          | Read conversation history                     |
-| `GET`    | `/v1/sessions/{id}/child_sessions` | List child sessions                           |
-| `GET`    | `/v1/sessions/{id}/stream`         | Receive live events via SSE                   |
-| `POST`   | `/v1/sessions/{id}/events`         | Send a message or interrupt active work       |
+| Method   | Path                                      | What you can do                               |
+| -------- | ----------------------------------------- | --------------------------------------------- |
+| `POST`   | `/v1/sessions`                            | Create a session                              |
+| `GET`    | `/v1/sessions`                            | List and filter sessions                      |
+| `GET`    | `/v1/sessions/{id}`                       | Read session details and status               |
+| `PATCH`  | `/v1/sessions/{id}`                       | Rename, configure, archive, or unarchive      |
+| `DELETE` | `/v1/sessions/{id}`                       | Delete a session and its associated resources |
+| `POST`   | `/v1/sessions/{id}/fork`                  | Copy conversation history into a new session  |
+| `GET`    | `/v1/sessions/{id}/items`                 | Read conversation history                     |
+| `GET`    | `/v1/sessions/{id}/child_sessions`        | List child sessions                           |
+| `GET`    | `/v1/sessions/{id}/stream`                | Receive live events via SSE                   |
+| `POST`   | `/v1/sessions/{id}/events`                | Send a message or interrupt active work       |
+| `PUT`    | `/v1/sessions/{id}/permissions`           | Grant or update user/public access            |
+| `GET`    | `/v1/sessions/{id}/permissions`           | List permission grants                        |
+| `DELETE` | `/v1/sessions/{id}/permissions/{user_id}` | Revoke a permission grant                     |
 
 </div>
 

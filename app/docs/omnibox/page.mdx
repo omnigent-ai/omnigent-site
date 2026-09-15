@@ -55,7 +55,7 @@ allowed hosts, methods, paths, and localhost access.
 By default, nothing credential-shaped ever enters the sandbox: a tool sends its
 request with no credential, and the proxy attaches the real one on the way out. For
 clients that refuse to send a request without a local credential, the agent can
-instead hold a fake placeholder token in place of the real secret — the proxy swaps
+instead hold a placeholder token in place of the real secret — the proxy swaps
 in the real credential when a request matching your allow-list leaves the sandbox.
 Either way, the agent can use a credential but never read it.
 

@@ -195,16 +195,20 @@ than a silently-disabled credential.
 
 - `{env: VAR}` — reads `VAR` from the **parent process's** own environment
   (the process running the Omnigent server/runner), not from the sandboxed
-  agent's environment and independent of `env_passthrough`. Missing or
-  empty raises.
+  agent's environment and independent of `env_passthrough`. A missing or
+  empty value raises.
 - `{file: /path}` — reads the file's contents as UTF-8. `~` is expanded;
-  the path is read on the host filesystem, before the sandbox's own path
-  grants apply. A missing or empty file raises.
+  the path is read on the host filesystem, independent of the sandbox's
+  own `read_paths`/`mask_paths` grants. A missing or empty file raises.
 - `{command: ...}` — runs the string through a shell (`shell=True`) in the
   parent process, with the parent's environment, and takes trimmed stdout
   as the secret (e.g. `gh auth token`). A 30-second timeout applies; a
   non-zero exit or empty stdout raises, surfacing the command's stderr in
   the error.
+
+`https_basic` and `git_https` also take an optional `username` (defaults to
+`x-access-token`). If a tool sets its own real, non-placeholder `Authorization`
+header, the proxy leaves it untouched rather than clobbering it.
 
 ```
 sandbox:
@@ -220,7 +224,7 @@ sandbox:
 
 `file` and `command` sources run in the unsandboxed parent process before the
 sandbox starts, and `command` runs through a real shell — so a `source` value
-is effectively parent-side code/file-read execution, not something the
+can read a file or execute a command on the host, entirely outside what the
 sandbox boundary constrains. Only use them in specs you author or trust;
 don't accept `file`/`command` sources from a user-uploaded, shared, or remote
 agent spec, since that hands the parent process an attacker-influenced file
@@ -228,19 +232,15 @@ read or shell command outside the sandbox boundary.
 
 </div>
 
-`https_basic` and `git_https` also take an optional `username` (defaults to
-`x-access-token`). If a tool sets its own real, non-placeholder `Authorization`
-header, the proxy leaves it untouched rather than clobbering it.
-
 #### Opt-in placeholder injection
 
 Some clients — `gh` is the canonical case — refuse to issue a request at all
 when they don't see a local credential, so there's no outbound request for the
-proxy to decorate. For those, add an `env` field to a host-keyed entry: the
-proxy mints a random, single-use `oa_cred_*` placeholder and injects it into
-that environment variable instead of the real secret. The client believes it's
-authenticated and sends the placeholder; the proxy swaps it for the real value
-on the way out.
+proxy to attach a credential to. For those, add an `env` field to a host-keyed
+entry: the proxy mints a random, single-use `oa_cred_*` placeholder and
+injects it into that environment variable instead of the real secret. The
+client believes it's authenticated and sends the placeholder; the proxy swaps
+it for the real value on the way out.
 
 ```
 sandbox:
@@ -258,12 +258,13 @@ so even a compromised sandbox that replays the placeholder against an
 attacker-controlled host gets no credential. `gh_basic` is a preset built on
 this: it resolves the token with `source: {command: gh auth token}`, treats the
 git host (`github.com`) as swap-on-access, and injects the API host
-(`api.github.com`) via `GH_TOKEN`/`GITHUB_TOKEN`, since `gh` gates on those.
+(`api.github.com`) via `GH_TOKEN`/`GITHUB_TOKEN`, since `gh` checks those
+env vars locally before it will issue a request.
 
 <div className="note">
 
-This phase covers HTTP(S) Bearer and Basic auth only — SSH-based git remotes
-are out of scope. Credential-bound hosts also can't use opaque HTTP/2
+The credential proxy covers HTTP(S) Bearer and Basic auth only — SSH-based git
+remotes are out of scope. Credential-bound hosts also can't use opaque HTTP/2
 passthrough (the proxy needs to inspect and rewrite the `Authorization`
 header), so a host listed in `credential_proxy` is served over HTTP/1.1 even
 if its egress rule would otherwise qualify for HTTP/2.

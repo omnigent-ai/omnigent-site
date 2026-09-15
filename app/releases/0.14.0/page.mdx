@@ -4,29 +4,23 @@
 
 _Released 2026-09-15_ · 3 min read · Omnigent maintainers
 
-Omnigent 0.14.0 is a major release focused on connecting Omnigent to your own infrastructure and smoothing the everyday workflow, from wiring in a personal Databricks workspace to expanding where and how the platform can run. Along the way it brings context-window awareness and native compaction to claude-sdk agents, redesigns the new-session composer around a single set of launch controls, and lets you track and switch between multiple pull requests inside one session.
+Omnigent 0.14.0 is a release focused on connecting Omnigent to your own infrastructure and smoothing the everyday workflow, from wiring in a personal Databricks workspace to expanding where and how the platform can run. Along the way it brings context-window awareness and native compaction to claude-sdk agents, redesigns the new-session composer around a single set of launch controls, and lets you track and switch between multiple pull requests inside one session.
 
 ## 1. Personal Databricks workspace connections
-
-![TODO: add a demo screenshot or GIF for "Personal Databricks workspace connections"](TODO)
 
 You can now connect your own Databricks workspace to Omnigent without handing over a shared or static token. Managed sandboxes mint per-user OAuth tokens on demand and refresh them server-side, so each session authenticates as you rather than as a common service account.
 
 Once connected, the built-in `jcode` ACP harness and the native coding harnesses route through the Databricks AI Gateway, and Omnigent can also authenticate as an OAuth machine-to-machine service principal for unattended work. The result is per-user access that stays scoped and current without manual token juggling.
 
-_Learn more in the [Models & Credentials](/docs/build/models#databricks)._
+_Learn more in the [Connect Databricks](/docs/deploy/databricks-connect)._
 
 ## 2. Context-window usage ring and native `/compact` for claude-sdk agents
-
-![TODO: add a demo screenshot or GIF for "Context-window usage ring and native /compact for claude-sdk agents"](TODO)
 
 claude-sdk agents now show a context-window usage ring so you can see at a glance how much of the model's context you have consumed as a session grows. When you are approaching the limit, you can run `/compact` to trigger native compaction and keep the conversation going without losing the thread.
 
 This works whether you are on an API key or signed in with a Claude Pro or Max subscription, so long-running sessions stay manageable regardless of how you authenticate.
 
 ## 3. Redesigned new-session composer
-
-![TODO: add a demo screenshot or GIF for "Redesigned new-session composer"](TODO)
 
 The new-session composer brings workspace, model, effort, permissions, and folder browsing together in one place, so you configure everything about a session before you launch it instead of hunting through separate controls.
 
@@ -36,8 +30,6 @@ _Learn more in the [Web UI](/docs/interact/web-ui#session-management)._
 
 ## 4. Multi-pull-request tracking across repositories
 
-![TODO: add a demo screenshot or GIF for "Multi-pull-request tracking across repositories"](TODO)
-
 A single session can now track and switch between multiple pull requests, even across different repositories. Omnigent captures PRs automatically as work produces them, and gives you manual link and unlink controls when you want to associate or detach a PR yourself.
 
 This keeps multi-repo and multi-PR work organized in one session, so you can move between related changes without losing track of which pull request you are on.
@@ -46,11 +38,15 @@ _Learn more in the [Web UI](/docs/interact/web-ui#github)._
 
 ## 5. More ways to run Omnigent
 
-![TODO: add a demo screenshot or GIF for "More ways to run Omnigent"](TODO)
-
 This release broadens how and where you can deploy Omnigent. CockroachDB joins the supported database backends, and Gensee is now available as a built-in managed sandbox provider.
 
 For Kubernetes deployments, sandbox Pods can carry node-pool tolerations so they schedule onto the nodes you intend, and you can start a sandbox from multiple GitHub repositories that clone in parallel for faster startup.
+
+## Reliability improvements
+
+Pending approvals and MCP elicitations remain answerable across server and runner restarts. Native Codex sessions resume more reliably, and the UI more accurately reflects when an agent has finished working.
+
+Agent uploads validate nested settings consistently, and tool approval retries preserve reviewed arguments.
 
 Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
 

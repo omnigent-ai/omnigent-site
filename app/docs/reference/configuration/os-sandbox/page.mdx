@@ -186,8 +186,25 @@ hardened, network-isolating backend (`linux_bwrap` or `darwin_seatbelt`).
 
 Each entry has a `type`. The host-keyed types — `https_bearer`, `https_basic`,
 `git_https`, and `gh_basic` — bind a credential to a `target`/`targets` host and
-resolve the secret from a `source`: `{env: VAR}`, `{file: /path}`, or
-`{command: ...}` (the parent runs the command and reads its stdout).
+resolve the secret from a `source`. All three resolve once, at session start, in
+the unsandboxed parent process — never inside the sandbox, and never
+re-resolved per request (the `databricks_cli` OAuth profile is the one
+exception; see below). Whichever kind you use, the resolved value has
+surrounding whitespace stripped, and an empty result is a hard error rather
+than a silently-disabled credential.
+
+- `{env: VAR}` — reads `VAR` from the **parent process's** own environment
+  (the process running the Omnigent server/runner), not from the sandboxed
+  agent's environment and independent of `env_passthrough`. Missing or
+  empty raises.
+- `{file: /path}` — reads the file's contents as UTF-8. `~` is expanded;
+  the path is read on the host filesystem, before the sandbox's own path
+  grants apply. A missing or empty file raises.
+- `{command: ...}` — runs the string through a shell (`shell=True`) in the
+  parent process, with the parent's environment, and takes trimmed stdout
+  as the secret (e.g. `gh auth token`). A 30-second timeout applies; a
+  non-zero exit or empty stdout raises, surfacing the command's stderr in
+  the error.
 
 ```
 sandbox:
@@ -201,12 +218,13 @@ sandbox:
 
 <div className="note">
 
-`file` and `command` sources are resolved by the unsandboxed parent process
-before the sandbox starts — `command` runs through a shell. Only use them in
-specs you author or trust; don't accept `file`/`command` sources from a
-user-uploaded, shared, or remote agent spec, since that hands the parent
-process an attacker-influenced file read or shell command outside the sandbox
-boundary.
+`file` and `command` sources run in the unsandboxed parent process before the
+sandbox starts, and `command` runs through a real shell — so a `source` value
+is effectively parent-side code/file-read execution, not something the
+sandbox boundary constrains. Only use them in specs you author or trust;
+don't accept `file`/`command` sources from a user-uploaded, shared, or remote
+agent spec, since that hands the parent process an attacker-influenced file
+read or shell command outside the sandbox boundary.
 
 </div>
 

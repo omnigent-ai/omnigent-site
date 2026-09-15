@@ -222,10 +222,10 @@ sandbox host environment: the servers then listen on all interfaces (loopback
 consumers keep working) and advertise the host's routable address so the
 in-sandbox hooks can reach them.
 
-| Environment variable        | Default          | Description                                                                                                                                                                                                          |
-| --------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OMNIGENT_BRIDGE_BIND_HOST` | loopback-only    | Selects the bind posture. Unset is loopback-only (`127.0.0.1`). `0.0.0.0` binds all interfaces and advertises the detected routable address (falling back to loopback when the host has none). Any other value pins that exact host for both bind and advertisement. |
-| `OMNIGENT_BRIDGE_PORT_POOL` | `28700`–`28715`  | Overrides the server port pool. Accepts comma-separated ports and inclusive ranges, e.g. `28700-28703,29000`.                                                                                                        |
+| Environment variable        | Default         | Description                                                                                                                                                                                                                                                          |
+| --------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OMNIGENT_BRIDGE_BIND_HOST` | loopback-only   | Selects the bind posture. Unset is loopback-only (`127.0.0.1`). `0.0.0.0` binds all interfaces and advertises the detected routable address (falling back to loopback when the host has none). Any other value pins that exact host for both bind and advertisement. |
+| `OMNIGENT_BRIDGE_PORT_POOL` | `28700`–`28715` | Overrides the server port pool. Accepts comma-separated ports and inclusive ranges, e.g. `28700-28703,29000`.                                                                                                                                                        |
 
 Bridge servers draw their ports from a small stable pool (`28700`–`28715` by
 default) so a sandbox network policy can allowlist them by exact host and port.

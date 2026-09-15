@@ -1,0 +1,46 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "See every agent session in a project as a live board",
+  "Canvas lays your sessions out as draggable cards grouped by project, each showing live status, title, worktree branch, and a link to its pull request, so you can open a transcript or start a new session from one board.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/project-canvas-live-session-board",
+  },
+);
+
+export const meta = {
+  title: "See every agent session in a project as a live board",
+  date: "2026-09-09",
+  category: "Multi-agent",
+  author: "omnigent",
+  heroArt: "/images/blog/project-canvas-live-session-board.png",
+};
+
+<BlogPostHeader slug="project-canvas-live-session-board" />
+
+If you run several agents at once across a project, you can now see them all on
+one board instead of scanning a flat sidebar list. Canvas gives each project a
+spatial view of its sessions that you arrange yourself.
+
+When many sessions are running together, a list makes it hard to tell what each
+one is doing or where its work went. Canvas lays your sessions out as cards
+grouped by project. Each card shows the session's live status, its title, the
+worktree branch it is on, and a link to its pull request, so the state of the
+whole project reads at a glance. You can open a session's transcript or start a
+new one straight from the board.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: a project board of live session cards, dragging a couple into place, opening one card's transcript, and starting a new session from the board */}
+
+Canvas is a built-in page. Open it from Canvas in the sidebar, then drag cards
+to arrange them the way you think about the work. The board remembers every
+card's position, the selected project, and your view between visits. Turn it on
+with the `OMNIGENT_FEATURES` environment variable:
+
+```
+OMNIGENT_FEATURES=canvas
+```
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

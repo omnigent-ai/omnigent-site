@@ -1,0 +1,48 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Track and switch between every pull request a session touches, across repos",
+  "A single session now keeps a list of every pull request it works on, even across different repositories, captured automatically as the agent opens and updates them, with manual link and unlink controls when you want to correct it.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/multi-pr-tracking-across-repos",
+  },
+);
+
+export const meta = {
+  title:
+    "Track and switch between every pull request a session touches, across repos",
+  date: "2026-09-15",
+  category: "Multi-repo",
+  author: "omnigent",
+  heroArt: "/images/blog/multi-pr-tracking-across-repos.png",
+};
+
+<BlogPostHeader slug="multi-pr-tracking-across-repos" />
+
+If you run coding agents that open and update more than one pull request in a
+single session, the GitHub tab now keeps track of all of them instead of only
+the one on the current branch. You can see the whole list a session has touched
+and switch between them, even when they live in different repositories.
+
+Before this, the GitHub rail showed a single pull request inferred from your
+branch, so a session that opened a fix in one repo and a follow-up in another
+lost sight of the first. Now the session records each pull request as the agent
+creates or updates it, and each entry carries its own repository and number, so
+the details, changed files, and diff you see always match the pull request you
+picked. Recording an association reads from GitHub and never changes the remote
+pull request.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an agent opening PRs in two repos, then the GitHub tab's PR selector switching between them to show each one's diff. */}
+
+Capture is automatic and happens as the agent works, including across compound
+`gh` commands, so a chained create-and-comment still tracks the pull request it
+created. Simply reading or commenting on a pull request does not link it, which
+keeps the list to the ones the session actually worked on. When you want to
+correct it, open the GitHub tab in the workspace rail, use the selector to
+switch pull requests, and link or unlink one by its URL. See the
+[Web UI guide](/docs/interact/web-ui#github) for the tab's controls.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

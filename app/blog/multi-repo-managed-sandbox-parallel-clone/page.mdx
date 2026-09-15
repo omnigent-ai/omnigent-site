@@ -1,0 +1,48 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Start one workspace spanning several repos, cloned in parallel",
+  "When you start a managed sandbox session, you can now list more than one repository. Each one clones in parallel into the same workspace, so the agent opens with all of them checked out side by side.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/multi-repo-managed-sandbox-parallel-clone",
+  },
+);
+
+export const meta = {
+  title: "Start one workspace spanning several repos, cloned in parallel",
+  date: "2026-09-15",
+  category: "Multi-repo",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="multi-repo-managed-sandbox-parallel-clone" />
+
+If your work crosses more than one repository, you can now start a single
+managed sandbox session with all of them checked out together. List several
+repositories when you create the session and each one clones into the same
+workspace, so the agent opens with the whole set in front of it instead of just
+one.
+
+Before, a managed sandbox cloned a single repository, so a change that touched a
+service and its client meant juggling separate sessions or cloning by hand. Now
+the repositories clone in parallel and land as sibling folders under one
+workspace. Give it one repository and the agent starts right inside it; give it
+several and the agent starts in the folder that holds them all.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: the new-session composer with two repository URLs added, then the sandbox opening with both cloned side by side in the workspace file tree */}
+
+To use it, open the new-session composer, choose a managed sandbox, and add each
+repository you want. A repository is its clone URL (`https://...` or
+`git@...`), and you can pin a branch by appending `#<branch>`, for example
+`https://github.com/org/api.git#main`. Connect the account first and each clone
+authenticates as you, so private repositories work without putting a token in
+the URL. Adding several repositories is available on providers that support it,
+and the composer only offers the option where it applies. See the
+[Cloud Sandbox Host guide](/docs/deploy/cloud-sandbox-host) for how managed
+sandboxes work.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

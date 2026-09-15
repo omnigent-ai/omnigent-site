@@ -52,9 +52,12 @@ allowed hosts, methods, paths, and localhost access.
 
 ## Credential injection
 
-The agent holds a fake placeholder token instead of the real secret. When a request
-matching your allow-list leaves the sandbox, the proxy swaps in the real credential. The
-agent can use a credential but never read it.
+By default, nothing credential-shaped ever enters the sandbox: a tool sends its
+request with no credential, and the proxy attaches the real one on the way out. For
+clients that refuse to send a request without a local credential, the agent can
+instead hold a fake placeholder token in place of the real secret — the proxy swaps
+in the real credential when a request matching your allow-list leaves the sandbox.
+Either way, the agent can use a credential but never read it.
 
 Only the placeholder appears in logs, transcripts, and model context. A leaked token is
 worthless, since it only works through the proxy, against allowed hosts.

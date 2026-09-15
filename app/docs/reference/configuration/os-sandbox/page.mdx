@@ -178,14 +178,16 @@ field first — the ACP executor logs a hint pointing back at it.
 ### Credentials (secretless proxy)
 
 `credential_proxy` lets sandboxed tools authenticate to external hosts without the
-real secret ever entering the sandbox: the mandatory L7 egress proxy attaches the
-credential on the way out, swapping a synthetic placeholder for the real value. It
-requires `egress_rules` and a hardened, network-isolating backend (`linux_bwrap` or
-`darwin_seatbelt`).
+real secret ever entering the sandbox. The default model is **swap-on-access**:
+a tool sends its request with no `Authorization` header at all, and the mandatory
+L7 egress proxy attaches the real credential on the way out. Nothing
+credential-shaped is ever present in the sandbox. It requires `egress_rules` and a
+hardened, network-isolating backend (`linux_bwrap` or `darwin_seatbelt`).
 
 Each entry has a `type`. The host-keyed types — `https_bearer`, `https_basic`,
 `git_https`, and `gh_basic` — bind a credential to a `target`/`targets` host and
-resolve the secret from a `source`.
+resolve the secret from a `source`: `{env: VAR}`, `{file: /path}`, or
+`{command: ...}` (the parent runs the command and reads its stdout).
 
 ```
 sandbox:
@@ -196,6 +198,59 @@ sandbox:
       target: api.github.com
       source: { env: GH_TOKEN }
 ```
+
+<div className="note">
+
+`file` and `command` sources are resolved by the unsandboxed parent process
+before the sandbox starts — `command` runs through a shell. Only use them in
+specs you author or trust; don't accept `file`/`command` sources from a
+user-uploaded, shared, or remote agent spec, since that hands the parent
+process an attacker-influenced file read or shell command outside the sandbox
+boundary.
+
+</div>
+
+`https_basic` and `git_https` also take an optional `username` (defaults to
+`x-access-token`). If a tool sets its own real, non-placeholder `Authorization`
+header, the proxy leaves it untouched rather than clobbering it.
+
+#### Opt-in placeholder injection
+
+Some clients — `gh` is the canonical case — refuse to issue a request at all
+when they don't see a local credential, so there's no outbound request for the
+proxy to decorate. For those, add an `env` field to a host-keyed entry: the
+proxy mints a random, single-use `oa_cred_*` placeholder and injects it into
+that environment variable instead of the real secret. The client believes it's
+authenticated and sends the placeholder; the proxy swaps it for the real value
+on the way out.
+
+```
+sandbox:
+  egress_rules:
+    - "* gating-saas.example.com/**"
+  credential_proxy:
+    - type: https_bearer
+      target: gating-saas.example.com
+      source: { env: SAAS_PAT }
+      env: SAAS_TOKEN
+```
+
+A placeholder presented to any host it isn't bound to is rejected with `403` —
+so even a compromised sandbox that replays the placeholder against an
+attacker-controlled host gets no credential. `gh_basic` is a preset built on
+this: it resolves the token with `source: {command: gh auth token}`, treats the
+git host (`github.com`) as swap-on-access, and injects the API host
+(`api.github.com`) via `GH_TOKEN`/`GITHUB_TOKEN`, since `gh` gates on those.
+
+<div className="note">
+
+This phase covers HTTP(S) Bearer and Basic auth only — SSH-based git remotes
+are out of scope. Credential-bound hosts also can't use opaque HTTP/2
+passthrough (the proxy needs to inspect and rewrite the `Authorization`
+header), so a host listed in `credential_proxy` is served over HTTP/1.1 even
+if its egress rule would otherwise qualify for HTTP/2.
+
+</div>
 
 #### Databricks CLI
 

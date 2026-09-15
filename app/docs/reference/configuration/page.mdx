@@ -39,8 +39,10 @@ type, default, and validation behavior.
 | Type    | String, up to 4,000 characters                       |
 | Default | No additional instructions                           |
 
-Use natural-language instructions to control the format of titles generated
-from the first message in a session:
+Use natural-language instructions to control the format of session titles.
+These requirements apply both to titles generated from the first message in a
+session and to later agent-initiated renames through the `sys_session_rename`
+tool:
 
 ```
 omni config set --global \
@@ -64,9 +66,16 @@ instructions are set, generated titles may use up to 200 characters and longer
 output is truncated with an ellipsis. Manually assigned titles also have a
 200-character limit.
 
-The setting applies to new titles after the local server restarts. An empty
-value removes the additional guidance. A non-string value or a string longer
-than 4,000 characters is ignored and the default title prompt is used.
+When an agent renames a session with `sys_session_rename`, its proposed title
+is formatted against these same requirements before the rename is applied. If
+that formatting fails, the existing title is preserved rather than replaced by
+an unformatted proposal. Without custom instructions, the agent's proposal is
+used as-is. Manually assigned titles are never reformatted.
+
+The setting applies after the local server restarts, to both new-session titles
+and agent renames. An empty value removes the additional guidance. A non-string
+value or a string longer than 4,000 characters is ignored and the default title
+prompt is used.
 
 ## Managed sandboxes
 

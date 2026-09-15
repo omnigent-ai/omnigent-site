@@ -27,8 +27,10 @@ See [Shared Server](/docs/deploy/overview#kubernetes) for the deployment steps.
 | Default | `90`                                     |
 
 Before a managed session goes online, Omnigent waits for the runner Pod to
-schedule, pull its image, clone its repository, and reach `Running`. Increase
-the wait budget when cold image pulls regularly take longer than the default:
+schedule, pull its image, clone its repository (or several, in parallel, for a
+[multi-repo session](/docs/deploy/cloud-sandbox-host#4-launch-from-the-web-ui)),
+and reach `Running`. Increase the wait budget when cold image pulls regularly
+take longer than the default:
 
 ```yaml
 sandbox:
@@ -72,6 +74,57 @@ must match a `RuntimeClass` you pre-created in the cluster; a malformed value
 (for example `Not_A_DNS_Name`) fails server startup rather than the first
 launch. Omnigent only references the `RuntimeClass` — provisioning it and the
 underlying node runtime is an out-of-band operator step.
+
+## Scheduling onto a tainted NodePool (`tolerations`)
+
+| Setting | Value                                                            |
+| ------- | ---------------------------------------------------------------- |
+| Key     | `sandbox.kubernetes.tolerations`                                 |
+| Type    | List of `{key?, operator?, value?, effect?, tolerationSeconds?}` |
+| Default | Unset — no tolerations added                                     |
+
+Set `tolerations` to let runner Pods schedule onto a tainted NodePool you've
+dedicated to sandboxes. Each entry is a Kubernetes
+[Toleration](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/),
+written verbatim to the Pod's `spec.tolerations`:
+
+```yaml
+sandbox:
+  provider: kubernetes
+  kubernetes:
+    tolerations:
+      - key: sei.io/node-role
+        operator: Equal
+        value: omnigent-sandbox
+        effect: NoSchedule
+    node_selector:
+      sei.io/node-role: omnigent-sandbox
+```
+
+A toleration only **permits** the Pod to schedule onto matching tainted
+nodes — it does not attract it there. Pair `tolerations` with `node_selector`
+to also pin runner Pods onto that pool; without a selector the Pod may still
+land on any untainted node. Leaving `tolerations` unset adds no
+`spec.tolerations` key, keeping the manifest byte-for-byte compatible with
+prior deployments.
+
+Each entry accepts these fields:
+
+- **`key`** — the taint key to tolerate. Must be a valid Kubernetes label key.
+  Omit it only with `operator: Exists` (Kubernetes' "tolerate everything" form).
+- **`operator`** — `Equal` (default) or `Exists`. `Exists` matches any value,
+  so it may not be combined with a `value`.
+- **`value`** — the taint value, matched when `operator: Equal`. Must be a
+  valid Kubernetes label value.
+- **`effect`** — one of `NoSchedule`, `PreferNoSchedule`, or `NoExecute`. Omit
+  to tolerate the key under every effect.
+- **`tolerationSeconds`** — an integer, valid only with `effect: NoExecute`;
+  how long the Pod stays bound to a node after a matching taint is added.
+
+Entries are validated at server startup, so a malformed or self-contradictory
+toleration (an `Exists` operator with a `value`, an empty `key` with an
+operator other than `Exists`, or a `tolerationSeconds` without
+`effect: NoExecute`) fails fast rather than at the first managed launch.
 
 ### Setting the budget from the environment
 

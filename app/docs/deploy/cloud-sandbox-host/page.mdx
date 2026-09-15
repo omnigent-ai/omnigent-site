@@ -130,6 +130,31 @@ also covers the other providers and lifecycle settings.
 Start a new session and select **New Sandbox** in the host picker. The server
 provisions the cloud host, starts the runner, and connects it back automatically.
 
+Optionally point the sandbox at a git repository to clone. Use the composer's
+**Repository** control to pick a repo from your
+[connected GitHub account](/docs/deploy/github-connect) or paste a clone URL, and
+pin a branch; leave it empty for a bare sandbox with a server-created workspace.
+The repo is cloned inside the sandbox and becomes the session's working
+directory.
+
+Some providers can clone **several repositories** into one sandbox. When the
+selected provider supports it, keep adding entries in the **Repository** control
+(up to 10 repos). Omnigent clones them in parallel as siblings under the sandbox
+workspace: with a single repo the agent starts inside it, and with several the
+agent starts in the parent directory that holds them all. Two repos that would
+land in the same directory name (for example `org-a/api` and `org-b/api`) are
+disambiguated by owner. Multi-repo is a per-provider capability — the
+[Kubernetes managed sandbox](/docs/reference/configuration/kubernetes) supports
+it, while single-repo providers accept only one repo and reject a request for
+several. The picker adapts to the selected provider, so it offers the multi-repo
+list only when that provider supports it.
+
+Calling the [REST API](/reference) directly, pass a single repository in
+`workspace` or several in `workspaces` (a list of clone URLs, each optionally
+`#<branch>`) on `POST /v1/sessions`. The two are mutually exclusive, `workspaces`
+requires a managed session (`host_type: "managed"`), and it takes at most 10
+repositories.
+
 ## CLI
 
 Create and manage cloud sandbox hosts from the command line. The commands are the same across

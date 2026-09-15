@@ -152,6 +152,34 @@ stored model is still a valid choice for that harness; a retired or unknown id
 falls back to your remembered pick. An explicit model you pick in the composer
 always wins for that session.
 
+### Set what the agent can do without asking
+
+Native coding-agent sessions choose their permission or approval mode from the
+composer's **permissions dropdown** — the hand icon next to the input — not from
+the picker's **Edit** menu. The Edit menu keeps the model and effort choices;
+**Advanced settings** now appears only for agents that have a configurable
+underlying harness (a bundle agent whose brain harness you can override). The
+options in the dropdown depend on the selected harness:
+
+- **Claude Code** (`claude-native`) offers its permission modes (for example
+  **Accept edits** or **Bypass permissions**). The pick rides along as
+  `--permission-mode`.
+- **Codex** (`codex-native`) offers its approval presets — **Default**,
+  **Full access**, and **Read only** — plus the most-permissive
+  **Bypass approvals & sandbox** option. Full access launches Codex with
+  `--sandbox danger-full-access --ask-for-approval never`; the bypass option
+  maps to Codex's `--dangerously-bypass-approvals-and-sandbox` stance and is
+  create-time only (a running Codex session switches approvals through its own
+  `/permissions` popup, which has no bypass row).
+- **Cursor** (`cursor-native`) offers its execution mode, such as **Plan**.
+- **Antigravity** (`antigravity-native`) offers **Ask every time** or
+  **Skip permissions**. Skip permissions is a dangerous bypass that runs the
+  session with all tool prompts disabled; while it's selected the composer shows
+  a red warning banner.
+
+Your choice is remembered and seeds the next new session, the same way the model
+picker is remembered.
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:
@@ -220,16 +248,41 @@ text-editing meaning, so they fire even while the composer is focused; inside a
 terminal or the code editor — which bind `⌘[` / `⌘]` themselves (indent/outdent,
 or forwarding to the PTY) — the shortcut yields to that surface.
 
+### Find a session by name
+
+Press `⌘⌥S` (`Ctrl+Alt+S` on Windows/Linux) to jump straight to the
+**Switch session** picker — a name-only search over your sessions. Type part of
+a session's title and the list fuzzy-matches it (for example, `fxprs` finds
+“Fix the parser”); press `Enter` to open the top match. The chord fires even
+while the composer is focused and leaves any unsent draft untouched when you
+`Escape` out; inside a terminal it yields to that surface.
+
+This picker lists sessions only — no commands or actions. It complements the
+command palette (`⌘K`), which searches sessions _and_ runs commands. The
+search loads more sessions as you narrow the query; when there are more matches
+than fit, a **Search older sessions** control pulls in older pages.
+
 ### Other global shortcuts
 
 | Action                                                      | Shortcut                                    |
 | ----------------------------------------------------------- | ------------------------------------------- |
 | Open the command palette                                    | `⌘K` (`Ctrl+K`)                             |
+| Find a session by name                                      | `⌘⌥S` (`Ctrl+Alt+S`)                        |
 | New session                                                 | `⌘N` (`Ctrl+N`)                             |
+| Open the model picker                                       | `⌘⇧M` (`Ctrl+Shift+M`)                      |
 | Toggle the left (Conversations) / right (Workspace) sidebar | `⌘⌥[` / `⌘⌥]` (`Ctrl+Alt+[` / `Ctrl+Alt+]`) |
 | Toggle voice dictation                                      | `⌘⌥V` (`Ctrl+Alt+V`)                        |
 | Approve a pending request                                   | `⌘↵` (`Ctrl+Enter`)                         |
 | Show the shortcuts overlay                                  | `⌘/` (`Ctrl+/`)                             |
+
+`⌘⇧M` is the keyboard equivalent of typing `/model` in the composer: it opens
+the model picker without leaving the keyboard. It works both in an existing
+session's composer and on the new-chat screen, where it opens the agent/model
+picker and drills straight into the selected harness's model submenu. The chord
+fires only when a model picker is available to open (it stays inert while the
+composer is read-only, the session is unreachable, or config is busy), and it
+yields to surfaces that own their own keys, such as the terminal and the code
+editor.
 
 Jump straight to a pinned session with the command modifier plus a digit
 (`1`–`9` for the first nine, `0` for the tenth). In a browser tab — where plain
@@ -297,6 +350,28 @@ only seeds sessions with no saved open-state — once you expand or collapse the
 rail in a given session, that session keeps its own remembered state regardless
 of the default.
 
+### Default Workspace tab
+
+Choose which tab the right **Workspace** rail opens on first. Under
+**Settings → Appearance → Default Workspace tab**, pick one of:
+
+- **Files** — the default.
+- **Changes**
+- **GitHub**
+- **Agents**
+
+The tab you pick is shown first in the rail; the remaining tabs keep their
+relative order. Changing this default also updates existing chats when they're
+reopened or refreshed, without closing their open file tabs or changing the
+rail layout. Any manual tab choice you make in a session afterwards is
+remembered for that session and wins over the default, and file links still
+open the linked file regardless of the setting.
+
+This is a per-device UI preference stored in your browser. If a chosen default
+tab isn't available in a given session (for example, GitHub only appears in
+coding-agent sessions, and Files/Changes need an on-disk workspace), the rail
+falls back to the first available tab.
+
 ## File editor
 
 A full markdown editor with syntax highlighting for browsing and editing every file your
@@ -328,12 +403,47 @@ the referenced file themselves.
 
 ## GitHub
 
-Coding-agent sessions have a **GitHub** tab in the right workspace rail. It's a
-read-only view of how the session's branch relates to GitHub, backed by the
-`gh` CLI and `git` running against the workspace on disk — nothing is pushed or
-mutated.
+Coding-agent sessions have a **GitHub** tab in the right workspace rail. It
+tracks the pull requests associated with the session and shows the selected
+one's summary (PR description and comments), CI checks, and a stacked diff with
+a file-tree navigator. Nothing is pushed or mutated — recording an association
+never touches the remote PR.
 
-The tab shows two things the associated pull request when the branch has one (PR description, CI checks, and diff).
+### Tracked pull requests
+
+Omnigent discovers a session's pull requests automatically by observing the
+agent's completed GitHub work — `gh` CLI commands and GitHub MCP tool calls that
+create, edit, review, merge, or comment on a PR. Each association is tagged with
+how it was found:
+
+- **created** — the session opened the PR.
+- **worked_on** — the session edited, reviewed, merged, or otherwise acted on
+  it.
+- **attached** — you linked it manually (see below).
+- **inferred** — matched from the current branch when the session has no
+  recorded PR yet; shown as `(from branch)` in the selector.
+
+Associations are stored on the host, independent of the current checkout, so
+they stay with the session even as its branch or worktree changes.
+
+When a session tracks more than one PR, a selector at the top of the tab
+switches between them; each entry reads `owner/repo #number` (prefixed with the
+host for GitHub Enterprise). The details, changed files, and diff below are
+always the selected PR's, fetched from GitHub — including fork PRs and renamed
+files — so they match the PR's "Files changed" exactly.
+
+### Link or unlink a PR
+
+Use the **+** (`Link a PR`) button to attach a pull request by URL — paste a
+`https://github.com/owner/repo/pull/123` link (GitHub Enterprise hosts work
+too). The linked PR becomes an `attached` association and is selected. The
+**trash** (`Unlink PR`) button removes the selected association; an unlinked PR
+stays out of the list until you link it again, even if the agent keeps touching
+it. When a session tracks no PRs yet, the tab's empty state offers the same
+`Link a PR` action.
+
+The composer status line mirrors this: it shows `#123` for a single tracked PR
+or `N PRs` when several are tracked, and clicking it opens the GitHub tab.
 
 ## Mentioning workspace files
 
@@ -398,6 +508,30 @@ Each queued row has inline actions:
   flush.
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
+
+## Side questions with `/btw`
+
+In a Claude Code (`claude-native`) session, type `/btw` in the composer to ask a
+side question without adding it to the conversation. `/btw` ("by the way") is a
+Claude Code built-in, so the composer's slash menu offers it only on Claude Code
+sessions; selecting it pre-fills `/btw ` so you can type your question after it.
+
+The answer comes back in a dismissable overlay above the composer instead of as
+a saved message. While the overlay is open the composer is locked — its
+placeholder reads **Side chat open — press Esc to close** — so the next input
+closes the overlay rather than sending a message. Press `Esc` (or click `✕`) to
+dismiss it.
+
+Side chats are transient and live-only: nothing is written to the transcript and
+there is no replay, so reloading the page drops the overlay. This matches the
+terminal, where Escape closes the `/btw` overlay and leaves no history.
+Dismissing the web overlay also closes the matching overlay in the embedded
+terminal, so the two views stay in lockstep.
+
+You can start a side chat from either side — typing `/btw` in the web composer or
+directly in the embedded terminal — and the answer is mirrored into the web
+overlay. If a very long answer is clipped in the relayed overlay, it's flagged as
+truncated and points you to the terminal for the full text.
 
 ## Scheduled tasks
 

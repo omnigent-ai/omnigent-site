@@ -96,13 +96,13 @@ OMNIGENT_DATABRICKS_SCOPES="all-apis offline_access"                 # default s
 OMNIGENT_DATABRICKS_ALLOWED_HOST_SUFFIXES=.databricks.com,.azuredatabricks.net  # default shown
 ```
 
-| Variable                                    | Required | Purpose                                                                                          |
-| ------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------ |
-| `OMNIGENT_DATABRICKS_CLIENT_ID`             | Yes      | OAuth client id (the account custom-app-integration id).                                         |
-| `OMNIGENT_DATABRICKS_CLIENT_SECRET`         | Yes      | App client secret; also signs the OAuth state and derives the PKCE verifier.                     |
-| `OMNIGENT_DATABRICKS_REDIRECT_URI`          | Yes\*    | OAuth callback URL. \*Derived from `OMNIGENT_DOMAIN` if unset.                                    |
-| `OMNIGENT_DATABRICKS_SCOPES`                | No       | Space-separated scopes to request. Defaults to `all-apis offline_access`.                        |
-| `OMNIGENT_DATABRICKS_ALLOWED_HOST_SUFFIXES` | No       | Comma-separated, dot-prefixed workspace host suffixes users may connect. Defaults below.         |
+| Variable                                    | Required | Purpose                                                                                  |
+| ------------------------------------------- | -------- | ---------------------------------------------------------------------------------------- |
+| `OMNIGENT_DATABRICKS_CLIENT_ID`             | Yes      | OAuth client id (the account custom-app-integration id).                                 |
+| `OMNIGENT_DATABRICKS_CLIENT_SECRET`         | Yes      | App client secret; also signs the OAuth state and derives the PKCE verifier.             |
+| `OMNIGENT_DATABRICKS_REDIRECT_URI`          | Yes\*    | OAuth callback URL. \*Derived from `OMNIGENT_DOMAIN` if unset.                           |
+| `OMNIGENT_DATABRICKS_SCOPES`                | No       | Space-separated scopes to request. Defaults to `all-apis offline_access`.                |
+| `OMNIGENT_DATABRICKS_ALLOWED_HOST_SUFFIXES` | No       | Comma-separated, dot-prefixed workspace host suffixes users may connect. Defaults below. |
 
 The client secret is POSTed to the user-supplied workspace host, so Omnigent
 gates that host to Databricks domains: by default `.databricks.com` and

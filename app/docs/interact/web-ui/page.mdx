@@ -38,6 +38,33 @@ a new top-level session; turn it off to keep the default session name and
 rename sessions yourself. This is a per-user preference stored on the server, so
 it follows your account across browsers and devices.
 
+### Read and unread state
+
+A session that has activity you haven't looked at yet shows a pink **unread
+dot** in the sidebar. Read state is tracked per viewer — marking a shared
+session read or unread affects only what you see, not your teammates.
+
+Every session row's `⋯` menu offers exactly one read-state action, depending on
+the row's current state:
+
+- **Mark as unread** — shown on a read row. It re-lights the dot so you can flag
+  a session to revisit later, including the session you're currently viewing.
+- **Mark as read** — shown on a row already displaying the dot. It clears the
+  dot without opening the session.
+
+To change several sessions at once, enter selection mode with the **Select
+sessions** control at the top of the list and pick the rows you want. The bulk
+action bar then offers the matching action alongside Archive, Move, and Delete:
+
+- **Mark as read** appears while any selected session is unread, and clears the
+  dot on all of them.
+- **Mark as unread** appears once the whole selection is read (it's disabled
+  until at least one row is selected), and lights the dot on every selected
+  session.
+
+Either bulk action applies immediately and exits selection mode, like the other
+bulk actions.
+
 ### Hide unconfigured harnesses
 
 By default the new-chat picker lists every harness and badges the ones that

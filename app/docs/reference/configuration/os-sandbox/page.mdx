@@ -197,6 +197,68 @@ sandbox:
       source: { env: GH_TOKEN }
 ```
 
+#### Credential sources
+
+A host-keyed `source` sets **exactly one** of four keys, resolved in the trusted
+parent (never in the sandbox):
+
+- `env: VAR` — read the secret from an environment variable.
+- `file: path` — read the secret from a file (`~` is expanded).
+- `command: "cmd"` — run a shell command and use its stdout.
+- `unix_socket: path` — fetch the secret from a private HTTP token broker.
+
+For a `unix_socket` source, the parent makes an `HTTP GET /token` directly over
+the socket. The broker must return `200` with a non-empty, single-line token (at
+most 64 KiB); redirects are not followed and no shell or external executable is
+involved. A single five-second deadline covers connection setup, headers, and
+the response body.
+
+#### Refreshing credentials
+
+`file` and `unix_socket` sources can opt into renewal with
+`refresh_interval_seconds`. The trusted parent re-reads the source on the first
+request after that interval; the sandbox's placeholder never changes. This lets a
+local broker mint replacement tokens before they expire:
+
+```
+sandbox:
+  egress_rules:
+    - "* api.github.com/**"
+  credential_proxy:
+    - type: gh_basic
+      target: api.github.com
+      source:
+        unix_socket: /private/broker.sock
+        refresh_interval_seconds: 60
+```
+
+`refresh_interval_seconds` must be a positive number of seconds and applies only
+to `file` and `unix_socket` sources. `env` sources cannot refresh (a running
+process inherits a fixed environment), and `command` sources stay startup-only
+(a sandbox could otherwise replace a script or dependency before the parent runs
+it again) — use a private broker for renewable credentials instead. Without a
+refresh interval, every source resolves once at startup.
+
+Choose an interval shorter than the minimum remaining lifetime of the tokens the
+source returns. A failed refresh fails that request with a sanitized `502`
+rather than reusing a stale credential; a later request retries once the shared
+attempt finishes. The broker must be ready before the helper starts — a source
+failure during startup prevents launch instead of producing a recoverable
+request-time `502`.
+
+<div className="note">
+
+Refresh sources require **absolute paths** and an active `linux_bwrap` or
+`darwin_seatbelt` policy. Keep the broker socket, its private key, and the
+broker's own code and dependencies **outside** sandbox read/write paths: the
+runtime rejects sources whose paths, symlink targets, or parent directories fall
+inside sandbox grants or the workspace (even a read-only workspace), and rejects
+hard-linked files and sockets. A symlink source must keep its original canonical
+target for the session, though replacing the file atomically at the same
+canonical path is still supported.
+
+</div>
+
 #### Databricks CLI
 
 The `databricks_cli` type proxies the [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/).

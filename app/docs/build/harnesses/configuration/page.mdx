@@ -87,33 +87,63 @@ agent. If you need the key route, pass it explicitly with
 
 ## Devin
 
-Devin (Cognition) ships as a builtin harness with the id `devin`. Like Grok
-Build, it drives its vendor CLI over the
-[Agent Client Protocol](https://agentclientprotocol.com) over stdio — Omnigent
-renders its streaming output, reasoning, and tool cards and routes its
-permission requests through your [contextual policies](/docs/policies/overview).
-It's built in, so you select the `devin` harness id directly instead of
-registering a launch command.
-
-```
-omni run --harness devin
-```
-
-Devin brings **its own auth and model** — Omnigent stores no credential, and a
-`/model` pick is refused rather than silently dropped, so it runs its
-account-default model. To pin one, configure an [`acp:` agent](#custom-acp-agents)
-whose command passes the Devin CLI's own model flag. Install the CLI and log in
-through Cognition first:
+Devin (Cognition) ships as a built-in **native TUI** harness with the id
+`devin-native`. `omni devin` boots the resident Devin CLI in a runner-owned pane
+and mirrors it into an Omnigent conversation, so you get
+[contextual policies](/docs/policies/overview), approval cards, resume, cost
+tracking, and Devin's sub-agents as child sessions on top of the native
+experience.
 
 ```
 curl -fsSL https://cli.devin.ai/install.sh | bash
 devin auth login
+omni devin
 ```
+
+Devin brings **its own auth** — Omnigent stores no credential. The CLI writes its
+own credential file and reads it back at launch, and `devin auth status` is a
+live probe, so `omni setup` reports the real sign-in state.
+
+Approvals surface two ways: Omnigent policies gate each request, tool call, and
+tool result, and Devin's own consent prompt is republished as a Chat approval
+card (answerable in the web UI or the embedded terminal).
+
+### Model and effort
+
+Devin encodes reasoning effort as a suffix on the model id. Omnigent keeps model
+and effort as separate axes and recombines them at launch. Pass a model family
+slug or alias from `devin models list`, and optionally an effort rung:
+
+```
+omni devin --model opus --effort xhigh
+omni devin --model gemini --effort max
+```
+
+`--effort` accepts `low`, `medium`, `high`, `xhigh`, or `max`; a family with no
+matching rung falls back to its default variant, so a mismatched pair costs
+effort, not the session. You can also switch models mid-session with `/model`.
+
+### Launch options
+
+- `--permission-mode` — one of `normal` (default), `accept-edits`, `smart`,
+  `dangerous`, or `bypass`.
+- `--sandbox` — enable Devin's OS-level process sandbox for its `exec` tool.
+- `-p`, `--prompt` — send an initial chat input when the TUI starts.
+- `--resume [CONVERSATION]` — resume a prior Omnigent conversation; with no value
+  it opens a picker scoped to `devin-native` sessions.
+
+Devin's own `--resume`/`-c`/`--config`/`--export` flags are reserved for
+Omnigent, which owns resume and hook wiring; use `omni devin --resume` instead.
+
+The `devin` and `native-devin` spellings both resolve to `devin-native`. The
+former built-in ACP row `devin-acp` was **removed in 0.14** and its id now
+aliases onto the native wrap, so existing sessions and scripts keep resolving. A
+user-configured [`acp:` agent](#custom-acp-agents) for Devin is unaffected.
 
 ## Jcode
 
 Jcode ([jcode.sh](https://jcode.sh)) ships as a builtin harness with the id
-`jcode`. Like Grok Build and Devin, it drives its vendor CLI (`jcode acp`) over
+`jcode`. Like Grok Build, it drives its vendor CLI (`jcode acp`) over
 the [Agent Client Protocol](https://agentclientprotocol.com) over stdio —
 Omnigent renders its streaming output, reasoning, and tool cards and routes its
 permission requests through your [contextual policies](/docs/policies/overview).

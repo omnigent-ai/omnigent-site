@@ -175,6 +175,33 @@ are worth knowing:
 If an agent fails during its `initialize` handshake for no obvious reason, check this
 field first — the ACP executor logs a hint pointing back at it.
 
+#### Desktop-session variables (Linux keyrings)
+
+`DBUS_SESSION_BUS_ADDRESS` and `XDG_RUNTIME_DIR` locate your Linux desktop session, where
+secrets stored by `omni setup` live. An **active sandbox always strips these two
+variables**, even when you list them in `env_passthrough`, and supplies a private,
+writable `XDG_RUNTIME_DIR` of its own. A sandboxed harness therefore can't read the
+desktop keyring — configure its authentication separately.
+
+They pass through only when the sandbox is disabled (`type: none`) and you name them
+explicitly. Use this for a trusted headless harness that performs its own keyring lookup —
+for example Goose set up with `goose configure`:
+
+```
+os_env:
+  type: caller_process
+  sandbox:
+    type: none
+    env_passthrough: [DBUS_SESSION_BUS_ADDRESS, XDG_RUNTIME_DIR]
+```
+
+<div className="note">
+
+Environment filtering alone doesn't isolate the keyring: `sandbox.type: none` provides no
+OS isolation, so only grant these desktop paths to harnesses you trust.
+
+</div>
+
 ### Credentials (secretless proxy)
 
 `credential_proxy` lets sandboxed tools authenticate to external hosts without the

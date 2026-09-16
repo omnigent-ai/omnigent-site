@@ -78,6 +78,24 @@ The setup wizard walks you through adding a credential, setting a default, or re
 It also auto-detects credentials already on your machine (API keys in environment variables,
 logged-in CLIs, and local servers) so you can confirm them with one tap.
 
+### Linux keyring access
+
+On Linux, `omni setup` stores secrets in your OS keyring through the Secret Service
+(D-Bus). The Omnigent host and runner resolve them from your desktop login session using
+two environment variables: `DBUS_SESSION_BUS_ADDRESS` and `XDG_RUNTIME_DIR`. The keyring
+must be available and unlocked, and the host must run inside that desktop session. If you
+change either variable, restart the host from the desktop session so it picks up the new
+values.
+
+<div className="note">
+
+If the keyring is inaccessible (locked, headless, or no backend) **and** no file-backed
+secret exists, Omnigent raises an error naming these two variables to check, rather than
+treating the secret as missing. Sandboxed harnesses can't reach the desktop keyring — see
+[OS sandbox › Environment](/docs/reference/configuration/os-sandbox#environment).
+
+</div>
+
 ## Credential types
 
 | Type | What it is |

@@ -549,6 +549,35 @@ directly in the embedded terminal — and the answer is mirrored into the web
 overlay. If a very long answer is clipped in the relayed overlay, it's flagged as
 truncated and points you to the terminal for the full text.
 
+## Side chats with `/side`
+
+In a Codex (`codex-native`) session, type `/side <question>` in the composer to
+start a **side chat** — an ephemeral fork of the current Codex thread. The
+composer's slash menu offers `/side` only on Codex sessions; selecting it
+pre-fills `/side ` so you can type your question after it.
+
+Unlike `/btw`, a `/side` question is not answered in a throwaway overlay. It
+opens as its own **sub-agent chat**, labelled **Side chat**, so you can navigate
+into it and keep the conversation going over multiple turns. It never appears in
+the left conversation sidebar, and the main Codex conversation keeps running
+unchanged the whole time.
+
+The fork inherits the parent thread's history as **reference context only** —
+the side chat is told to treat that history as background, not as active
+instructions — so you can ask about the work so far without steering the main
+thread. The `/side` message itself stays out of the parent conversation: it's
+routed straight into the fork and leaves no bubble in the main transcript.
+
+Side chats are **ephemeral**: nothing is written to disk, so a side chat is not
+resumable after a runner restart. If a `/side` request can't be opened, the
+session posts a visible notice so the question is never silently dropped.
+
+You can also start a side chat from selected text. Select part of a message and
+choose **Ask in side chat**: the selection is added as a quote card, and when
+you send, it's forwarded as a `/side` command carrying the quoted text and your
+question. On a harness without side-chat support this action degrades to an
+ordinary quoted reply in the main chat.
+
 ## Scheduled tasks
 
 Run an agent on a recurring schedule instead of starting each session by hand. A

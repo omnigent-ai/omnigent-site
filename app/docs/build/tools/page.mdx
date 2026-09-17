@@ -60,6 +60,38 @@ tools:
 
 Omit `tools` to expose everything the server provides.
 
+### Sidecar MCP files
+
+Instead of declaring an MCP server inline under `tools` in `config.yaml`, you
+can keep it in its own file under the agent's `tools/mcp/` directory. Omnigent
+discovers every `tools/mcp/*.yaml` at load time. A sidecar file names the
+server and its transport explicitly (`transport: stdio` with `command`/`args`,
+or `transport: http` with `url`) and accepts the same optional `tools`
+allow-list as the inline form:
+
+```
+# tools/mcp/github.yaml
+name: github
+transport: stdio
+command: npx
+args: [-y, server-github]
+tools: [search_issues, get_pull_request]   # only these two are exposed
+```
+
+```
+# tools/mcp/docs.yaml
+name: docs
+transport: http
+url: https://mcp.example.com/sse
+tools: [search_docs]
+```
+
+The `tools` allow-list is enforced identically whether the server is declared
+inline or in a sidecar file: only the listed tool names are advertised to the
+model, omitting `tools` exposes everything the server provides, and a `tools`
+value that is not a list is rejected at load time with an error naming the
+file.
+
 ### Authentication
 
 As shown in the examples above, custom MCP servers accept credentials through:

@@ -58,6 +58,14 @@ Or import a batch of your most recent chats with `--last N`, which imports the
 omnigent import --harness claude --last 10
 ```
 
+Recent-session listing only considers chats you opened interactively. For
+Codex, that mirrors its own resume picker: headless `codex exec` runs, MCP
+sessions, and sub-agent or internal threads are skipped, so a batch import
+doesn't fill your sidebar with automation whose first message is an injected
+instruction. (Older Codex rollouts that don't record a source are treated as
+interactive so genuine history isn't dropped.) You can still import any of
+those sessions individually with `--session`.
+
 Provide exactly one of `--session` or `--last` — they are mutually exclusive.
 
 To pull recent chats from every supported harness at once, pass
@@ -86,6 +94,11 @@ session that fails to import doesn't stop the rest. Omnigent prints a summary of
 how many sessions were imported, already imported, and failed, and exits with a
 non-zero status if any failed.
 
+An imported session is titled from its first real user message. If a large
+Claude Code transcript was trimmed to its last compaction point, the
+continuation summary Claude wrote is still imported as context, but it is
+marked as meta so it neither becomes the title nor shows up as a user turn.
+
 ### Import from the web UI
 
 You can also import from the web UI without touching the terminal. Open
@@ -103,6 +116,22 @@ Then click **Import**. The transcripts live on your machine, so the read
 happens on that connected machine over its tunnel — the server never sees your
 local files. Sessions already imported are skipped, and each newly imported
 session is linked in the result so you can jump straight into it.
+
+If some sessions couldn't be imported, the result lists each one with the
+reason (for example, a transcript that could not be read on your machine, or
+one that was malformed or too large to import) and its harness-native session
+ID when known. Click **Retry failed** to re-run the same import — sessions that
+already imported successfully are skipped rather than duplicated, so only the
+failures are attempted again.
+
+The same detail is available to API clients: the buffered
+`POST /v1/imports/local` response carries a `failures` list (one
+`{ external_session_id, source, reason }` entry per failed session, so its
+length equals `failed`), and the NDJSON `POST /v1/imports/local/stream`
+endpoint emits one `{"event": "failed", ...}` line per failed session after the
+successes, with the full `failures` list repeated on the terminal `done` event.
+`external_session_id` and `source` are `null` when the machine reported only a
+count without naming the session.
 
 A brand-new account with no sessions yet also gets a one-click **Import your 25
 most recent sessions** button on the empty home screen (importing across all

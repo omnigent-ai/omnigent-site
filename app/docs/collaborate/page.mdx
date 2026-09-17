@@ -86,6 +86,43 @@ an isolated remote container rather than on your personal machine. To constrain 
 agent can touch even on a trusted host, apply an
 [OS sandbox](/docs/reference/configuration/os-sandbox) policy.
 
+### What each permission level can do
+
+Everything an **Edit** collaborator does goes _through the agent_ — messages,
+workspace-relative file edits, and answering the session's pending prompts — so
+it passes the same policy and approval gates as the owner's own turns. A few
+actions bypass the agent entirely and stay with the session owner:
+
+| Action                                                | Read | Edit | Owner |
+| ----------------------------------------------------- | :--: | :--: | :---: |
+| Watch the session stream                              |  ✓   |  ✓   |   ✓   |
+| Send messages and drive the agent                     |      |  ✓   |   ✓   |
+| Browse and edit files inside the workspace            |  \*  |  ✓   |   ✓   |
+| See and answer pending prompts (approvals, questions) |      |  ✓   |   ✓   |
+| Browse absolute paths on the host filesystem          |      |      |   ✓   |
+| Run a raw shell command in the session's environment  |      |      |   ✓   |
+
+\* Off by default; the owner can enable it with the **Workspace files** toggle
+described above.
+
+"Pending prompts" covers everything the agent pauses on: policy approval
+gates, harness permission prompts, questions the agent asks you, plan review,
+and MCP forms.
+
+The environment shell
+(`POST /v1/sessions/{session_id}/resources/environments/{environment_id}/shell`)
+is **owner-only** (a server admin may also use it). A command has no path to
+inspect, so there is no "inside the workspace" form that could safely be opened
+to collaborators — any command reaches the owner's machine directly and passes
+no policy or approval gate on the way. It carries the same bar as browsing an
+absolute path. Collaborators with **Edit** get a `403` from this endpoint; they
+can still ask the agent to run commands, which are subject to the session's
+policies.
+
+Pending prompts are answerable by anyone who can drive the agent (**Edit**),
+whether from the web UI's approval bar or the REST elicitation endpoints. A
+**Read** share can neither see nor answer them.
+
 ### Who said what
 
 When more than one authenticated person participates in a session, Omnigent

@@ -110,6 +110,17 @@ curl -fsSL https://cli.devin.ai/install.sh | bash
 devin auth login
 ```
 
+The native Devin harness (`devin-native`) is different: it reads Devin's own
+model catalog and surfaces it in the web UI's per-session **Model** picker,
+including Devin's **Fusion** mode, which pairs a *lead* model with a cheaper
+*sidekick*. A Fusion pick is a single self-contained variant id of the form
+`fusion-<lead>-sidekick-<sidekick>` — the lead's reasoning effort is baked into
+the id, so it launches as-is and any separate reasoning effort is ignored. The
+bare `fusion` id is not itself a launchable variant; it defers to Devin's own
+default pairing. See
+[Devin Fusion pairings](/docs/interact/web-ui#devin-fusion-pairings) for how
+the picker composes one.
+
 ## Jcode
 
 Jcode ([jcode.sh](https://jcode.sh)) ships as a builtin harness with the id

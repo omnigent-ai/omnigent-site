@@ -144,9 +144,10 @@ global default.
 ### Choose the launch model
 
 Native coding-agent sessions carry a per-session **Model** picker in their
-launch config, next to the harness's other launch knobs. Both Claude Code
-(`claude-native`) and Codex (`codex-native`) surface it: open the agent's config
-in the new-chat composer and pick the underlying LLM the harness launches with.
+launch config, next to the harness's other launch knobs. Claude Code
+(`claude-native`), Codex (`codex-native`), and Devin (`devin-native`) surface
+it: open the agent's config in the new-chat composer and pick the underlying LLM
+the harness launches with.
 
 The choices come from the **selected host's resolved model catalog**, so the list
 reflects the providers and credentials configured on that machine. The first
@@ -167,6 +168,37 @@ agent, so a project can pin its own launch model. It only applies when the
 stored model is still a valid choice for that harness; a retired or unknown id
 falls back to your remembered pick. An explicit model you pick in the composer
 always wins for that session.
+
+#### Devin Fusion pairings
+
+Devin (`devin-native`) lists its model *families* (for example SWE-2) in the
+picker, and the **Effort** section offers only the rungs that family actually
+has. Devin's **Fusion** mode is different: each Fusion variant pairs a *lead*
+model with a cheaper *sidekick*, so a flat effort list can't describe it. Pick
+the **Fusion** row and the menu reveals three dependent sections in its place:
+
+- **Lead** — the lead model family.
+- **Effort** — the lead's reasoning-effort rungs, plus a **Fast** checkbox when
+  that lead + effort has a fast serving variant.
+- **Sidekick** — the sidekicks paired with that lead/effort, plus a **Priority**
+  checkbox when the chosen sidekick has a priority variant.
+
+Only pairings that exist in Devin's catalog are offered. Choosing the **Fusion**
+row lands on the catalog's default pairing; changing one selector keeps the
+others where possible and otherwise repairs them to the nearest real pairing
+(for example, switching to a lead that lacks the current effort falls to the
+rung it does have, and **Fast** or **Priority** drop off when the new target
+has no such variant). The picker therefore never assembles a combination Devin
+would reject.
+
+The result is a single variant id — `fusion-<lead>-sidekick-<sidekick>` — that
+rides along as the session's model override. The lead's effort is baked into
+that id, so no separate reasoning effort is sent. The picker labels the pairing
+as `Fusion · <Lead> <Effort> + <Sidekick>` (e.g.
+`Fusion · Claude Fable 5.1 Medium + SWE-2 Medium`). The same Lead / Effort /
+Sidekick controls appear in a running Devin session's composer picker, and a
+remembered Fusion id that the current host's catalog no longer offers resolves
+back to the default pairing rather than being sent stale.
 
 ### Set what the agent can do without asking
 

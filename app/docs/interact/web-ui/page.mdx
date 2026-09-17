@@ -206,6 +206,53 @@ On a multi-user server the sidebar splits your session list across two tabs:
 - **Shared with me** — a flat list of sessions other people have
   [shared with you](/docs/collaborate).
 
+### Session list refresh and loading
+
+The sidebar keeps your own sessions and sessions shared with you in two
+separate caches and refreshes each one in the background on its own schedule:
+
+- **Your sessions** refresh every **60 seconds**.
+- **Shared sessions** refresh every **3 minutes** (180 seconds), and only while
+  a view that shows them is selected (or while the Inbox counts shared
+  sessions, which it does by default). Switching to a view that shows shared
+  sessions refreshes them immediately, then resumes the interval; while no
+  such view is selected the list stops polling but keeps its cached rows.
+- **Archived** sessions refresh each time you open that view and are never
+  polled.
+
+Session lists load **30 rows** per request. Scrolling to the bottom of the
+list loads up to three more pages automatically; after that, a **Load more**
+button appears and each click fetches the next 30 rows. If you click **Load
+more** while a background refresh is in flight, the click waits for the refresh
+and then continues from its updated cursor. Each background refresh re-requests
+the rows you have loaded, up to a cap of 100; rows loaded beyond that cap stay
+cached but are not refreshed.
+
+Agent discovery for the new-chat picker reuses the first 30 rows of your
+session cache rather than issuing its own list request, so an agent used only
+in older or shared sessions is not discovered from there (the built-in agent
+catalog is still loaded separately).
+
+#### Changing the refresh intervals
+
+The intervals are baked in when the web UI is built. If you build the frontend
+from source, set `VITE_MINE_REFRESH_MS` and/or `VITE_SHARED_REFRESH_MS` (in
+milliseconds) before starting the dev server or building:
+
+```bash
+VITE_MINE_REFRESH_MS=120000 VITE_SHARED_REFRESH_MS=300000 pnpm --dir web dev
+```
+
+Values must be positive integers; anything else falls back to the default.
+Set a variable to `false` or `0` to turn that timer off entirely — the list
+still loads on open, refreshes when you switch views, and can be refreshed
+explicitly; it just stops polling.
+
+Hosts that embed the web UI's `OmnigentApp` React component can instead pass a
+`sidebarConfig` prop at runtime to override these intervals and the other
+sidebar defaults (page size, refresh cap, and whether shared sessions are
+available or counted in the Inbox and pins).
+
 ### Browser-first mode
 
 If you prefer to work in the browser rather than the terminal UI, one command

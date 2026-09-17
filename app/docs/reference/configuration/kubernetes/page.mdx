@@ -2,7 +2,7 @@ import { pageMeta } from "@/lib/og";
 
 export const metadata = pageMeta(
   "Kubernetes Sandbox Configuration",
-  "Configure storage and Secret mounts for Kubernetes managed sandbox runner Pods.",
+  "Configure storage, Secret mounts, and idle keep-warm for Kubernetes managed sandbox runner Pods.",
   {
     eyebrow: "Reference",
     path: "/docs/reference/configuration/kubernetes",
@@ -141,6 +141,79 @@ always wins when set; the env var is only consulted when that key is unset, and
 it overrides the built-in `90`-second default. A non-numeric env value (for
 example `not-a-number`) fails fast with a clear error; a float-looking value
 such as `120.0` is accepted and truncated to a whole number of seconds.
+
+## Idle keep-warm for self-reclaiming sandboxes (`keep_warm_s`)
+
+| Setting | Value                                                                    |
+| ------- | ------------------------------------------------------------------------ |
+| Key     | `sandbox.keep_warm_s` (top-level under `sandbox:`, `agent_sandbox` only) |
+| Type    | Whole number of seconds, `1` to `2592000` (30 days)                      |
+| Default | Unset — about one hour                                                   |
+
+The `agent_sandbox` provider runs each managed session as a Kubernetes
+agent-sandbox `Sandbox` resource that reclaims itself once idle. It reads the
+same `sandbox.kubernetes` block as the `kubernetes` provider, plus one timing
+knob: `keep_warm_s` is how long an idle sandbox stays warm — its runner alive,
+so follow-ups are instant — after the last turn before it suspends:
+
+```yaml
+sandbox:
+  provider: agent_sandbox
+  keep_warm_s: 300      # stay warm 5 min after the last turn, then suspend
+```
+
+Once `keep_warm_s` elapses the runner exits and the Pod suspends a short
+window later (about 5 minutes), so a sandbox is reclaimed roughly
+`keep_warm_s` after the agent goes quiet. A follow-up sent **within**
+`keep_warm_s` is instant; one sent after it re-wakes the sandbox on the next
+message. A suspend is resumable — the `Sandbox` resource and its PVC are
+retained, so the workspace survives — unlike the deployment-wide reaper's hard
+terminate.
+
+`keep_warm_s` maps directly to the in-sandbox `runner.idle_timeout_s` and is
+authoritative: it wins over an explicit `host_config.runner.idle_timeout_s`
+(the server logs when it overrides one), so there is a single source of truth.
+Leave it unset for the roughly one-hour default. The value must be a whole
+number in range — `0`, `2.9`, `true`, or a value above 30 days fails server
+startup rather than the first launch.
+
+Because of the post-exit window, a `keep_warm_s` of a few seconds still
+suspends about 5 minutes after the runner goes idle. The window trades a
+longer linger for headroom against reaping a busy sandbox; lower it with
+`OMNIGENT_AGENT_SANDBOX_SHUTDOWN_WINDOW_S` (below) for a faster demo.
+
+### Watching the lifecycle
+
+The reliable view is the `Sandbox` resource itself:
+
+```bash
+kubectl get sandbox -n omnigent-sandboxes -w
+```
+
+`spec.shutdownTime` marches forward while a runner is live (each keepalive
+pushes it out), then the resource flips to `Ready=False` /
+`Reason=SandboxExpired` and the Pod is torn down when it suspends. The server
+also logs each keepalive at `INFO` from `omnigent.server.managed_host_keepalive`
+(`kept managed sandbox <id> alive (provider <p>)`), but that runs on a
+background thread and may not surface in every logging setup — treat
+`kubectl get sandbox -w` as the source of truth.
+
+### Advanced tuning (rarely needed)
+
+Two environment variables on the **server** adjust the keepalive machinery
+under `keep_warm_s`. Normal deployments leave both unset.
+
+| Environment variable                     | Default                                            | Description                                                                                                                                                                                                                                                                                                                             |
+| ---------------------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OMNIGENT_AGENT_SANDBOX_SHUTDOWN_WINDOW_S` | `300`                                              | How far ahead each keepalive sets `spec.shutdownTime`, in seconds — the Pod-linger tail after the runner exits. Floored at twice the keepalive interval (a shorter value is clamped up, with a warning). Empty, malformed, or non-positive values fall back to the default rather than blocking launches.                                     |
+| `OMNIGENT_MANAGED_KEEPALIVE_INTERVAL_S`  | `60` for `agent_sandbox`; `600` for other providers | How often the server refreshes a live managed sandbox, in seconds. `agent_sandbox` refreshes fast because its window is short; other managed providers keep the cheaper cadence so its fast refresh does not multiply their write load. When set, overrides both; clamped to `5`–`3600`, and a non-numeric value falls back to the default. |
+
+Keepalive runs on its own timer, separate from the fixed 30-second runner
+liveness ping, and fires once immediately when a runner connects or
+reconnects. The deadline set when a sandbox is created or woken is floored at a
+20-minute boot grace, so a short window never reaps a Pod that is still pulling
+its image and booting; once the runner connects, keepalive brings the deadline
+down to the steady window.
 
 ## Persistent storage for runner Pods
 

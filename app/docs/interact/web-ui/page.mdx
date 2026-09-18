@@ -232,6 +232,27 @@ Sign-in still happens in the foreground, before the spawn: pointing
 the browser login in your terminal first, since the detached daemon has no
 terminal to prompt on.
 
+### Suppressing the browser tab
+
+When run from an interactive terminal, `omni host`, `omni host --background`,
+and `omni start` open the host web UI in your browser once the host is up. To
+skip that tab, pass `--no-open` or set `OMNIGENT_HOST_NO_OPEN=1` in your shell:
+
+```
+omni host --no-open                       # connect without opening the web UI
+omni host --background --no-open          # same, detached
+OMNIGENT_HOST_NO_OPEN=1 omni start        # environment variable form
+```
+
+The flag and the environment variable behave the same way; `--no-open` also
+wins over `auto_open_conversation: true` in your config. `OMNIGENT_HOST_NO_OPEN`
+is read as a boolean, so `0` or `false` leaves the default behavior in place.
+
+`--no-open` only affects the web UI tab. Sign-in to a remote server may still
+open a browser; in scripts and CI, add `--non-interactive` to fail with the
+`omni login` hint instead of launching the login flow. The tab is also skipped
+automatically when stdin is not a TTY or when `--non-interactive` is set.
+
 ## Keyboard shortcuts
 
 The web UI ships a set of global keyboard shortcuts. Press `⌘/` (`Ctrl+/` on

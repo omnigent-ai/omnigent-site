@@ -77,6 +77,67 @@ and agent renames. An empty value removes the additional guidance. A non-string
 value or a string longer than 4,000 characters is ignored and the default title
 prompt is used.
 
+## SSE event log files
+
+| Setting | Value                                                                   |
+| ------- | ----------------------------------------------------------------------- |
+| Key     | `OMNIGENT_SSE_LOG_TO_FILE` (environment variable)                       |
+| Scope   | Server process                                                          |
+| Type    | Boolean; `1`, `true`, `yes`, or `on` enable it                          |
+| Default | Off                                                                     |
+| Output  | `<data-dir>/logs/<source>/<session_id>-sse.jsonl`, one file per session |
+
+Set `OMNIGENT_SSE_LOG_TO_FILE` to a truthy value to have the server append every
+SSE event it emits to a local JSONL file, split per session. This is an opt-in
+debugging aid for inspecting a session's event stream offline; it is not a
+managed log stream.
+
+```
+OMNIGENT_SSE_LOG_TO_FILE=1 omnigent server
+```
+
+Files are written under the process log directory, for example
+`~/.omnigent/logs/server/<session_id>-sse.jsonl` (or under `$OMNIGENT_DATA_DIR`
+when set). Session ids are sanitized to filesystem-safe basenames: any character
+other than letters, digits, `-`, and `_` becomes `_`. Files are created with mode
+`0600`.
+
+Each line is one JSON object:
+
+| Field             | Value                                                 |
+| ----------------- | ----------------------------------------------------- |
+| `ts`              | Event time, ISO 8601 in UTC                           |
+| `source`          | Emitting process, e.g. `server`                       |
+| `level`           | `INFO`, or `WARNING` for failure events               |
+| `conversation_id` | The session id                                        |
+| `event`           | The SSE event type, e.g. `response.completed`         |
+| `attrs`           | Safe ids and dimensions for the event (never content) |
+
+Only the event name and a whitelisted subset of ids and dimensions are written.
+Message text, deltas, and tool arguments are never recorded. Frequent, low-signal
+events — `session.terminal.activity`, `session.heartbeat`, and
+`response.heartbeat` — are skipped.
+
+Writes are non-blocking and best-effort: events are queued and flushed to disk
+by a background thread in batches (roughly once per second), and the SSE stream
+is never delayed by file I/O. Under sustained overload the queue is bounded at
+20,000 records and drops the oldest, so a very busy server may lose lines. The
+number of concurrently open files is capped at 128; a session whose file was
+closed reopens and keeps appending on its next event.
+
+The SSE event stream is kept out of the regular server process logs whether or
+not this sink is enabled, and enabling it does not depend on any other logging
+configuration.
+
+<div className="note">
+
+Files are appended without rotation and old per-session files are never removed,
+so the directory grows until you clean it up yourself. Turn the setting off or
+prune `<data-dir>/logs/<source>/*-sse.jsonl` periodically on long-running
+servers.
+
+</div>
+
 ## Managed sandboxes
 
 - [Kubernetes sandbox configuration](/docs/reference/configuration/kubernetes)

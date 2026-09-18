@@ -54,8 +54,9 @@ than hosting sessions itself.
 1. **Install the app** from the [App Store](https://apps.apple.com/us/app/omnigent/id6783102694).
 2. **Enter your server URL.** On first launch, the app asks for the URL of the
    Omnigent server to connect to. Enter your deployed server URL, or a Databricks
-   workspace URL if you're using Omnigent on Databricks. The app remembers recent
-   servers so you can switch between them.
+   workspace URL if you're using Omnigent on Databricks (see
+   [Databricks workspace sign-in](#databricks-workspace-sign-in)). The app
+   remembers recent servers so you can switch between them.
 3. **Start working.** The app connects and shows the same UI you'd see in a browser.
 
 ### Requirements
@@ -68,6 +69,46 @@ than hosting sessions itself.
 
 The app shows foreground notifications and updates the app badge while it's open. It does not
 do background polling, so notifications arrive when the app is in the foreground.
+
+### Databricks workspace sign-in
+
+When the server URL is a Databricks **workspace** (Omnigent mounted in the
+workspace UI), the iOS app signs you in natively instead of inside the embedded
+web view:
+
+1. The app shows **Connecting to workspace…** and opens the system sign-in sheet
+   for Databricks OAuth. You can **Cancel** from this screen.
+2. The resulting grant is stored in the iOS Keychain, scoped to that workspace.
+3. The app exchanges the grant for a workspace session itself, then loads the
+   Omnigent page you asked for (a conversation link keeps its path and query).
+
+Relaunching the app or reconnecting to the same workspace reuses the saved grant
+while it's valid, so you're not prompted in the browser again.
+
+**Each workspace is isolated.** Every workspace context — the workspace host plus
+its `o` workspace ID, when present — gets its own persistent web data store, so
+cookies and web storage never mix between workspaces, including two workspaces
+on the same host that differ only by `o`. The server switcher shows such
+entries as `<host> · <workspace id>` and lists them as separate servers.
+
+**Use a workspace-specific URL.** If your Databricks account signs you in at the
+account level rather than a single workspace, the app requires the workspace to
+be explicit in the URL (including its `o` query parameter where the workspace
+uses one). It never picks a default workspace for you; a URL that doesn't
+identify the workspace fails with `Enter a workspace-specific URL, including
+its o parameter when required.`
+
+**When sign-in doesn't complete.** Cancelling, losing network, a rejected or
+unsupported session response, or a login/workspace change detected while you
+browse all return you to the setup screen with an error message and the server
+URL you entered prefilled, so you can retry. The app does not fall back to
+signing in inside the web view for workspace URLs. Automatic recovery of an
+expired session mid-browse and a full sign-out flow aren't available yet;
+reconnect from the setup screen instead.
+
+This applies only to workspace URLs. **Databricks Apps** URLs keep the inline
+platform sign-in, and servers using [OIDC single sign-on](/docs/collaborate/auth#single-sign-on-oidc)
+are unchanged.
 
 ## Android app
 

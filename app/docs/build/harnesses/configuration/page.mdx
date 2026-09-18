@@ -165,7 +165,8 @@ hermes setup    # file-based auth under HERMES_HOME
 hermes model    # choose the model Hermes runs
 ```
 
-Unlike the generic ACP agents, a `/model` pick **is** honored for Hermes: the
+A `/model` pick **is** honored for Hermes without any extra setup (generic ACP
+agents need a [curated model list](#curate-the-model-picker) first): the
 model you declare in YAML or switch to mid-session threads through to the
 harness (via `HARNESS_HERMES_MODEL`). The sandbox and workspace a session
 selects are threaded through as well, so a sandbox chosen in the web session
@@ -297,6 +298,67 @@ access to `/tmp`; an agent that must write its own config directory needs
 `sandbox: none` (the default) for now.
 
 </div>
+
+### Curate the model picker
+
+By default a custom ACP agent exposes no model picker in Omnigent — the vendor
+CLI owns its own model choice, and any `/model` pick is passed through
+best-effort. To offer a curated picker instead, point the agent's spec at a
+named provider from the `providers:` block of `~/.omnigent/config.yaml`:
+
+```yaml
+executor:
+  harness: acp:helper
+  auth:
+    type: provider
+    name: team-gateway
+```
+
+The curated list comes from that provider's family `models:` map, for example
+`models: {default: model-a, fast: model-b}`. Configure **at least two distinct
+model IDs** — tier aliases resolve to concrete IDs, and duplicates collapse, so a
+default-only map leaves model switching unrestricted and shows no picker. The
+provider's default leads the list; session selections can never add models to
+it. Only an *explicitly referenced* provider counts: an unrelated global default
+provider does not change a custom ACP agent. The referenced provider must
+resolve successfully — a configuration error is reported rather than silently
+lifting the restriction.
+
+With curation enabled:
+
+- A model pinned in the spec (`executor.model`) or on the agent's `acp:` entry
+  (`model:`) must also appear in the list. An unlisted default prevents the
+  session from launching, even when a valid override is selected.
+- Model picks are validated up front (in the composer, on `omni run --model`,
+  and on the session API), so an ID outside the list is rejected before a turn
+  is sent. Clearing a selection restores the approved default.
+- Select a model from the session composer and send a turn to apply it through
+  ACP without losing the live session, provided the command supports ACP model
+  switching. If the switch fails, the turn reports an error and the prompt is
+  **not** sent on the previous model; retrying attempts the switch again in the
+  same session.
+
+<div className="note">
+
+**Note:** The provider reference supplies **model choices, not credentials**.
+The ACP command still owns its gateway URL and authentication, exactly as
+before. Configure matching `providers:` definitions on both the server and the
+execution host so the picker and the launch agree.
+
+</div>
+
+Some vendor CLIs activate built-in providers on the mere presence of a
+credential variable — any value — which lets their own picker bypass the curated
+set. Set `OMNIGENT_ACP_ENV_UNSET` on the execution host to a comma-separated
+list of environment variable **names** to remove from the ACP command's
+environment:
+
+```
+export OMNIGENT_ACP_ENV_UNSET=OPENAI_API_KEY,GEMINI_API_KEY
+```
+
+The setting propagates through the runner and affects newly spawned commands;
+it is unset by default (no scrubbing).
 
 ### Import agents from OpenClaw
 

@@ -577,6 +577,48 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+## Link to a message
+
+Every message in the transcript has a permanent link. Hover a message (on touch
+devices the action row is always faintly visible) and click the **Copy link**
+action — the link icon next to **Copy** (and, on assistant replies, next to
+**Fork from here**). The tooltip flips to **Copied!** for a moment; on a mobile
+viewport a **Link copied** toast confirms it instead.
+
+The copied URL is the session's own URL with a `?message=<id>` query parameter
+added, for example:
+
+```
+https://<your-server>/c/<session_id>?message=<message_id>
+```
+
+Any other query parameters already on the page are preserved. The link only
+encodes a location — it grants no access on its own, so whoever opens it must
+already be able to open the session (see
+[Collaboration](#collaboration) for sharing).
+
+Opening the link:
+
+- loads the session and, if it opens in the **Terminal** view, switches it to
+  **Chat** so the transcript is visible;
+- pages in older history as needed until the message is loaded, even when it
+  sits far outside the currently rendered part of a long transcript;
+- scrolls the message to the center of the view and highlights it briefly
+  (about 1.5 seconds; with reduced motion enabled the highlight is shown
+  without animating).
+
+If the message can't be found once the whole history has loaded, the session
+simply opens at its usual position.
+
+**Copy link** is disabled on a message you've just sent until the server has
+stored it — a queued message doesn't have a permanent id yet. The plain **Copy**
+action still works in the meantime, and **Copy link** becomes available as soon
+as the message is persisted.
+
+The `message` parameter is scoped to the session it was copied from: switching
+to a sub-agent from the **Agents** panel drops it along with the other
+session-scoped parameters.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

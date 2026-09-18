@@ -91,7 +91,11 @@ Scheduled tasks currently run on a **connected host**, in an **existing
 workspace**. When a task is due, Omnigent:
 
 1. Re-reads the task row — a task that was deleted or paused since the timer was
-   armed is skipped.
+   armed is skipped. Under built-in accounts auth, the run also confirms the
+   task's owner is still the same registered account and that the target
+   `host_id` belongs to that owner; a task whose owner account has been
+   removed is marked deleted and the run is recorded with error code
+   `owner_deleted`.
 2. Creates a session bound to the task's agent, carrying the stored `workspace`,
    `host_id`, `model_override`, and `reasoning_effort`.
 3. Grants the task's owner ownership of the new session so the run is visible.
@@ -107,3 +111,7 @@ A few scheduling guarantees:
   only the next future occurrence is armed — Omnigent does not backfill.
 - **Overlapping fires are skipped.** If a task's previous run is still in flight
   when the next occurrence arrives, that occurrence is dropped.
+- **Removed accounts stop firing.** When an admin
+  [removes a member](/docs/collaborate/auth#removing-a-member), all of that
+  user's tasks are marked deleted. A username that is later re-registered does
+  not see or inherit the old account's tasks.

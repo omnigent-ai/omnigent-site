@@ -226,6 +226,82 @@ above applies to the native `agy`-wrapping `antigravity-native` harness.
 
 </div>
 
+## Pi
+
+The native Pi harness (`pi`, alias `pi-native`) runs the Pi CLI against the
+provider you configured with `omni setup`, writing a managed `models.json` and
+per-session Pi settings so Pi authenticates with the provider's key rather than
+its own credential env vars.
+
+### Curated `/model` shortlist
+
+A gateway provider family can declare a `models:` map of named tiers. When that
+map contains **more than one distinct model id**, Omnigent registers every tier
+with Pi and scopes Pi's `/model` picker to exactly that set, listed under the
+`omnigent` provider:
+
+```yaml
+# ~/.omnigent/config.yaml
+providers:
+  bifrost:
+    kind: gateway
+    default: true
+    openai:
+      base_url: http://bifrost.example.com/v1
+      api_key: <your-gateway-key>
+      wire_api: chat
+      models:
+        default: GLM-5.3-Flash
+        opus: GLM-5.3
+        pro: deepseek-v4-pro
+```
+
+With this config, `/model` in a Pi session shows `GLM-5.3-Flash`, `GLM-5.3`,
+and `deepseek-v4-pro` (each once — tiers that resolve to the same id collapse
+into a single row) and hides Pi's built-in provider catalogs. The scope is a
+picker preference written to the session's managed Pi settings as
+`enabledModels`, so you can still toggle the picker back to all models from
+inside Pi.
+
+Two details about how tier values are resolved:
+
+- **Aliases.** A tier value may name another tier — for example
+  `default: deepseek-pro` alongside `deepseek-pro: deepseek-v4-pro`. Omnigent
+  follows the alias to the concrete id, so the session launches with
+  `deepseek-v4-pro` and the alias never appears as a picker row of its own.
+- **Bracket suffixes.** A `[...]` suffix on a tier value (e.g. `GLM-5.3[16m]`)
+  is stripped before the id reaches the gateway or the picker, matching how the
+  launch model is handled.
+
+The shortlist only comes from a configured `models:` map. A family with no map,
+a map that resolves to a single id, or a `--model` override on a default-only
+setup does **not** scope the picker, and a catalog discovered live from the
+endpoint never does — in those cases any `enabledModels` preference you already
+keep in your own Pi settings is left as-is.
+
+### Keep other harnesses' credentials out of Pi
+
+Pi activates a built-in provider's whole catalog when it merely sees that
+provider's credential variable in its environment — whatever the value. A
+deployment that exports a placeholder token for another harness (for example
+`ANTHROPIC_AUTH_TOKEN` so `claude-code` can talk to a gateway) would therefore
+see Pi's picker flooded with built-in entries that bypass the managed provider.
+
+Pi's own auth rides the managed `models.json` key and needs none of those
+variables, so you can name the ones to strip from the Pi terminal's environment
+with `OMNIGENT_PI_ENV_UNSET`, a comma-separated list of variable names:
+
+```
+OMNIGENT_PI_ENV_UNSET=ANTHROPIC_AUTH_TOKEN,OPENAI_API_KEY
+```
+
+Names are trimmed and de-duplicated; when the variable is unset or blank, nothing
+is stripped. Set it in the environment where `omnigent host` runs — the variable
+carries **names only**, so it is forwarded through both the host daemon and the
+spawned runner without forwarding the named secrets themselves, and the Pi
+terminal removes those variables before launching `pi`. Other harnesses in the
+same deployment are unaffected.
+
 ## Custom ACP agents
 
 Beyond the built-in harnesses, the generic `acp` harness drives *any* agent that

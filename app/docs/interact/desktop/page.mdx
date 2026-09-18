@@ -177,7 +177,7 @@ Omnigent desktop app?` rather than hanging.
 />
 
 1. **Launch the app.** On first launch, you'll see a setup screen.
-2. **Enter your server URL.** `http://localhost:6767` if running locally, or your deployed server URL (e.g. `https://your-app.onrender.com`).
+2. **Enter your server URL.** `http://localhost:6767` if running locally, or your deployed server URL (e.g. `https://your-app.onrender.com`). For a Databricks workspace URL, the app signs you in through your system browser — see [Sign in to a Databricks workspace](#sign-in-to-a-databricks-workspace).
 3. **Start working.** The app connects and shows the same UI you'd see in a browser.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -200,6 +200,7 @@ Each window connects to one server. To work with multiple servers at the same ti
 
 Notifications and badge counts are combined across all connected servers.
 
+{/* TODO(doc-drafter): screenshot may be stale — the Connect button now shows Connecting… / Authenticating… states with a trailing × cancel button during Databricks browser sign-in. */}
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
 <img
@@ -207,6 +208,72 @@ Notifications and badge counts are combined across all connected servers.
   alt="Omnigent desktop app setup screen prompting for the server URL to connect to"
   style={{ width: "100%", borderRadius: "8px" }}
 />
+
+## Sign in to a Databricks workspace
+
+When the server URL is an `https://` Databricks workspace or account URL (a host
+under `databricks.com` or `azuredatabricks.net`), the desktop app signs you in
+through your **system browser** using OAuth instead of showing the workspace's
+login page inside the app window. Databricks Apps (`*.databricksapps.com`),
+`localhost`, and every other server keep their existing sign-in behavior.
+
+On the connect screen, the **Connect** button shows **Connecting…** and then
+**Authenticating…** while your browser opens the Databricks sign-in page. Once
+you finish signing in, the desktop creates the workspace session and loads
+Omnigent. If you entered an account URL, the app shows a workspace picker so you
+can choose which workspace to open.
+
+- **Cancel.** The **×** button next to **Authenticating…** cancels the current
+  attempt and returns the form to **Connect** with the same URL filled in, so
+  you can retry. The tab in your external browser may stay open; cancelling
+  does not sign you out of that browser.
+- **No automatic browser pop-ups.** Reopening a saved server, opening another
+  window, switching servers, and following an `omnigent://` link all reuse your
+  stored credentials without launching a browser.
+- **Session renewal.** The app renews the workspace session in the background
+  before it expires. If renewal isn't possible — missing credentials, OAuth
+  unavailable, or a cancelled sign-in — you're returned to the connect screen
+  rather than an embedded login page. Choose **Connect** to sign in through the
+  browser again.
+
+### Roll back to embedded sign-in (macOS)
+
+If you need the previous behavior, where the Databricks login page is shown
+inside the app window, you can switch the packaged macOS app back with a user
+default. Quit Omnigent first, then:
+
+```bash
+defaults write ai.omnigent.desktop DatabricksBrowserAuthEnabled -bool false
+```
+
+This selects the whole legacy flow — no system-browser OAuth and no
+OAuth-based session renewal. It is an explicit switch, not an automatic
+fallback after a failed browser sign-in. The preference is read once when the
+app starts, so restart Omnigent after changing it. It does not delete saved
+credentials.
+
+To return to browser sign-in, quit Omnigent and remove the override:
+
+```bash
+defaults delete ai.omnigent.desktop DatabricksBrowserAuthEnabled
+```
+
+An unset key (or an explicit `-bool true`) means browser sign-in. The
+preference is honored only on macOS; Linux and Windows always use browser
+sign-in.
+
+### Troubleshooting sign-in
+
+Launch the app's executable from a terminal and look for lines prefixed with
+`[omnigent] databricks`. No extra logging flag is needed. The logs show the
+selected sign-in mode, the OAuth client id and requested scopes, token-exchange
+status, account/workspace routing, and the final response status, plus
+Databricks error codes and request ids when available. Tokens, cookie values,
+client secrets, authorization codes, and raw response bodies are never logged.
+Workspace and client ids are still deployment metadata, so redact them before
+sharing logs. For a direct `403 PERMISSION_DENIED`, give the request id and
+client id to your Databricks platform owner to check the denial reason (client
+enablement, token scope, or workspace permissions).
 
 ## Managed servers (macOS MDM)
 

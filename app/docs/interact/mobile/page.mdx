@@ -54,7 +54,8 @@ than hosting sessions itself.
 1. **Install the app** from the [App Store](https://apps.apple.com/us/app/omnigent/id6783102694).
 2. **Enter your server URL.** On first launch, the app asks for the URL of the
    Omnigent server to connect to. Enter your deployed server URL, or a Databricks
-   workspace URL if you're using Omnigent on Databricks. The app remembers recent
+   workspace URL if you're using Omnigent on Databricks (see
+   [Databricks workspaces](#databricks-workspaces)). The app remembers recent
    servers so you can switch between them.
 3. **Start working.** The app connects and shows the same UI you'd see in a browser.
 
@@ -68,6 +69,48 @@ than hosting sessions itself.
 
 The app shows foreground notifications and updates the app badge while it's open. It does not
 do background polling, so notifications arrive when the app is in the foreground.
+
+### Databricks workspaces
+
+When you connect to a Databricks workspace URL, the app signs you in natively
+with Databricks OAuth and keeps each workspace's credentials and web data in its
+own isolated store, so two workspaces on the same device never share a session.
+Reconnecting or relaunching reuses a valid grant without another sign-in prompt.
+(Databricks Apps URLs and generic OIDC servers keep their inline, in-page sign-in.)
+
+**Session recovery.** If the workspace session expires while you're connected —
+the page returns HTTP 401, gets redirected to a login page, or the session cookie
+is missing when you bring the app back to the foreground — the app silently
+re-establishes the session and returns you to the page and conversation you were
+on. It never switches workspace on its own. Recovery is bounded: an automatic
+retry only happens after you've used the app since the last attempt and at least
+60 seconds have passed. If recovery keeps failing, the app returns to the
+connect screen with "The workspace session could not be restored. Reconnect to
+try again." Tapping **Reload** in the server menu starts a fresh attempt.
+
+- If the cached access token is rejected during recovery, the app refreshes it
+  once and retries once; other failures don't delete a valid grant.
+- If your saved credentials are missing or revoked, the app asks **Sign in
+  again?** instead of opening a browser unprompted. **Sign In** preserves the page
+  you were on; **Cancel** returns to the connect screen.
+- HTTP 403 is treated as a permission error, not an expired session, so it shows
+  an error rather than repeatedly prompting you to sign in.
+
+**Sign out.** The server menu at the top of a workspace connection has a
+**Sign Out of Workspace** item (it stays reachable on workspace connections even
+when the web UI's sidebar is closed). Signing out removes that workspace's
+credentials from the device Keychain, clears its isolated web data, and drops it
+as the default server so relaunching lands on the connect screen instead of
+reconnecting. It stays in recents for an explicit reconnect later, and other
+workspaces' credentials and data are untouched. Following a workspace logout link
+(`/auth/logout`, `/logout`, or `/login.html?logout=1`) in the page does the same.
+If cleanup is interrupted, the app finishes it the next time you connect to that
+workspace before using or requesting any credentials; if it can't, you'll see
+"Sign-out could not finish. Reconnect to retry cleanup before signing in."
+
+This is a local sign-out: it doesn't revoke Databricks sessions elsewhere or sign
+you out of Safari or your identity provider, so a later sign-in may complete
+without re-entering a password.
 
 ## Android app
 

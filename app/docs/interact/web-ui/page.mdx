@@ -525,6 +525,32 @@ Each queued row has inline actions:
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
 
+## Background tasks
+
+When the agent leaves a shell running past the end of its turn — a dev server,
+a monitor such as `gh pr checks 123 --watch` — the composer's status line (the
+same bar that shows the tracked PR) grows a **background tasks** badge: a
+terminal icon with the number of shells still running. It appears as soon as
+the session reports one or more running background tasks and disappears again
+when the count drops to zero. In a Claude Code (`claude-native`) session the
+list comes from the harness's own background-task report, so the count is
+authoritative even when no per-task detail is available.
+
+Click the badge to open a panel listing each running task with its description
+and the command it's running. Long commands are clipped to two lines; a chevron
+next to the command expands it to the full text and collapses it again. The
+panel is read-only — nothing in it stops or restarts a task — and it reopens
+collapsed each time. If the session reports only a count with no per-task
+detail (for example, from an older runner), the badge still shows the number
+and the panel says details are unavailable rather than listing rows.
+
+Background tasks never make the composer busy: the **Working…** indicator and
+the sidebar's running spinner reflect only the foreground turn, so you can keep
+sending messages while a monitor runs. The panel gets out of the way when you
+type — clicking the composer closes it and focuses the input, and `Esc` closes
+it and returns focus to the badge. The count is scoped to the open session:
+switching sessions closes the panel, and it survives a page reload.
+
 ## Side questions with `/btw`
 
 In a Claude Code (`claude-native`) session, type `/btw` in the composer to ask a

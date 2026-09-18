@@ -13,7 +13,10 @@ export const metadata = pageMeta(
 
 The `kubernetes` managed sandbox provider starts a dedicated runner Pod for
 each managed session. Configure it under `sandbox.kubernetes` in the
-[server configuration](/docs/reference/configuration).
+[server configuration](/docs/reference/configuration). The `agent_sandbox`
+provider (self-reclaiming agent-sandbox `Sandbox` resources) reads the same
+`sandbox.kubernetes` settings and adds an optional `sandbox.agent_sandbox`
+block for [native warm pools](#native-warm-pools-for-agentsandbox-warmpool).
 
 See [Shared Server](/docs/deploy/overview#kubernetes) for the deployment steps.
 
@@ -217,3 +220,187 @@ validated at server startup: `secret_name` must be a DNS-1123 subdomain and
 duplicate, nest with, or overlap another `secret_mounts` or `pvc_mounts` path —
 an operator typo fails startup, not the first launch. A missing Secret keeps
 the Pod from starting.
+
+## Native warm pools for `agent_sandbox` (`warm_pool`)
+
+| Setting  | Value                                                         |
+| -------- | ------------------------------------------------------------- |
+| Key      | `sandbox.agent_sandbox.warm_pool`                             |
+| Type     | String (DNS-1123 subdomain) — the name of a `SandboxWarmPool` |
+| Default  | Unset — every session creates its `Sandbox` directly          |
+| Requires | `sandbox.provider: agent_sandbox`                             |
+
+With the `agent_sandbox` provider, a warm pool prepares spare Pods **before** a
+session asks for one. Image pulls, scheduling, container startup, and initial
+PVC provisioning happen ahead of the request; Omnigent then claims a compatible
+`Sandbox`, delivers the managed-host identity to the waiting bootstrap, and
+runs the normal repository preparation and host startup. GitHub and Databricks
+credentials still come from the existing owner-bound broker and credential
+store, and the suspend/resume lifecycle with a durable HOME PVC is unchanged.
+
+Opt in by naming the operator-owned pool:
+
+```yaml
+sandbox:
+  provider: agent_sandbox
+  server_url: http://omnigent.omnigent.svc.cluster.local:8000
+  agent_sandbox:
+    warm_pool: omnigent-default-v1
+  kubernetes:
+    namespace: omnigent-sandboxes
+    service_account: omnigent-runner
+    image: your-registry/omnigent-host:your-version
+```
+
+Validation happens at server startup: `warm_pool` is the only key allowed under
+`sandbox.agent_sandbox`, the value must be a non-empty DNS-1123 subdomain
+(surrounding whitespace is trimmed), and setting `sandbox.agent_sandbox` with
+any other `provider` fails with `requires provider: agent_sandbox`. Omitting
+the block, or setting `warm_pool: null`, keeps direct `Sandbox` creation. The
+key also works inside a `providers:` list entry in a multi-provider deployment.
+
+### Prerequisites
+
+- The upstream agent-sandbox **v1.0.0** controller **with extensions** —
+  the `SandboxTemplate`, `SandboxWarmPool`, and `SandboxClaim` CRDs
+  (`extensions.agents.x-k8s.io/v1beta1`):
+
+  ```bash
+  kubectl --context YOUR_CONTEXT apply --server-side -f \
+    https://github.com/kubernetes-sigs/agent-sandbox/releases/download/v1.0.0/sandbox-with-extensions.yaml
+  ```
+
+- A host image built from the **same Omnigent revision as the server**. Warm
+  Pods run the `omnigent.host.warm_bootstrap` module, which must be present in
+  the image.
+- The additive warm-pool RBAC overlay (see below).
+
+### Generate the template and pool
+
+Omnigent reads the pool but never creates, resizes, or updates it — the
+`SandboxTemplate` and `SandboxWarmPool` are operator-owned. Render them from the
+**exact** server config you deploy, with the same workspace-volume environment
+settings the server uses, so the template's profile matches what the server
+expects:
+
+```bash
+export OMNIGENT_AGENT_SANDBOX_WORKSPACE_SIZE=5Gi
+python -m omnigent.onboarding.sandboxes.agent_sandbox_warm_pool \
+  --config server-config.yaml --name omnigent-default-v1 --replicas 2 --shared \
+  > warm-pool.yaml
+kubectl --context YOUR_CONTEXT apply -f warm-pool.yaml
+kubectl --context YOUR_CONTEXT apply -k deploy/kubernetes/overlays/sandbox-runners/warm-pool
+```
+
+Generator options:
+
+- **`--config PATH`** (required) — the server config; it must enable
+  `sandbox.provider: agent_sandbox`.
+- **`--name NAME`** (required) — used for both the `SandboxTemplate` and the
+  `SandboxWarmPool`; set `sandbox.agent_sandbox.warm_pool` to the same value.
+- **`--replicas N`** — spare Pods to keep ready (default `1`, must be
+  non-negative).
+- **`--shared`** or **`--agent-name NAME`** — mutually exclusive; they choose
+  which sessions the pool may serve (see the table below).
+
+The output is a `SandboxTemplate` with `networkPolicyManagement: Unmanaged` and
+a `SandboxWarmPool` using the `Recreate` update strategy, which only replaces
+**unused** inventory. Use a new versioned pool name (e.g. `…-v2`) whenever you
+change the mode or any profile setting so old spare Pods never serve the
+previous profile.
+
+| Generator option | Sessions the pool serves                                                                                           |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `--shared`       | Any session harness or trusted agent classifier, including uploaded agents, with the same infrastructure profile.  |
+| `--agent-name`   | Only the exact built-in agent classifier; other classifiers fall back to direct provisioning.                      |
+| Neither          | Legacy unclassified behaviour: only an exact empty-classifier match uses the pool; built-in classifiers go direct. |
+
+`--shared` is recommended for deployments using the owner-bound GitHub and
+Databricks brokers, so built-in and uploaded agents share the same spare
+inventory. A shared template omits the `omnigent.ai/agent` label and carries
+the annotation `omnigent.ai/warm-pool-shared: "true"`; the marker is part of
+the profile fingerprint, so an existing pool that merely lacks the agent label
+is **not** shared. Per-agent admission-time credential injection does not apply
+to an unlabeled shared pool — use `--agent-name` if you rely on it. Shared mode
+changes pool compatibility only; credentials stay scoped to the host's owner.
+
+### RBAC overlay
+
+`deploy/kubernetes/overlays/sandbox-runners/warm-pool` adds a namespaced
+`Role`/`RoleBinding` for the `omnigent-server` ServiceAccount in
+`omnigent-sandboxes`:
+
+- `sandboxclaims`: `create`, `get`, `patch`, `delete`
+- `sandboxtemplates`, `sandboxwarmpools`: `get`
+- `pods/exec`: `create`, `get` — used to deliver the session identity to the
+  bootstrap after allocation
+
+Kubernetes RBAC cannot restrict `exec` to a particular command, so enabling warm
+mode is an explicit permission expansion for the server within the runner
+namespace. Runner ServiceAccounts receive none of these grants, and direct mode
+does not need the overlay.
+
+### Behaviour and caveats
+
+- **Allocated profiles stay fixed.** An allocated warm `Sandbox` keeps its
+  original image, mounts, resources, scheduling, security settings, and agent
+  classifier. Changing those server settings can block a later wake of that
+  session; the mismatch fails with a profile error and preserves the `Sandbox`
+  and its PVC. Shared allocations tolerate agent or harness changes across
+  suspension when the infrastructure profile still matches; dedicated and
+  legacy unclassified allocations require an exact classifier match.
+- **Changing `warm_pool` affects new allocations only.** Existing claims and
+  workspaces are not migrated, and disabling pooling does not convert existing
+  warm allocations into direct ones. Use direct provisioning for sessions that
+  need infrastructure changes across wake.
+- **Capacity planning counts both containers.** The bootstrap and host run as
+  regular containers and each reserves the configured resources, so `250m` CPU
+  / `384Mi` memory in the config reserves `500m` / `768Mi` per pooled Pod
+  (before injected sidecars). Size nodes for spare **and** allocated Pods.
+- **Networking is yours.** Generated templates set
+  `networkPolicyManagement: Unmanaged` and use cluster DNS, matching the direct
+  provider. Provide production `NetworkPolicy` objects yourself, including DNS
+  and egress to the Omnigent callback URL and any private Git/Databricks
+  endpoints.
+- **Do not customise individual claims.** Adding environment variables or PVC
+  overrides to a `SandboxClaim` makes upstream create a cold `Sandbox` instead.
+  Session-specific data arrives after allocation; each template-created HOME
+  PVC belongs to its `Sandbox` and survives suspension. Allocated Sandboxes are
+  never returned to the spare pool.
+- **An empty pool still works.** Upstream may create a cold member from the
+  same template, so a successful allocation alone does not prove a warm hit —
+  compare Pod UIDs recorded before the request when measuring latency.
+- Static harness Secrets injected via `envFrom` are read when a spare Pod
+  starts, so rotate them by replacing unused Pods before relying on the new
+  value.
+
+### Verify a deployment
+
+An opt-in live end-to-end test exercises allocation, host/runner registration,
+workspace persistence, pool replenishment, and suspend/wake against a real
+cluster. It needs a test server that accepts API requests without an
+authentication header (such as a single-user development server), a shared pool
+with at least one ready spare in a namespace isolated from other launchers, and
+a host image that supports the Claude SDK harness. Without
+`OMNIGENT_WARM_POOL_E2E=1` the test skips; no model or connected-account
+credentials are required.
+
+```bash
+OMNIGENT_WARM_POOL_E2E=1 \
+  OMNIGENT_WARM_POOL_SERVER_URL=http://127.0.0.1:8000 \
+  OMNIGENT_WARM_POOL_KUBECONFIG=/absolute/path/to/test-kubeconfig \
+  OMNIGENT_WARM_POOL_CONTEXT=YOUR_TEST_CONTEXT \
+  OMNIGENT_WARM_POOL_NAMESPACE=omnigent-sandboxes \
+  OMNIGENT_WARM_POOL_NAME=omnigent-default-v1 \
+  .venv/bin/python -m pytest tests/e2e/test_agent_sandbox_warm_pool.py -v
+```
+
+Validate credential behaviour separately in an authenticated deployment:
+connect test GitHub and Databricks accounts, create a pooled session with a
+private repository, and check `git fetch` and `gh api user --jq .login`; confirm
+the workspace survives suspend and wake and that both services still
+authenticate afterwards. Keep static provider credential Secrets out of the pool
+during this check so they cannot mask a failed broker lookup.
+
+See `deploy/kubernetes/overlays/sandbox-runners/warm-pool/README.md` in the
+repo for the full runbook.

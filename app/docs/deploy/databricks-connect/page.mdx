@@ -114,6 +114,35 @@ be resolved (neither `OMNIGENT_DATABRICKS_REDIRECT_URI` nor `OMNIGENT_DOMAIN`),
 the feature logs a warning and stays disabled. Both the CLI (`omnigent server`)
 and the Docker image read the same env vars.
 
+## Bind a harness to the connected workspace
+
+On the `kubernetes` and `agent_sandbox` sandbox providers, an operator can make
+a harness use the connected workspace's AI Gateway for inference by declaring a
+`kind: databricks` provider with `connection: databricks` in
+`sandbox.host_config.providers` and binding the harness to it under
+`sandbox.host_config.inference.harnesses`:
+
+```yaml
+sandbox:
+  host_config:
+    providers:
+      unity:
+        kind: databricks
+        connection: databricks
+    inference:
+      harnesses:
+        claude-native:
+          provider: unity
+          default_model: workspace-claude-primary
+          model_allowlist: [workspace-claude-primary, workspace-claude-fast]
+```
+
+`connection: databricks` is mutually exclusive with `profile:`. The model list
+comes from the connected user's live catalog, and the user must connect
+Databricks before starting a session on that harness. See
+[Harness providers and model lists](/docs/reference/configuration/cloud-sandbox#harness-providers-and-model-lists)
+for the full settings, catalog behaviour, and session lifetime.
+
 ## Verify
 
 1. Sign in to Omnigent as a real user and open **Settings → Sandbox

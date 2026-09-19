@@ -17,6 +17,11 @@ each managed session. Configure it under `sandbox.kubernetes` in the
 
 See [Shared Server](/docs/deploy/overview#kubernetes) for the deployment steps.
 
+To bind individual harnesses to different inference gateways and curate the
+model list shown in the composers, add `inference.harnesses` to
+`sandbox.host_config` — see
+[Harness providers and model lists](/docs/reference/configuration/cloud-sandbox#harness-providers-and-model-lists).
+
 ## Pod-start wait budget
 
 | Setting | Value                                    |

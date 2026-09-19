@@ -332,3 +332,200 @@ untouched.
 Do not put secrets in `host_config`. Use `api_key_ref: env:VAR`; the variable
 is resolved inside the sandbox from its provider-specific credential source.
 Inline `api_key` values are rejected. The server validates the block at startup.
+
+## Harness providers and model lists
+
+The `kubernetes` and `agent_sandbox` providers can bind each harness to a named
+provider from `host_config.providers` and expose a short model list in the
+new-session and in-session composers. For example, Claude Code can use a
+Databricks AI Gateway while Codex and Pi use a Bifrost gateway.
+
+This is opt-in per sandbox target: a nonempty
+`sandbox.host_config.inference.harnesses` mapping enables it. Targets without
+bindings keep their existing authentication, provider defaults, and model
+selection. `/v1/info` reports `inference_models: true` under
+`sandbox_provider_capabilities.<provider>` only for configured targets.
+
+```yaml
+sandbox:
+  provider: agent_sandbox # or kubernetes
+  server_url: https://omnigent.example.com
+  kubernetes:
+    secret_name: harness-credentials
+
+  # Optional with a curated allowlist; resolved only on the server.
+  model_discovery:
+    bifrost:
+      base_url: https://bifrost.example.com/v1
+      api_key_ref: env:BIFROST_CATALOG_KEY
+      # auth_command is an alternative to api_key_ref.
+
+  host_config:
+    providers:
+      bifrost:
+        kind: gateway
+        anthropic:
+          base_url: https://bifrost.example.com/anthropic
+          api_key_ref: env:BIFROST_INFERENCE_KEY
+        openai:
+          base_url: https://bifrost.example.com/v1
+          api_key_ref: env:BIFROST_INFERENCE_KEY
+          wire_api: responses
+      unity:
+        kind: databricks
+        connection: databricks
+
+    inference:
+      harnesses:
+        claude-native:
+          provider: unity
+          default_model: workspace-claude-primary
+          model_allowlist: [workspace-claude-primary, workspace-claude-fast]
+        claude-sdk:
+          provider: bifrost
+          default_model: claude-primary
+          model_allowlist: [claude-primary, claude-fast]
+        codex-native:
+          provider: bifrost
+          default_model: gpt-primary
+          model_allowlist: [gpt-primary, gpt-fast]
+        pi-native:
+          provider: bifrost
+          default_model: gpt-primary
+          model_allowlist: [gpt-primary, gpt-fast, claude-primary]
+```
+
+The model names above are placeholders for the exact IDs your gateway returns.
+`BIFROST_CATALOG_KEY` belongs in the server environment;
+`BIFROST_INFERENCE_KEY` belongs in the credential source projected into the
+sandbox (for Kubernetes, the Secret). Use a sandbox image that carries the same
+inference-profile support as the server.
+
+### `inference.harnesses`
+
+Each key is a harness id; each value accepts exactly these settings:
+
+| Setting           | Required | Description                                                                                                                         |
+| ----------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `provider`        | Yes      | Name of an entry in `host_config.providers`. Must be a `gateway`, `key`, or `local` provider, or a `databricks` provider with `connection: databricks`. |
+| `default_model`   | No       | Model preselected in the composer and used by `/model` reset. Must appear in `model_allowlist` when both are set.                     |
+| `model_allowlist` | No       | Ordered list of exact model IDs shown in the composer. Omitted adds no restriction; an empty list permits no models.                  |
+
+Bindings are accepted for `claude-sdk`, `claude-native`, `codex`,
+`codex-native`, `openai-agents`, `qwen`, `jcode`, `opencode-native`, `pi`,
+`pi-native`, `acp`, and `acp:<slug>`. Configure native and SDK harnesses
+separately. An exact `acp:<slug>` binding takes precedence over a generic
+`acp` binding; neither configures authentication for the ACP program itself.
+Duplicate bindings, unknown settings, or a harness that does not support
+bindings fail server startup.
+
+An explicit binding is authoritative: an agent whose `auth` names a different
+provider is rejected, and [Smart Routing](/docs/build/routing) cannot replace
+the bound provider. Unbound harnesses on the same target keep their existing
+behaviour.
+
+### Credentials and endpoints
+
+Provider entries referenced by a binding may not contain literal keys. Use
+`api_key_ref` in one of the forms `env:VAR`, `$VAR`, `${VAR}`, or
+`keychain:name`, or an `auth_command` that prints a credential. Endpoint
+`base_url` values must be literal `http(s)://` URLs without embedded
+credentials, query strings, fragments, or environment substitutions.
+
+### `model_discovery`
+
+`sandbox.model_discovery` is a server-only mapping, keyed by provider name,
+that lets the server list a gateway's live inventory. It is never installed in
+the sandbox. Each entry requires `base_url` and one of `api_key_ref` or
+`auth_command`, subject to the same credential rules as above. The discovery
+credential must see the same models as the credential the sandbox uses.
+
+Discovery is optional when every bound harness has a `model_allowlist`. A
+gateway binding with neither an allowlist nor discovery is rejected.
+
+| `model_allowlist` | `model_discovery` | Composer choices                                     |
+| ----------------- | ----------------- | ---------------------------------------------------- |
+| Present           | Absent            | The curated IDs, in operator order                   |
+| Present           | Present           | Allowlist intersected with the compatible live catalog |
+| Absent            | Present           | Full compatible live catalog                         |
+
+Without discovery, Omnigent enforces the allowlist but cannot confirm
+availability in advance; errors surface when the harness uses the model. With
+discovery, an unavailable default model blocks session creation or a model
+switch rather than silently choosing another model. A discovery failure and an
+empty intersection are distinct errors; neither falls back to public models or
+the server's own providers. Provider model aliases resolve to exact IDs; an
+alias that points to different IDs across the Anthropic and OpenAI families is
+rejected as ambiguous, so use exact IDs to disambiguate.
+
+### Gateway transport per harness
+
+| Harness                     | Gateway transport                                                          |
+| --------------------------- | -------------------------------------------------------------------------- |
+| Claude native / SDK         | Anthropic Messages                                                         |
+| Codex native / SDK          | OpenAI Responses (`wire_api: responses` is required)                       |
+| Pi native / SDK             | Configured Anthropic or OpenAI transport                                   |
+| OpenAI Agents SDK           | Configured OpenAI transport                                                |
+| Qwen, OpenCode native, Jcode | OpenAI Chat Completions                                                   |
+| `acp` or `acp:<slug>`       | Catalog policy only; the installed ACP CLI owns its own auth and transport |
+
+When a provider configures both families, Pi identifies Anthropic models by
+`claude` in the model ID. OpenCode and Jcode resolve `auth_command` at process
+launch, so a restart or resume is what obtains a fresh token.
+
+### Connected Databricks (`connection: databricks`)
+
+A `kind: databricks` provider may set `connection: databricks` instead of
+`profile:` (the two are mutually exclusive). It uses the session owner's
+[Databricks connection](/docs/deploy/databricks-connect) and credential broker:
+the server materializes an Anthropic endpoint at
+`<workspace>/ai-gateway/anthropic` and a Responses endpoint at
+`<workspace>/ai-gateway/codex/v1`, and the model list always comes from the
+owner's live catalog, independent of `model_discovery`. The user must connect
+Databricks before choosing a harness bound to it; the composer reports
+"Connect Databricks" otherwise. The workspace identity is pinned to the
+session — disconnecting or reconnecting to a different workspace makes the
+session unavailable until the original access is restored. Because only
+Anthropic and Responses endpoints are materialized, Qwen, OpenCode, and Jcode
+need a separate Chat-compatible gateway entry rather than this shorthand.
+
+### Session lifetime
+
+Provider and model-policy edits apply to **new sessions**. When a session is
+created, its harness identity, provider settings, model policy, credential
+references, and workspace identity are saved with the conversation, and the
+session keeps that configuration across model switches, runner restarts,
+sandbox stop/wake or replacement, and server restarts. Credentials are
+refreshed through the saved references; tokens are never stored.
+
+- Child sessions inherit the configuration and resolve their own harness
+  binding. Forks retain it, even when resetting model settings, and validate
+  the chosen model against the saved policy.
+- A configured session cannot switch agents or fork into another harness or
+  another owner's credential scope; start a new session for that.
+- Sessions with a saved profile launch only on server-managed sandbox hosts,
+  including on fork or restart. Ordinary hosts keep their own provider
+  configuration.
+- Session creation, `/model` changes, and prompt dispatch all validate against
+  the same saved policy. A rejected model change restores the previous
+  selection; a model reset picks the saved default.
+- Legacy sessions created before bindings were added do not acquire them on
+  restore.
+
+The new-session composer previews the model list without provisioning a
+sandbox via
+`GET /v1/sandbox-providers/{provider}/harnesses/{harness}/model-options`
+(optional `agent_id` query parameter). The response carries the model rows,
+provider label, default, status, and a configuration revision — never
+credential values. The composer submits that
+`inference_configuration_revision` with the chosen model; if the server
+configuration changed in between, creation fails with HTTP 409 before anything
+is written and the composer refreshes its choices for you to resubmit.
+
+<div className="note">
+
+These settings govern which providers and models Omnigent selects for a
+harness. They are not a network boundary for arbitrary code running inside the
+sandbox.
+
+</div>

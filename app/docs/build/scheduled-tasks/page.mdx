@@ -40,10 +40,15 @@ is not enumerable.
 - **`rrule`** (required) — the recurrence rule (see [Recurrence rules](#recurrence-rules)).
 - **`agent_id`** (required) — the agent to run, e.g. `ag_abc123` (from
   `sys_agent_list` or `sys_agent_get`).
-- **`workspace`** (required) — an existing absolute path on the host where the
-  fired session's runner starts.
-- **`host_id`** (required) — the connected host to run on, from the current
-  workspace's host list.
+- **`execution_target`** (optional) — where each firing runs: `connected_host`
+  (default) or `managed_sandbox`. See [Where a task runs](#where-a-task-runs).
+- **`host_id`** (optional, `connected_host` only) — pin the run to a specific
+  connected host, from the current workspace's host list. Omit to run on your
+  online host at fire time; a failed run is recorded if none is online. An
+  existing managed sandbox host cannot be pinned.
+- **`workspace`** (optional, `connected_host` only) — an existing absolute path
+  on the host where the fired session's runner starts. Requires `host_id`; omit
+  it to start in the host's home directory.
 - **`timezone`** (optional) — the IANA timezone the rule is evaluated in, e.g.
   `America/Los_Angeles`. Defaults to `UTC`.
 - **`model_override`** (optional) — a per-run model override. Omit for the
@@ -75,7 +80,13 @@ minutes.
 
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
 untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
-`model_override`, `reasoning_effort`, `workspace`, `host_id`, and `state`.
+`model_override`, `reasoning_effort`, `workspace`, `host_id`,
+`execution_target`, and `state`.
+
+Passing `execution_target=managed_sandbox` switches the task to a fresh sandbox
+per run and clears any pinned `host_id` and `workspace`; don't set either field
+in the same update. Switching back to `connected_host` leaves the task unpinned
+until you set a host again.
 
 The `state` field accepts `active` or `paused`:
 
@@ -85,17 +96,53 @@ The `state` field accepts `active` or `paused`:
 To remove a task permanently, use `sys_scheduled_task_delete` — deletion is not
 done through `update`.
 
+## Where a task runs
+
+`execution_target` picks the machine each firing runs on.
+
+### `connected_host` (default)
+
+The task runs on one of your own connected hosts. Pin a specific host with
+`host_id` (and optionally a `workspace` on it), or leave both unset and Omnigent
+resolves your most-recently-active **online** host when the task fires, starting
+in that host's home directory. Server-managed sandbox hosts are never picked by
+this resolution, and pinning one as `host_id` is rejected — a warm sandbox from an
+interactive session would leak its state into the run and break once it is gone.
+If no live host can be resolved (or the pinned host is offline), the occurrence
+is recorded as a failed run.
+
+### `managed_sandbox`
+
+Each firing provisions a **fresh** server-managed sandbox — the same launch path
+as choosing **New Sandbox** for a chat (see
+[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)). The session starts in
+the sandbox's clean server-created workspace, so `host_id` and `workspace` must
+not be set; a create or update that combines them with `managed_sandbox` is
+rejected. The server must have managed sandboxes configured — an unconfigured
+server rejects the task at create time rather than failing every fire.
+
+A sandbox created by an automation follows the server's normal sandbox
+lifecycle, exactly like one created for a chat: the automation does not
+override timeouts or terminate the sandbox when the run finishes. Server
+operators should choose provider lifetime, idle, and cleanup settings that fit
+their automation frequency and resource budget; enabling managed sandboxes
+alone does not guarantee a short shutdown time.
+
 ## How a firing runs
 
-Scheduled tasks currently run on a **connected host**, in an **existing
-workspace**. When a task is due, Omnigent:
+When a task is due, Omnigent:
 
 1. Re-reads the task row — a task that was deleted or paused since the timer was
    armed is skipped.
-2. Creates a session bound to the task's agent, carrying the stored `workspace`,
-   `host_id`, `model_override`, and `reasoning_effort`.
-3. Grants the task's owner ownership of the new session so the run is visible.
-4. Launches the runner and dispatches the prompt so the agent actually runs.
+2. Resolves the launch target for this fire only. A `connected_host` task fills
+   in an unpinned host and workspace as described above; a `managed_sandbox`
+   task starts hostless and binds a new sandbox in step 4. Resolved values are
+   never written back to the task.
+3. Creates a session bound to the task's agent, carrying the stored
+   `model_override` and `reasoning_effort`, and grants the task's owner
+   ownership of the new session so the run is visible.
+4. Launches the runner — on the resolved host, or in a freshly provisioned
+   sandbox — and dispatches the prompt so the agent actually runs.
 5. Records the run — stamping the task's last-run time and the run's
    conversation id.
 

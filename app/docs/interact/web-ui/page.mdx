@@ -305,6 +305,26 @@ Jump straight to a pinned session with the command modifier plus a digit
 ⌘/Ctrl+digit is reserved for native tab-switching — the binding adds Alt
 (`⌘⌥1`…, `Ctrl+Alt+1`…); the installed desktop app uses the plain `⌘1`… chord.
 
+### Composer shortcuts
+
+The composer's Enter chords depend on which key you've chosen to send with. By
+default `Enter` sends; if you've switched the composer to send with `⌘↵`
+(`Ctrl+Enter`) instead, the other chords shift so each modifier keeps one
+meaning. The shortcuts overlay shows the bindings for your current choice.
+
+| Action                              | Default (`Enter` sends) | `⌘↵` / `Ctrl+Enter` sends |
+| ----------------------------------- | ----------------------- | ------------------------- |
+| Send message                        | `↵`                     | `⌘↵` (`Ctrl+Enter`)       |
+| Send now, with all queued messages  | `⌘↵` (`Ctrl+Enter`)     | `⌘⇧↵` (`Ctrl+Shift+Enter`) |
+| New line in message                 | `⇧↵` (`Shift+Enter`)    | `↵`                       |
+
+**Send now, with all queued messages** sends your draft and every message
+waiting in the queue into the running turn at once — see
+[Send everything now](#send-everything-now). While the agent has a pending
+approval request, `⌘↵` / `Ctrl+Enter` approves it instead (see the global
+shortcuts above). The chord is desktop-only and ignores IME composition and
+`Alt` combinations.
+
 ## Canvas
 
 The Canvas page gives you a spatial view of your work: instead of the linear
@@ -524,6 +544,38 @@ Each queued row has inline actions:
   flush.
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
+
+### Send everything now
+
+To push the whole backlog into the running turn instead of steering rows one by
+one, press `⌘↵` (`Ctrl+Enter` on Windows/Linux) in the composer — or
+`⌘⇧↵` (`Ctrl+Shift+Enter`) if you've made `⌘↵` / `Ctrl+Enter` your send key
+(see [Composer shortcuts](#composer-shortcuts)). The chord:
+
+1. Submits whatever is in the composer first, so an unsent draft joins the end
+   of the queue (or sends directly when the session is idle).
+2. Sends every queued message for the current session, in queue order, into the
+   running turn. Order is preserved because the sends are chained.
+
+Only this session's queue is affected; messages queued for other sessions stay
+put. With nothing queued and an empty composer the chord does nothing, and it
+yields to a pending approval request, which `⌘↵` / `Ctrl+Enter` approves
+instead.
+
+### Failed sends stay queued
+
+If a queued message can't be sent — for example the server rejects the request
+while draining, steering, or bulk-sending — it isn't dropped. The message stays
+in the strip marked **Send failed**, an error is shown in the conversation, and
+the row's send action becomes **Retry**. Failed messages keep their original
+order and sit ahead of anything you queue afterwards.
+
+A failed message is never re-sent automatically: idle draining and background
+flushing pause at it until you act. Click **Retry** on the row (or use the
+send-everything chord to retry the whole queue at once) to re-send it with its
+original attachments, quotes, and identity — attachments aren't uploaded again
+and the server sees the same message ID. Use **Edit** to pull it back into the
+composer and revise it, or **Delete** to drop it.
 
 ## Side questions with `/btw`
 

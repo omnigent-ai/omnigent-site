@@ -39,9 +39,44 @@ showing how many sessions are waiting, and multiple independent windows.
 - **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing.
 - **Dock badge.** See at a glance how many sessions need your attention, without switching to the app.
 - **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
+- **One-click host reconnect.** When a session's host is this machine and it has gone offline, the app restarts the host for you instead of asking you to run a command in a terminal. See [Reconnect the local host](#reconnect-the-local-host).
 
 Everything else (sessions, file editor, inline comments, collaboration) works exactly the
 same as the web UI.
+
+## Reconnect the local host
+
+A session bound to a host that has gone offline (for example, after a reboot or
+after the `omni host` daemon stopped) is unreachable until the host comes back.
+In the browser, sending a message or choosing **Reconnect host** from the
+composer's host menu opens a **Host is offline** dialog with the CLI command to
+run from the host machine. The desktop app can do that step itself when the
+offline host _is_ the machine the app is running on.
+
+If you own the session, its host is bound, and the app's installed CLI reports
+that this machine is that host, then any of these actions start the host
+directly with no dialog:
+
+- sending a message or slash command into the unreachable session,
+- choosing **Reconnect host** from the composer's host menu,
+- using the reconnect action on the session's offline banner.
+
+A **Reconnecting this machine…** toast shows progress; repeated clicks while it
+runs are ignored. On success the toast reads **Host start requested.** and the
+host badge flips to online as soon as the host reports in — the liveness check
+refreshes immediately instead of waiting for the next poll.
+
+If the reconnect fails, the **Host is offline** dialog opens with the failure
+reason. A sign-in failure asks you to finish signing in (the app opens a browser
+window for the login) and try again; other failures ask you to retry or use the
+command. The dialog offers a **Retry reconnect** button — disabled and labelled
+**Reconnecting this machine…** while a retry is in flight — alongside the
+terminal command as a fallback. Each retry rechecks the machine's identity, so a
+host re-enrolled under a different id falls back to the command.
+
+The direct reconnect is skipped, and the standard dialog shown instead, when you
+are viewing someone else's session, the session isn't bound to a host, the CLI
+isn't installed for the app, or the offline host is a different machine.
 
 ## Embedded browser
 

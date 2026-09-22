@@ -77,6 +77,63 @@ and agent renames. An empty value removes the additional guidance. A non-string
 value or a string longer than 4,000 characters is ignored and the default title
 prompt is used.
 
+## Attachment limits
+
+| Setting | Value                                                                              |
+| ------- | ---------------------------------------------------------------------------------- |
+| Keys    | `filesystem_attachment_max_bytes`, `filesystem_attachment_max_files`, `filesystem_attachment_max_total_bytes`, `filesystem_attachment_denied_extensions` |
+| Scope   | Server config (`omni server --config`)                                             |
+| Applies | `.zip`, `.docx`, `.xlsx`, `.pptx`, `.db`, `.sqlite`, `.sqlite3` uploads            |
+
+Uploads of ZIP archives, Office documents, and SQLite databases are admitted by
+filename extension and stored without extraction; the harness reads a local copy
+outside the working checkout (see [Attach archives, Office documents, and
+databases](/docs/interact/web-ui#attach-archives-office-documents-and-databases)).
+These formats require Claude Code (`claude-native`) or Codex (`codex-native`) and
+an execution host/runner that supports their delivery and restoration. The
+upload, copy, and fork routes apply the following limits to them:
+
+| Key                                       | Default               | Scope                                              |
+| ----------------------------------------- | --------------------- | -------------------------------------------------- |
+| `filesystem_attachment_max_bytes`         | `52428800` (50 MiB)   | Bytes per file                                     |
+| `filesystem_attachment_max_files`         | `20`                  | Stored files of these types per session            |
+| `filesystem_attachment_max_total_bytes`   | `209715200` (200 MiB) | Combined bytes of these types per session          |
+| `filesystem_attachment_denied_extensions` | `[]`                  | Further restrict the allowlist, e.g. `[".zip", ".db"]` |
+
+```yaml
+filesystem_attachment_max_bytes: 26214400 # 25 MiB per file
+filesystem_attachment_max_files: 10
+filesystem_attachment_max_total_bytes: 104857600 # 100 MiB per session
+filesystem_attachment_denied_extensions: [".zip", "db"] # leading dot optional
+```
+
+Denied-extension entries are matched case-insensitively, with or without the
+leading dot. Entries that are not non-empty strings are skipped with a warning;
+if the value is not a list, the whole setting is ignored. The denylist can only
+narrow the built-in allowlist, and it does not restrict files the agent creates
+or downloads through other tools.
+
+These are filename-based admission and storage limits, not content inspection:
+the server does not identify file formats from their bytes, inspect archive
+entries, or detect renamed binary content. Images, PDFs, and text/code uploads
+keep their separate existing limits. The web composer also has a fixed 50 MiB
+ceiling for these formats, so raising `filesystem_attachment_max_bytes` above
+that has no effect for uploads made from the web UI.
+
+**Sandbox access.** The runner writes attachment copies to
+`~/.omnigent/attachments/<session-key>/<filename>` (or
+`$OMNIGENT_DATA_DIR/attachments/` when overridden) on the execution host, and the
+harness receives that absolute path. Custom sandbox and provider configurations
+must let the runner write this cache and the harness's file-reading tools read
+it; permission to read the working directory does not cover `attachments/`. If
+the harness runs in a separate filesystem namespace, expose the session cache at
+the same absolute path. Scope any added access to the required cache rather than
+the whole data directory, which also contains credentials.
+
+Request-phase [custom policies](/docs/policies/custom#reference-policyevent)
+receive the filename and content type of these attachments with an empty `text`
+value; their contents are not scanned as text.
+
 ## Managed sandboxes
 
 - [Kubernetes sandbox configuration](/docs/reference/configuration/kubernetes)

@@ -118,6 +118,48 @@ desktop app to be running with the session open. If no desktop window is subscri
 the action fails cleanly with `browser action timed out — is the session open in the
 Omnigent desktop app?` rather than hanging.
 
+### Local network permission
+
+Sites in the embedded pane can ask for **local network access** — for example a
+sign-in page that talks to a loopback helper such as Okta Verify. When they do,
+a compact Chrome-style popover appears beneath the browser toolbar, asking
+**Allow local network access?** for the requesting origin, with three choices:
+
+- **Allow once** — grants access for this site visit in this pane. It survives
+  reloads and same-origin navigation, and expires when you leave the site or
+  close the pane.
+- **Always allow** — remembers the decision for this exact origin across all
+  conversations and app restarts.
+- **Deny** — blocks the permission for this origin across all conversation
+  browsers and app restarts.
+
+Closing the popover, pressing <kbd>Esc</kbd>, or clicking outside it dismisses
+the request without saving a decision; the site isn't asked again until the
+next navigation. Only the visible, active pane can open a new prompt, but an
+existing **Allow once** or **Always allow** grant stays in effect while the
+site is in the background. HTTPS sites and HTTP loopback pages can request
+access; embedded subframes cannot request it on their own.
+
+Some sign-in flows check the permission before requesting it. Because Electron
+can only answer such checks with allowed or denied — never "prompt" — the popover
+then shows **Allowing will reload this page**, and either allow button reloads
+the page so the site retries with the new answer. If a background page has
+already given up on its sign-in flow, bring its pane into view and reload.
+
+Saved choices live in the desktop app's `settings.json` under
+`browser_local_network_permissions`, as a map of origin → `true`/`false`. To
+reset a saved choice, quit the app, remove that origin's entry, and reopen it.
+These choices don't change the pane's per-conversation cookie and storage
+isolation, and camera, microphone, notifications, and all other browser
+permissions remain denied.
+
+This controls Chromium's local-network permission answers — it is **not a
+network firewall**. Not every Electron version gates every local-network fetch
+on this permission, and approving it doesn't bypass CORS, TLS certificate
+validation, or the agent's navigation policy. A local helper that rejects the
+site through its own CORS policy must itself be configured to allow it; the pane
+doesn't rewrite those headers.
+
 ## Prerequisites
 
 - **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.

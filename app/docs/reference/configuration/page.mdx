@@ -77,6 +77,30 @@ and agent renames. An empty value removes the additional guidance. A non-string
 value or a string longer than 4,000 characters is ignored and the default title
 prompt is used.
 
+## Web UI base path
+
+| Setting | Value                                                                                |
+| ------- | ------------------------------------------------------------------------------------ |
+| Key     | `OMNIGENT_WEB_BASE_PATH` environment variable, or `omni server --base-path <prefix>` |
+| Scope   | Server process only (environment or CLI flag); not a `config.yaml` key               |
+| Type    | URL path prefix — leading slash, no trailing slash, e.g. `/proxy/6767`               |
+| Default | Unset — served at the origin root (`/`)                                              |
+
+Serves the server and web UI under a path prefix behind a reverse proxy such as
+code-server's `/proxy/<port>/` or an nginx `location` block. The web UI
+prefixes its API, SSE, WebSocket, and asset URLs, and the server accepts
+requests with or without the prefix, so prefix-stripping and non-rewriting
+proxies both work from one value. The flag is shorthand for the environment
+variable and wins over an inherited value.
+
+`""` and `/` are treated as unset. A missing leading slash is added and a
+trailing slash is removed. Values that start with `//`, contain characters
+outside letters, digits, and `-._~/`, include `.`/`..` segments, or whose first
+segment collides with a reserved API namespace or a top-level web UI route are
+rejected at startup. For the full list of reserved segments, the auth variables
+to pair with it, and how the local managed server remembers the prefix, see
+[Serving under a subpath](/docs/deploy/overview#serving-under-a-subpath).
+
 ## Attachment limits
 
 | Setting | Value                                                                                                                                                    |

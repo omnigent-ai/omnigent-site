@@ -179,6 +179,66 @@ and — for the `agent_sandbox` provider — opt-in
 [native warm pools](/docs/reference/configuration/kubernetes#native-warm-pools-for-agentsandbox-warmpool)
 that keep spare Pods ready before a session arrives.
 
+### Serving under a subpath
+
+By default the server and web UI are served from the origin root (`/`). To
+serve them under a path prefix instead — behind code-server's port proxy at
+`https://<host>/proxy/6767/`, or an nginx/Traefik `location /omnigent/` block —
+set the base path. The environment variable and the CLI flag are equivalent:
+
+```
+OMNIGENT_WEB_BASE_PATH=/proxy/6767 omni server
+# or
+omni server --base-path /proxy/6767
+```
+
+The web UI then prefixes its API, SSE, WebSocket, and asset URLs with that path,
+and the server accepts requests **whether or not** the proxy forwards the
+prefix, so one value covers both kinds of proxy:
+
+- **Prefix-stripping proxies** (code-server's `/proxy/<port>/`) forward
+  `/v1/...` — the server serves it as-is.
+- **Non-rewriting proxies** (code-server's `/absproxy/<port>/`, or an nginx
+  `location` block without a rewrite) forward the full `/proxy/6767/v1/...` —
+  the server strips the configured prefix before routing.
+
+Server-issued redirects stay under the prefix too: login and logout, magic-link
+sign-in, the device-code consent page used by `omni login`, and the GitHub /
+Databricks connection callbacks all return to the prefixed app instead of the
+origin root.
+
+**Value rules.** Use a leading slash and no trailing slash (`/proxy/6767`); a
+missing leading slash is added and a trailing slash is dropped. Unset, empty,
+or `/` means a root deployment (unchanged behavior). The server refuses to
+start with a value that:
+
+- starts with `//`, contains characters outside letters, digits, and `-._~/`
+  (including percent-encoding), or has a `.` / `..` segment;
+- begins with a reserved API segment — `api`, `assets`, `auth`, `docs`,
+  `health`, `oauth`, `openapi.json`, `redoc`, `v1`, `.well-known`;
+- begins with one of the web UI's own top-level routes — `approve`, `c`,
+  `canvas`, `extensions`, `inbox`, `login`, `members`, `policies`, `register`,
+  `settings`, `tasks`, `usage`.
+
+<div className="note">
+
+**Auth behind a subpath.** For built-in accounts, also set
+`OMNIGENT_ACCOUNTS_BASE_URL` to the full public URL including the prefix (e.g.
+`https://<host>/proxy/6767`) so login and invite redirects and cookies resolve
+correctly. For [OIDC](/docs/collaborate/auth#single-sign-on-oidc), set
+`OMNIGENT_OIDC_REDIRECT_URI` to the full public callback URL including the
+prefix (e.g. `https://<host>/proxy/6767/auth/callback`).
+
+</div>
+
+**Local managed server.** `omni server --background --base-path /proxy/6767`
+respawns the detached local server under that prefix. The prefix is remembered:
+later commands that don't set a base path (a plain `omni run`, `connect`, …)
+reuse the running server as-is rather than restarting it at the root, and only
+an explicitly different value triggers a respawn. Browser links the CLI opens or
+prints for that local server (the auto-opened web UI and `/c/<id>` session
+links) include the prefix; links to a remote `--server` are never rewritten.
+
 ## Runner
 
 The **runner** is the per-session process that executes Omnigent loops. It

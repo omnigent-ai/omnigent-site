@@ -38,16 +38,31 @@ a new top-level session; turn it off to keep the default session name and
 rename sessions yourself. This is a per-user preference stored on the server, so
 it follows your account across browsers and devices.
 
+### Harness picker
+
+The new-chat composer's agent picker leads with the harnesses that are ready to
+launch on the selected host. Everything else is one level down:
+
+- **Other...** holds the remaining harnesses. A primary harness (Claude Code,
+  Codex, Cursor, and so on) that the selected host reports as unavailable — for
+  example, one that still needs a CLI install or sign-in — is demoted here
+  rather than shown inline, so the main list stays launch-ready. It keeps its
+  setup badge in the submenu, and a harness that can't launch at all stays
+  disabled there with a tooltip explaining what to do (for example, run
+  `omni setup` on that machine). The harness you currently have selected always
+  keeps its slot in the main list, even if it's unavailable.
+- **Custom agents...** holds your [custom agents](/docs/use/custom-agents),
+  along with the **Create custom agent** action.
+
 ### Hide unconfigured harnesses
 
-By default the new-chat picker lists every harness and badges the ones that
-aren't set up on the selected host (for example, a harness that still needs a
-CLI install or sign-in) so you can discover and configure them. If you'd rather
-see only the harnesses that can launch right now, turn on
+By default the picker keeps unavailable harnesses discoverable under
+**Other...**, badged, so you can find and configure them. If you'd rather not
+see them at all, turn on
 **Settings › Appearance › Hide unconfigured harnesses**. With it on, harnesses
-the selected host reports as unconfigured are hidden from the picker instead of
-badged — including the brain-harness override submenu of a bundle agent (though
-the currently selected brain always stays visible).
+the selected host reports as unconfigured are hidden from the picker entirely —
+including the brain-harness override submenu of a bundle agent (though the
+currently selected brain always stays visible).
 
 This is a per-device UI preference, off by default. It changes only what the
 picker shows on this browser — no account or host state is touched — and fails

@@ -1,0 +1,46 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Reach your own Databricks workspace from a managed sandbox — with your identity, not a shared token",
+  "Connect your personal Databricks workspace once, like connecting GitHub, and the agents you run in a managed sandbox reach Databricks as you: a per-user token minted on demand, refreshed server-side, and never written to sandbox disk.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/per-user-databricks-connect-managed-sandbox",
+  },
+);
+
+export const meta = {
+  title:
+    "Reach your own Databricks workspace from a managed sandbox — with your identity, not a shared token",
+  date: "2026-09-15",
+  category: "Governance",
+  author: "omnigent",
+  heroArt: "/images/blog/per-user-databricks-connect-managed-sandbox.png",
+};
+
+<BlogPostHeader slug="per-user-databricks-connect-managed-sandbox" />
+
+If you run agents in a managed Omnigent sandbox and your work touches data in
+Databricks, you can now connect your own Databricks workspace and have those
+agents reach it as you.
+
+Until now, a sandbox that talked to Databricks leaned on a shared or static
+token, so everyone's agents acted as the same account and rotating or revoking
+access was a manual chore. Now you authorize your workspace once, the same way
+you connect GitHub, and the server mints a short-lived token for you on demand
+and refreshes it when it expires. The raw token never lands on the sandbox
+disk, and each stored credential stays encrypted at rest and bound to the
+identity that owns it, so an agent's access to Databricks is your access.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: opening Settings → Integrations, entering a workspace URL, completing the Databricks sign-in, and the connection showing as connected. */}
+
+Open Settings, find Integrations, and choose to connect Databricks. Enter your
+workspace URL, complete the sign-in in your workspace, and you are connected.
+From then on, the agents you run in the sandbox reach your Databricks workspace
+with your identity, and you can disconnect from the same place at any time. For
+how these per-user credentials are stored and protected, see the
+[credential store docs](/docs/deploy/credential-store).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

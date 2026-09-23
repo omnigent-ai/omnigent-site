@@ -526,6 +526,32 @@ Paste images, screenshots, diagrams, and mockups directly into the conversation.
 Omnigent sees them alongside your text. Useful for frontend work where describing a layout
 issue in words is slower than screenshotting it.
 
+### Attach archives, Office documents, and databases
+
+Besides images, PDFs, and text/code files, the composer accepts ZIP archives
+(`.zip`), Office documents (`.docx`, `.xlsx`, `.pptx`), and SQLite databases
+(`.db`, `.sqlite`, `.sqlite3`). Drop them on the composer or pick them with the
+attach button — the file picker filter includes these extensions. They appear as
+ordinary file cards showing an icon, filename, type, and size; images keep their
+thumbnail and preview.
+
+These formats are classified by filename extension, not by the MIME type the
+browser reports, so a `.docx` that the browser labels as a ZIP still attaches
+correctly. Anything outside the supported set (audio, video, unrecognised
+binaries) is rejected with an inline error.
+
+**Harness requirement.** These files need a harness that can open local files:
+Claude Code (`claude-native`) or Codex (`codex-native`), running on an
+up-to-date host/runner. On other harnesses the upload is rejected; the server
+suggests attaching images, PDF, or text/code files instead, or switching to
+Claude Code or Codex.
+
+**Size limits.** The web composer caps each of these files at 50 MiB. Server
+operators can lower the per-file limit, cap the number and combined size of such
+files per session, or deny specific extensions — see [Attachment
+limits](/docs/reference/configuration#attachment-limits). Images, PDFs, and
+text/code files keep their existing separate limits.
+
 ## Message queue and steering
 
 Type a follow-up while the agent is still working and it's held in a client-side

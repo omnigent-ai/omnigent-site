@@ -191,6 +191,42 @@ Omnigent desktop app?` rather than hanging.
 The app remembers your server URL for future launches. To change it later, go to
 **Server > Change Server**.
 
+### Redesigned setup wizard (experimental)
+
+The desktop app also ships a redesigned first-launch wizard as an opt-in
+experiment (**View > Experiments** in the desktop app; off by default). When
+enabled, it replaces the setup screen above with a short step-by-step flow:
+
+1. **Meet Omnigent.** The landing offers two paths: **Get started locally** and
+   **Join your team**.
+2. **Get started locally** opens **Set up Omnigent locally**, which explains what
+   a local install gives you — Claude Code, Codex, Cursor, and other local
+   harnesses from one UI, history and context kept across harnesses, and import
+   of existing harness chats. **Install Omnigent** then starts the local server.
+   There is no longer a separate Local/Cloud choice; the cloud path is
+   **Join your team**.
+3. **Join your team** opens the server list. Saved servers appear under
+   **Recents** (the most recent is tagged **Last used**); if you have none, the
+   wizard goes straight to URL entry. Expand a row to see its URL with a copy
+   button, or use its **⋯** menu to **Delete from list**. **Add server** shows
+   the URL input — **Join** validates the URL, adds it to the list, and checks
+   whether it's reachable — and **Create server** links out to omnigent.ai.
+   With a server selected, the action button reads **Install Omnigent** for a
+   new user, or **Open Omnigent** if the `omnigent` CLI is already installed.
+
+**Returning users** — anyone with the `omnigent` CLI already installed — skip the
+landing and start directly on the server list. **Back** still returns to the
+landing for the local path.
+
+**Managed servers** change the landing: the primary action becomes a split
+button, **Join your team (\<name\>)**, named after the first preset's short host
+name, with a dropdown listing every preset URL; **Get started locally** drops to
+secondary. Picking a preset opens **You're in!**, a single-server detail step
+(expand it to see and copy the URL) with the same **Install Omnigent** /
+**Open Omnigent** action. In the server list, presets are grouped under
+**Preset (by your organization)** and can't be deleted. See
+[Managed servers](#managed-servers-macos-mdm) for how to publish them.
+
 ## Work with multiple servers
 
 Each window connects to one server. To work with multiple servers at the same time:
@@ -261,7 +297,11 @@ Managed servers are read only on macOS; other platforms ignore the preference.
 ### How they appear
 
 Managed servers show up under **Provided by your organization** on the connect
-screen and in the in-app server switcher. They are offered, not enforced:
+screen and in the in-app server switcher. In the
+[redesigned setup wizard](#redesigned-setup-wizard-experimental) they drive the
+landing's **Join your team (\<name\>)** split button and are grouped under
+**Preset (by your organization)** in the server list. They are offered, not
+enforced:
 
 - Omnigent never connects to them automatically.
 - People can still type another server URL.

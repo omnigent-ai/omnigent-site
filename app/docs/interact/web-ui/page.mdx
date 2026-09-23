@@ -542,29 +542,66 @@ Each queued row has inline actions:
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
 
-## Side questions with `/btw`
+## Side chats
 
-In a Claude Code (`claude-native`) session, type `/btw` in the composer to ask a
-side question without adding it to the conversation. `/btw` ("by the way") is a
-Claude Code built-in, so the composer's slash menu offers it only on Claude Code
-sessions; selecting it pre-fills `/btw ` so you can type your question after it.
+A side chat lets you ask the agent something off to the side of a conversation
+— with the agent's full context — without adding anything to the main
+transcript. Side chats work on every harness. Each one opens as its own tab
+(`Side chat 1`, `Side chat 2`, …) in the right **Workspace** rail, beside the
+still-active main chat: you stay in the main conversation while the side chat
+streams next to it. The rail opens automatically when a side chat starts.
 
-The answer comes back in a dismissable overlay above the composer instead of as
-a saved message. While the overlay is open the composer is locked — its
-placeholder reads **Side chat open — press Esc to close** — so the next input
-closes the overlay rather than sending a message. Press `Esc` (or click `✕`) to
-dismiss it.
+Start one from any of these places:
 
-Side chats are transient and live-only: nothing is written to the transcript and
-there is no replay, so reloading the page drops the overlay. This matches the
-terminal, where Escape closes the `/btw` overlay and leaves no history.
-Dismissing the web overlay also closes the matching overlay in the embedded
-terminal, so the two views stay in lockstep.
+- Type **`/side <question>`** in the composer. The `/side` row appears in the
+  composer's slash menu on every harness; the menu lists each command and skill
+  with its description inline.
+- Open the composer's **`+`** tray and choose **Start a new side chat** (under
+  **Session**).
+- Open the Workspace rail's **`+`** (`Open new`) menu and choose **Side chat**.
+  This opens an empty side-chat tab first; the side chat itself is created when
+  you send its first message there.
+- Select text in a reply and choose **Ask in side chat** — the quoted selection
+  and your question are sent to the side chat instead of the main conversation.
 
-You can start a side chat from either side — typing `/btw` in the web composer or
-directly in the embedded terminal — and the answer is mirrored into the web
-overlay. If a very long answer is clipped in the relayed overlay, it's flagged as
-truncated and points you to the terminal for the full text.
+Inside the tab you get a scoped composer (attachments and dictation included).
+Follow-ups go to the side chat, not the main conversation, and any approval
+request the agent raises there is answered there too. The side chat starts
+visually empty — the history it inherited from the parent is hidden — but the
+agent has the parent conversation's full context.
+
+### How a side chat is created
+
+- **Codex** (`codex-native`) forks in-process using its native ephemeral `/side`
+  fork, so the fork stays warm on Codex's prompt cache. Because that fork lives
+  with the parent's runner process, a Codex side-chat tab restored after an app
+  restart points at a thread that no longer exists: it opens read-only, showing
+  its transcript with the notice **This side chat has ended and can't be
+  continued.**
+- **Every other harness** forks the conversation server-side (a
+  `POST /v1/sessions/{id}/fork` with `"side_chat": true`) and launches a runner
+  for the fork on the **same host as the source session** — local or managed,
+  with no new sandbox. When the source session is on a git branch, the fork runs
+  in its own worktree on a `side-chat/<id>` branch cut from the source branch,
+  so it never touches the parent's working tree; otherwise it runs in the
+  source's workspace. If the session has no host or workspace to launch on, or
+  the fork fails, a toast reads **Couldn't start a side chat for this session.**
+  and your typed question stays in the composer so you can retry.
+
+A side chat is otherwise a normal session with its own runner and transcript,
+but it is stamped with the `omnigent.side_chat` label and hidden from the left
+sidebar's session list — it surfaces only as a rail tab.
+
+### Side-chat tabs
+
+Side-chat tabs are stored in your browser, like the rail's file and browser
+tabs: they survive reloads and restarts on this device but don't follow you to
+another device. Switching to another conversation shows that conversation's own
+side-chat tabs. Close a tab with its `✕` (or a middle-click) to stop the side
+chat's runner and drop the tab.
+
+Side chats are distinct from Claude Code's `/btw` overlay (below), which answers
+a one-off question inline without creating a session.
 
 ## Side chats with `/side`
 

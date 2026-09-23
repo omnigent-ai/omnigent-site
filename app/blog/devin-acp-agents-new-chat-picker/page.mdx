@@ -1,0 +1,54 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Launch Devin and other ACP agents straight from the New Chat picker",
+  "Devin is now a built-in harness, and configured ACP agents show up in the web New Chat picker next to your native harnesses, no config file needed.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/devin-acp-agents-new-chat-picker",
+  },
+);
+
+export const meta = {
+  title: "Launch Devin and other ACP agents straight from the New Chat picker",
+  date: "2026-08-19",
+  category: "Multi-harness",
+  author: "omnigent",
+  heroArt: "/images/blog/devin-acp-agents-new-chat-picker.png",
+};
+
+<BlogPostHeader slug="devin-acp-agents-new-chat-picker" />
+
+If you run agents in the Omnigent web UI, you can now start Devin from the New
+Chat picker the same way you start any native harness, and configured ACP agents
+show up there too.
+
+Before this, starting an ACP agent meant editing an `acp:` config entry and
+knowing its slug. Devin is now built in: it appears in the picker and in
+`omni setup` with no config file, and configured ACP agents (Devin) and
+installed ACP CLI harnesses (Grok Build) sit right alongside your native
+harnesses so you pick one and go. Each agent keeps its own login, so Omnigent
+stores no credential for it.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: opening the web New Chat picker and selecting Devin from the harness list, then a first turn running. */}
+
+To use Devin, log into it once with its own CLI, then pick it from the New Chat
+picker, or launch it from the command line:
+
+```bash
+omnigent run --harness devin
+```
+
+Devin ships via a curl installer and authenticates through its own login:
+
+```bash
+curl -fsSL https://cli.devin.ai/install.sh | bash
+devin auth login
+```
+
+See the [supported harnesses docs](/docs/build/harnesses/supported) for the full
+list of agents you can launch this way.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

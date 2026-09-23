@@ -38,6 +38,23 @@ a new top-level session; turn it off to keep the default session name and
 rename sessions yourself. This is a per-user preference stored on the server, so
 it follows your account across browsers and devices.
 
+### Export a session
+
+Save a conversation as a local file without leaving the browser: open the
+session's header menu and choose **Export**. The transcript downloads as
+`<session-id>.jsonl` — one JSON record per line:
+
+- The first line is the session metadata (`record_type: "session_meta"`).
+- Every following line is one committed conversation item
+  (`record_type: "item"`), in chronological order. Items keep their raw API
+  shape, so messages, code blocks, and links come through as they were stored.
+
+This is the same format the `omnigent session export` CLI command produces, so
+a file exported from the web UI round-trips through `omnigent session import`.
+Long conversations are exported in full — the UI pages through the whole
+history before saving. If the export can't be built, an **Export failed** toast
+appears and nothing is downloaded.
+
 ### Hide unconfigured harnesses
 
 By default the new-chat picker lists every harness and badges the ones that

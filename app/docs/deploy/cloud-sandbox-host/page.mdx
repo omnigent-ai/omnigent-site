@@ -169,6 +169,22 @@ Calling the [REST API](/reference) directly, pass a single repository in
 requires a managed session (`host_type: "managed"`), and it takes at most 10
 repositories.
 
+### 5. Run automations in sandboxes (optional)
+
+[Scheduled tasks](/docs/build/scheduled-tasks#where-a-task-runs) can use the same
+launch path: create a task with `execution_target: managed_sandbox` (or pick
+**New Sandbox** in the automation dialog's host picker) and each firing
+provisions a fresh sandbox with a clean workspace. Existing managed sandbox
+hosts cannot be pinned as an automation's host, and the option is only offered
+when this server has a managed sandbox provider configured.
+
+An automation's sandbox follows the server's sandbox configuration exactly like
+one launched for a chat — the automation does not override timeouts or
+terminate the sandbox when a run finishes. Choose provider lifetime, idle, and
+cleanup settings (including the [reaper](#reap-stale-sandboxes-optional) below)
+that fit your automation frequency and resource budget; enabling managed
+sandboxes alone does not guarantee a short shutdown time.
+
 ## CLI
 
 Create and manage cloud sandbox hosts from the command line. The commands are the same across

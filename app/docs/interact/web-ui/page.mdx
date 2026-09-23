@@ -678,10 +678,14 @@ To create one manually, open the **New scheduled task** dialog and fill in:
   is evaluated in your browser's local timezone.
 - **Host (optional)** — pin the task to a specific connected host, or leave it
   set to **Resolve at fire time** to run on your connected host whenever the
-  task fires.
-- **Workspace (optional)** — shown only once a host is pinned. Pick a directory
-  to pin it; leave it unset to default to the host's home directory. A workspace
-  can't be set without a host.
+  task fires. When the server has [managed sandboxes](/docs/deploy/cloud-sandbox-host)
+  configured, the picker also offers **New Sandbox** (labelled with the
+  provider's name, e.g. **Modal Sandbox**): each run then provisions a fresh
+  sandbox instead of using a connected host, and the sandbox's shutdown follows
+  the server's sandbox configuration. Existing sandbox hosts can't be pinned.
+- **Workspace (optional)** — shown only once a connected host is pinned. Pick a
+  directory to pin it; leave it unset to default to the host's home directory. A
+  workspace can't be set without a host, and doesn't apply to sandbox runs.
 
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.

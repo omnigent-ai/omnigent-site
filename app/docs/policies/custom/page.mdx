@@ -198,6 +198,12 @@ filter which events you care about:
 
 Return `None` for event types you don't handle.
 
+For `request` events, text/code attachments (e.g. a CSV) carry their decoded
+content in `text`. Archives, Office documents, and databases (`.zip`, `.docx`,
+`.xlsx`, `.pptx`, `.db`, `.sqlite`, `.sqlite3`) are listed with their
+`filename` and `content_type` but an empty `text`, so a policy can act on their
+names and types without their contents being scanned as text.
+
 Every event also carries:
 
 - **`event["target"]`** — tool name on `tool_call` / `tool_result`; `None` otherwise.

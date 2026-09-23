@@ -33,6 +33,10 @@ omni run agent.yaml --model claude-sonnet-4-6
 Use the `/model` command inside any running session to switch models on the fly.
 The agent keeps its conversation history and tool state – only the underlying model changes.
 
+For the Pi harness, a gateway provider's `models:` tier map can scope the
+`/model` picker to a curated shortlist — see
+[Pi configuration](/docs/build/harnesses/configuration#pi).
+
 ## Reasoning effort
 
 Set a default reasoning level for the agent alongside the model:

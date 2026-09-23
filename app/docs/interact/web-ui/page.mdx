@@ -38,6 +38,23 @@ a new top-level session; turn it off to keep the default session name and
 rename sessions yourself. This is a per-user preference stored on the server, so
 it follows your account across browsers and devices.
 
+### Export a session
+
+Save a conversation as a local file without leaving the browser: open the
+session's header menu and choose **Export**. The transcript downloads as
+`<session-id>.jsonl` — one JSON record per line:
+
+- The first line is the session metadata (`record_type: "session_meta"`).
+- Every following line is one committed conversation item
+  (`record_type: "item"`), in chronological order. Items keep their raw API
+  shape, so messages, code blocks, and links come through as they were stored.
+
+This is the same format the `omnigent session export` CLI command produces, so
+a file exported from the web UI round-trips through `omnigent session import`.
+Long conversations are exported in full — the UI pages through the whole
+history before saving. If the export can't be built, an **Export failed** toast
+appears and nothing is downloaded.
+
 ### Hide unconfigured harnesses
 
 By default the new-chat picker lists every harness and badges the ones that
@@ -509,6 +526,32 @@ Paste images, screenshots, diagrams, and mockups directly into the conversation.
 Omnigent sees them alongside your text. Useful for frontend work where describing a layout
 issue in words is slower than screenshotting it.
 
+### Attach archives, Office documents, and databases
+
+Besides images, PDFs, and text/code files, the composer accepts ZIP archives
+(`.zip`), Office documents (`.docx`, `.xlsx`, `.pptx`), and SQLite databases
+(`.db`, `.sqlite`, `.sqlite3`). Drop them on the composer or pick them with the
+attach button — the file picker filter includes these extensions. They appear as
+ordinary file cards showing an icon, filename, type, and size; images keep their
+thumbnail and preview.
+
+These formats are classified by filename extension, not by the MIME type the
+browser reports, so a `.docx` that the browser labels as a ZIP still attaches
+correctly. Anything outside the supported set (audio, video, unrecognised
+binaries) is rejected with an inline error.
+
+**Harness requirement.** These files need a harness that can open local files:
+Claude Code (`claude-native`) or Codex (`codex-native`), running on an
+up-to-date host/runner. On other harnesses the upload is rejected; the server
+suggests attaching images, PDF, or text/code files instead, or switching to
+Claude Code or Codex.
+
+**Size limits.** The web composer caps each of these files at 50 MiB. Server
+operators can lower the per-file limit, cap the number and combined size of such
+files per session, or deny specific extensions — see [Attachment
+limits](/docs/reference/configuration#attachment-limits). Images, PDFs, and
+text/code files keep their existing separate limits.
+
 ## Message queue and steering
 
 Type a follow-up while the agent is still working and it's held in a client-side
@@ -525,29 +568,95 @@ Each queued row has inline actions:
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
 
-## Side questions with `/btw`
+## Side chats
 
-In a Claude Code (`claude-native`) session, type `/btw` in the composer to ask a
-side question without adding it to the conversation. `/btw` ("by the way") is a
-Claude Code built-in, so the composer's slash menu offers it only on Claude Code
-sessions; selecting it pre-fills `/btw ` so you can type your question after it.
+A side chat lets you ask the agent something off to the side of a conversation
+— with the agent's full context — without adding anything to the main
+transcript. Side chats work on every harness. Each one opens as its own tab
+(`Side chat 1`, `Side chat 2`, …) in the right **Workspace** rail, beside the
+still-active main chat: you stay in the main conversation while the side chat
+streams next to it. The rail opens automatically when a side chat starts.
 
-The answer comes back in a dismissable overlay above the composer instead of as
-a saved message. While the overlay is open the composer is locked — its
-placeholder reads **Side chat open — press Esc to close** — so the next input
-closes the overlay rather than sending a message. Press `Esc` (or click `✕`) to
-dismiss it.
+Start one from any of these places:
 
-Side chats are transient and live-only: nothing is written to the transcript and
-there is no replay, so reloading the page drops the overlay. This matches the
-terminal, where Escape closes the `/btw` overlay and leaves no history.
-Dismissing the web overlay also closes the matching overlay in the embedded
-terminal, so the two views stay in lockstep.
+- Type **`/side <question>`** in the composer. The `/side` row appears in the
+  composer's slash menu on every harness; the menu lists each command and skill
+  with its description inline.
+- Open the composer's **`+`** tray and choose **Start a new side chat** (under
+  **Session**).
+- Open the Workspace rail's **`+`** (`Open new`) menu and choose **Side chat**.
+  This opens an empty side-chat tab first; the side chat itself is created when
+  you send its first message there.
+- Select text in a reply and choose **Ask in side chat** — the quoted selection
+  and your question are sent to the side chat instead of the main conversation.
 
-You can start a side chat from either side — typing `/btw` in the web composer or
-directly in the embedded terminal — and the answer is mirrored into the web
-overlay. If a very long answer is clipped in the relayed overlay, it's flagged as
-truncated and points you to the terminal for the full text.
+Inside the tab you get a scoped composer (attachments and dictation included).
+Follow-ups go to the side chat, not the main conversation, and any approval
+request the agent raises there is answered there too. The side chat starts
+visually empty — the history it inherited from the parent is hidden — but the
+agent has the parent conversation's full context.
+
+### How a side chat is created
+
+- **Codex** (`codex-native`) forks in-process using its native ephemeral `/side`
+  fork, so the fork stays warm on Codex's prompt cache. Because that fork lives
+  with the parent's runner process, a Codex side-chat tab restored after an app
+  restart points at a thread that no longer exists: it opens read-only, showing
+  its transcript with the notice **This side chat has ended and can't be
+  continued.**
+- **Every other harness** forks the conversation server-side (a
+  `POST /v1/sessions/{id}/fork` with `"side_chat": true`) and launches a runner
+  for the fork on the **same host as the source session** — local or managed,
+  with no new sandbox. When the source session is on a git branch, the fork runs
+  in its own worktree on a `side-chat/<id>` branch cut from the source branch,
+  so it never touches the parent's working tree; otherwise it runs in the
+  source's workspace. If the session has no host or workspace to launch on, or
+  the fork fails, a toast reads **Couldn't start a side chat for this session.**
+  and your typed question stays in the composer so you can retry.
+
+A side chat is otherwise a normal session with its own runner and transcript,
+but it is stamped with the `omnigent.side_chat` label and hidden from the left
+sidebar's session list — it surfaces only as a rail tab.
+
+### Side-chat tabs
+
+Side-chat tabs are stored in your browser, like the rail's file and browser
+tabs: they survive reloads and restarts on this device but don't follow you to
+another device. Switching to another conversation shows that conversation's own
+side-chat tabs. Close a tab with its `✕` (or a middle-click) to stop the side
+chat's runner and drop the tab.
+
+Side chats are distinct from Claude Code's `/btw` overlay (below), which answers
+a one-off question inline without creating a session.
+
+## Side chats with `/side`
+
+In a Codex (`codex-native`) session, type `/side <question>` in the composer to
+start a **side chat** — an ephemeral fork of the current Codex thread. The
+composer's slash menu offers `/side` only on Codex sessions; selecting it
+pre-fills `/side ` so you can type your question after it.
+
+Unlike `/btw`, a `/side` question is not answered in a throwaway overlay. It
+opens as its own **sub-agent chat**, labelled **Side chat**, so you can navigate
+into it and keep the conversation going over multiple turns. It never appears in
+the left conversation sidebar, and the main Codex conversation keeps running
+unchanged the whole time.
+
+The fork inherits the parent thread's history as **reference context only** —
+the side chat is told to treat that history as background, not as active
+instructions — so you can ask about the work so far without steering the main
+thread. The `/side` message itself stays out of the parent conversation: it's
+routed straight into the fork and leaves no bubble in the main transcript.
+
+Side chats are **ephemeral**: nothing is written to disk, so a side chat is not
+resumable after a runner restart. If a `/side` request can't be opened, the
+session posts a visible notice so the question is never silently dropped.
+
+You can also start a side chat from selected text. Select part of a message and
+choose **Ask in side chat**: the selection is added as a quote card, and when
+you send, it's forwarded as a `/side` command carrying the quoted text and your
+question. On a harness without side-chat support this action degrades to an
+ordinary quoted reply in the main chat.
 
 ## Scheduled tasks
 
@@ -569,10 +678,14 @@ To create one manually, open the **New scheduled task** dialog and fill in:
   is evaluated in your browser's local timezone.
 - **Host (optional)** — pin the task to a specific connected host, or leave it
   set to **Resolve at fire time** to run on your connected host whenever the
-  task fires.
-- **Workspace (optional)** — shown only once a host is pinned. Pick a directory
-  to pin it; leave it unset to default to the host's home directory. A workspace
-  can't be set without a host.
+  task fires. When the server has [managed sandboxes](/docs/deploy/cloud-sandbox-host)
+  configured, the picker also offers **New Sandbox** (labelled with the
+  provider's name, e.g. **Modal Sandbox**): each run then provisions a fresh
+  sandbox instead of using a connected host, and the sandbox's shutdown follows
+  the server's sandbox configuration. Existing sandbox hosts can't be pinned.
+- **Workspace (optional)** — shown only once a connected host is pinned. Pick a
+  directory to pin it; leave it unset to default to the host's home directory. A
+  workspace can't be set without a host, and doesn't apply to sandbox runs.
 
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.

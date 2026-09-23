@@ -133,7 +133,11 @@ alone does not guarantee a short shutdown time.
 When a task is due, Omnigent:
 
 1. Re-reads the task row — a task that was deleted or paused since the timer was
-   armed is skipped.
+   armed is skipped. Under built-in accounts auth, the run also confirms the
+   task's owner is still the same registered account and that the target
+   `host_id` belongs to that owner; a task whose owner account has been
+   removed is marked deleted and the run is recorded with error code
+   `owner_deleted`.
 2. Resolves the launch target for this fire only. A `connected_host` task fills
    in an unpinned host and workspace as described above; a `managed_sandbox`
    task starts hostless and binds a new sandbox in step 4. Resolved values are
@@ -154,3 +158,7 @@ A few scheduling guarantees:
   only the next future occurrence is armed — Omnigent does not backfill.
 - **Overlapping fires are skipped.** If a task's previous run is still in flight
   when the next occurrence arrives, that occurrence is dropped.
+- **Removed accounts stop firing.** When an admin
+  [removes a member](/docs/collaborate/auth#removing-a-member), all of that
+  user's tasks are marked deleted. A username that is later re-registered does
+  not see or inherit the old account's tasks.

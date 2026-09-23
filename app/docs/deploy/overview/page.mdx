@@ -174,8 +174,10 @@ kubectl apply -k deploy/kubernetes/overlays/sandbox-runners
 ```
 
 See the [Kubernetes sandbox configuration reference](/docs/reference/configuration/kubernetes)
-for Pod-start timeouts, persistent storage, and rotation-friendly Secret
-mounts.
+for Pod-start timeouts, persistent storage, rotation-friendly Secret mounts,
+and — for the `agent_sandbox` provider — opt-in
+[native warm pools](/docs/reference/configuration/kubernetes#native-warm-pools-for-agentsandbox-warmpool)
+that keep spare Pods ready before a session arrives.
 
 ### Serving under a subpath
 

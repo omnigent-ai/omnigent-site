@@ -79,11 +79,11 @@ prompt is used.
 
 ## Attachment limits
 
-| Setting | Value                                                                              |
-| ------- | ---------------------------------------------------------------------------------- |
+| Setting | Value                                                                                                                                                    |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Keys    | `filesystem_attachment_max_bytes`, `filesystem_attachment_max_files`, `filesystem_attachment_max_total_bytes`, `filesystem_attachment_denied_extensions` |
-| Scope   | Server config (`omni server --config`)                                             |
-| Applies | `.zip`, `.docx`, `.xlsx`, `.pptx`, `.db`, `.sqlite`, `.sqlite3` uploads            |
+| Scope   | Server config (`omni server --config`)                                                                                                                   |
+| Applies | `.zip`, `.docx`, `.xlsx`, `.pptx`, `.db`, `.sqlite`, `.sqlite3` uploads                                                                                  |
 
 Uploads of ZIP archives, Office documents, and SQLite databases are admitted by
 filename extension and stored without extraction; the harness reads a local copy
@@ -93,11 +93,11 @@ These formats require Claude Code (`claude-native`) or Codex (`codex-native`) an
 an execution host/runner that supports their delivery and restoration. The
 upload, copy, and fork routes apply the following limits to them:
 
-| Key                                       | Default               | Scope                                              |
-| ----------------------------------------- | --------------------- | -------------------------------------------------- |
-| `filesystem_attachment_max_bytes`         | `52428800` (50 MiB)   | Bytes per file                                     |
-| `filesystem_attachment_max_files`         | `20`                  | Stored files of these types per session            |
-| `filesystem_attachment_max_total_bytes`   | `209715200` (200 MiB) | Combined bytes of these types per session          |
+| Key                                       | Default               | Scope                                                  |
+| ----------------------------------------- | --------------------- | ------------------------------------------------------ |
+| `filesystem_attachment_max_bytes`         | `52428800` (50 MiB)   | Bytes per file                                         |
+| `filesystem_attachment_max_files`         | `20`                  | Stored files of these types per session                |
+| `filesystem_attachment_max_total_bytes`   | `209715200` (200 MiB) | Combined bytes of these types per session              |
 | `filesystem_attachment_denied_extensions` | `[]`                  | Further restrict the allowlist, e.g. `[".zip", ".db"]` |
 
 ```yaml

@@ -91,6 +91,8 @@ browser can't, like notifications and a dock badge.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
+{/* TODO(doc-drafter): screenshot may be stale — the setup screen now runs an in-app CLI install phase on macOS when the CLI is missing */}
+
 <img
   src="/images/docs/desktop-start.png"
   alt="Omnigent desktop app first-launch setup screen"
@@ -102,6 +104,12 @@ browser can't, like notifications and a dock badge.
    deployed server URL (e.g. `https://your-app.onrender.com`).
 3. **Start working.** The app connects and shows the same UI you'd see in a
    browser.
+
+On macOS you can skip the CLI install above: if the `omnigent` CLI isn't
+detected, the setup screen installs it for you (via `uv`) before starting a
+local server or connecting. See
+[Install the CLI from the app](/docs/interact/desktop#install-the-cli-from-the-app-macos).
+On other platforms, install the CLI first.
 
 See the [Desktop app](/docs/interact/desktop) reference for all platforms and
 details.

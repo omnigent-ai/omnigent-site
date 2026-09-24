@@ -122,6 +122,7 @@ Omnigent desktop app?` rather than hanging.
 
 - **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.
 - **At least one runner.** A [runner](/docs/deploy/overview) is the process that actually executes your agent. If you have [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host) set up, you'll be able to launch them from the app. Otherwise, register your machine by running `omni host` from your CLI.
+- **The Omnigent CLI.** Running a local server or registering your machine as a runner needs the `omnigent` CLI. On macOS the app can [install it for you](#install-the-cli-from-the-app-macos) during setup; on other platforms, [install it](/quickstart/install) first.
 
 ## Install
 
@@ -170,6 +171,8 @@ Omnigent desktop app?` rather than hanging.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
+{/* TODO(doc-drafter): screenshot may be stale — the setup screen now runs an in-app CLI install phase on macOS when the CLI is missing */}
+
 <img
   src="/images/docs/desktop-start.png"
   alt="Omnigent desktop app first-launch setup screen"
@@ -179,6 +182,41 @@ Omnigent desktop app?` rather than hanging.
 1. **Launch the app.** On first launch, you'll see a setup screen.
 2. **Enter your server URL.** `http://localhost:6767` if running locally, or your deployed server URL (e.g. `https://your-app.onrender.com`).
 3. **Start working.** The app connects and shows the same UI you'd see in a browser.
+
+If the `omnigent` CLI isn't installed yet, the setup screen offers **Install
+Omnigent** instead of **Open Omnigent**. On macOS that installs the CLI for you
+before starting or connecting — see below.
+
+## Install the CLI from the app (macOS)
+
+On macOS, the setup screen installs the `omnigent` CLI itself when it isn't
+detected on your machine. This happens whichever path you take: choosing to run
+a local server, or joining a remote server from the server list or a preset.
+The install runs first, then the app carries on with the action you picked
+(starting the local server, or connecting to the server you chose). If the CLI
+is already installed, the install step is skipped and the app connects
+directly.
+
+The installer's output streams into the setup screen's terminal pane, headed
+**Installing the Omnigent CLI**, so you can watch it work. Under the hood the
+app:
+
+1. Checks for [`uv`](https://docs.astral.sh/uv/) and, if it's missing, installs
+   it with uv's official installer (`curl -LsSf https://astral.sh/uv/install.sh | sh`).
+2. Runs the bundled `install_oss.sh --non-interactive`, which resolves to
+   `uv tool install --force --python 3.12 omnigent` and places the `omnigent`
+   and `omni` binaries in `~/.local/bin`.
+3. Re-checks that the CLI is now resolvable before moving on.
+
+The install is given up to 10 minutes; if it times out, the setup screen asks
+you to check your connection and try again. If the installer finishes but the
+CLI still isn't detected (typically a `PATH` issue), setup stops with an error
+rather than proceeding without a CLI — open a new terminal, or
+[install the CLI manually](/quickstart/install), then retry.
+
+In-app install is macOS-only for now. On Linux and Windows the setup screen
+never routes through an install step: [install the CLI](/quickstart/install)
+yourself, then connect as usual.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
@@ -264,7 +302,9 @@ Managed servers show up under **Provided by your organization** on the connect
 screen and in the in-app server switcher. They are offered, not enforced:
 
 - Omnigent never connects to them automatically.
-- People can still type another server URL.
+- People can still type another server URL. The preset dropdown on the landing
+  screen and the preset detail view both offer **Show all servers**, which opens
+  the full server list (presets plus recently used servers).
 - A managed workspace path is loaded exactly as configured, rather than being
   reduced to its origin.
 - Values are read from macOS on demand, not copied into the app's settings, so

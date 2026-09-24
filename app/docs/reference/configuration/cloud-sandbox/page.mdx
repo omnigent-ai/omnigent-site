@@ -63,6 +63,18 @@ sandbox:
 - `env` lists server environment variables copied into each sandbox. A listed
   variable that is not set fails the launch.
 
+Daytona has no platform lifetime cap. Omnigent disables Daytona's 15-minute
+idle auto-stop when it provisions a sandbox, so a host survives gaps between
+turns, and deletes the sandbox when its session is deleted. If a managed
+sandbox is stopped or archived out-of-band, the next message resumes the same
+sandbox in place, preserving its filesystem and workspace; an archived sandbox
+may first need a restore, so the wake waits up to 15 minutes (the same budget
+as a cold create). A sandbox that is mid-transition (starting, stopping, or
+archiving) is waited on rather than replaced. Only when the sandbox has been
+deleted does Omnigent create a replacement with a fresh workspace; a sandbox
+that is still being deleted, or a provider error during the wake, fails the
+turn with a retryable error and leaves the existing sandbox binding intact.
+
 Daytona Tier 1 and 2 organizations restrict outbound traffic to a
 [fixed allowlist](https://www.daytona.io/docs/en/network-limits). The
 `server_url` and model endpoints must be reachable from Daytona. Tier 3 and

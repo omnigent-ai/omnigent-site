@@ -94,6 +94,11 @@
     "description": "Move the Omnigent runner from your laptop to a remote container so your agent keeps working in an isolated cloud environment.",
     "eyebrow": "Deploy"
   },
+  "/docs/deploy/community-sandbox-providers": {
+    "title": "Community Sandbox Providers",
+    "description": "Implement, package, and test a third-party sandbox provider for Omnigent using the launcher API and Python entry-point registry.",
+    "eyebrow": "Deploy"
+  },
   "/docs/deploy/database": {
     "title": "Database",
     "description": "The Omnigent server persists session history, accounts, and artifacts. Choose between Postgres and SQLite, with the same schema and migrations.",

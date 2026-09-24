@@ -654,6 +654,33 @@ figcaption {
   color: var(--fg-soft);
 }
 
+/* ---- Mermaid diagrams ---- */
+.mermaid-figure {
+  text-align: left;
+}
+.mermaid-diagram {
+  min-height: 18rem;
+  padding: 1rem;
+  overflow-x: auto;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.mermaid-diagram svg {
+  display: block;
+  width: 100%;
+  min-width: 42rem;
+  height: auto;
+  margin: 0 auto;
+}
+.mermaid-error {
+  padding: 1rem;
+  color: var(--fg-soft);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
 /* ---- pillars (tabbed) ---- */
 .pillars-tabs {
   margin: 1.5rem 0 0;

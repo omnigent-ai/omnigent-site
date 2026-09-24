@@ -1,0 +1,485 @@
+import MermaidDiagram from "@/components/MermaidDiagram";
+import { pageMeta } from "@/lib/og";
+import { managedSandboxLifecycle } from "@/lib/sandbox-provider-diagrams";
+
+export const metadata = pageMeta(
+  "Community Sandbox Providers",
+  "Implement, package, and test a third-party sandbox provider for Omnigent using the launcher API and Python entry-point registry.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/community-sandbox-providers",
+  },
+);
+
+# Community Sandbox Providers
+
+Add a new place to run Omnigent hosts without changing the core package. A
+third-party Python package registers a provider through the
+`omnigent.sandbox_providers` entry-point group. Once installed and configured on
+the server, it can serve managed sessions from the web UI or API.
+
+A sandbox provider controls **where the runner executes**. It is separate from
+[Omnibox](/docs/omnibox), which restricts what agent commands can access inside
+that environment. To use an existing provider rather than build one, start with
+[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host).
+
+## Choose a launcher model
+
+Every registered launcher must subclass `SandboxHostLauncher`, directly or
+through `ExecModelHostLauncher`. Both live in
+`omnigent.onboarding.sandboxes.base`.
+
+| Base class              | Use when                                                                                   | What you implement                                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `ExecModelHostLauncher` | Your platform creates a sandbox and exposes shell execution inside it.                     | `prepare()`, `provision()`, and `run()`, plus cleanup with `terminate()`. Core supplies `start_host()`.    |
+| `SandboxHostLauncher`   | Your container starts the host as its entrypoint, or your control plane starts it for you. | `prepare()`, `provision()`, `start_host()`, and cleanup with `terminate()`. No exec transport is required. |
+
+Start with **managed sessions only**. CLI bootstrap is a separate, optional
+feature that needs file transfer, foreground execution, and additional lifecycle
+methods. The example below deliberately leaves it disabled.
+
+## 1. Create the package
+
+Use a unique provider id, such as `acme`. Put implementation modules under
+`omnigent.community.sandbox.<provider>`:
+
+```text
+omnigent-acme/
+├── pyproject.toml
+└── src/
+    └── omnigent/
+        └── community/
+            └── sandbox/
+                └── acme/
+                    ├── __init__.py
+                    ├── config.py
+                    ├── launcher.py
+                    └── plugin.py
+```
+
+Keep `acme/__init__.py` empty. Do not ship replacements for core's
+`omnigent/__init__.py`, `omnigent/community/__init__.py`, or
+`omnigent/community/sandbox/__init__.py`. Core provides the shared namespace;
+your distribution supplies only its own subtree.
+
+Here is a setuptools-based package definition:
+
+```toml
+# pyproject.toml
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omnigent-acme"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["omnigent", "pydantic>=2", "click>=8"]
+
+[project.entry-points."omnigent.sandbox_providers"]
+acme = "omnigent.community.sandbox.acme.plugin:get_contribution"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["omnigent.community.sandbox.acme*"]
+namespaces = true
+```
+
+Add your provider SDK to the dependencies, and constrain the Omnigent dependency
+to the versions you test before publishing. These examples follow the current
+[source contract](https://github.com/omnigent-ai/omnigent/blob/main/omnigent/onboarding/sandboxes/base.py);
+check that your target release exposes the same API.
+
+## 2. Define provider configuration
+
+A `config_model` validates the server's `sandbox.acme` block and is passed to the
+launcher as `config=`. Use a Pydantic model in your provider namespace:
+
+```python
+# src/omnigent/community/sandbox/acme/config.py
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class AcmeConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    namespace: str = Field(default="sandboxes", min_length=1)
+```
+
+`extra="forbid"` rejects misspelled keys rather than silently ignoring them.
+Validation runs when the server parses its configuration and again when the
+registry constructs the launcher. If the block is absent, the model receives
+no arguments, so provide defaults for optional settings.
+
+The model is optional. Without one, the registry calls the launcher with **no
+arguments** and does not pass through the provider-specific block. Do not
+expect arbitrary YAML keys to become constructor arguments.
+
+Keep provider control credentials in the launching process's environment or
+credential store, not in this example's YAML. Resolve them in `prepare()` and
+never copy the server's entire environment into a sandbox.
+
+## 3. Implement the launcher
+
+This is an **interface skeleton**, not a working Acme integration. Replace the
+four `NotImplementedError` bodies with calls to your platform's SDK or API
+before attempting a launch.
+
+```python
+# src/omnigent/community/sandbox/acme/launcher.py
+from omnigent.onboarding.sandboxes.base import (
+    ExecModelHostLauncher,
+    RemoteCommandResult,
+)
+from omnigent.onboarding.sandboxes.types import SandboxCapabilities
+
+from .config import AcmeConfig
+
+
+class AcmeSandboxLauncher(ExecModelHostLauncher):
+    provider = "acme"
+
+    def __init__(self, *, config: AcmeConfig) -> None:
+        self.config = config
+
+    @property
+    def capabilities(self) -> SandboxCapabilities:
+        return SandboxCapabilities(
+            managed_launch=True,
+            programmatic_terminate=True,
+        )
+
+    def prepare(self) -> None:
+        """Load the SDK and verify provider credentials; safe to repeat."""
+        raise NotImplementedError("Implement provider preflight")
+
+    def provision(self, name: str) -> str:
+        """Create a sandbox in self.config.namespace and return its id."""
+        raise NotImplementedError("Implement sandbox creation")
+
+    def run(
+        self, sandbox_id: str, command: str, *, check: bool = True
+    ) -> RemoteCommandResult:
+        """Run a shell command; raise on nonzero exit only when check=True."""
+        raise NotImplementedError("Implement shell execution")
+
+    def terminate(self, sandbox_id: str) -> None:
+        """Delete the sandbox; an already-absent sandbox is success."""
+        raise NotImplementedError("Implement idempotent deletion")
+```
+
+Keep constructors free of network calls and resource creation: the server also
+constructs launchers to read their capabilities for `/v1/info`. Keep
+`plugin.py` and `config.py` imports light; load optional SDKs in `prepare()` or
+the methods that use them.
+
+### Method contracts
+
+- **`prepare()`** validates tooling and credentials without provisioning
+  compute. It must be safe to repeat. Surface expected operational failures as
+  `click.ClickException` with the provider name and a useful, secret-free
+  message.
+- **`provision(name) -> str`** returns an opaque sandbox id, not a `SandboxInfo`
+  or SDK object. Clean up partial allocations if creation fails before you can
+  return an id; the caller cannot clean up an id it never received.
+- **`run(..., check=True) -> RemoteCommandResult`** returns `returncode`,
+  `stdout`, and `stderr`. With `check=True`, raise `click.ClickException` on a
+  nonzero exit. With `check=False`, return the failure result. If the SDK takes
+  an argv list, invoke a shell with `["sh", "-c", command]` rather than splitting
+  the command on spaces. Do not log raw command strings: host-start commands
+  carry credentials.
+- **`terminate(sandbox_id)`** releases compute and other provider resources.
+  Treat “already deleted” as success, but do not hide authorization errors or
+  transient failures. Cleanup can retry, and it may use a fresh launcher that
+  did not provision the sandbox; resolve resources from the id and configured
+  credentials, not only an in-memory handle. Do not require an earlier
+  `prepare()` call on the teardown instance.
+
+### What the exec-model base supplies
+
+Inherited `start_host()` uses your `run()` to:
+
+1. Resolve `$HOME` and create `$HOME/workspace`.
+2. Clone requested repositories through `materialize_workspace()`.
+3. Apply deployment-supplied `host_config` before starting the host.
+4. Launch `omnigent host --server ...` with the supplied host identity and
+   launch token in its environment.
+5. Return the absolute workspace path: the clone directory for one repository,
+   otherwise the parent workspace.
+
+Provision an image with Omnigent already installed, the harnesses you support,
+and the shell tools needed by this flow. The official
+`ghcr.io/omnigent-ai/omnigent-host:latest` image is a starting point; pin a
+published image tag for reproducible deployments. Managed startup does not
+build or install Omnigent wheels for you.
+
+The default `run_background()` uses `setsid`, `nohup`, and a shell supervisor,
+writing host output to `/tmp/omnigent-host.log`. If your platform kills child
+processes when an exec request ends, override `run_background()` with a
+provider-supported long-lived process mechanism. Do not report success for a
+host that immediately dies when the exec session closes.
+
+Override `materialize_workspace()` if you need a different way to obtain a
+checkout; you need not replace all of `start_host()` for that.
+
+### Providers without remote exec
+
+Subclass `SandboxHostLauncher` directly and implement this keyword contract:
+
+```python
+from collections.abc import Callable, Sequence
+
+from omnigent.onboarding.sandboxes.types import RepoWorkspace
+
+
+def start_host(
+    self,
+    sandbox_id: str,
+    *,
+    token: str,
+    host_id: str,
+    host_name: str,
+    server_url: str,
+    repos: Sequence[RepoWorkspace] = (),
+    host_config: dict[str, object] | None = None,
+    on_stage: Callable[[str], None] | None = None,
+) -> str:
+    # Launch through your container entrypoint or control-plane API.
+    raise NotImplementedError("Return the absolute in-sandbox workspace path")
+```
+
+Your implementation must arrange for `omnigent host --server <server_url>` to
+run with `OMNIGENT_HOST_TOKEN`, `OMNIGENT_HOST_ID`, and `OMNIGENT_HOST_NAME` set
+to the supplied values. Install `host_config` before the host starts; the shared
+`render_host_config_write_command()` helper implements core's injection and
+replacement semantics when you can run an initialization command.
+
+`RepoWorkspace` supplies `url`, `branch`, and `repo_name`. Materialize requested
+repositories and return the same workspace-path convention as the exec model.
+When supplied, call `on_stage("cloning")` before cloning and
+`on_stage("starting")` before host startup.
+
+For platforms that boot the host immediately when compute is created,
+`provision()` can reserve an id and defer actual creation to `start_host()`.
+This lets Omnigent register the launch token **before** the new host connects.
+Do not block `start_host()` for the host's entire lifetime; after it returns,
+the server waits for online registration.
+
+See the built-in
+[Kubernetes launcher](https://github.com/omnigent-ai/omnigent/blob/main/omnigent/onboarding/sandboxes/kubernetes.py)
+and [Gensee launcher](https://github.com/omnigent-ai/omnigent/blob/main/omnigent/onboarding/sandboxes/gensee.py)
+for the entrypoint and control-plane approaches, respectively.
+
+## 4. Register the contribution
+
+```python
+# src/omnigent/community/sandbox/acme/plugin.py
+from omnigent.onboarding.sandboxes.registry import (
+    SandboxProviderContribution,
+    SandboxProviderMetadata,
+)
+
+from .config import AcmeConfig
+
+
+def get_contribution() -> SandboxProviderContribution:
+    return SandboxProviderContribution(
+        name="omnigent-acme",
+        providers={
+            "acme": SandboxProviderMetadata(
+                name="acme",
+                launcher_class=(
+                    "omnigent.community.sandbox.acme.launcher:AcmeSandboxLauncher"
+                ),
+                config_model=AcmeConfig,
+            ),
+        },
+    )
+```
+
+The contribution name identifies the package in diagnostics. The provider key,
+metadata `name`, and launcher's `provider` must agree. One contribution can
+register several providers, but it cannot override an already registered name.
+
+The registry requires the launcher import path and the config model's module to
+be under `omnigent.community.sandbox.*`. The launcher is referenced by import
+string so it need not load during entry-point discovery.
+
+`SandboxProviderMetadata` also accepts **`managed_token_ttl_s`**, the managed
+host launch-token lifetime in seconds. If omitted, it currently defaults to
+25 hours. Choose a positive value appropriate for your sandbox lifetime: this
+is an authentication lifetime, not a provider-side timeout or an instruction to
+delete compute.
+
+## 5. Install and configure
+
+Install the plugin into the **same Python environment as the Omnigent server**.
+From your plugin checkout:
+
+```bash
+uv pip install -e .
+```
+
+For a published plugin, install its distribution there instead. If Omnigent is
+installed as a uv tool, add the plugin to that tool's environment with
+`uv tool inject omnigent omnigent-acme`. Restart the server after installing or
+upgrading: registry discovery is cached per process.
+
+Configure the server:
+
+```yaml
+sandbox:
+  provider: acme
+  server_url: https://your-server.example.com
+  acme:
+    namespace: sandboxes
+```
+
+`sandbox.server_url` must be reachable from the sandbox and support the host's
+connection back to Omnigent. The provider SDK authenticates on the server; the
+host receives a separate server-minted launch token. Keep provider control
+credentials out of the guest, and use a secure environment or secret mechanism
+for the host token rather than logging it or putting it in process arguments.
+
+Once the launcher is implemented, select **New Sandbox** in the web UI. The
+diagram shows the normal managed lifecycle alongside failure cleanup, idle
+resume, deletion, and stale-sandbox reaping.
+
+<MermaidDiagram
+  chart={managedSandboxLifecycle}
+  label="Managed sandbox provider lifecycle, from provisioning through startup, resume, and termination"
+/>
+
+Omnigent handles host registration, token issuance, and the session binding.
+Your provider handles compute, workspace setup, process startup, and teardown.
+A failed wake preserves the stopped sandbox and its workspace for another
+attempt. Deletion and reaping call the provider's idempotent `terminate()`;
+transient teardown failures remain pending for a later retry.
+See [host configuration](/docs/reference/configuration/cloud-sandbox#host-configuration)
+for configuring the runner, and the
+[cloud-host guide](/docs/deploy/cloud-sandbox-host#reap-stale-sandboxes-optional)
+for the optional stale-sandbox reaper.
+
+## Optional capabilities
+
+Return an explicit `SandboxCapabilities` object. Its fields default to `False`;
+set a flag only when the corresponding behavior is implemented and tested.
+
+| Capability                   | Contract                                                                                                                           |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `managed_launch`             | Implements the server-managed `prepare` / `provision` / `start_host` flow.                                                         |
+| `programmatic_terminate`     | Implements idempotent `terminate()`. Needed for reliable automatic cleanup.                                                        |
+| `cli_bootstrap`              | Supports the separate `omnigent sandbox create` / `connect` flows described below.                                                 |
+| `file_copy`                  | Implements `put(sandbox_id, local_path, remote_path)`.                                                                             |
+| `streaming_exec`             | Implements `stream_exec(..., pty=False)` returning a `RemoteProcess`.                                                              |
+| `foreground_exec`            | Implements `exec_foreground(sandbox_id, command) -> int`, including Ctrl-C cleanup.                                                |
+| `local_port_forward`         | Implements a `forward_local_port()` context manager for local-to-sandbox callback forwarding.                                      |
+| `resume_stopped`             | Implements `resume(sandbox_id)` to restore compute and persistent storage under the same id. Core restarts the host separately.    |
+| `snapshot_restore`           | Resume restores a suspend-time snapshot rather than a cold start; meaningful with `resume_stopped`.                                |
+| `multi_repo`                 | Handles multiple `RepoWorkspace` entries and returns their parent workspace. Explicit opt-in, including for exec-model subclasses. |
+| `classifies_runner_by_agent` | Accepts an additional `agent_name` keyword in `start_host()` and stamps the resolved built-in agent into provider metadata.        |
+
+The server currently treats configured community providers as managed-launch
+options. `managed_launch=False` is **not** a way to hide a configured plugin
+from the picker; only configure providers that actually implement managed
+launch.
+
+If your platform needs expiry refreshes, implement a cheap, idempotent
+`keep_alive()`; the server calls it periodically for live managed runners.
+`is_running()` may return `True`, `False`, or `None` when status is unknown.
+
+The reaper can reuse one launcher per workspace and provider. Override
+`reaper_identity(workspace_id)` with a context manager if background termination
+requires workspace-scoped credentials. Termination must still succeed when the
+sandbox has already disappeared.
+
+### Adding CLI bootstrap
+
+CLI support requires an `ExecModelHostLauncher` subclass with
+`cli_bootstrap=True`. Implement `attach()`, `keep_alive()`, `put()`,
+`wheel_install_command()`, and `exec_foreground()` in addition to the basic
+exec-model methods. Supporting the in-sandbox App OAuth flow also requires
+`stream_exec()` and `forward_local_port()`. `RemoteProcess.lines` must return
+the same iterator across accesses; its `close()` must be idempotent.
+
+The CLI constructs a community provider with the config model's defaults, not
+the server's `sandbox.acme` block. Supply usable defaults or resolve CLI-specific
+configuration in your launcher. `create` builds and ships wheels from an
+Omnigent source checkout; a plugin installation alone does not supply that
+checkout.
+
+After implementing CLI support, use:
+
+```bash
+omnigent sandbox create --provider acme \
+  --server https://your-server.example.com \
+  --repo-root /path/to/omnigent
+
+omnigent sandbox connect --provider acme \
+  --sandbox-id YOUR_SANDBOX_ID \
+  --server https://your-server.example.com
+```
+
+Without local port forwarding, `create` skips the in-sandbox login flow; it does
+not bypass authentication required by the target server. Managed-only plugins,
+including the skeleton above, should use the web UI/API flow instead.
+
+## Verify and troubleshoot
+
+First check discovery and config construction without allocating compute. Run
+this with the Python interpreter from the environment where you installed the
+plugin:
+
+```python
+from omnigent.onboarding.sandboxes.registry import instantiate, plugin_state
+
+state = plugin_state()
+print("Registered providers:", state.names())
+print("Plugin load errors:", state.load_errors)
+assert "acme" in state, state.load_errors
+
+launcher = instantiate("acme", config={"namespace": "test-sandboxes"})
+assert launcher.provider == "acme"
+assert launcher.config.namespace == "test-sandboxes"
+assert launcher.capabilities.managed_launch
+assert not launcher.capabilities.cli_bootstrap
+```
+
+Then test your implementation with SDK fakes and an isolated provider account:
+
+- Reject unknown config keys and invalid values before allocating compute.
+- Verify `run()` captures output and obeys both values of `check`.
+- Start a managed session with an empty workspace, then one with a repository
+  and branch. Verify the returned workspace and that the host comes online.
+- Verify the host survives the provisioning/exec connection closing.
+- Exercise failed startup and deletion; confirm resources are released. Call
+  `terminate()` twice, including from a newly constructed launcher.
+- Test resume, multi-repo workspaces, and CLI bootstrap only if advertised.
+- Inspect logs and provider operation records for accidental token exposure.
+
+For registry and lifecycle test examples, see
+[`test_registry.py`](https://github.com/omnigent-ai/omnigent/blob/main/tests/onboarding/sandboxes/test_registry.py),
+[`test_base.py`](https://github.com/omnigent-ai/omnigent/blob/main/tests/onboarding/sandboxes/test_base.py),
+and [`test_managed_hosts.py`](https://github.com/omnigent-ai/omnigent/blob/main/tests/server/test_managed_hosts.py).
+
+| Symptom                                 | Check                                                                                                                                                                                  |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Provider is absent from `state.names()` | Confirm the package is installed in the server's environment, its entry-point group is exactly `omnigent.sandbox_providers`, and discovery has restarted. Inspect `state.load_errors`. |
+| Namespace or duplicate-name error       | Use your own `omnigent.community.sandbox.*` subtree for both launcher and config model; choose a unique provider id.                                                                   |
+| `not a SandboxHostLauncher subclass`    | Register a subclass of `SandboxHostLauncher` or `ExecModelHostLauncher`, not a transport-only class.                                                                                   |
+| Invalid `sandbox.acme` config           | Match the model's fields and types. An absent block still must satisfy the model's required fields.                                                                                    |
+| Host never comes online                 | Check server reachability, the image's Omnigent installation, host identity/token delivery, and whether the host process survives exec completion.                                     |
+
+A broken entry point is logged and recorded in `load_errors` without stopping
+registry discovery. However, **configuring a missing or rejected provider still
+fails server config validation** because its name is unknown. Launcher import
+and construction happen later, so a registered name alone does not prove that
+its SDK dependencies or runtime are usable.
+
+<div className="note">
+
+Plugins execute Python in the Omnigent server process. The namespace rule is a
+packaging constraint, not a security sandbox. Install only provider packages you
+trust.
+
+</div>

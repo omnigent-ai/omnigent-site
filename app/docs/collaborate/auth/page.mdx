@@ -19,6 +19,10 @@ Omnigent supports three ways to authenticate users. Pick the one that fits your 
 | [Single sign-on (OIDC)](#single-sign-on-oidc) | Your own IdP: Google, GitHub, Okta, Microsoft.                           |
 | [Header-based auth](#header-based-auth)       | Behind an existing SSO proxy that injects `X-Forwarded-Email`.           |
 
+Whichever mode you pick, if browsers reach the web UI through a hostname other
+than the server's own (a proxy, tunnel, or extra domain), also see the
+[browser origin allowlist](#browser-origin-allowlist).
+
 ## Built-in accounts
 
 If you deployed with [Docker](/docs/deploy/overview#docker-compose) or a
@@ -100,6 +104,73 @@ If your server sits behind an existing SSO proxy (e.g. OAuth2 Proxy, Cloudflare 
 injects a trusted header, Omnigent can read the user identity directly from
 `X-Forwarded-Email`. No additional auth configuration is needed on the Omnigent
 side.
+
+## Browser origin allowlist
+
+Independent of the auth mode above, the server also checks the browser
+`Origin` header on WebSocket handshakes and file-upload POSTs — the only
+signal that tells your own web UI apart from some other page open in the same
+browser. Set `OMNIGENT_WS_ALLOWED_ORIGINS` (comma-separated) to trust origins
+beyond the server's own host, e.g. when the web UI is reached through a proxy,
+tunnel, or a domain the server doesn't know about itself:
+
+```
+OMNIGENT_WS_ALLOWED_ORIGINS=https://ui.example.com,https://agents.internal
+```
+
+Each entry is matched exactly against the `Origin` — scheme, host, and port —
+so `https://ui.example.com` does not admit `http://ui.example.com` or
+`https://ui.example.com:8443`.
+
+### Wildcard subdomains
+
+An entry's host may start with `*.` to trust every subdomain of a domain in
+one entry instead of listing each hostname — useful when many or rotating
+subdomains all serve the same deploy (per-workspace subdomains, preview
+environments, a tunnel provider's generated hostnames, …):
+
+```
+OMNIGENT_WS_ALLOWED_ORIGINS=https://*.example.com
+```
+
+This matches `https://foo.example.com` and `https://a.b.example.com` (any
+subdomain depth), but not the bare `https://example.com` itself. Wildcard
+entries follow the same exact-match rules as literal ones for everything
+other than the host:
+
+- The scheme must match: `https://*.example.com` does not admit
+  `http://foo.example.com`.
+- The port must match: `https://*.example.com:8443` admits only origins on
+  port `8443`, and an entry without a port admits only origins without one.
+- Matching stops at label boundaries, so `https://*.example.com` never admits
+  a lookalike such as `https://evilexample.com`.
+- Wildcard and literal entries can be mixed in the same value.
+
+The `*` must be the entire leftmost label, and the entry may carry nothing
+beyond `scheme://*.<domain>[:port]`. Anything else — a bare `https://*`,
+`https://*.`, a second `*`, a wildcard in a non-leftmost label
+(`https://a.*.example.com`), or a path, query string, or userinfo — is treated
+as malformed: it matches **nothing** (fails closed rather than open), and the
+server logs a warning once pointing at the bad entry.
+
+<div className="note">
+
+**Tailscale.** To trust every device on your tailnet, scope the wildcard to
+_your_ tailnet's name, never the bare `ts.net` suffix. `ts.net` is Tailscale's
+single shared public suffix across every customer's tailnet, so
+`https://*.ts.net` would trust every Tailscale user's devices, not just yours:
+
+```
+OMNIGENT_WS_ALLOWED_ORIGINS=https://*.<tailnet>.ts.net
+```
+
+Find `<tailnet>` in a device's full MagicDNS name (`tailscale status`, or the
+admin console) — it's the label between the machine name and `ts.net`:
+`laptop.foo-tailnet.ts.net` → `<tailnet>` is `foo-tailnet`.
+`OMNIGENT_ACCOUNTS_BASE_URL` still needs one concrete host, since it is used to
+build actual URLs rather than to check one.
+
+</div>
 
 ## Access control
 

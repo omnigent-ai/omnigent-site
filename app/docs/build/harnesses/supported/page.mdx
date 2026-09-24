@@ -43,6 +43,16 @@ Most coding agents can run in one of two modes:
   mirrors it back. You get the exact native experience, wrapped with Omnigent's
   collaboration and policy layer. These ids end in `-native`.
 
+### Native TUI on Windows hosts
+
+Native TUI harnesses run the vendor CLI inside a tmux pane, and the Omnigent
+runner does not support tmux/PTY sessions on Windows. A host running on Windows
+therefore reports every `-native` harness as unavailable, regardless of whether
+the CLI is installed and signed in, and the new-session picker badges those
+agents with a warning when that host is selected. Direct-execution harnesses
+(for example `claude-sdk` and `openai-agents`) are unaffected and remain
+available on Windows hosts.
+
 ## Harnesses
 
 | Harness | IDs and aliases | Direct execution | Native TUI | Support | Repository |

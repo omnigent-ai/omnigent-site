@@ -138,6 +138,13 @@ option is **Default** — labeled `Default (<model-id>)` when the host reports a
 default model — which leaves the harness on its own configured/default model.
 Leaving the picker on **Default** omits the override entirely.
 
+Pi (`pi-native`) lists the models of the provider `omni setup` configured for
+it — including every family a
+[Databricks AI Gateway](/docs/build/models#databricks-ai-gateway-with-pi)
+serves — and marks the model Pi opens when nothing is selected as the default
+row. The new-chat summary's **Model** line shows that default model rather than
+a bare **Default** while no pick is made.
+
 Your choice is remembered per harness, so a model picked for Codex doesn't change
 the model remembered for Claude Code (and vice versa). When you start the session,
 the selected model rides along as the launch override and the runner uses it at
@@ -151,6 +158,16 @@ agent, so a project can pin its own launch model. It only applies when the
 stored model is still a valid choice for that harness; a retired or unknown id
 falls back to your remembered pick. An explicit model you pick in the composer
 always wins for that session.
+
+#### Change the model or effort in a running session
+
+In a running session, the composer's gear (**Configure session**) opens a single
+row labeled with the agent's name. Its value shows the current model — or
+**Smart Routing** when routing is on — and opening it reveals one page with the
+model choices and, for harnesses that expose one, the **Effort** choices
+(**Thinking level** for Pi). Model and effort are no longer split across
+separate rows. Effort choices are disabled while Smart Routing is on. On a
+phone-sized viewport the page opens full-screen with a back control.
 
 ### Set what the agent can do without asking
 

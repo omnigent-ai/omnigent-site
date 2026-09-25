@@ -126,6 +126,8 @@ documents the full set to copy from:
 | `OMNIGENT_DEVICE_CLIENT_SECRET`       | No       | Set to the same value as the server's `OMNIGENT_DEVICE_CLIENT_SECRET` so only this bot can drive the device-grant login. Accounts mode only.  |
 | `OMNIGENT_SLACK_TOKEN_ENCRYPTION_KEY` | No       | A Fernet key that encrypts users' delegated tokens at rest. Without it, tokens live in memory only and users re-authenticate after a restart. |
 | `OMNIGENT_SLACK_DATABASE_PATH`        | No       | Where the bot's SQLite store lives. Defaults to `$OMNIGENT_DATA_DIR/omnigent_slack.sqlite3` (or `~/.omnigent/omnigent_slack.sqlite3`).        |
+| `OMNIGENT_SLACK_DEFAULT_AGENT_ID`     | No       | Pre-selects this agent id in every user's `/omnigent` setup modal. See [Operator-set setup defaults](#operator-set-setup-defaults).           |
+| `OMNIGENT_SLACK_DEFAULT_HOST_TYPE`    | No       | Only `managed` — pre-selects the server-provisioned managed sandbox as the host in the setup modal. Any other non-blank value fails at startup. |
 | `LOG_LEVEL`                           | No       | Set to `DEBUG` when diagnosing why Slack events aren't producing replies.                                                                     |
 
 Generate an encryption key with:
@@ -173,6 +175,40 @@ and clear all saved settings.
 
 Each new session launches a **fresh runner** on the chosen host, rooted at the
 configured workspace.
+
+### Operator-set setup defaults
+
+If your team has standardized on one agent — or on the managed sandbox — the
+operator can pre-select those choices in step 2 for everyone, so a new user
+just submits the modal instead of making two decisions they have no opinion on:
+
+| Variable                           | Effect                                                                                                                    |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `OMNIGENT_SLACK_DEFAULT_AGENT_ID`  | Opens the **Agent** menu on this agent id — one of the ids the server returns from `GET /v1/agents`.                     |
+| `OMNIGENT_SLACK_DEFAULT_HOST_TYPE` | Only `managed` — opens the **Host** menu on the server-provisioned managed sandbox. Any other non-blank value fails at startup. |
+
+Both are set in the bot's environment like every other variable. Either may be
+left unset or blank for no default (the picker then opens blank, as it always
+has).
+
+These are **pre-selections, nothing more**. The modal still opens, still shows
+the full menus, and still has to be submitted — the user can change either
+choice, and what they submit is what is saved.
+
+Availability is checked per user, each time the modal is rendered, against the
+agents and hosts that user's own login can see. A default that isn't on offer —
+an agent id missing from their menu, or `managed` on a server that provisions
+no sandbox — leaves **that** menu blank and adds a warning note in the modal
+saying so. A different agent or host is never substituted, and a valid default
+in the other menu is still applied. The note distinguishes what it could
+establish from what it couldn't: if the server's sandbox capability couldn't be
+checked, the modal says the check didn't complete rather than claiming the
+server provisions none; and an agent past the menu's 100-option cap is reported
+as missing from the menu, not from the server.
+
+There is deliberately **no** default for a specific external host id: on an
+authenticated server `/v1/hosts` is owner-scoped, so one user's host is never
+listed for anyone else and could not be pre-selected.
 
 ## Authentication
 

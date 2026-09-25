@@ -129,6 +129,70 @@ and the OpenAI-agents harness, use the OpenAI-compatible `.../api/v1`.
 
 </div>
 
+#### Databricks AI Gateway with Pi
+
+A gateway family can point at a **workspace-hosted Databricks AI Gateway**
+URL — any of `https://<workspace>/ai-gateway/anthropic`,
+`https://<workspace>/ai-gateway/codex/v1`, or
+`https://<workspace>/ai-gateway/mlflow/v1`. A single family only describes one
+protocol, but the gateway behind it fronts a whole workspace of models, so when
+**Pi** (`pi-native`) launches on such a family it lists the workspace's model
+services and offers every family the gateway serves, not just the one the entry
+declares:
+
+- Claude models on Pi's native Anthropic Messages surface (`/ai-gateway/anthropic`)
+- GPT models on the Responses surface (`/ai-gateway/codex/v1`)
+- Gemini models on the MLflow surface (`/ai-gateway/mlflow/v1`)
+- Other served models on the workspace's `/serving-endpoints`
+
+```yaml
+# ~/.omnigent/config.yaml
+providers:
+  databricks-gateway:
+    kind: gateway
+    default: pi
+    openai:
+      base_url: https://<workspace>.cloud.databricks.com/ai-gateway/codex/v1
+      api_key: <gateway token>   # or auth_command: <command that prints a token>
+      wire_api: responses
+      models:
+        default: system.ai.gpt-5
+```
+
+The configured `models.default` stays the model Pi launches with when you make
+no selection, served from its own surface, and any `context_window` /
+`max_output_tokens` set on the family still apply to it. The other families
+appear in Pi's model picker (see
+[Choose the launch model](/docs/interact/web-ui#choose-the-launch-model)), and
+the row Pi opens without a selection is marked as the default. A picked model
+is launched from whichever generated provider currently serves it, so a saved
+pick keeps working if the workspace listing later routes that model to a
+different surface.
+
+Enumeration is skipped — and the family behaves like any single-protocol
+gateway — when:
+
+- the `models:` map names more than one tier (a curated shortlist is never
+  widened);
+- the `base_url` is a dedicated `*.ai-gateway.*` host rather than a workspace
+  URL (it names no workspace to list);
+- the listing fails — the workspace is unreachable, the token lacks Unity
+  Catalog access, or the `auth_command` produces no token. Pi then keeps the
+  configured model on its declared surface instead of falling back to its own
+  login.
+
+<div className="note">
+
+**`auth_command`:** instead of a static `api_key`, a family may set
+`auth_command` to a command that prints a bearer token. The command runs
+through your default shell, so pipelines, quoting, and `~` behave as they do at
+your prompt (for example `jq -r .access_token ~/token.json`). It becomes Pi's
+`!command` API key — re-run per request — and also mints the one-shot token
+used to list the workspace. A command that stalls is killed after the timeout
+(15 seconds) and treated as a failed mint.
+
+</div>
+
 #### Cost tracking for self-hosted models
 
 Self-hosted and gateway models (Ollama, vLLM, custom endpoints) often aren't in

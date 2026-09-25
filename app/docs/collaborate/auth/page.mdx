@@ -178,11 +178,50 @@ is also editable at runtime from **Settings > Sharing**. When disabled, the
 Share dialog hides its **Public access** toggle and the server rejects new
 public grants; sessions already shared publicly stay public until revoked.
 
+#### Default visibility for new sessions
+
+By default every session starts private and its owner shares it explicitly. A
+third setting, **Default visibility for new sessions**, lets an admin make new
+sessions start with public read access instead. It has three options:
+
+| Value     | Settings > Sharing label        | Behavior                                                                                                                  |
+| --------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `off`     | Private                         | New sessions start private. Owners share them explicitly. This is the default.                                            |
+| `sandbox` | Cloud sandbox sessions public   | Sessions running in a server-managed [cloud sandbox](/docs/deploy/cloud-sandbox-host) start public; sessions on a user's own machine stay private. |
+| `all`     | All sessions public             | Every new session starts with public read access.                                                                         |
+
+```
+OMNIGENT_DEFAULT_PUBLIC_SESSIONS=sandbox omni server start
+```
+
+Unlike the two settings above, this one fails **closed**: an unset or
+unrecognized value resolves to `off`, so a typo never exposes sessions. It is
+also editable at runtime from **Settings > Sharing**, or via
+`default_public_sessions` on `PUT /v1/sharing`.
+
+The default is applied when a session is created, forked, or fired by a
+[scheduled task](/docs/build/scheduled-tasks) (a task whose execution target is
+`managed_sandbox` counts as a sandbox session). It is only the creation default: owners can revoke the
+public grant from the Share dialog at any time, and existing sessions are never
+changed. A few sessions are always left private:
+
+- Sub-agent sessions, which follow their parent's grants instead.
+- Side chats, which are private scratch forks of the caller's own view.
+- Single-user (no-auth) servers, where there is no sharing at all.
+
+The default never grants more than an owner could grant by hand. It is
+inactive while the sharing mode is `off` or public access is disabled, and
+under `restricted_read_only` it skips sessions whose working directory is too
+broad to share (see above). **Settings > Sharing** greys out the control and
+shows the effective value (`Private`) while a higher-level setting overrides it;
+the saved choice returns once the blocker is lifted.
+
 <div className="note">
 
-When a deployment manages the sharing mode or public access itself (for example
-a managed service that injects its own policy), **Settings > Sharing** shows the
-current value as read-only and cannot change it here.
+When a deployment manages the sharing mode, public access, or default visibility
+itself (for example a managed service that injects its own policy),
+**Settings > Sharing** shows the current value as read-only and cannot change it
+here.
 
 </div>
 

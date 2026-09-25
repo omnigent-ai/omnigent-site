@@ -265,6 +265,35 @@ executor:
   harness: acp:gemini-cli
 ```
 
+### Select an ACP agent per session
+
+Picking `acp:<slug>` for a session — in the web picker, or via the
+`harness_override` field when creating a session through the API — resolves the
+slug on the **host that runs the session**, not on the server. The server only
+checks the id's syntax (`acp:` followed by lowercase letters, digits, and single
+hyphens, e.g. `acp:gemini-cli`) and stores the selection with the session; the
+runner then looks the slug up in its own `acp:` block, so the agent only needs
+to be registered on the host you attach the session to. The selection is kept
+across every turn of the session, and the session snapshot reports it as its
+`harness`.
+
+- A slug that isn't registered on that host fails the session (`ACP agent
+  '<slug>' is not configured on this runner. Check the selected host's ACP
+  configuration.`) rather than silently launching a different agent. The
+  session shows as `failed`; register the agent on that host or pick another.
+- The bare `acp` id still launches the first agent in the host's `acp:` block.
+- A per-session `model_override` is validated against the model policy of the
+  selected agent.
+
+<div className="note">
+
+**Note:** All per-session overrides (harness, model, reasoning effort, and so
+on) are stored together in one field capped at 512 characters. A request that
+would overflow it is rejected with `invalid_input` before anything is saved —
+shorten the harness or model identifier if you hit this.
+
+</div>
+
 The agent runs its own agent loop, tools, and context window; Omnigent renders
 its streaming output, reasoning, and tool cards, routes its permission requests
 through your [contextual policies](/docs/policies/overview) as web elicitation

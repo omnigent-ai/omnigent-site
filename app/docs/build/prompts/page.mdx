@@ -40,6 +40,16 @@ directory for context files in this order:
 
 The first file found becomes the system prompt. No merge, first wins.
 
+<div className="note">
+
+**Note:** This discovery happens once, in the agent directory, when Omnigent
+builds the system prompt. The `pi` harness separately appends `AGENTS.md` /
+`CLAUDE.md` files it finds in the *workspace* and its ancestors at run time. To
+keep only your explicit prompt, set `context_files: false` on the executor — see
+[Pi context files](/docs/build/harnesses/configuration#context-files).
+
+</div>
+
 ## Skills
 
 Skills are reusable instruction bundles that your agent can load at runtime via the

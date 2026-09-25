@@ -226,6 +226,53 @@ above applies to the native `agy`-wrapping `antigravity-native` harness.
 
 </div>
 
+## Pi
+
+### Context files
+
+With `harness: pi`, Pi automatically appends context files such as `AGENTS.md`
+and `CLAUDE.md` from the workspace, its ancestor directories, and Pi's global
+agent directory to the system prompt. To turn that discovery off for an agent,
+set `context_files: false` on the executor:
+
+```yaml
+name: focused-agent
+executor:
+  harness: pi
+  context_files: false
+prompt: |
+  Follow these explicit agent instructions.
+```
+
+In a directory bundle's `config.yaml`, the option lives under `executor.config`:
+
+```yaml
+spec_version: 1
+name: focused-agent
+executor:
+  type: omnigent
+  config:
+    harness: pi
+    context_files: false
+instructions: AGENTS.md
+```
+
+The default is `true`, and the value must be a YAML boolean — quoted strings
+like `"false"`, `off`, or `0` are rejected when the agent loads. Omnigent maps
+`context_files: false` to Pi's `--no-context-files` flag; the setting travels
+with the agent when it's bundled and uploaded, and each inline sub-agent
+(`type: agent`) can set its own value.
+
+What the option does **not** change:
+
+- Your explicit `prompt:` or `instructions:` content — including an
+  `instructions: AGENTS.md` file you reference deliberately — and Omnigent's
+  own runtime instructions are still sent to Pi.
+- Skills, extensions, and Pi's separate `SYSTEM.md` discovery stay enabled.
+
+`context_files` is only accepted with `harness: pi`. Setting it on `pi-native`
+or any other harness is a validation error.
+
 ## Custom ACP agents
 
 Beyond the built-in harnesses, the generic `acp` harness drives *any* agent that

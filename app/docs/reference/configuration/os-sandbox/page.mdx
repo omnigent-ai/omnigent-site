@@ -125,6 +125,120 @@ sandbox:
     - ~/.config/private
 ```
 
+### Disposable copy-on-write writes (Linux)
+
+A `write_paths` entry can also be an object with `copy_on_write: true`. On the
+`linux_bwrap` backend, that directory is mounted as a disposable overlay: the agent
+sees it at its original path and can create, edit, rename, and delete files there,
+but the host's original files never change. A plain string entry is shorthand for
+`{path: ..., copy_on_write: false}`.
+
+```
+executor:
+  harness: openai-agents
+
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    type: linux_bwrap
+    write_paths:
+      - ./artifacts                 # persistent: writes land on the host
+      - path: ./dependencies
+        copy_on_write: true         # disposable: writes stay in the overlay
+
+terminals:
+  bash:
+    command: bash
+    os_env: inherit
+```
+
+Create `artifacts` and `dependencies` before starting the session. The `sys_os_*`
+tools, shell commands, and inherited terminals all share the same overlay, including
+across turns and terminal reopen. Writes to `artifacts` persist normally.
+
+The disposable view belongs to the session's OS environment:
+
+- Its changes are discarded when that environment closes, and they are not restored
+  after a runner restart. Separate sessions get separate views. Export anything you
+  want to keep into a persistent write path before the session ends.
+- Overlay data lives in temporary memory-backed storage and consumes memory/swap as
+  files are copied up.
+- The original directory should stay unchanged on the host while its overlay is
+  active; OverlayFS does not snapshot concurrent host edits.
+
+Copy-on-write is currently restricted, and Omnigent rejects configs that break these
+rules rather than falling back to writing the original directory:
+
+- Requires `sandbox.type: linux_bwrap` and `executor.harness: openai-agents`. Other
+  harnesses are rejected because their native tools do not yet share the session's
+  mount namespace.
+- Each copy-on-write path must name an existing directory.
+- Nested copy-on-write roots, persistent `write_paths` inside a copy-on-write root,
+  and `write_files` inside one are rejected. A persistent parent with a
+  copy-on-write child is supported.
+- `os_env.fork` and sandbox overrides are not supported with copy-on-write paths.
+- In a copy-on-write session, file uploads, agent bundle downloads
+  (`sys_agent_download`), local agent config discovery (`sys_agent_list`), skill
+  loading/reading, and `sys_session_create` with `config_path` return an explicit
+  unsupported-operation error. Use `sys_os_*` tools and an inherited terminal for
+  filesystem work, and export results to a persistent write path.
+
+#### Host requirements
+
+These apply only to paths with `copy_on_write: true`; ordinary `read_paths` and
+persistent `write_paths` keep their existing requirements. They are checked on the
+machine running the sandbox, not the UI:
+
+- **Bubblewrap 0.11+**, providing `--overlay-src` and `--tmp-overlay`.
+- **Unprivileged OverlayFS mounts with `userxattr` support** — upstream Linux
+  **5.11+**; some distributions backport them to older kernels.
+- **tmpfs `user.*` extended attributes** (upstream **Linux 6.6**) for Bubblewrap's
+  temporary upper layer. The upstream baseline is therefore **6.6+**, or distro
+  backports of both features. Older tmpfs can allow the mount but fail later
+  directory operations.
+- **Kernel facilities:** user/mount namespaces (`CONFIG_NAMESPACES`,
+  `CONFIG_USER_NS`), OverlayFS (`CONFIG_OVERLAY_FS`, built in or as a module), and
+  tmpfs with extended attributes (`CONFIG_TMPFS`, `CONFIG_TMPFS_XATTR`).
+- **Permission to use them:** sufficient `user.max_user_namespaces` and
+  `user.max_mnt_namespaces` quotas, `kernel.unprivileged_userns_clone=1` where
+  that switch exists, and AppArmor/SELinux/seccomp/container policy that allows
+  namespace creation and OverlayFS mounts. Ubuntu 24.04's AppArmor restrictions,
+  for example, can block unprivileged user namespaces even on a recent kernel.
+  Omnigent does not change host security settings.
+
+Omnigent attempts the real mounts and tests tmpfs user extended attributes when it
+initializes a copy-on-write environment — it neither rejects a working distro
+backport based on `uname` nor accepts a host solely for having a new kernel. On
+failure the error reports the running kernel, these prerequisites, and Bubblewrap's
+original message; the session fails before running tools in that environment. A
+missing or unlaunchable `bwrap` binary and a mount startup timeout also produce
+copy-on-write-specific errors.
+
+To check support, run this as the same user and inside the same container/VM as the
+runner, from a directory containing an existing `dependencies` folder:
+
+```
+uname -r
+bwrap --version
+cow_probe_dir=$(mktemp -d)
+bwrap --unshare-user --ro-bind / / \
+  --overlay-src "$PWD/dependencies" --tmp-overlay "$PWD/dependencies" \
+  --tmpfs "$cow_probe_dir" \
+  -- python3 -c 'import os,sys,tempfile; f=tempfile.TemporaryFile(dir=sys.argv[1]); os.setxattr(f.fileno(), "user.cow_probe", b"1")' "$cow_probe_dir"
+cow_probe_status=$?
+rmdir "$cow_probe_dir"
+test "$cow_probe_status" -eq 0
+```
+
+The probe should exit successfully without changing `dependencies`. An unknown
+overlay option indicates an old Bubblewrap build; a namespace or mount permission
+error points at host policy; an unsupported filesystem/option points at missing
+kernel support. See the
+[Bubblewrap manual](https://github.com/containers/bubblewrap/blob/v0.12.0/bwrap.xml),
+the [kernel OverlayFS documentation](https://docs.kernel.org/filesystems/overlayfs.html),
+and the [Linux 6.6 tmpfs extended-attribute handlers](https://github.com/torvalds/linux/blob/v6.6/mm/shmem.c#L3711).
+
 ### Network
 
 ```
@@ -313,7 +427,7 @@ Omnigent errors instead of quietly running unsandboxed. The only opt-out is
 | Field                               | Type     | Default          | Description                                                                                                                   |
 | ----------------------------------- | -------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `type`                              | string   | platform default | `auto` (or omitted) picks the platform default; `linux_bwrap`, `darwin_seatbelt`, `windows_jobobject`; `none`/`null` disables |
-| `write_paths`                       | string[] | `[]`             | Writable directories. `cwd` is read-only by default.                                                                          |
+| `write_paths`                       | (string or object)[] | `[]` | Writable directories. `cwd` is read-only by default. An object entry takes `path` and `copy_on_write` (bool, default `false`); see [copy-on-write writes](#disposable-copy-on-write-writes-linux). |
 | `write_files`                       | string[] | `[]`             | Individual writable files                                                                                                     |
 | `read_paths`                        | string[] | none             | Read-only grants outside `cwd`                                                                                                |
 | `allow_network`                     | bool     | `true`           | Network access on/off                                                                                                         |

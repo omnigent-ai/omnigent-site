@@ -14,6 +14,8 @@ export const metadata = pageMeta(
 The web UI starts automatically with every session. When the server launches, the URL is
 printed in your terminal. Open it in any browser to get started.
 
+{/* TODO(doc-drafter): screenshot may be stale — the Files rail header now shows the folder breadcrumb with parent/refresh controls instead of a "Working folder" title, and tree rows use per-type file icons. */}
+
 ![Omnigent web UI](/images/docs/single-harness-demo.gif)
 
 ## Session management
@@ -371,6 +373,77 @@ This is a per-device UI preference stored in your browser. If a chosen default
 tab isn't available in a given session (for example, GitHub only appears in
 coding-agent sessions, and Files/Changes need an on-disk workspace), the rail
 falls back to the first available tab.
+
+## Workspace files
+
+The **Files** and **Changes** tabs of the right **Workspace** rail show the
+session's working folder. **Files** is a folder tree of everything on disk;
+**Changes** is a flat list of only the files the agent has created, modified,
+or deleted. Click a file in either tab to open it in the
+[code viewer](#code-viewer-and-diffs).
+
+### Files tab
+
+The header of the Files tab is the working folder itself, not a title: it shows
+the current folder's name (hover for the full path), with a set of controls
+around it:
+
+- **Go to parent folder** (`←`) — re-roots the tree one level up. It's enabled
+  only while the parent is still inside the session's workspace, unless the
+  session is host-bound and unconfined, in which case you can keep climbing.
+- **Back to working folder** — appears once you've browsed away from the
+  workspace root, and returns the tree to it.
+- **Copy folder path** — copies the absolute path of whatever folder the tree
+  is currently rooted at.
+- **Refresh files** — re-reads the tree, the expanded folders, the change list,
+  and any active search from disk. The icon spins until the refresh completes.
+
+When the session is host-bound and unconfined, the path itself is a button that
+opens the workspace directory browser, so you can re-root the tree anywhere on
+the host. Double-clicking a folder in the tree re-roots onto it; a single click
+just expands or collapses it in place.
+
+Below the header, a search box filters the tree, followed by three controls:
+
+- **Sort** — a dropdown that shows the active sort (for example **Last
+  edited**) and lets you pick another order.
+- **Files to include / exclude** — the filter icon reveals two glob fields that
+  narrow the search. A dot on the icon means a filter is set while the fields
+  are hidden.
+- **Hidden files** — dot-prefixed files and folders (`.claude/`, `.github/`,
+  and so on) are shown by default. The eye icon previews what clicking it will
+  do: a slashed eye hides the hidden entries, a plain eye reveals them again.
+  While they're hidden, the tooltip reports how many files are being filtered
+  out.
+
+Each row carries an icon that reflects the file type (documents, spreadsheets,
+code, JSON, images, video, audio, archives, databases, fonts, and so on), a
+file-size caption for files, and a hover-only **Copy path** / **Download**
+pair. Folders show a closed or open folder icon at rest and a chevron on hover.
+
+The tree also overlays the agent's changes onto the on-disk listing:
+
+- Files the agent **added** are marked `A` and shown even before the directory
+  listing has caught up.
+- **Modified** files are marked `M`.
+- **Deleted** files stay in the tree, struck through and marked `D`, so you can
+  see what was removed even though the file is no longer on disk.
+
+Folders containing changed files are tinted to match, and the badges follow you
+when you re-root into a subfolder of the workspace.
+
+### Changes tab
+
+The **Changes** tab lists the same changed files flat, one per row: file-type
+icon, name, containing folder, the `A` / `M` / `D` status letter, and the file
+size (replaced on hover by the **Copy path** / **Download** actions). Its
+header keeps a **Refresh files** control, and the row above the list has the
+same search, sort, and hidden-files toggles as the Files tab.
+
+Changes are tracked from the agent's own file edits. Codex (`codex-native`)
+sessions report each applied patch to the same tracker, so the files Codex
+adds, edits, or deletes appear here too — including in workspaces that aren't
+git repositories. Patches that fail or are declined are not recorded.
 
 ## File editor
 

@@ -149,7 +149,10 @@ Optionally point the sandbox at a git repository to clone. Use the composer's
 [connected GitHub account](/docs/deploy/github-connect) or paste a clone URL, and
 pin a branch; leave it empty for a bare sandbox with a server-created workspace.
 The repo is cloned inside the sandbox and becomes the session's working
-directory.
+directory. Admins can make these clones faster with the optional
+[`sandbox.git_clone`](/docs/reference/configuration/cloud-sandbox#git-clone-options)
+block, which limits history depth, branch selection, and blob fetching for
+fresh checkouts on providers that support it.
 
 Some providers can clone **several repositories** into one sandbox. When the
 selected provider supports it, keep adding entries in the **Repository** control

@@ -44,6 +44,11 @@ or node drain, Kubernetes API read errors, and time spent `Pending`. When it
 expires, the launch error reports the configured deadline and last observed Pod
 state.
 
+To shorten the clone step itself, set the provider-independent
+[`sandbox.git_clone`](/docs/reference/configuration/cloud-sandbox#git-clone-options)
+block (shallow depth, single-branch, blobless filter). The Kubernetes provider
+honors it for every repository it clones, including warm-pool Pods.
+
 The value must be a positive YAML integer. Values such as `0`, `"90"`, and
 `true` fail server startup.
 

@@ -432,6 +432,15 @@ host for GitHub Enterprise). The details, changed files, and diff below are
 always the selected PR's, fetched from GitHub — including fork PRs and renamed
 files — so they match the PR's "Files changed" exactly.
 
+When a file diff is computed from the local checkout instead, Omnigent diffs
+`HEAD` against the merge base with the base branch. In a shallow or
+single-branch clone (for example one created under an admin's
+[`sandbox.git_clone`](/docs/reference/configuration/cloud-sandbox#git-clone-options)
+policy) a missing merge base or unfetched base branch produces an error naming
+the `git fetch` command to run, rather than a misleading branch-tip comparison.
+File content that cannot be read is also reported as an error, never shown as
+an added or deleted file.
+
 ### Link or unlink a PR
 
 Use the **+** (`Link a PR`) button to attach a pull request by URL — paste a

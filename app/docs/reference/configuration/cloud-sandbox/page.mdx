@@ -30,8 +30,100 @@ sandbox:
 | `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `openshell`, `boxlite`, or `microsandbox`. |
 | `server_url`  | Yes      | Public Omnigent server URL that the remote runner connects back to.                                     |
 | `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).    |
+| `git_clone`   | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).                |
 
 Provider-specific blocks are optional. Omit one to use that provider's defaults.
+
+## Git clone options
+
+The optional `git_clone` mapping reduces the Git history a managed sandbox
+downloads when it creates a repository checkout. A useful starting point for
+short coding sessions:
+
+```yaml
+sandbox:
+  provider: kubernetes
+  server_url: https://your-server.example.com
+  git_clone:
+    depth: 50
+    single_branch: true
+```
+
+This checks out every file on the selected branch with up to 50 commits of
+history. It applies to each requested repository, including repositories cloned
+after claiming a warm-pool Pod, and needs no prepared workspace image. Restart
+the server after changing the block, then create a new sandbox to try it.
+
+| Setting         | Default | Behavior                                                                                                                                                                                                                                            |
+| --------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `depth`         | `null`  | Full history. A positive integer requests a shallow clone with that many commits.                                                                                                                                                                    |
+| `single_branch` | `null`  | Keep the existing rule: a pinned repo branch selects only that branch; otherwise all branches are fetched. `true` selects only the requested (or default) branch; `false` fetches all branches.                                                     |
+| `filter`        | `null`  | `blob:none` enables a partial clone: commit history is kept and file contents are fetched on demand. The initial checkout still includes every file. Requires remote filter support; Git can warn and fall back to an unfiltered clone.              |
+| `tags`          | `true`  | Normal tag following. `false` passes `--no-tags`, which persists for later fetches. `true` does not promise every remote tag is fetched.                                                                                                             |
+
+Only these four keys are accepted; any other key, or a non-mapping value, fails
+server startup. Omitting `git_clone` preserves the existing clone commands.
+Setting only `depth` keeps the existing branch selection — Omnigent explicitly
+counters Git's implicit single-branch default for shallow clones. Fetching every
+branch of a repository with many branch tips can erase most of the speed
+benefit; set `single_branch: true` when that tradeoff fits the workload.
+
+The policy applies only when a checkout has to be created. Retained checkouts
+are not reset, truncated, or reconfigured when a session wakes; an
+agent-sandbox wake that lost its ephemeral workspace recreates it with the
+current policy. Each entry in a `sandbox.providers` list can override the
+entire shared `git_clone` mapping; use `git_clone: {}` on an entry to restore
+the defaults.
+
+Kubernetes (including agent-sandbox warm pools) and providers that use the
+standard exec clone implementation support these options. Gensee, Islo, and
+custom workspace materializers must implement support explicitly; with
+nondefault settings the launch, replacement, or resume is rejected before any
+sandbox is provisioned, naming the provider. Third-party providers advertise
+support with `SandboxCapabilities.git_clone_options=True` and honor
+`RepoWorkspace.git_clone`; exec providers that override `materialize_workspace`
+must accept its optional `git_clone` argument when opting in. With default
+settings, legacy overrides receive no new keyword.
+
+Clone settings carry no credentials. Initial clones keep using the owner-bound
+[GitHub broker](/docs/deploy/github-connect), and later Git operations use the
+host's existing credential helper. Deepening a private repo or lazily fetching
+blobs requires continued access to the remote.
+
+### Getting more history later
+
+Inside a shallow checkout:
+
+```bash
+git fetch --deepen=100 origin
+# Or restore full history for the configured branch selection:
+git fetch --unshallow origin
+```
+
+Neither command widens a single-branch fetch refspec or re-enables tags. To
+fetch another branch, for example for a PR comparison, name its remote-tracking
+destination:
+
+```bash
+git fetch origin '+refs/heads/main:refs/remotes/origin/main'
+# If both branches need more history, include both refspecs:
+git fetch --deepen=100 origin \
+  '+refs/heads/main:refs/remotes/origin/main' \
+  '+refs/heads/feature:refs/remotes/origin/feature'
+git fetch --tags origin  # explicitly fetch tags if needed
+```
+
+When a local PR diff cannot find a merge base because history is shallow, or
+the base branch was never fetched, Omnigent reports an actionable error with
+these commands rather than showing a misleading branch-tip comparison. A failed
+lazy file fetch is also an error; unavailable content is never treated as an
+added or deleted file.
+
+Keep the full-history defaults for history-heavy development, offline work, or
+tools that expect broad history. `blob:none` is opt-in because it moves work to
+later reads: a first historical `git show` or `git blame` can fetch more data
+and take longer. Sparse checkout, submodule recursion, and LFS behavior are
+unchanged.
 
 ## Modal
 

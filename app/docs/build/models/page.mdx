@@ -196,3 +196,64 @@ Model names are prefixed with `databricks-` so Omnigent routes them through your
 workspace automatically. See the
 [Databricks Foundation Model API docs](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/supported-models)
 for the full list of available models.
+
+#### Codex on Databricks
+
+When a `codex` agent uses a Databricks credential, Omnigent does not hand the
+harness a token. It starts a per-session, **signer-backed** route: a model
+signer runs outside the sandbox
+that signs only the Codex model route
+(`POST <workspace-host>/ai-gateway/codex/v1/responses`); the Codex process
+inside the sandbox never sees the credential. This is the only Databricks route
+for Codex, and it requires all of the following:
+
+- An active `os_env.sandbox` (any backend other than `none`).
+- An explicit Databricks `profile`, and configured ucode Codex state for that
+  workspace — run `ucode configure` first.
+- A top-level `model_egress` grant naming the route the signer may authorize.
+- No `os_env.sandbox.egress_rules` — signer-backed Codex sessions are
+  model-only.
+- Codex CLI `0.146.0` exactly. The session refuses to start on any other version.
+
+```yaml
+executor:
+  harness: codex
+  auth:
+    type: databricks
+    profile: <your-profile>
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    write_paths: [.]
+model_egress:
+  - "POST <workspace-host>/ai-gateway/codex/v1/responses"
+```
+
+`model_egress` uses the same `"METHODS host/path-glob"` rule syntax as the
+sandbox's [`egress_rules`](/docs/reference/configuration/os-sandbox#network),
+but it is a separate, operator-approved grant: generic network access can never
+authorize a credential. It must be a non-empty list, and every entry must parse
+as a rule — `model_egress: []` or a bare string is rejected when the spec is
+loaded. The signer's effective authority is the intersection of the provider's
+fixed route, the endpoint recorded in your ucode state, and your `model_egress`
+rules; if nothing survives that intersection, the session fails to start.
+
+If `executor.model` is unset, the session uses the Codex model configured in
+ucode, falling back to Omnigent's catalog default for Databricks.
+
+<div className="note">
+
+**Note:** signer-backed Codex conflicts with the legacy gateway overrides
+(`HARNESS_CODEX_GATEWAY_AUTH_COMMAND` and the other `HARNESS_CODEX_GATEWAY_*`
+variables). Unset them; a session that has both fails at launch.
+
+</div>
+
+**Expired or missing credentials.** If the signer cannot mint a token — `ucode`
+is not on `PATH`, you are not logged in, or the token has expired — the turn
+fails with error code `PROVIDER_AUTH_REQUIRED` titled **Databricks
+authentication required**. Run `ucode configure` or
+`databricks auth login --host <workspace-host> --profile <profile>`, then
+**Retry**. In the Web UI the error card includes a **Copy command** button that
+copies the `ucode configure` recovery command to your clipboard.

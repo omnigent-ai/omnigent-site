@@ -262,6 +262,16 @@ By default, the proxy also blocks connections to private IPs (RFC1918, loopback,
 metadata like `169.254.169.254`). Set
 `egress_allow_private_destinations: true` if your agent needs to reach internal services.
 
+<div className="note">
+
+`egress_rules` never authorizes a model credential. Signer-backed harness routes
+(currently Codex on Databricks) take a separate top-level `model_egress` list in
+the agent spec, written in the same rule syntax, and reject
+`os_env.sandbox.egress_rules` entirely. See
+[Codex on Databricks](/docs/build/models#codex-on-databricks).
+
+</div>
+
 ### Environment
 
 ```

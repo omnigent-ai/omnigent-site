@@ -29,6 +29,11 @@ instructions: prompts/system.md
 `instructions` also accepts file paths (resolved relative to the agent YAML's
 directory). If you set both fields, `instructions` wins.
 
+How the prompt reaches the model depends on the harness. With the `pi` harness,
+Omnigent appends it to Pi's built-in base prompt by default; set
+`executor.system_prompt_mode: replace` to make your prompt the base instead. See
+[Pi](/docs/build/harnesses/configuration#pi) for details.
+
 ### Auto-discovery
 
 When neither `prompt` nor `instructions` is set, Omnigent scans the agent

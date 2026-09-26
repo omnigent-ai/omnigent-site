@@ -226,6 +226,79 @@ above applies to the native `agy`-wrapping `antigravity-native` harness.
 
 </div>
 
+## Pi
+
+The `pi` harness accepts two executor options that control what Pi receives as
+its system prompt. Both apply only to `pi` — setting either on `pi-native` or
+any other harness is a validation error.
+
+### System prompt mode
+
+By default Omnigent keeps Pi's own base prompt and *appends* the composed
+instructions to it. `system_prompt_mode` switches that:
+
+| Value | Behavior |
+| --- | --- |
+| `append` (default) | Keeps Pi's base prompt — its built-in coding prompt, or a discovered `SYSTEM.md` — and appends Omnigent's instructions via `--append-system-prompt`. |
+| `replace` | Sends Omnigent's instructions as the base via `--system-prompt`. Pi's built-in coding prompt and any discovered `SYSTEM.md` are omitted, and an explicit empty `--append-system-prompt` prevents `APPEND_SYSTEM.md` discovery. |
+
+Values are case-sensitive; anything other than `append` or `replace` is
+rejected when the agent loads. `replace` also requires non-empty instructions —
+Omnigent refuses to start Pi with an empty base prompt.
+
+In a flat agent YAML, set it directly under `executor`:
+
+```yaml
+name: support-agent
+executor:
+  harness: pi
+  system_prompt_mode: replace
+  context_files: false
+prompt: |
+  You are a customer-support assistant.
+```
+
+In a directory bundle, it lives under `executor.config`:
+
+```yaml
+spec_version: 1
+name: support-agent
+executor:
+  type: omnigent
+  config:
+    harness: pi
+    system_prompt_mode: replace
+    context_files: false
+instructions: AGENTS.md
+```
+
+Both modes preserve your explicit agent instructions, per-request instructions,
+and Omnigent's appended runtime instructions. What `replace` removes is Pi's
+default tool summaries and coding guidelines — tool schemas and tool execution
+keep working. Skills, the working-directory footer, and extension hooks stay
+active in either mode, and extensions can still modify the final prompt.
+
+Inline sub-agents (`type: agent` tools) carry their own `executor` block, so a
+sub-agent can pick a different `system_prompt_mode` from its parent.
+
+<div className="note">
+
+**Note:** Omnigent forwards the setting to the Pi runner as
+`HARNESS_PI_SYSTEM_PROMPT_MODE`, derived from the agent spec on every launch.
+Set the YAML key rather than the environment variable — an ambient value never
+overrides what the YAML (or the `append` default) says.
+
+</div>
+
+### Context files
+
+`context_files` (default `true`) controls whether Pi automatically loads
+workspace context files such as `AGENTS.md` and `CLAUDE.md`. It is independent
+of `system_prompt_mode`: set `context_files: false` alongside
+`system_prompt_mode: replace` — as in the examples above — when you want Pi to
+see only your authored prompt. Explicit agent instructions are unaffected
+either way.
+
 ## Custom ACP agents
 
 Beyond the built-in harnesses, the generic `acp` harness drives *any* agent that

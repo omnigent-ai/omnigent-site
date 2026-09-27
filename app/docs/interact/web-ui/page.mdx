@@ -509,6 +509,54 @@ Each queued row has inline actions:
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
 
+## Sign-in prompts in native sessions
+
+A Claude Code (`claude-native`) or Codex (`codex-native`) session runs the
+vendor CLI in the session terminal. When a launcher wrapper in front of that
+binary stops on a **device-style sign-in prompt** — an address to open, often
+with a one-time code — the agent never receives your message. Instead of
+waiting out the startup budget and tearing the terminal down, the send fails
+fast and the chat shows an error card headed **Claude Code can't start until
+you sign in to Databricks** (or **Codex can't start until you sign in to
+Databricks**; error code `databricks_sign_in_pending`). The terminal is left
+running so the sign-in can be finished.
+
+The card offers the next step as an action:
+
+- **Open sign-in link** asks the host what the agent's terminal is showing
+  _right now_ and opens that address in a new tab. The address is never saved
+  in the transcript — it is a one-time URL bound to the launcher process that
+  printed it, so a copy would go stale within minutes. If the prompt has since
+  gone, the card reports **No sign-in is pending in the terminal any more. Try
+  sending your message again.**
+- **Copy code `XXXX-XXXX`** appears once a link has been fetched and the prompt
+  shows a device code, so you can paste it on the sign-in page.
+
+Only the native agent's own pane is read: a shell you opened alongside it in
+the same session never supplies the address.
+
+Once you sign in, the agent continues on its own. Omnigent watches the pane
+and, when the agent is ready to take a message, posts a neutral notice —
+**Signed in to Databricks: Claude Code (or Codex) is ready. Send your message
+again.** (`databricks_sign_in_completed`). The message that failed stays in the
+transcript above the card rather than vanishing on reload; resend it (or type a
+new one) to continue. Reloading the page keeps the card's headline and
+**Open sign-in link** action, since the persisted error item now carries them.
+
+Two related Codex startup cards use the same shape:
+
+- **Codex is still starting** (`agent_startup_pending`) — the Codex TUI has not
+  started a thread within its startup budget but its pane is still alive and
+  no sign-in address was recognized on screen. Finish any sign-in shown in the
+  session terminal, then send your message again; Omnigent keeps waiting for
+  the thread without a deadline.
+- `codex_thread_not_started` — Codex exited (or its event stream ended) before
+  it could start, so the turn never ran. The next send recreates the terminal
+  and launches Codex again.
+
+Web addresses in an error card's expanded message body are rendered as links
+that open in a new tab.
+
 ## Side questions with `/btw`
 
 In a Claude Code (`claude-native`) session, type `/btw` in the composer to ask a

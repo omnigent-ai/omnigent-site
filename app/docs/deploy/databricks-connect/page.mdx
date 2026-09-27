@@ -52,6 +52,16 @@ Databricks connect logs an error and stays disabled.
   refresh as it nears expiry, so long sessions stay authenticated to the AI
   Gateway.
 
+<div className="note">
+
+**Note:** This is separate from a launcher that sits in front of the `claude` or
+`codex` binary and asks for a device-style Databricks sign-in in the session
+terminal. When that happens in a native Claude Code or Codex session, the web UI
+fails the send fast and shows a card with an **Open sign-in link** action — see
+[Sign-in prompts in native sessions](/docs/interact/web-ui#sign-in-prompts-in-native-sessions).
+
+</div>
+
 ## Register a Databricks OAuth app
 
 A Databricks **account admin** must register an OAuth custom app integration to

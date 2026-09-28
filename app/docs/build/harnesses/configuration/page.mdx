@@ -194,6 +194,33 @@ row. To sign out, delete the credential file:
 rm ~/.kimi-code/credentials/kimi-code.json
 ```
 
+## Cursor
+
+### Default model
+
+When an agent spec pins a model, that `executor.model` is what the Cursor
+harness launches with (threaded through as `HARNESS_CURSOR_MODEL`). When the
+spec leaves the model unset — common for bundle agents such as
+[Polly](/docs/use/builtin-agents/polly) and
+[Debby](/docs/use/builtin-agents/debby) when you override their brain harness
+to Cursor — Omnigent falls back to your Omnigent config instead of letting the
+Cursor SDK default to `auto-smart`, which many API keys reject. The first
+non-empty value wins:
+
+1. `executor.model` in the agent spec.
+2. `cursor.model` in your config.
+3. The top-level `model` key in your config.
+
+```yaml
+# ~/.omnigent/config.yaml
+model: composer-2.5        # global default, used by any harness that consults it
+cursor:
+  model: grok-4.5          # Cursor-specific default; wins over the global key
+```
+
+If none of the three is set, no model override is sent and the Cursor SDK's own
+default applies.
+
 ## Antigravity
 
 The native Antigravity harness (`antigravity-native`) wraps Google's `agy` CLI.
@@ -225,6 +252,25 @@ that resolves its own Gemini API key at runtime. The `GEMINI_API_KEY` behavior
 above applies to the native `agy`-wrapping `antigravity-native` harness.
 
 </div>
+
+### Default model
+
+An explicit `executor.model` in the agent spec always wins and is threaded
+through as `HARNESS_ANTIGRAVITY_MODEL`. When the spec leaves the model unset —
+as brain-picker sessions for [Polly](/docs/use/builtin-agents/polly) and
+[Debby](/docs/use/builtin-agents/debby) often do — Omnigent reads
+`antigravity.model` from your config so the session doesn't inherit an
+unintended SDK default:
+
+```yaml
+# ~/.omnigent/config.yaml
+antigravity:
+  model: gemini-2.5-flash
+```
+
+Unlike [Cursor](#cursor), Antigravity does **not** consult the top-level
+`model` config key. If neither `executor.model` nor `antigravity.model` is set,
+no model override is sent and the SDK's default applies.
 
 ## Custom ACP agents
 

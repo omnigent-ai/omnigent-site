@@ -39,9 +39,42 @@ showing how many sessions are waiting, and multiple independent windows.
 - **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing.
 - **Dock badge.** See at a glance how many sessions need your attention, without switching to the app.
 - **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
+- **Show in Finder / File Explorer.** Right-click a workspace file or folder to reveal it in your OS file manager when the session runs on this machine (see [below](#show-files-in-your-os-file-manager)).
 
 Everything else (sessions, file editor, inline comments, collaboration) works exactly the
 same as the web UI.
+
+## Show files in your OS file manager
+
+When a session's files live on the machine the desktop app is running on, the
+**Files** tab of the right **Workspace** rail gains a right-click menu:
+
+- Right-click a **file** and choose **Show in Finder** (macOS), **Show in File
+  Explorer** (Windows), or **Show in file manager** (Linux). The file is
+  selected in its containing folder — it is never opened or executed.
+- Right-click a **folder** and choose **Open in Finder** / **Open in File
+  Explorer** / **Open in file manager**. The folder opens in the file manager;
+  right-clicking doesn't expand or collapse it in the tree.
+
+The same **Show in …** entry appears in an open file's view-settings menu in the
+file viewer, next to the download action. Deleted files (as reported by the
+Changes list) don't offer it.
+
+A few details worth knowing:
+
+- **Desktop-only, local-only.** The menu is offered only in the desktop app,
+  and only when the session's host is this machine — the host registered by
+  `omni host` on the computer running the app. In a browser tab, or for a
+  session running on a remote host or cloud sandbox, right-click keeps the
+  browser's own context menu and nothing else changes. If this machine hasn't
+  been registered as a host yet, the menu turns on as soon as the host first
+  connects, with no reload.
+- **Nothing is launched.** A file, a symlink, or a macOS package such as a
+  `.app` bundle or a `.key` deck is selected in its folder rather than opened, so
+  revealing an item can't run it. Symlinks are selected as-is, never followed.
+- **Failures are reported.** If the OS can't show the item (for example it no
+  longer exists), the app shows a **Couldn't show this item in the file
+  manager** notice.
 
 ## Embedded browser
 

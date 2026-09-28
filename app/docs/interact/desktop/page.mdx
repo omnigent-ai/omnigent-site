@@ -118,6 +118,38 @@ desktop app to be running with the session open. If no desktop window is subscri
 the action fails cleanly with `browser action timed out — is the session open in the
 Omnigent desktop app?` rather than hanging.
 
+Whenever the agent calls `browser_navigate`, the Workspace rail brings the
+**Browser** tab forward — even if you had a file or shell tab selected — so the
+page never loads into a hidden pane.
+
+### Open chat links in the in-app browser
+
+By default, clicking a web link in chat content opens it in your system's
+default browser. To have links open in the conversation's embedded browser
+pane instead, turn on **Settings → General → Links → Open links in the in-app
+browser**. This setting only appears in desktop builds that include the
+embedded browser.
+
+With it on, a plain click on an `http` or `https` link in a chat message loads
+the page in that conversation's Browser tab and brings the tab forward, the
+same way `browser_navigate` does. A few things always stay on the external
+path:
+
+- **Modified clicks.** `⌘`/`Ctrl`+click, middle-click, and shift/alt-click keep
+  their native open-in-new-tab semantics, so you can still send a link to your
+  default browser at any time.
+- **Non-web links.** `mailto:` and other non-`http(s)` schemes go to their
+  system handlers as before.
+
+Links opened this way run under the same navigation policy the agent's
+`browser_navigate` uses — because the agent can read the pane, loopback and
+private-network hosts are refused, including via redirect. If the embedded
+browser can't accept a link for any reason, the app falls back to opening it in
+your default browser and shows a toast explaining why.
+
+This is a per-device preference, off by default; it is stored locally in the
+app and doesn't follow your account to other devices.
+
 ## Prerequisites
 
 - **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.

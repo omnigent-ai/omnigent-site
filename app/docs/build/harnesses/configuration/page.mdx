@@ -16,6 +16,26 @@ then configure any authentication or launch settings it needs.
 
 ## GitHub Copilot
 
+The `copilot` harness runs GitHub Copilot through the Copilot SDK (install the
+`copilot` extra). Launch it with the `omni copilot` shorthand, or spell out the
+harness on `omni run`:
+
+```
+omni copilot                         # shorthand for the line below
+omni run --harness copilot
+```
+
+`omni copilot` forwards every `omni run` option unchanged, so flags like
+`-p "review the last commit"` or `--model <id>` work as they do on `omni run`.
+Because the shorthand always uses the Copilot harness, passing `--harness` to
+it is a usage error — use `omni run --harness <name>` to pick a different
+harness. Resume hints for a session started this way print the canonical
+`omni run --harness copilot` form. `omni --help` lists `copilot` under
+**Harnesses** only when the Copilot SDK is installed, the same way the `cursor`
+row follows its SDK extra.
+
+### Authentication
+
 The `copilot` harness authenticates with a GitHub token that carries Copilot
 access. Omnigent resolves one from the first source that's set, in this order:
 

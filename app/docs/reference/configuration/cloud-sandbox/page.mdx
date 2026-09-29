@@ -30,7 +30,7 @@ sandbox:
 | `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `openshell`, `boxlite`, or `microsandbox`. |
 | `server_url`  | Yes      | Public Omnigent server URL that the remote runner connects back to.                                     |
 | `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).    |
-| `git_clone`   | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).                |
+| `git_clone`   | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).               |
 
 Provider-specific blocks are optional. Omit one to use that provider's defaults.
 
@@ -54,14 +54,14 @@ history. It applies to each requested repository, including repositories cloned
 after claiming a warm-pool Pod, and needs no prepared workspace image. Restart
 the server after changing the block, then create a new sandbox to try it.
 
-| Setting         | Default | Behavior                                                                                                                                                                                                                                            |
-| --------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `depth`         | `null`  | Full history. A positive integer requests a shallow clone with that many commits.                                                                                                                                                                    |
-| `single_branch` | `null`  | Keep the existing rule: a pinned repo branch selects only that branch; otherwise all branches are fetched. `true` selects only the requested (or default) branch; `false` fetches all branches.                                                     |
-| `filter`        | `null`  | `blob:none` enables a partial clone: commit history is kept and file contents are fetched on demand. The initial checkout still includes every file. Requires remote filter support; Git can warn and fall back to an unfiltered clone.              |
-| `tags`          | `true`  | Normal tag following. `false` passes `--no-tags`, which persists for later fetches. `true` does not promise every remote tag is fetched.                                                                                                             |
+| Setting         | Default | Behavior                                                                                                                                                                                                                                |
+| --------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `depth`         | `null`  | Full history. A positive integer requests a shallow clone with that many commits.                                                                                                                                                       |
+| `single_branch` | `null`  | Keep the existing rule: a pinned repo branch selects only that branch; otherwise all branches are fetched. `true` selects only the requested (or default) branch; `false` fetches all branches.                                         |
+| `filter`        | `null`  | `blob:none` enables a partial clone: commit history is kept and file contents are fetched on demand. The initial checkout still includes every file. Requires remote filter support; Git can warn and fall back to an unfiltered clone. |
+| `tags`          | `true`  | Normal tag following. `false` passes `--no-tags`, which persists for later fetches. `true` does not promise every remote tag is fetched.                                                                                                |
 
-Only these four keys are accepted; any other key, or a non-mapping value, fails
+Only these four keys are accepted; any other key, or any non-null, non-mapping value, fails
 server startup. Omitting `git_clone` preserves the existing clone commands.
 Setting only `depth` keeps the existing branch selection — Omnigent explicitly
 counters Git's implicit single-branch default for shallow clones. Fetching every
@@ -154,6 +154,18 @@ sandbox:
 - `image` defaults to the official Omnigent host image.
 - `env` lists server environment variables copied into each sandbox. A listed
   variable that is not set fails the launch.
+
+Daytona has no platform lifetime cap. Omnigent disables Daytona's 15-minute
+idle auto-stop when it provisions a sandbox, so a host survives gaps between
+turns, and deletes the sandbox when its session is deleted. If a managed
+sandbox is stopped or archived out-of-band, the next message resumes the same
+sandbox in place, preserving its filesystem and workspace; an archived sandbox
+may first need a restore, so the wake waits up to 15 minutes (the same budget
+as a cold create). A sandbox that is mid-transition (starting, stopping, or
+archiving) is waited on rather than replaced. Only when the sandbox has been
+deleted does Omnigent create a replacement with a fresh workspace; a sandbox
+that is still being deleted, or a provider error during the wake, fails the
+turn with a retryable error and leaves the existing sandbox binding intact.
 
 Daytona Tier 1 and 2 organizations restrict outbound traffic to a
 [fixed allowlist](https://www.daytona.io/docs/en/network-limits). The

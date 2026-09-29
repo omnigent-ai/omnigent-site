@@ -32,7 +32,12 @@ Great for pairing or handing the keyboard to a domain expert mid-investigation.
       <li>
         Share grants one of two permission levels: <strong>Read</strong>{" "}
         (read-only, teammates watch the session stream) or <strong>Edit</strong>{" "}
-        (teammates can co-drive and send messages).
+        (teammates can co-drive and send messages). Changing the session's agent
+        — its MCP servers or the agent bundle itself — stays with the owner; see{" "}
+        <a href="#owner-only-agent-changes">
+          Only the owner can change the agent
+        </a>
+        .
       </li>
     </ul>
   </li>
@@ -50,9 +55,10 @@ connected viewer.
 <div className="note">
 
 An admin can restrict or disable sharing server-wide (read-only, or off
-entirely), and turn off public "anyone-with-the-link" access. If the **Share**
-control is missing or capped at read-only, that's the server's sharing policy —
-see [Session sharing](/docs/collaborate/auth#session-sharing).
+entirely), turn off public "anyone-with-the-link" access, or make new sessions
+start with public read access by default. If the **Share** control is missing
+or capped at read-only, or a new session is already public, that's the server's
+sharing policy — see [Session sharing](/docs/collaborate/auth#session-sharing).
 
 </div>
 
@@ -85,6 +91,29 @@ To collaborate more safely, share read-only instead, or host the session on a
 an isolated remote container rather than on your personal machine. To constrain what the
 agent can touch even on a trusted host, apply an
 [OS sandbox](/docs/reference/configuration/os-sandbox) policy.
+
+<h3 id="owner-only-agent-changes">Only the owner can change the agent</h3>
+
+Co-driving lets a teammate send messages, but it does not let them reconfigure
+the agent a session runs. Adding, editing, or removing the session's **MCP
+servers**, and replacing the session's agent bundle (`PUT
+/v1/sessions/{session_id}/agent`), require **owner** access to the session —
+**Edit** is not enough. On top of session ownership, the caller must also own
+the agent bound to the session (or be a workspace admin). Both checks are
+enforced by the server, so this applies to API clients as well as the UI.
+
+In the web UI, open the session's actions menu and choose **Agent info** to see
+the bound agent's tools and policies. Everyone with access to the session sees
+the MCP server names listed there; only the owner sees the **Manage MCP
+servers** control and the per-server edit and delete actions. Child sessions
+inherit their parent's access, so an owner keeps the controls in sub-agent
+sessions too, while a collaborator with Edit sees a read-only list.
+
+Built-in template agents and native coding-agent harnesses (`*-native`) never
+expose MCP editing here, regardless of who is looking.
+
+When auth is disabled or the server runs in local single-user mode there is no
+ownership model, and the MCP controls are always available for editable agents.
 
 ### Who said what
 

@@ -136,6 +136,11 @@ const ALL_PAGES = [
     section: "Collaboration",
   },
   {
+    href: "/docs/deploy/community-sandbox-providers",
+    label: "Community Sandbox Providers",
+    section: "Collaboration",
+  },
+  {
     href: "/docs/policies/overview",
     label: "Overview",
     section: "Contextual Policies",

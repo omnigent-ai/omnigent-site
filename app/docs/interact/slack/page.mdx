@@ -41,6 +41,20 @@ Slack, so it needs no public HTTP endpoint and no request URLs.
 
 ### 1. Create the Slack app
 
+**Quick path — create the app from the manifest.** At
+[api.slack.com/apps](https://api.slack.com/apps) → **Create New App** → **From
+an app manifest**, pick the workspace, and paste
+`integrations/slack/deploy/slack-app-manifest.yaml` from the repo. That
+configures Socket Mode, Interactivity, every scope and event the bot needs, and
+the `/omnigent` command in one step. For Databricks web-auth, uncomment
+`users:read` and `users:read.email` in the manifest before pasting it. A
+manifest cannot mint tokens, so finish with the two steps that a manifest can't
+do — generate a `connections:write` app-level token (**Basic Information →
+App-Level Tokens**) and **Install to Workspace** for the bot token — then skip
+to step 2 below only if you need to double-check the scopes.
+
+Doing it by hand instead:
+
 1. Create a Slack app with **Socket Mode** and **Interactivity** enabled
    (Socket Mode also delivers the button/modal payloads — no request URL
    needed).
@@ -50,6 +64,11 @@ Slack, so it needs no public HTTP endpoint and no request URLs.
 4. Install the app into your workspace.
 
 ### 2. Grant scopes
+
+These scopes and events are mirrored in
+`integrations/slack/deploy/slack-app-manifest.yaml` — if you created the app
+from the manifest they're already set, and if you change one, change both
+together.
 
 **Bot token scopes** (OAuth & Permissions → Bot Token Scopes) — all required:
 

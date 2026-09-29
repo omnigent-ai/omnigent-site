@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useDocsSidebar } from "./DocsSidebarContext";
+
+const SCROLL_POSITION_KEY = "docs-sidebar-scroll-top";
 
 const SECTIONS = [
   {
@@ -86,7 +88,12 @@ const SECTIONS = [
       { href: "/docs/deploy/database", label: "Database" },
       { href: "/docs/deploy/credential-store", label: "Credential Store" },
       { href: "/docs/deploy/github-connect", label: "Connect GitHub" },
+      { href: "/docs/deploy/databricks-connect", label: "Connect Databricks" },
       { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host" },
+      {
+        href: "/docs/deploy/community-sandbox-providers",
+        label: "Community Sandbox Providers",
+      },
     ],
   },
   {
@@ -116,6 +123,10 @@ const SECTIONS = [
   {
     title: "Omnibox",
     pages: [{ href: "/docs/omnibox", label: "Overview" }],
+  },
+  {
+    title: "Programmatic Usage",
+    pages: [{ href: "/docs/programmatic", label: "Overview" }],
   },
   {
     title: "Reference",
@@ -176,6 +187,30 @@ function allHrefs(section) {
 export default function DocsSidebarFull() {
   const path = usePathname();
   const { open: drawerOpen, close: closeDrawer } = useDocsSidebar();
+  const sidebarRef = useRef(null);
+
+  // Docs and Quickstart have separate layouts. Restore the sidebar before
+  // paint when navigation remounts it, without changing the article's scroll.
+  useLayoutEffect(() => {
+    try {
+      sidebarRef.current.scrollTop = Number(
+        sessionStorage.getItem(SCROLL_POSITION_KEY),
+      );
+    } catch {
+      // Navigation still works when browser storage is unavailable.
+    }
+  }, []);
+
+  function saveScrollPosition(event) {
+    try {
+      sessionStorage.setItem(
+        SCROLL_POSITION_KEY,
+        String(event.currentTarget.scrollTop),
+      );
+    } catch {
+      // Storage may be disabled by browser settings.
+    }
+  }
 
   useEffect(() => {
     closeDrawer();
@@ -232,7 +267,11 @@ export default function DocsSidebarFull() {
       {drawerOpen && (
         <div className="docs-sidebar-backdrop" onClick={closeDrawer} />
       )}
-      <aside className={`docs-side ${drawerOpen ? "docs-side-open" : ""}`}>
+      <aside
+        ref={sidebarRef}
+        onScroll={saveScrollPosition}
+        className={`docs-side ${drawerOpen ? "docs-side-open" : ""}`}
+      >
         {SECTIONS.map((section, si) => {
           const isOpen = sectionOpen[si];
 

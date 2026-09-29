@@ -118,17 +118,17 @@ directly, or launch the bot under a tool that injects a `.env`
 (e.g. `uv run --env-file .env omni integration slack`). `.env.example`
 documents the full set to copy from:
 
-| Variable                              | Required | Purpose                                                                                                                                       |
-| ------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OMNIGENT_SLACK_BOT_TOKEN`            | Yes      | The bot token (`xoxb-…`).                                                                                                                     |
-| `OMNIGENT_SLACK_APP_TOKEN`            | Yes      | The app-level token (`xapp-…`) for Socket Mode.                                                                                               |
-| `OMNIGENT_SERVER_URL`                 | Yes      | The one Omnigent server the bot talks to.                                                                                                     |
-| `OMNIGENT_DEVICE_CLIENT_SECRET`       | No       | Set to the same value as the server's `OMNIGENT_DEVICE_CLIENT_SECRET` so only this bot can drive the device-grant login. Accounts mode only.  |
-| `OMNIGENT_SLACK_TOKEN_ENCRYPTION_KEY` | No       | A Fernet key that encrypts users' delegated tokens at rest. Without it, tokens live in memory only and users re-authenticate after a restart. |
-| `OMNIGENT_SLACK_DATABASE_PATH`        | No       | Where the bot's SQLite store lives. Defaults to `$OMNIGENT_DATA_DIR/omnigent_slack.sqlite3` (or `~/.omnigent/omnigent_slack.sqlite3`).        |
-| `OMNIGENT_SLACK_DEFAULT_AGENT_ID`     | No       | Pre-selects this agent id in every user's `/omnigent` setup modal. See [Operator-set setup defaults](#operator-set-setup-defaults).           |
+| Variable                              | Required | Purpose                                                                                                                                         |
+| ------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OMNIGENT_SLACK_BOT_TOKEN`            | Yes      | The bot token (`xoxb-…`).                                                                                                                       |
+| `OMNIGENT_SLACK_APP_TOKEN`            | Yes      | The app-level token (`xapp-…`) for Socket Mode.                                                                                                 |
+| `OMNIGENT_SERVER_URL`                 | Yes      | The one Omnigent server the bot talks to.                                                                                                       |
+| `OMNIGENT_DEVICE_CLIENT_SECRET`       | No       | Set to the same value as the server's `OMNIGENT_DEVICE_CLIENT_SECRET` so only this bot can drive the device-grant login. Accounts mode only.    |
+| `OMNIGENT_SLACK_TOKEN_ENCRYPTION_KEY` | No       | A Fernet key that encrypts users' delegated tokens at rest. Without it, tokens live in memory only and users re-authenticate after a restart.   |
+| `OMNIGENT_SLACK_DATABASE_PATH`        | No       | Where the bot's SQLite store lives. Defaults to `$OMNIGENT_DATA_DIR/omnigent_slack.sqlite3` (or `~/.omnigent/omnigent_slack.sqlite3`).          |
+| `OMNIGENT_SLACK_DEFAULT_AGENT_ID`     | No       | Pre-selects this agent id in every user's `/omnigent` setup modal. See [Operator-set setup defaults](#operator-set-setup-defaults).             |
 | `OMNIGENT_SLACK_DEFAULT_HOST_TYPE`    | No       | Only `managed` — pre-selects the server-provisioned managed sandbox as the host in the setup modal. Any other non-blank value fails at startup. |
-| `LOG_LEVEL`                           | No       | Set to `DEBUG` when diagnosing why Slack events aren't producing replies.                                                                     |
+| `LOG_LEVEL`                           | No       | Set to `DEBUG` when diagnosing why Slack events aren't producing replies.                                                                       |
 
 Generate an encryption key with:
 
@@ -182,9 +182,9 @@ If your team has standardized on one agent — or on the managed sandbox — the
 operator can pre-select those choices in step 2 for everyone, so a new user
 just submits the modal instead of making two decisions they have no opinion on:
 
-| Variable                           | Effect                                                                                                                    |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `OMNIGENT_SLACK_DEFAULT_AGENT_ID`  | Opens the **Agent** menu on this agent id — one of the ids the server returns from `GET /v1/agents`.                     |
+| Variable                           | Effect                                                                                                                          |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `OMNIGENT_SLACK_DEFAULT_AGENT_ID`  | Opens the **Agent** menu on this agent id — one of the ids the server returns from `GET /v1/agents`.                            |
 | `OMNIGENT_SLACK_DEFAULT_HOST_TYPE` | Only `managed` — opens the **Host** menu on the server-provisioned managed sandbox. Any other non-blank value fails at startup. |
 
 Both are set in the bot's environment like every other variable. Either may be

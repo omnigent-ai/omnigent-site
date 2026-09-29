@@ -101,6 +101,45 @@ fields are handled differently depending on your harness:
 If you need `disable-model-invocation` or `allowed-tools` behavior, use the
 `claude-native` harness and place those skills in `.claude/skills/`.
 
+### Existing Codex skills and plugins
+
+On the Codex harnesses (`codex` and `codex-native`), Omnigent also surfaces the
+skills Codex itself knows about, so they appear in the skills menu alongside
+your bundled and discovered skills:
+
+- **Standalone Codex skills** in the Codex home's `skills/` directory. These are
+  listed by **directory name** (the name Codex registers the slash command
+  under), not by the `name` in their frontmatter.
+- **Skills from installed Codex plugins.** Omnigent runs `codex plugin list --json`
+  against the session's Codex home and loads skills from every plugin that is
+  installed **and enabled**, reading the exact version the inventory reports
+  from Codex's plugin cache. Disabled plugins and stale cached versions are
+  hidden; updating a plugin in Codex changes what Omnigent lists on the next
+  discovery.
+
+Plugin skills are namespaced as `<plugin>:<skill>` — for example a `review`
+skill from a plugin whose manifest is named `toolkit` shows up as
+`toolkit:review`. The namespace is the `name` from the plugin manifest
+(`.codex-plugin/plugin.json`, or `.claude-plugin/plugin.json` for plugins
+authored for Claude Code); the skill part is the `name` from the skill's
+SKILL.md frontmatter. Within a plugin, skills are read from the manifest's
+`skills` paths (a `./`-relative path or list of paths, each either a single
+skill folder or a directory of skill folders), falling back to the plugin's
+`skills/` directory, plus any commands Codex migrated into
+`.codex-plugin/migrated-command-skills`.
+
+A few practical notes:
+
+- `codex-native` sessions use the session's Codex home; the in-process `codex`
+  (SDK) harness uses `~/.codex`.
+- Plugin discovery needs the Codex CLI on the machine running the agent. If the
+  CLI is missing, times out (5 seconds), or returns something unparseable,
+  plugin skills are simply omitted — standalone Codex skills and everything
+  else keep working.
+- A plugin with a broken manifest or an unreadable SKILL.md is skipped with a
+  warning in the logs; other plugins are unaffected.
+- With `skills: none`, Omnigent never queries the plugin inventory.
+
 ### SKILL.md format
 
 Each skill lives in its own folder and must have a `SKILL.md` file with YAML
@@ -208,5 +247,10 @@ skills:
   - deploy
 ```
 
-This only affects discovered skills (from `.agents/skills/` and `.claude/skills/`).
+This only affects discovered skills (from `.agents/skills/` and `.claude/skills/`,
+and on the Codex harnesses, standalone Codex skills and Codex plugin skills).
 Bundled skills in the agent's own `skills/` directory are always available regardless.
+
+For Codex plugin skills, a list entry matches either the bare skill name or the
+namespaced form, so both `review` and `toolkit:review` select `toolkit:review`.
+A bare name selects that skill from every enabled plugin that provides one.

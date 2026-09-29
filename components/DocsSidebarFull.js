@@ -90,6 +90,10 @@ const SECTIONS = [
       { href: "/docs/deploy/github-connect", label: "Connect GitHub" },
       { href: "/docs/deploy/databricks-connect", label: "Connect Databricks" },
       { href: "/docs/deploy/cloud-sandbox-host", label: "Cloud Sandbox Host" },
+      {
+        href: "/docs/deploy/community-sandbox-providers",
+        label: "Community Sandbox Providers",
+      },
     ],
   },
   {

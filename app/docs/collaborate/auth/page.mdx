@@ -131,6 +131,69 @@ first sign-in. Separately, every signed-in account (built-in or OIDC) gets a
 **Settings > Account** section showing who they're signed in as, with a sign-out
 control and, in built-in accounts mode only, `Change password`.
 
+### Removing a member
+
+In built-in accounts mode, `Remove` (`DELETE /auth/users/{id}`) revokes
+everything the account could still use to act, in one database transaction.
+Every authenticated request re-checks the stored account state — including on
+other server replicas — so there is no cache to wait out. After removal:
+
+- **Sign-in stops immediately.** Existing browser cookies and JWTs are
+  rejected, and the account's device/refresh grants (`omni login`, mobile and
+  desktop sign-ins) are revoked, so token refresh fails with `invalid_grant`.
+  Outstanding invite and magic-login links created for or by the user are
+  deleted.
+- **Saved authority is removed.** Session-sharing grants, saved provider
+  connections ([GitHub](/docs/deploy/github-connect),
+  [Databricks](/docs/deploy/databricks-connect)), projects, and daily
+  spending/budget checkpoints are deleted. Sessions that lived in the removed
+  user's projects are detached from the project, not deleted.
+- **Scheduled tasks are disabled.** The user's [scheduled
+  tasks](/docs/build/scheduled-tasks) are marked deleted and never fire again.
+- **Hosts are removed.** Hosts the user registered are torn down as if deleted
+  from the host list: bound sessions are detached and launch credentials
+  cleared. A managed cloud-sandbox host is kept as a tombstone until its
+  sandbox is confirmed terminated.
+- **Session history is retained.** Conversations stay in the database, but no
+  new runner can be launched for them on the removed owner's behalf.
+
+Removal is a database commit boundary, not a kill switch: work that was already
+admitted before the removal committed may finish, but nothing new can be
+granted to that identity afterward. You cannot remove your own account, and
+the last remaining admin cannot be removed.
+
+Usernames are reusable. If you later invite the same username again, it
+becomes a brand-new account: it does not inherit the old account's shared
+sessions, connections, projects, or session ownership, and the old cookies
+still fail.
+
+#### Provisioning a password for a shared-with user
+
+Sharing a session with a username that has never registered creates a
+passwordless entry for that person. To let them sign in, use `Reset` on that
+row in **Settings > Members**: the first reset provisions their credentials
+while preserving the sessions already shared with them, and they can log in
+with the returned password.
+
+#### Upgrading an existing accounts deployment
+
+The release that introduces this revocation model adds a schema migration
+that stamps existing accounts and their saved credentials. Accounts-mode
+deployments must upgrade every server and scheduler that shares the database
+together — old code does not understand the new columns, so mixed versions are
+unsafe.
+
+1. Back up the database.
+2. Stop all writers: every server and scheduler sharing the database.
+3. Upgrade the application and run the migration.
+4. Restart only the new version.
+5. Sign in again in ordinary browser sessions, and restart any provider OAuth
+   connection handshake that began before the upgrade.
+
+Existing refresh grants (CLI, mobile, desktop sign-ins) keep working and renew
+into upgraded tokens; ordinary cookies and JWTs require a fresh login. Do not
+roll back to the old version against the upgraded schema.
+
 ### Session sharing
 
 Admins set a **server-wide sharing policy** that governs how users can share

@@ -510,6 +510,12 @@ This copies the full history. Add `"up_to_response_id": "<response_id>"` to
 the body to copy history only through that response. Bind a runner to the fork
 before sending another prompt, or request a managed host in the fork body.
 
+Add `"side_chat": true` (default `false`) to mark the fork as a
+[side chat](/docs/interact/web-ui#side-chats): the fork is labeled
+`omnigent.side_chat` and omitted from `GET /v1/sessions`, so it stays out of
+the web UI's sidebar and appears only as a Workspace-rail tab. It otherwise
+behaves like any other fork, with its own runner and transcript.
+
       </td>
     </tr>
     <tr>

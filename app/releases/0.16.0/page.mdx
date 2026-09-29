@@ -1,69 +1,110 @@
-{/* Auto-generated from the GitHub Release for v0.16.0. Edit the GitHub Release, not this file. */}
+{/* Curated from the published GitHub Release for v0.16.0. */}
+
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Omnigent v0.16.0",
+  "What's new in Omnigent v0.16.0 — release highlights, improvements, and fixes.",
+  {
+    eyebrow: "Release",
+    path: "/releases/0.16.0",
+    absoluteTitle: true,
+  },
+);
 
 # v0.16.0
 
-_Released 2026-09-29_ · 4 min read · Omnigent maintainers
+_Released 2026-09-29_ · Omnigent maintainers
 
-Omnigent 0.16.0 is a major release focused on smoothing the whole path from first launch to production-grade agent runs, from getting the desktop app set up and pointed at your team's server to controlling how agents edit files inside sandboxes. The desktop onboarding flow has been redesigned end to end, the workspace panel has been unified into a single browser with change badges, Linux sandboxes gain disposable copy-on-write edits and lighter repository clones, admins get new defaults for session sharing, trusted origins, and Slack setup, and Pi agent authors can take full control of their prompts while MCP tools and the embedded browser hand images to harnesses natively.
+Omnigent 0.16.0 updates desktop onboarding, the workspace browser, sandbox controls, and agent configuration. It also improves runner reconnection and harness reliability. Review the breaking changes below before upgrading.
 
-## 1. Redesigned desktop onboarding
+## Major new features
 
-![TODO: add a demo screenshot or GIF for "Redesigned desktop onboarding"](TODO)
+### Redesigned desktop onboarding
 
-Getting the desktop app from a fresh install to a working session should not take a detour through the terminal and a docs page. The redesigned onboarding detects returning users so you skip steps you have already completed, installs the CLI for you on macOS from inside the app, and walks you through the remaining steps with smoother animated transitions.
+The desktop onboarding flow detects returning users, installs the CLI from inside the app on macOS, and guides setup with smoother animated steps. Organization-preset servers offer a "Join your team" path, and the post-setup import review groups discovered items by harness.
 
-If your organization publishes preset servers, a "Join your team" path picks them up so you connect to the right server without copying URLs around. Once setup finishes, a post-setup import review shows you the existing chats it found, grouped per harness, so you can decide what to bring into Omnigent before you start working.
+![The redesigned desktop onboarding flow](https://github.com/user-attachments/assets/7ff29e03-2567-47e2-8e35-ebb974236086)
 
-_Learn more in the [Get started](/docs/interact/desktop#get-started)._
+Learn more in [Get started](/docs/interact/desktop#get-started).
 
-## 2. Unified workspace browser and file panel
+([#8119](https://github.com/omnigent-ai/omnigent/pull/8119), [#8126](https://github.com/omnigent-ai/omnigent/pull/8126), [#8195](https://github.com/omnigent-ai/omnigent/pull/8195), [#8202](https://github.com/omnigent-ai/omnigent/pull/8202), [#8290](https://github.com/omnigent-ai/omnigent/pull/8290), [#8277](https://github.com/omnigent-ai/omnigent/pull/8277), [#8311](https://github.com/omnigent-ai/omnigent/pull/8311), [@hzub](https://github.com/hzub), [@zhengwin](https://github.com/zhengwin))
 
-![TODO: add a demo screenshot or GIF for "Unified workspace browser and file panel"](TODO)
+### Unified workspace browser and file panel
 
-Keeping track of what an agent has touched in your repository should not require opening a terminal to run a status check. The workspace panel is now a single, unified browser with a compact file panel, and every file carries a badge marking it as added, modified, or deleted, so you can see the shape of a change at a glance while the agent is still working.
+A unified workspace browser and compact file panel show badges for added, modified, and deleted files. Shared controls and folder indicators make changes easier to find while navigating the workspace.
 
-On the desktop, local files gain a Show in Finder action, and an opt-in setting lets you open links from chat in the in-app browser instead of jumping out to your system browser. When an agent or page reaches for something on your local network, you now get a Chrome-style prompt to allow or deny the access.
+The desktop app adds Show in Finder for local files and an opt-in setting to open chat links in the in-app browser. Embedded browser sites can request local network access through a Chrome-style permission prompt.
 
-## 3. Copy-on-write sandbox edits and leaner repository clones
+![The unified workspace browser](https://github.com/user-attachments/assets/a84ab68d-a958-40b6-8178-ea0e7bc03c87)
 
-![TODO: add a demo screenshot or GIF for "Copy-on-write sandbox edits and leaner repository clones"](TODO)
+([#8254](https://github.com/omnigent-ai/omnigent/pull/8254), [#8335](https://github.com/omnigent-ai/omnigent/pull/8335), [#6691](https://github.com/omnigent-ai/omnigent/pull/6691), [#8219](https://github.com/omnigent-ai/omnigent/pull/8219), [#8049](https://github.com/omnigent-ai/omnigent/pull/8049), [@ajayalfred](https://github.com/ajayalfred), [@nakazax](https://github.com/nakazax), [@fanzeyi](https://github.com/fanzeyi))
 
-Letting an agent experiment freely on a checkout should not mean risking the checkout itself. On Linux, you can now mark a `write_paths` entry with `copy_on_write: true` so the agent's edits land in a disposable layer: the agent sees a fully writable tree, while the underlying files stay exactly as they were once the session ends.
+### Sandbox edits and repository clones
 
-Sandbox startup gets lighter too. Admins can opt into shallow or blobless repository clones so large repositories come up quickly without pulling their full history, and Daytona sessions now keep their workspace intact when a stopped or archived sandbox resumes, so you pick up where you left off instead of starting from a fresh clone.
+Linux agents can make disposable edits by setting `copy_on_write: true` on a sandbox `write_paths` entry. Edits stay in a disposable layer while the underlying files remain unchanged.
 
-_Learn more in the [Filesystem](/docs/reference/configuration/os-sandbox#filesystem)._
+Admins can opt into shallow clones to limit history or blobless clones to fetch file contents on demand. Daytona sessions also keep their workspace when a stopped or archived sandbox resumes.
 
-## 4. Admin defaults for sharing, allowed origins, and Slack setup
+Learn more about [filesystem access](/docs/reference/configuration/os-sandbox#filesystem) and [Git clone options](/docs/reference/configuration/cloud-sandbox#git-clone-options).
 
-![TODO: add a demo screenshot or GIF for "Admin defaults for sharing, allowed origins, and Slack setup"](TODO)
+([#7599](https://github.com/omnigent-ai/omnigent/pull/7599), [#8322](https://github.com/omnigent-ai/omnigent/pull/8322), [#7828](https://github.com/omnigent-ai/omnigent/pull/7828), [@mxatone](https://github.com/mxatone), [@dhruv0811](https://github.com/dhruv0811), [@wilbeibi](https://github.com/wilbeibi))
 
-Teams that want every session visible by default should not have to ask each person to flip a switch. From Settings > Sharing, admins can now default new sessions to public, choosing between off, sandbox-only, or all sessions, so the sharing posture matches how your team actually works.
+### Admin defaults for sharing, allowed origins, and Slack setup
 
-Two more defaults round this out. `OMNIGENT_WS_ALLOWED_ORIGINS` accepts `*.` entries, letting you trust an entire subdomain instead of enumerating every host, and `OMNIGENT_SLACK_DEFAULT_AGENT_ID` and `OMNIGENT_SLACK_DEFAULT_HOST_TYPE` pre-select the agent and managed host for the Slack setup flow, so people connecting from Slack land on your recommended configuration without having to choose.
+Settings > Sharing now lets admins default new sessions to public, choosing off, sandbox-only, or all sessions.
 
-_Learn more in the [Session sharing](/docs/collaborate/auth#session-sharing)._
+`OMNIGENT_WS_ALLOWED_ORIGINS` accepts `*.` entries to trust all subdomains of a domain. Operators can also pre-select the Slack setup agent and managed host through `OMNIGENT_SLACK_DEFAULT_AGENT_ID` and `OMNIGENT_SLACK_DEFAULT_HOST_TYPE`; users can change those choices before submitting setup.
 
-## 5. Pi prompt controls and native image passthrough
+![Settings > Sharing with the default visibility controls](https://github.com/user-attachments/assets/50159570-0d4a-4f11-84cc-3dc9ceafaffc)
 
-![TODO: add a demo screenshot or GIF for "Pi prompt controls and native image passthrough"](TODO)
+Learn more about [session sharing](/docs/collaborate/auth#session-sharing) and [Slack setup defaults](/docs/interact/slack#operator-set-setup-defaults).
 
-Authoring a tightly scoped Pi agent should not mean fighting the context files Omnigent discovers on your behalf. You can now set `executor.context_files: false` to disable auto-discovered context files entirely, and `executor.system_prompt_mode: replace` to swap out the base prompt for your own rather than layering on top of it, giving you full control over exactly what the model sees.
+([#8295](https://github.com/omnigent-ai/omnigent/pull/8295), [#8070](https://github.com/omnigent-ai/omnigent/pull/8070), [#6965](https://github.com/omnigent-ai/omnigent/pull/6965), [@dhruv0811](https://github.com/dhruv0811), [@natsuskaizen](https://github.com/natsuskaizen), [@bdchatham](https://github.com/bdchatham))
 
-Visual output also flows through more faithfully. Images returned by MCP tools and screenshots captured by the embedded browser now reach supported harnesses as native images instead of being flattened to text, so your agent can look at a rendered chart or a page it just opened and reason about what it sees.
+### Pi prompt controls and native images
 
-_Learn more in the [System prompt](/docs/build/prompts#system-prompt)._
+Pi agents can set `executor.context_files: false` to skip automatically discovered context files while keeping their explicit instructions. With the regular Pi harness, `executor.system_prompt_mode: replace` replaces Pi's base system prompt with the agent's Omnigent instructions. Framework instructions remain in place, and skills and extensions can still contribute to the final prompt.
+
+MCP tool images and embedded-browser screenshots now reach supported harnesses as native images with accompanying text.
+
+Learn more about the [system prompt](/docs/build/prompts#system-prompt).
+
+([#8184](https://github.com/omnigent-ai/omnigent/pull/8184), [#8349](https://github.com/omnigent-ai/omnigent/pull/8349), [#7444](https://github.com/omnigent-ai/omnigent/pull/7444), [@PattaraS](https://github.com/PattaraS), [@Jomak-x](https://github.com/Jomak-x))
+
+## Breaking changes
+
+- Saved preferences and inference snapshots are now capped at 65,535 stored bytes: upgrading resets oversized preferences to defaults and clears snapshots that remain oversized after compression, and new oversized project-order saves or snapshots are rejected before session creation ([#8137](https://github.com/omnigent-ai/omnigent/pull/8137), [#8143](https://github.com/omnigent-ai/omnigent/pull/8143), [@dbczumar](https://github.com/dbczumar))
+- Only session owners can manage MCP servers or replace agent bundles; collaborators who previously edited MCP configuration now get read-only visibility and must ask the owner to make changes ([#8481](https://github.com/omnigent-ai/omnigent/pull/8481), [@dhruv0811](https://github.com/dhruv0811))
+
+## Bug fixes
+
+- 🔌 Brief runner drops (Wi-Fi roam, VPN stall, sleep/resume, replica failover) no longer fail turns with "Runner disconnected unexpectedly", runners reconnect promptly, and host launches no longer spawn duplicate runners ([#8093](https://github.com/omnigent-ai/omnigent/pull/8093), [#8094](https://github.com/omnigent-ai/omnigent/pull/8094), [#8152](https://github.com/omnigent-ai/omnigent/pull/8152), [#8413](https://github.com/omnigent-ai/omnigent/pull/8413), [#8085](https://github.com/omnigent-ai/omnigent/pull/8085), [@yaoharry](https://github.com/yaoharry), [@dbczumar](https://github.com/dbczumar), [@daniellok-db](https://github.com/daniellok-db))
+- 🖥️ Codex terminals recover without restarting a healthy backend, keep their final screen and exit code, survive launcher sign-in prompts with the link shown in chat, and cold resumes no longer lose tool results across compaction; sub-agents no longer flash "failed" on newer Codex versions ([#7442](https://github.com/omnigent-ai/omnigent/pull/7442), [#8233](https://github.com/omnigent-ai/omnigent/pull/8233), [#8040](https://github.com/omnigent-ai/omnigent/pull/8040), [#8271](https://github.com/omnigent-ai/omnigent/pull/8271), [#8309](https://github.com/omnigent-ai/omnigent/pull/8309), [@yaoharry](https://github.com/yaoharry), [@dbczumar](https://github.com/dbczumar))
+- 🤖 Claude Code sessions use a Unix socket instead of a loopback port per MCP helper, treat `/exit` as a clean stop, show Claude's own API error text, aren't failed by a background sub-agent, and mark lost messages undelivered instead of duplicating the next one ([#8079](https://github.com/omnigent-ai/omnigent/pull/8079), [#8364](https://github.com/omnigent-ai/omnigent/pull/8364), [#8097](https://github.com/omnigent-ai/omnigent/pull/8097), [#8103](https://github.com/omnigent-ai/omnigent/pull/8103), [#8186](https://github.com/omnigent-ai/omnigent/pull/8186), [@dbczumar](https://github.com/dbczumar), [@yaoharry](https://github.com/yaoharry))
+- 🧠 Pi on the Databricks AI Gateway lists Claude, OpenAI, and Gemini models, sub-agents no longer report false launch failures, and new sessions accept the first message during provider setup ([#8228](https://github.com/omnigent-ai/omnigent/pull/8228), [#8200](https://github.com/omnigent-ai/omnigent/pull/8200), [#8424](https://github.com/omnigent-ai/omnigent/pull/8424), [@dbczumar](https://github.com/dbczumar), [@serena-ruan](https://github.com/serena-ruan))
+- ✍️ Composer fixes: cancel or edit an unsent message while a model switch finishes, pick skills with `/` anywhere in a prompt, and Files panel search finds tracked files in repositories of any size ([#8039](https://github.com/omnigent-ai/omnigent/pull/8039), [#8087](https://github.com/omnigent-ai/omnigent/pull/8087), [#8409](https://github.com/omnigent-ai/omnigent/pull/8409), [@dbczumar](https://github.com/dbczumar), [@serena-ruan](https://github.com/serena-ruan))
+
+## Other contributions
+
+[#8055](https://github.com/omnigent-ai/omnigent/pull/8055), [#8072](https://github.com/omnigent-ai/omnigent/pull/8072), [@ajayalfred](https://github.com/ajayalfred); [#5917](https://github.com/omnigent-ai/omnigent/pull/5917), [@Arshgill01](https://github.com/Arshgill01); [#7495](https://github.com/omnigent-ai/omnigent/pull/7495), [@arthivjkumar](https://github.com/arthivjkumar); [#8439](https://github.com/omnigent-ai/omnigent/pull/8439), [@chameleon82](https://github.com/chameleon82); [#8485](https://github.com/omnigent-ai/omnigent/pull/8485), [@christianclaudio](https://github.com/christianclaudio); [#8002](https://github.com/omnigent-ai/omnigent/pull/8002), [#8029](https://github.com/omnigent-ai/omnigent/pull/8029), [#8066](https://github.com/omnigent-ai/omnigent/pull/8066), [#8108](https://github.com/omnigent-ai/omnigent/pull/8108), [@daniellok-db](https://github.com/daniellok-db); [#8042](https://github.com/omnigent-ai/omnigent/pull/8042), [#8053](https://github.com/omnigent-ai/omnigent/pull/8053), [#8063](https://github.com/omnigent-ai/omnigent/pull/8063), [#8074](https://github.com/omnigent-ai/omnigent/pull/8074), [#8090](https://github.com/omnigent-ai/omnigent/pull/8090), [#8092](https://github.com/omnigent-ai/omnigent/pull/8092), [#8138](https://github.com/omnigent-ai/omnigent/pull/8138), [#8270](https://github.com/omnigent-ai/omnigent/pull/8270), [#8320](https://github.com/omnigent-ai/omnigent/pull/8320), [#8362](https://github.com/omnigent-ai/omnigent/pull/8362), [#8416](https://github.com/omnigent-ai/omnigent/pull/8416), [#8469](https://github.com/omnigent-ai/omnigent/pull/8469), [#8494](https://github.com/omnigent-ai/omnigent/pull/8494), [@dbczumar](https://github.com/dbczumar); [#7802](https://github.com/omnigent-ai/omnigent/pull/7802), [#8327](https://github.com/omnigent-ai/omnigent/pull/8327), [@dependabot[bot]](https://github.com/apps/dependabot); [#8216](https://github.com/omnigent-ai/omnigent/pull/8216), [#8313](https://github.com/omnigent-ai/omnigent/pull/8313), [#8316](https://github.com/omnigent-ai/omnigent/pull/8316), [#8319](https://github.com/omnigent-ai/omnigent/pull/8319), [#8325](https://github.com/omnigent-ai/omnigent/pull/8325), [#8330](https://github.com/omnigent-ai/omnigent/pull/8330), [@dhruv0811](https://github.com/dhruv0811); [#7871](https://github.com/omnigent-ai/omnigent/pull/7871), [#7872](https://github.com/omnigent-ai/omnigent/pull/7872), [@dipeshbabu](https://github.com/dipeshbabu); [#2405](https://github.com/omnigent-ai/omnigent/pull/2405), [@dosenr](https://github.com/dosenr); [#7977](https://github.com/omnigent-ai/omnigent/pull/7977), [#8041](https://github.com/omnigent-ai/omnigent/pull/8041), [#8051](https://github.com/omnigent-ai/omnigent/pull/8051), [#8056](https://github.com/omnigent-ai/omnigent/pull/8056), [#8057](https://github.com/omnigent-ai/omnigent/pull/8057), [#8059](https://github.com/omnigent-ai/omnigent/pull/8059), [#8061](https://github.com/omnigent-ai/omnigent/pull/8061), [@fanzeyi](https://github.com/fanzeyi); [#8017](https://github.com/omnigent-ai/omnigent/pull/8017), [#8026](https://github.com/omnigent-ai/omnigent/pull/8026), [#8031](https://github.com/omnigent-ai/omnigent/pull/8031), [#8106](https://github.com/omnigent-ai/omnigent/pull/8106), [#8132](https://github.com/omnigent-ai/omnigent/pull/8132), [#8201](https://github.com/omnigent-ai/omnigent/pull/8201), [#8444](https://github.com/omnigent-ai/omnigent/pull/8444), [@hzub](https://github.com/hzub); [#8140](https://github.com/omnigent-ai/omnigent/pull/8140), [#8146](https://github.com/omnigent-ai/omnigent/pull/8146), [#8149](https://github.com/omnigent-ai/omnigent/pull/8149), [#8247](https://github.com/omnigent-ai/omnigent/pull/8247), [@Leemoonsoo](https://github.com/Leemoonsoo); [#6770](https://github.com/omnigent-ai/omnigent/pull/6770), [@nhsdb](https://github.com/nhsdb); [#5519](https://github.com/omnigent-ai/omnigent/pull/5519), [#7166](https://github.com/omnigent-ai/omnigent/pull/7166), [#7479](https://github.com/omnigent-ai/omnigent/pull/7479), [#7512](https://github.com/omnigent-ai/omnigent/pull/7512), [#7602](https://github.com/omnigent-ai/omnigent/pull/7602), [#7673](https://github.com/omnigent-ai/omnigent/pull/7673), [#7698](https://github.com/omnigent-ai/omnigent/pull/7698), [#7704](https://github.com/omnigent-ai/omnigent/pull/7704), [#7708](https://github.com/omnigent-ai/omnigent/pull/7708), [#8014](https://github.com/omnigent-ai/omnigent/pull/8014), [#8166](https://github.com/omnigent-ai/omnigent/pull/8166), [#8196](https://github.com/omnigent-ai/omnigent/pull/8196), [#8403](https://github.com/omnigent-ai/omnigent/pull/8403); [#8028](https://github.com/omnigent-ai/omnigent/pull/8028), [#8035](https://github.com/omnigent-ai/omnigent/pull/8035), [@omnigent-ci[bot]](https://github.com/apps/omnigent-ci); [#7991](https://github.com/omnigent-ai/omnigent/pull/7991), [#8114](https://github.com/omnigent-ai/omnigent/pull/8114), [#8192](https://github.com/omnigent-ai/omnigent/pull/8192), [#8206](https://github.com/omnigent-ai/omnigent/pull/8206), [#8207](https://github.com/omnigent-ai/omnigent/pull/8207), [#8262](https://github.com/omnigent-ai/omnigent/pull/8262), [#8275](https://github.com/omnigent-ai/omnigent/pull/8275), [@PattaraS](https://github.com/PattaraS); [#8024](https://github.com/omnigent-ai/omnigent/pull/8024), [#8025](https://github.com/omnigent-ai/omnigent/pull/8025), [#8098](https://github.com/omnigent-ai/omnigent/pull/8098), [#8113](https://github.com/omnigent-ai/omnigent/pull/8113), [#8117](https://github.com/omnigent-ai/omnigent/pull/8117), [#8120](https://github.com/omnigent-ai/omnigent/pull/8120), [#8158](https://github.com/omnigent-ai/omnigent/pull/8158), [#8178](https://github.com/omnigent-ai/omnigent/pull/8178), [#8185](https://github.com/omnigent-ai/omnigent/pull/8185), [#8197](https://github.com/omnigent-ai/omnigent/pull/8197), [#8256](https://github.com/omnigent-ai/omnigent/pull/8256), [#8417](https://github.com/omnigent-ai/omnigent/pull/8417), [#8425](https://github.com/omnigent-ai/omnigent/pull/8425), [#8428](https://github.com/omnigent-ai/omnigent/pull/8428), [#8431](https://github.com/omnigent-ai/omnigent/pull/8431), [#8432](https://github.com/omnigent-ai/omnigent/pull/8432), [#8510](https://github.com/omnigent-ai/omnigent/pull/8510), [@serena-ruan](https://github.com/serena-ruan); [#8160](https://github.com/omnigent-ai/omnigent/pull/8160), [@terrytangyuan](https://github.com/terrytangyuan); [#8351](https://github.com/omnigent-ai/omnigent/pull/8351), [#8410](https://github.com/omnigent-ai/omnigent/pull/8410), [@TomeHirata](https://github.com/TomeHirata); [#7731](https://github.com/omnigent-ai/omnigent/pull/7731), [@trungnguyen21](https://github.com/trungnguyen21); [#8046](https://github.com/omnigent-ai/omnigent/pull/8046), [@tyler-lynch](https://github.com/tyler-lynch); [#8215](https://github.com/omnigent-ai/omnigent/pull/8215), [@vasvlasov](https://github.com/vasvlasov); [#7975](https://github.com/omnigent-ai/omnigent/pull/7975), [#8006](https://github.com/omnigent-ai/omnigent/pull/8006), [#8058](https://github.com/omnigent-ai/omnigent/pull/8058), [#8095](https://github.com/omnigent-ai/omnigent/pull/8095), [#8096](https://github.com/omnigent-ai/omnigent/pull/8096), [#8240](https://github.com/omnigent-ai/omnigent/pull/8240), [#8260](https://github.com/omnigent-ai/omnigent/pull/8260), [#8263](https://github.com/omnigent-ai/omnigent/pull/8263), [#8266](https://github.com/omnigent-ai/omnigent/pull/8266), [#8503](https://github.com/omnigent-ai/omnigent/pull/8503), [@yaoharry](https://github.com/yaoharry); [#8062](https://github.com/omnigent-ai/omnigent/pull/8062), [#8081](https://github.com/omnigent-ai/omnigent/pull/8081), [#8110](https://github.com/omnigent-ai/omnigent/pull/8110), [#8118](https://github.com/omnigent-ai/omnigent/pull/8118), [#8136](https://github.com/omnigent-ai/omnigent/pull/8136), [#8141](https://github.com/omnigent-ai/omnigent/pull/8141), [#8159](https://github.com/omnigent-ai/omnigent/pull/8159), [#8161](https://github.com/omnigent-ai/omnigent/pull/8161), [#8162](https://github.com/omnigent-ai/omnigent/pull/8162), [#8163](https://github.com/omnigent-ai/omnigent/pull/8163), [#8174](https://github.com/omnigent-ai/omnigent/pull/8174), [#8179](https://github.com/omnigent-ai/omnigent/pull/8179), [#8182](https://github.com/omnigent-ai/omnigent/pull/8182), [#8191](https://github.com/omnigent-ai/omnigent/pull/8191), [#8193](https://github.com/omnigent-ai/omnigent/pull/8193), [#8194](https://github.com/omnigent-ai/omnigent/pull/8194), [#8198](https://github.com/omnigent-ai/omnigent/pull/8198), [#8220](https://github.com/omnigent-ai/omnigent/pull/8220), [#8221](https://github.com/omnigent-ai/omnigent/pull/8221), [#8222](https://github.com/omnigent-ai/omnigent/pull/8222), [#8223](https://github.com/omnigent-ai/omnigent/pull/8223), [#8224](https://github.com/omnigent-ai/omnigent/pull/8224), [#8225](https://github.com/omnigent-ai/omnigent/pull/8225), [#8226](https://github.com/omnigent-ai/omnigent/pull/8226), [#8236](https://github.com/omnigent-ai/omnigent/pull/8236), [#8255](https://github.com/omnigent-ai/omnigent/pull/8255), [@zhengwin](https://github.com/zhengwin)
+
+### 💜 Thanks to our community
+
+This release was shaped by the people who filed issues, opened PRs, and talked through feature requests with us on our Discord! Thank you for building omnigent with us, keep the bug reports, ideas and contributions coming :)
+
+[@ajayalfred](https://github.com/ajayalfred), [@Arshgill01](https://github.com/Arshgill01), [@arthivjkumar](https://github.com/arthivjkumar), [@bdchatham](https://github.com/bdchatham), [@chameleon82](https://github.com/chameleon82), [@christianclaudio](https://github.com/christianclaudio), [@daniellok-db](https://github.com/daniellok-db), [@dbczumar](https://github.com/dbczumar), [@dependabot[bot]](https://github.com/apps/dependabot), [@dhruv0811](https://github.com/dhruv0811), [@dipeshbabu](https://github.com/dipeshbabu), [@dosenr](https://github.com/dosenr), [@fanzeyi](https://github.com/fanzeyi), [@hzub](https://github.com/hzub), [@Jomak-x](https://github.com/Jomak-x), [@Leemoonsoo](https://github.com/Leemoonsoo), [@mxatone](https://github.com/mxatone), [@nakazax](https://github.com/nakazax), [@natsuskaizen](https://github.com/natsuskaizen), [@nhsdb](https://github.com/nhsdb), [@omnigent-ci[bot]](https://github.com/apps/omnigent-ci), [@PattaraS](https://github.com/PattaraS), [@serena-ruan](https://github.com/serena-ruan), [@terrytangyuan](https://github.com/terrytangyuan), [@TomeHirata](https://github.com/TomeHirata), [@trungnguyen21](https://github.com/trungnguyen21), [@tyler-lynch](https://github.com/tyler-lynch), [@vasvlasov](https://github.com/vasvlasov), [@wilbeibi](https://github.com/wilbeibi), [@yaoharry](https://github.com/yaoharry), [@zhengwin](https://github.com/zhengwin)
 
 Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
 
-## What's Next
-
-Install or upgrade Omnigent:
+## Install or upgrade
 
 ```bash
-uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
+uv tool install --python 3.12 --upgrade omnigent
 ```
 
-- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
-- Join the conversation on our [Discord](https://discord.gg/omnigent).
-- Browse the [docs](https://omnigent.ai/docs) to go deeper.
+For a pip-managed environment, use `pip install --upgrade omnigent`.
+
+- Read the [GitHub release](https://github.com/omnigent-ai/omnigent/releases/tag/v0.16.0).
+- Join the conversation on [Discord](https://discord.gg/omnigent).
+- Browse the [docs](/docs).

@@ -184,11 +184,11 @@ By default every session starts private and its owner shares it explicitly. A
 third setting, **Default visibility for new sessions**, lets an admin make new
 sessions start with public read access instead. It has three options:
 
-| Value     | Settings > Sharing label        | Behavior                                                                                                                  |
-| --------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `off`     | Private                         | New sessions start private. Owners share them explicitly. This is the default.                                            |
-| `sandbox` | Cloud sandbox sessions public   | Sessions running in a server-managed [cloud sandbox](/docs/deploy/cloud-sandbox-host) start public; sessions on a user's own machine stay private. |
-| `all`     | All sessions public             | Every new session starts with public read access.                                                                         |
+| Value     | Settings > Sharing label      | Behavior                                                                                                                                           |
+| --------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `off`     | Private                       | New sessions start private. Owners share them explicitly. This is the default.                                                                     |
+| `sandbox` | Cloud sandbox sessions public | Sessions running in a server-managed [cloud sandbox](/docs/deploy/cloud-sandbox-host) start public; sessions on a user's own machine stay private. |
+| `all`     | All sessions public           | Every new session starts with public read access.                                                                                                  |
 
 ```
 OMNIGENT_DEFAULT_PUBLIC_SESSIONS=sandbox omni server start

@@ -21,6 +21,7 @@ For a single-file expanded context, use [llms-full.txt](https://omnigent.ai/llms
 - [Polly](https://omnigent.ai/docs/use/builtin-agents/polly): Multi-AI coding orchestrator, workflow, skills, and when to use it.
 - [Debby](https://omnigent.ai/docs/use/builtin-agents/debby): Model debate agent, debate workflow, and when to use it.
 - [Custom Agents](https://omnigent.ai/docs/use/custom-agents): Create custom agents in YAML and configure harnesses, models, prompts, skills, tools, and policies.
+- [Company Knowledge](https://omnigent.ai/docs/use/company-knowledge): Connect agents to your company's knowledge over MCP, with cited answers and per-person permissions.
 
 ## Harnesses
 

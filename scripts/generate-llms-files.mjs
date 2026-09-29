@@ -87,6 +87,14 @@ const docsRoutes = [
       "Create custom agents in YAML and configure harnesses, models, prompts, skills, tools, and policies.",
   },
   {
+    section: "Agent Use Cases",
+    href: "/docs/use/company-knowledge",
+    label: "Company Knowledge",
+    source: "app/docs/use/company-knowledge/page.mdx",
+    description:
+      "Connect agents to your company's knowledge over MCP, with cited answers and per-person permissions.",
+  },
+  {
     section: "Harnesses",
     href: "/docs/build/harnesses",
     label: "Overview",

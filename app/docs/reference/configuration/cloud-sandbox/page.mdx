@@ -294,8 +294,7 @@ sandbox host that the harness's hook and helper subprocesses call back into:
   session costs no loopback listener for it — which matters under remote-dev
   port forwarders that mirror every TCP listener to your laptop and cap how
   many they will. Sockets left behind by a `serve-mcp` process that died
-  without cleanup are reaped by owner pid on the next start. On Windows, which
-  has no Unix sockets, the ingress always binds TCP from the port pool.
+  without cleanup are reaped by owner pid on the next start. On Windows, the ingress always binds TCP from the port pool.
 
 A sandbox whose SSRF hardening denies loopback destinations unconditionally
 (the `openshell` provider is one such backend) cannot reach a
@@ -305,10 +304,10 @@ sandbox host environment: both servers then listen on all interfaces (loopback
 consumers keep working) and advertise the host's routable address so the
 in-sandbox hooks can reach them.
 
-| Environment variable        | Default                                         | Description                                                                                                                                                                                                                                                                                                                                                   |
-| --------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OMNIGENT_BRIDGE_BIND_HOST` | loopback-only relay, Unix socket for MCP ingress | Selects the bind posture. Unset is loopback-only (`127.0.0.1`) for the tool relay and a Unix domain socket for the MCP control ingress. `0.0.0.0` binds both servers on all interfaces and advertises the detected routable address (falling back to loopback when the host has none). Any other value pins that exact host for both bind and advertisement. Setting it to anything moves the MCP ingress onto a TCP port from the pool. |
-| `OMNIGENT_BRIDGE_PORT_POOL` | `28700`–`28715`                                 | Overrides the server port pool. Accepts comma-separated ports and inclusive ranges, e.g. `28700-28703,29000`.                                                                                                                                                                                                                                                 |
+| Environment variable        | Default                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| --------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `OMNIGENT_BRIDGE_BIND_HOST` | loopback-only relay, Unix socket for MCP ingress | Selects the bind posture. Unset is loopback-only (`127.0.0.1`) for the tool relay and a Unix domain socket for the MCP control ingress. `0.0.0.0` binds both servers on all interfaces and advertises the detected routable address (falling back to loopback when the host has none). Any other value pins that exact host for both bind and advertisement. Setting it to a nonblank value moves the MCP ingress onto a TCP port from the pool. |
+| `OMNIGENT_BRIDGE_PORT_POOL` | `28700`–`28715`                                  | Overrides the server port pool. Accepts comma-separated ports and inclusive ranges, e.g. `28700-28703,29000`.                                                                                                                                                                                                                                                                                                                                    |
 
 TCP-bound bridge servers draw their ports from a small stable pool
 (`28700`–`28715` by default) so a sandbox network policy can allowlist them by

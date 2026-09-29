@@ -39,12 +39,16 @@ omni claude                          # Claude Code
 omni codex                           # Codex
 omni goose                           # Goose (native TUI)
 omni hermes                          # Hermes (native TUI)
+omni copilot                         # GitHub Copilot (SDK harness, via `omni run`)
 omni run agent.yaml                  # custom omnigent
 omni run ./my-agent/                 # directory with config.yaml
 ```
 
 `omni claude`, `omni codex`, `omni goose`, and `omni hermes` launch a built-in
-coding agent with Omnigent's UI. No YAML needed. See the
+coding agent with Omnigent's UI. No YAML needed. `omni copilot` is shorthand for
+`omni run --harness copilot` and forwards every `omni run` option; it requires
+the Copilot SDK (`copilot` extra) and appears in `omni --help` only when that
+SDK is installed. See the
 [Coding Agent tutorial](/quickstart/coding-agent) and the full harness list in
 [Harnesses](/docs/build/harnesses).
 

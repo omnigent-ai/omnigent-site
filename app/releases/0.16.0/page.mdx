@@ -16,19 +16,9 @@ export const metadata = pageMeta(
 
 _Released 2026-09-29_ · Omnigent maintainers
 
-Omnigent 0.16.0 updates desktop onboarding, the workspace browser, sandbox controls, and agent configuration. It also improves runner reconnection and harness reliability. Review the breaking changes below before upgrading.
+Omnigent 0.16.0 updates the workspace browser, sandbox controls, and agent configuration. It also improves runner reconnection and harness reliability. Review the breaking changes below before upgrading.
 
 ## Major new features
-
-### Redesigned desktop onboarding
-
-The desktop onboarding flow detects returning users, installs the CLI from inside the app on macOS, and guides setup with smoother animated steps. Organization-preset servers offer a "Join your team" path, and the post-setup import review groups discovered items by harness.
-
-![The redesigned desktop onboarding flow](https://github.com/user-attachments/assets/7ff29e03-2567-47e2-8e35-ebb974236086)
-
-Learn more in [Get started](/docs/interact/desktop#get-started).
-
-([#8119](https://github.com/omnigent-ai/omnigent/pull/8119), [#8126](https://github.com/omnigent-ai/omnigent/pull/8126), [#8195](https://github.com/omnigent-ai/omnigent/pull/8195), [#8202](https://github.com/omnigent-ai/omnigent/pull/8202), [#8290](https://github.com/omnigent-ai/omnigent/pull/8290), [#8277](https://github.com/omnigent-ai/omnigent/pull/8277), [#8311](https://github.com/omnigent-ai/omnigent/pull/8311), [@hzub](https://github.com/hzub), [@zhengwin](https://github.com/zhengwin))
 
 ### Unified workspace browser and file panel
 
@@ -84,6 +74,16 @@ Learn more about the [system prompt](/docs/build/prompts#system-prompt).
 - 🤖 Claude Code sessions use a Unix socket instead of a loopback port per MCP helper, treat `/exit` as a clean stop, show Claude's own API error text, aren't failed by a background sub-agent, and mark lost messages undelivered instead of duplicating the next one ([#8079](https://github.com/omnigent-ai/omnigent/pull/8079), [#8364](https://github.com/omnigent-ai/omnigent/pull/8364), [#8097](https://github.com/omnigent-ai/omnigent/pull/8097), [#8103](https://github.com/omnigent-ai/omnigent/pull/8103), [#8186](https://github.com/omnigent-ai/omnigent/pull/8186), [@dbczumar](https://github.com/dbczumar), [@yaoharry](https://github.com/yaoharry))
 - 🧠 Pi on the Databricks AI Gateway lists Claude, OpenAI, and Gemini models, sub-agents no longer report false launch failures, and new sessions accept the first message during provider setup ([#8228](https://github.com/omnigent-ai/omnigent/pull/8228), [#8200](https://github.com/omnigent-ai/omnigent/pull/8200), [#8424](https://github.com/omnigent-ai/omnigent/pull/8424), [@dbczumar](https://github.com/dbczumar), [@serena-ruan](https://github.com/serena-ruan))
 - ✍️ Composer fixes: cancel or edit an unsent message while a model switch finishes, pick skills with `/` anywhere in a prompt, and Files panel search finds tracked files in repositories of any size ([#8039](https://github.com/omnigent-ai/omnigent/pull/8039), [#8087](https://github.com/omnigent-ai/omnigent/pull/8087), [#8409](https://github.com/omnigent-ai/omnigent/pull/8409), [@dbczumar](https://github.com/dbczumar), [@serena-ruan](https://github.com/serena-ruan))
+
+## Desktop onboarding preview
+
+We're working on a redesigned desktop onboarding flow to make setup easier for new and returning users. This preview is still in development and hasn't shipped in a desktop release yet.
+
+We'd love to hear your thoughts on the new flow and what would make getting started smoother. Share your feedback on [Discord](https://discord.gg/omnigent).
+
+![Preview of the redesigned desktop onboarding flow](https://github.com/user-attachments/assets/7ff29e03-2567-47e2-8e35-ebb974236086)
+
+([#8119](https://github.com/omnigent-ai/omnigent/pull/8119), [#8126](https://github.com/omnigent-ai/omnigent/pull/8126), [#8195](https://github.com/omnigent-ai/omnigent/pull/8195), [#8202](https://github.com/omnigent-ai/omnigent/pull/8202), [#8290](https://github.com/omnigent-ai/omnigent/pull/8290), [#8277](https://github.com/omnigent-ai/omnigent/pull/8277), [#8311](https://github.com/omnigent-ai/omnigent/pull/8311), [@hzub](https://github.com/hzub), [@zhengwin](https://github.com/zhengwin))
 
 ## Other contributions
 

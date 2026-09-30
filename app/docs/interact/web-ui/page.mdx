@@ -577,6 +577,47 @@ Each queued row has inline actions:
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
 
+## Sub-agent activity
+
+When a session hands work to a sub-agent — a child session created with the
+built-in session tools, or one that a native harness such as Claude Code or
+Codex spawns itself — the parent chat records the hand-off inline. A dashed
+divider reading **Started** followed by the child's title appears in the
+transcript where the child was delegated, and a second divider appears when the child finishes:
+**Completed**, **Failed**, or **Stopped** (a cancelled child). A child whose
+runner disconnects or goes offline mid-turn is recorded as **Failed**.
+
+The child's name in the divider is a link. Clicking it opens that child session
+with the **Agents** tab selected in the right **Workspace** rail (on a
+phone-sized viewport the sub-agents panel opens instead), so you can inspect
+the child and step back up to its parent. The link is a plain session URL with
+a `panel=agents` query parameter — `/c/<session-id>?panel=agents` — which you
+can share or bookmark. The parameter is scoped to that one session and is
+dropped when you switch to another conversation.
+
+Activity dividers are persisted as ordinary items in the parent's history, so
+they survive reloads and reconnects and are visible to everyone following the
+session. Each is a `resource_event` item with `resource_type: "session"`,
+`resource_id` set to the child session id, an `event_type` of
+`session.subagent.delegated` or `session.subagent.returned`, and a `resource`
+object carrying the child's `title` and — for a returned child — its `status`
+(`completed`, `failed`, or `cancelled`). The title comes from the child's task
+summary or its harness-native description or nickname, and falls back to
+**Sub-agent**.
+
+Two harness-specific details:
+
+- **Claude Code** — a child's **Completed** divider is recorded when the
+  child's result actually reaches the parent (a completed `Agent` tool result
+  or a task notification), not merely when the child goes idle. The
+  hand-back messages Claude Code injects into the parent transcript — task
+  notifications and `<teammate-message>` / `<agent-message>` envelopes — are
+  hidden context and no longer render as user bubbles. A message you typed
+  yourself is always kept, even if it happens to look like that markup.
+- **Codex** — a child's **Started** divider appears once Codex has named the
+  child (its agent nickname or role), which can be a moment after the child
+  session itself is created.
+
 ## Side chats
 
 A side chat lets you ask the agent something off to the side of a conversation

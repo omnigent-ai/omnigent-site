@@ -65,6 +65,11 @@ omnigent import --harness claude --last 10
 
 Provide exactly one of `--session` or `--last` — they are mutually exclusive.
 
+When importing a Claude Code transcript, sub-agent task notifications and
+teammate / agent-message envelopes that Claude Code injected into the
+conversation are imported as hidden context rather than shown as messages you
+wrote, so the imported session reads like the chat you actually had.
+
 To pull recent chats from every supported harness at once, pass
 `--harness all` together with `--last N`. This merges all harnesses into a
 single global recency order and imports the `N` most recent sessions in total

@@ -751,7 +751,14 @@ Ask the "Review tests" child session to prioritize its findings by risk.
 `sys_session_send` can write only to the calling session's direct children.
 For agents with named sub-agents, reusing the same `agent` and `title` continues
 that child conversation; a different title starts a separate one. Child sessions
-appear in the Web UI, where you can follow their progress.
+appear in the Web UI, where you can follow their progress. The parent's
+transcript also records each hand-off inline — a **Started** divider when a
+child is delegated and a **Completed** / **Failed** / **Stopped** divider when
+it returns — and these are persisted as `resource_event` items
+(`event_type` `session.subagent.delegated` or `session.subagent.returned`,
+`resource_id` = the child session id) that you can read back from
+`/v1/sessions/{id}/items`. See [Sub-agent
+activity](/docs/interact/web-ui#sub-agent-activity) for the full shape.
 
 ### Use bundled skills for multi-agent workflows
 

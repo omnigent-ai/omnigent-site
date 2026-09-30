@@ -769,8 +769,9 @@ curl -fsSL https://get.pipeshub.com/install | bash
 ```
 
 Open `http://localhost:3000`, load the [demo data](https://docs.pipeshub.com/demo-data)
-or connect one of your own tools, then create a token under **Workspace →
-Developer Settings → Personal Access Tokens**. Export the two values it shows:
+or connect one of your own tools, then create a token under **Workspace Settings
+→ Developer Settings → Personal Access Tokens → New token**. Export the two
+values it shows:
 
 ```
 export PIPESHUB_MCP_URL=http://localhost:3000/mcp

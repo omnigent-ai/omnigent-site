@@ -224,6 +224,7 @@ Every event also carries:
 | `model`                | `str \| None` | Active model, e.g. `"databricks-claude-sonnet-4-6"`. `None` when unknown.                  |
 | `harness`              | `str \| None` | Active harness, e.g. `"codex-native"`. `None` on web / API paths.                          |
 | `labels`               | `dict`        | Read-only snapshot of the conversation's guardrail labels.                                 |
+| `conversation_id`      | `str \| None` | ID of the conversation this event belongs to, e.g. `"conv_abc123"`. Injected by the policy engine, so it's always set for real evaluations; `None` only when a policy is called outside an engine (e.g. in a hand-built test). Useful for correlating events with their session in logs or session-scoped side effects. |
 
 <span id="reference-policyresponse" />
 

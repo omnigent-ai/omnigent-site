@@ -114,3 +114,67 @@ most recent sessions** button on the empty home screen (importing across all
 harnesses from your online machine), plus a **Choose what to import** link into
 the Settings picker. Importing from the web UI requires an online machine —
 start one with `omnigent host` from your terminal if none are connected.
+
+## Review what your harnesses bring over
+
+Chats aren't the only thing that carries over. When one of your machines is
+connected, Omnigent sessions on it already load the logins, MCP servers,
+skills, and plugins you've configured in the harnesses installed there. The web
+UI's **Your imports are ready** dialog shows you exactly what that is, per
+harness, so nothing arrives as a surprise.
+
+The dialog is **review only**: there are no checkboxes and nothing to opt in to.
+Everything it lists carries over automatically; **Confirm** (or closing the
+dialog) just acknowledges it and changes nothing on the machine.
+
+### When it opens
+
+- **Automatically, once per machine.** The first time a browser sees one of
+  your machines online, it checks what the machine's harnesses bring. If there
+  is anything to show, the dialog opens on its own. Confirming or dismissing it
+  marks that machine as reviewed on this device (the memory is per browser, so
+  a different browser or device will show it once more). A machine with nothing
+  to show is skipped silently and rechecked the next time the app loads. The
+  dialog doesn't appear when the web UI is embedded in another surface.
+- **On demand, from Settings.** Open **Settings › Import sessions** and scroll
+  to **Harness imports**. Each of your online machines is listed with a
+  **Review imports** button that reopens the dialog for that machine. If none
+  of your machines are online, the panel tells you to start one with
+  `omnigent host`.
+
+When you have more than one machine, the dialog names the one it's describing.
+
+### What it shows
+
+One tab per harness family detected on the machine — **Claude Code**
+(`claude-native`), **Codex** (`codex-native`), and **Cursor**
+(`cursor-native`) — for harnesses whose CLI is installed there. Within a
+harness tab:
+
+- **Login** — a one-line summary when the harness is signed in on that machine:
+  **Databricks AI Gateway** when its inference goes through the gateway,
+  otherwise **Signed in**.
+- **MCP servers** — the harness's user-level MCP servers, as reported by the
+  machine. Servers bundled by a plugin are labelled with that plugin
+  (`<plugin> plugin`), and remote servers show their hostname.
+- **Skills** — the harness's user-level skills (its home-directory catalog, the
+  same one the composer's skills menu uses). Each is shown the way you'd invoke
+  it in a session: `$name` on Codex, `/name` on every other harness.
+- **Plugins** — skills namespaced `<plugin>:<skill>` are grouped under their
+  plugin with a skill count, together with any plugin that only contributes MCP
+  servers.
+
+Only lists with something in them are shown; a harness with a login but no
+assets reads **No MCPs, skills, or plugins detected**. Nothing here is edited or
+copied — the dialog reads from the machine over its tunnel and the server never
+sees your local files.
+
+### Loading, offline, and partial results
+
+- While the machine is still reporting, the dialog shows **Checking your
+  harnesses…** and fills in once the inventory arrives.
+- If the machine goes offline, the dialog says so and asks you to reconnect it
+  to review its imports.
+- If the machine could read one kind of asset but not another, what did load is
+  still shown and a notice names what couldn't be read — for example
+  **Couldn't read MCP servers from this machine.**

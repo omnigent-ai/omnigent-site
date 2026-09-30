@@ -61,7 +61,23 @@ export PIPESHUB_MCP_URL=http://localhost:3000/mcp
 export PIPESHUB_MCP_TOKEN=phpat_…
 ```
 
-**2. Add the connection file.**
+**2. Create the agent.** Make a `company-knowledge/` folder with a
+`config.yaml`. This is the minimum [custom agent](/docs/use/custom-agents):
+
+```
+# config.yaml
+spec_version: 1
+name: company-knowledge
+description: Answers questions from our company's knowledge, with sources.
+executor:
+  type: omnigent
+  config:
+    harness: claude-sdk
+interaction:
+  conversational: true
+```
+
+**3. Add the connection file** at `tools/mcp/pipeshub.yaml` in that folder:
 
 ```
 # tools/mcp/pipeshub.yaml
@@ -73,13 +89,13 @@ headers:
   Authorization: "Bearer ${PIPESHUB_MCP_TOKEN}"
 ```
 
-The file holds no endpoint and no secret, so it can be committed. Omnigent
-fills in both values from your environment when it loads the agent, and stops
-with an error naming the variable if one isn't set. See
-[MCP & Tools](/docs/build/tools) for how expansion works.
+The file holds no endpoint and no secret, so it can be committed. When you start
+the agent with `omni run`, Omnigent fills in both values from your shell before
+it uploads the agent, and stops with an error naming the variable if one isn't
+set. See [MCP & Tools](/docs/build/tools) for how expansion works.
 
-**3. Tell the agent when to search.** An agent with a search tool doesn't
-always use it. Put the rule in `AGENTS.md`:
+**4. Tell the agent when to search.** An agent with a search tool doesn't
+always use it. Put the rule in `AGENTS.md`, next to `config.yaml`:
 
 ```
 Search PipesHub before answering any question about how or why something was
@@ -88,7 +104,7 @@ If the search comes back empty, or a PipesHub tool fails, say so instead of
 answering from general knowledge.
 ```
 
-**4. Run it.**
+**5. Run it** from the folder that contains `company-knowledge/`:
 
 ```
 omni run ./company-knowledge/

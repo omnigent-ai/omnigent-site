@@ -79,6 +79,12 @@
   </url>
 
   <url>
+    <loc>https://omnigent.ai/docs/use/company-knowledge</loc>
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://omnigent.ai/docs/build/harnesses</loc>
     <lastmod>2026-06-23</lastmod>
     <changefreq>weekly</changefreq>

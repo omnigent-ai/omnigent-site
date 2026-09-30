@@ -723,6 +723,140 @@ policies:
 
 ---
 
+## https://omnigent.ai/docs/use/company-knowledge
+
+# Connect Your Company's Knowledge
+
+Your agents can read your code, but not the decisions around it: the incident
+ticket that explains why something changed, the Slack thread where the team
+chose a design, the doc that records the outcome, the review comments on the
+pull request. Without that context, an agent asked "why does this work this
+way?" either guesses or asks you.
+
+Connect a knowledge source to your agent as an MCP server and it can search
+that context itself, cite where each answer came from, and see only what the
+person using it is allowed to see.
+
+## How it works
+
+The connection is one file in the agent's folder. Omnigent discovers every
+file under `tools/mcp/` at load time ([sidecar MCP files](/docs/build/tools)),
+so the agent's `config.yaml` doesn't have to change:
+
+```
+company-knowledge/
+├── config.yaml              # the agent
+├── AGENTS.md                # when to search, and how to answer
+└── tools/mcp/knowledge.yaml # the connection to your knowledge source
+```
+
+Because the connection belongs to the agent rather than to one person's tool
+settings, everyone who runs the folder gets the same connection, and copying
+the file into another agent's folder gives that agent the same knowledge.
+
+## Example: PipesHub
+
+[PipesHub](https://github.com/pipeshub-ai/pipeshub-ai) is an open-source
+knowledge layer that indexes tools such as Slack, Jira, Google Drive,
+Confluence and GitHub, and serves them over MCP. It checks permissions on every
+search using the identity behind the token, so an answer only draws on
+documents that person can already open.
+
+**1. Run PipesHub and create a token.** PipesHub runs locally with Docker:
+
+```
+curl -fsSL https://get.pipeshub.com/install | bash
+```
+
+Open `http://localhost:3000`, load the [demo data](https://docs.pipeshub.com/demo-data)
+or connect one of your own tools, then create a token under **Workspace →
+Developer Settings → Personal Access Tokens**. Export the two values it shows:
+
+```
+export PIPESHUB_MCP_URL=http://localhost:3000/mcp
+export PIPESHUB_MCP_TOKEN=phpat_…
+```
+
+**2. Create the agent.** Make a `company-knowledge/` folder with a
+`config.yaml`. This is the minimum [custom agent](/docs/use/custom-agents):
+
+```
+# config.yaml
+spec_version: 1
+name: company-knowledge
+description: Answers questions from our company's knowledge, with sources.
+executor:
+  type: omnigent
+  config:
+    harness: claude-sdk
+interaction:
+  conversational: true
+```
+
+**3. Add the connection file** at `tools/mcp/pipeshub.yaml` in that folder:
+
+```
+# tools/mcp/pipeshub.yaml
+name: pipeshub
+description: Search our company's knowledge (Slack, Jira, Drive, GitHub) with sources.
+transport: http
+url: ${PIPESHUB_MCP_URL}
+headers:
+  Authorization: "Bearer ${PIPESHUB_MCP_TOKEN}"
+```
+
+The file holds no endpoint and no secret, so it can be committed. When you start
+the agent with `omni run`, Omnigent fills in both values from your shell before
+it uploads the agent, and stops with an error naming the variable if one isn't
+set. See [MCP & Tools](/docs/build/tools) for how expansion works.
+
+**4. Tell the agent when to search.** An agent with a search tool doesn't
+always use it. Put the rule in `AGENTS.md`, next to `config.yaml`:
+
+```
+Search PipesHub before answering any question about how or why something was
+done here, or about anything that isn't in the code. Cite the sources you used.
+If the search comes back empty, or a PipesHub tool fails, say so instead of
+answering from general knowledge.
+```
+
+**5. Run it** from the folder that contains `company-knowledge/`:
+
+```
+omni run ./company-knowledge/
+```
+
+With the demo data loaded, ask _"Why was the payment service architecture
+changed, and how was the decision made?"_ The answer draws on an incident
+ticket, a Slack discussion, a design doc and a pull request, and lists each
+one as a source.
+
+## Who the agent searches as
+
+A knowledge source answers as the identity behind its credentials. When each
+person runs the agent with their own token, each gets their own view. If you
+register one agent on a shared server with a single token in the server's
+environment, everyone who uses that agent searches as the token's owner, so
+choose a token whose access suits everyone who can use the agent.
+
+## Limit what the agent can use
+
+Add a `tools` list to the connection file to expose only some of the server's
+tools. For PipesHub, for example, search and read only:
+
+```
+tools: [pipeshub_search, pipeshub_get_record_content]
+```
+
+## Other knowledge sources
+
+Any MCP server that searches your company's content works the same way: one
+file under `tools/mcp/`, credentials from environment variables, and the same
+`AGENTS.md` rule to search first and cite. See [MCP & Tools](/docs/build/tools)
+for the full connection options, including stdio servers and authentication.
+
+---
+
 ## https://omnigent.ai/docs/build/harnesses
 
 # Harnesses

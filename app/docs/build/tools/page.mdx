@@ -31,7 +31,7 @@ tools:
     command: node
     args: [dist/server.js]
     env:
-      API_KEY: ${MY_API_KEY}          # env vars expanded at load time
+      API_KEY: ${MY_API_KEY}          # filled in from your environment
 ```
 
 **Remote URL (HTTP/SSE):**
@@ -40,19 +40,20 @@ tools:
 tools:
   docs-api:
     type: mcp
-    url: ${DOCS_API_URL}                     # env vars expanded at load time
+    url: ${DOCS_API_URL}                     # filled in from your environment
     headers:
-      Authorization: "Bearer ${API_TOKEN}"   # env vars expanded at load time
+      Authorization: "Bearer ${API_TOKEN}"   # filled in from your environment
 ```
 
-Omnigent expands `${VAR}` references in `url`, `headers` and `env` when it
-loads the agent, from the environment of whoever loads it: your shell when you
-start the agent with `omni run`, or the server's environment for an agent
-registered on a server with `omni server --agent`. So a remote server's config
-can be committed to version control with neither the endpoint nor the
-credential in it, and each person who runs the agent supplies their own.
+Omnigent fills in `${VAR}` references in `url`, `headers` and `env` from the
+environment of whoever starts the agent. `omni run` fills them in from your
+shell before it uploads the agent; an agent registered with
+`omni server --agent` is filled in from the server's environment when the
+server loads it. So a remote server's config can be committed to version
+control with neither the endpoint nor the credential in it, and each person who
+runs the agent supplies their own.
 
-If a referenced variable isn't set, loading fails with an error that names it,
+If a referenced variable isn't set, Omnigent stops with an error that names it,
 instead of sending a literal `${...}` to the server:
 
 ```

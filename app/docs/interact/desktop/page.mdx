@@ -262,7 +262,8 @@ preference domain is the desktop app's bundle identifier:
 ai.omnigent.desktop
 ```
 
-Set the `serverUrls` key to an array of server URLs, most-preferred first:
+Set the `serverUrls` key to an array of server URLs, most-preferred first.
+Optionally, give those servers display names with the `serverNames` key:
 
 <table>
   <thead>
@@ -289,6 +290,20 @@ Set the `serverUrls` key to an array of server URLs, most-preferred first:
         <code>https://</code>. At most 10.
       </td>
     </tr>
+    <tr>
+      <td>
+        <code>serverNames</code>
+      </td>
+      <td>Dictionary</td>
+      <td>No</td>
+      <td>
+        <code>{"{}"}</code>
+      </td>
+      <td>
+        Display names for servers in <code>serverUrls</code>: server URL →
+        name, e.g. <code>Engineering</code>. Unnamed servers show their host.
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -299,12 +314,21 @@ origin are collapsed, keeping the first. If any entry is an invalid type,
 insecure, or malformed — or the list has more than 10 entries — the whole list
 is rejected.
 
-Managed servers are read only on macOS; other platforms ignore the preference.
+A `serverNames` key is matched to a `serverUrls` entry after the same
+normalization, so write it as it appears in `serverUrls`. Names are cosmetic:
+an entry that doesn't match a listed server, or has an empty name, is ignored
+on its own without affecting the rest. Without `serverUrls`, `serverNames` has
+no effect.
+
+Managed servers are read only on macOS; other platforms ignore the preferences.
 
 ### How they appear
 
 Managed servers show up under **Provided by your organization** on the connect
-screen and in the in-app server switcher. They are offered, not enforced:
+screen and in the in-app server switcher. The first managed server's name
+labels the connect screen's **Join your team** button; names also label the
+organization's servers in its dropdown and in the in-app server switcher.
+Servers without a name show their host. They are offered, not enforced:
 
 - Omnigent never connects to them automatically.
 - People can still type another server URL.
@@ -333,11 +357,18 @@ this as a custom settings or managed preferences payload):
           <string>https://omnigent.corp.example.com</string>
           <string>https://my-workspace.cloud.databricks.com/ml/omnigents</string>
         </array>
+        <key>serverNames</key>
+        <dict>
+          <key>https://omnigent.corp.example.com</key>
+          <string>Engineering</string>
+        </dict>
       </dict>
     </dict>
   </array>
 </dict>
 ```
+
+{/* TODO(doc-drafter): screenshot may be stale — managed servers can now show an organization-provided display name (serverNames) instead of the host on the connect screen */}
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 

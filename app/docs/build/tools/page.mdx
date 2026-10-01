@@ -36,7 +36,7 @@ tools:
     command: node
     args: [dist/server.js]
     env:
-      API_KEY: ${MY_API_KEY}          # env vars expanded at runtime
+      API_KEY: ${MY_API_KEY}          # filled in from your environment
 ```
 
 **Remote URL (HTTP/SSE):**
@@ -45,9 +45,25 @@ tools:
 tools:
   docs-api:
     type: mcp
-    url: https://example.com/mcp
+    url: ${DOCS_API_URL}                     # filled in from your environment
     headers:
-      Authorization: "Bearer ${API_TOKEN}"   # env vars expanded at runtime
+      Authorization: "Bearer ${API_TOKEN}"   # filled in from your environment
+```
+
+Omnigent fills in `${VAR}` references in `url`, `headers` and `env` from the
+environment of whoever starts the agent. `omni run` fills them in from your
+shell before it uploads the agent; an agent registered with
+`omni server --agent` is filled in from the server's environment when the
+server loads it. So a remote server's config can be committed to version
+control with neither the endpoint nor the credential in it, and each person who
+runs the agent supplies their own.
+
+If a referenced variable isn't set, Omnigent stops with an error that names it,
+instead of sending a literal `${...}` to the server:
+
+```
+Unresolved environment variable '${API_TOKEN}' in config key 'Authorization'.
+Set the variable in the environment or remove the reference.
 ```
 
 The optional `tools` list filters which MCP tools are exposed to the agent. It
@@ -103,6 +119,7 @@ As shown in the examples above, custom MCP servers accept credentials through:
 
 - **`env`**: environment variables passed to stdio server processes (e.g., `API_KEY: ${MY_API_KEY}`)
 - **`headers`**: HTTP headers for remote servers, with `${...}` env var expansion (e.g., `Authorization: "Bearer ${API_TOKEN}"`)
+- **`url`**: the remote server's endpoint also supports `${...}` expansion (e.g., `url: ${DOCS_API_URL}`), so the endpoint doesn't have to be hardcoded either
 - **`auth:` with `type: databricks`**: resolves an OAuth token from a profile in your `~/.databrickscfg`. `databricks` is the only supported `auth` type; inside it, `profile` is required. Other servers don't use `auth:` — they authenticate via `env` or `headers` above:
 
 ```

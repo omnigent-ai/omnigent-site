@@ -251,18 +251,27 @@ Notifications and badge counts are combined across all connected servers.
   style={{ width: "100%", borderRadius: "8px" }}
 />
 
-## Managed servers (macOS MDM)
+## Preset server URLs via MDM (macOS)
 
-On macOS, administrators can publish a list of server URLs through MDM
-[Managed Preferences](https://support.apple.com/guide/deployment/welcome/web),
-so people can pick their organization's server instead of typing it. The
-preference domain is the desktop app's bundle identifier:
+On macOS, an administrator can preset the servers Omnigent Desktop offers, so
+users pick their organization's server from a list instead of typing it. This
+uses the standard macOS
+[Managed Preferences](https://support.apple.com/guide/deployment/welcome/web)
+mechanism, delivered through whatever MDM you run (for example Jamf, Kandji,
+Intune, or Mosyle). Each MDM has
+its own UI and configuration format, so follow your MDM's managed-preferences or
+custom-settings documentation for the exact steps. This page documents what
+Omnigent reads: the preference domain and the keys it recognizes.
+
+### Preference domain
+
+Omnigent Desktop reads its managed preferences from the app's bundle identifier:
 
 ```text
 ai.omnigent.desktop
 ```
 
-Set the `serverUrls` key to an array of server URLs, most-preferred first:
+### Keys
 
 <table>
   <thead>
@@ -289,36 +298,46 @@ Set the `serverUrls` key to an array of server URLs, most-preferred first:
         <code>https://</code>. At most 10.
       </td>
     </tr>
+    <tr>
+      <td>
+        <code>serverNames</code>
+      </td>
+      <td>Dictionary</td>
+      <td>No</td>
+      <td>
+        <code>{"{}"}</code>
+      </td>
+      <td>
+        Display names for the servers in <code>serverUrls</code>, keyed by URL
+        (for example <code>Engineering</code>). A server with no name shows its
+        host.
+      </td>
+    </tr>
   </tbody>
 </table>
 
-A schemeless host is accepted and interpreted as `https://`. Paths are
-preserved, so an administrator can point directly at a workspace mount such as
-`https://my-workspace.cloud.databricks.com/ml/omnigents`. Entries that share an
-origin are collapsed, keeping the first. If any entry is an invalid type,
-insecure, or malformed — or the list has more than 10 entries — the whole list
-is rejected.
+Notes:
 
-Managed servers are read only on macOS; other platforms ignore the preference.
+- A schemeless host is read as `https://`, and `http://` is rejected, so a plain
+  `localhost` server can't be preset.
+- Paths are preserved, so you can point directly at a workspace mount such as
+  `https://my-workspace.cloud.databricks.com/ml/omnigents`.
+- Entries that share an origin are collapsed, keeping the first. If any entry is
+  an invalid type, insecure, or malformed, or if the list has more than 10
+  entries, the whole list is rejected.
+- A `serverNames` entry is matched to its `serverUrls` entry after the same
+  normalization, so write the URL the same way in both. Names are cosmetic.
 
-### How they appear
+These preferences are read only on macOS; other platforms ignore them.
 
-Managed servers show up under **Provided by your organization** on the connect
-screen and in the in-app server switcher. They are offered, not enforced:
+### Example (macOS managed preferences)
 
-- Omnigent never connects to them automatically.
-- People can still type another server URL.
-- A managed workspace path is loaded exactly as configured, rather than being
-  reduced to its origin.
-- Values are read from macOS on demand, not copied into the app's settings, so
-  applying or removing a profile takes effect the next time the connect screen
-  loads or the server switcher opens.
-
-### Example MDM profile
-
-Use the standard `com.apple.ManagedClient.preferences` payload with the
-`ai.omnigent.desktop` application preference domain (most MDM products expose
-this as a custom settings or managed preferences payload):
+This is the macOS managed-preferences payload Omnigent reads. Depending on your
+MDM, you either upload it inside a Configuration Profile or paste these keys into
+a custom-settings form; either way, your MDM generates the surrounding profile
+wrapper (the `PayloadUUID`, `PayloadIdentifier`, and similar boilerplate). Keep
+the `ai.omnigent.desktop` domain and the key names as shown, and change the
+server URLs and names to your own.
 
 ```xml
 <key>ai.omnigent.desktop</key>
@@ -333,19 +352,29 @@ this as a custom settings or managed preferences payload):
           <string>https://omnigent.corp.example.com</string>
           <string>https://my-workspace.cloud.databricks.com/ml/omnigents</string>
         </array>
+        <key>serverNames</key>
+        <dict>
+          <key>https://omnigent.corp.example.com</key>
+          <string>Engineering</string>
+        </dict>
       </dict>
     </dict>
   </array>
 </dict>
 ```
 
-{/* eslint-disable-next-line @next/next/no-img-element */}
+### What users see
 
-<img
-  src="/images/docs/desktop-connect.png"
-  alt="Omnigent desktop app setup screen prompting for the server URL to connect to"
-  style={{ width: "100%", borderRadius: "8px" }}
-/>
+Preset servers show up under **Provided by your organization** on the connect
+screen and in the in-app server switcher. They are offered, not enforced:
+
+- Omnigent never connects to them automatically.
+- Users can still type and join another server URL.
+- A workspace path is loaded exactly as configured, rather than being reduced
+  to its origin.
+- Values are read from macOS on demand, not copied into the app's settings, so
+  applying or removing a profile takes effect the next time the connect screen
+  loads or the server switcher opens.
 
 ## Open a session from a link
 

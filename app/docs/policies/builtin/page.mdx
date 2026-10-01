@@ -53,6 +53,7 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `deny_trivial_to_expensive_model` | Classifies messages as trivial or complex. Routes trivial tasks away from expensive models.                                                                                            | `expensive_models` (string[], required), `classification_prompt` (string)                                                    |
 | `subagent_cost_budget`            | Gates a sub-agent on its own subtree LLM spend. Blocks expensive models at the hard limit, ASKs at soft thresholds. Attach to a child via `sys_session_send`'s `cost_budget` argument. | `max_cost_usd`, `ask_thresholds_usd`, `expensive_models`                                                                     |
 | `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                                                                                                | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                                          |
+| `user_period_cost_budget`         | Same as `user_daily_cost_budget`, but for a configurable UTC period — `day`, `week`, `month`, `quarter`, or `year`. Sums the user's daily spend across all their sessions for the current period; soft-checkpoint approvals are remembered per user for the rest of the period. | `period` (required), `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                     |
 
 ### Usage examples
 
@@ -227,6 +228,60 @@ omnigent server -c config.yaml
 
 The daily cap exists to surface sessions that are genuinely off the rails,
 not to penalize productive use.
+
+#### Per-user monthly (or weekly, quarterly, yearly) budget
+
+A daily cap doesn't catch a user who stays just under it every day.
+`user_period_cost_budget` applies the same gating as `user_daily_cost_budget`
+over a longer window: it sums the owner's spend across **all** of their
+sessions for the current UTC period and gates on the total.
+
+```yaml
+# config.yaml
+policies:
+  monthly_budget:
+    type: function
+    function:
+      path: omnigent.policies.builtins.cost.user_period_cost_budget
+      arguments:
+        period: month # day | week | month | quarter | year
+        ask_thresholds_usd: [250.0, 400.0]
+        max_cost_usd: 500.0
+        # Omit (or pass []) for a true hard stop that blocks every model at
+        # the limit; name tiers for a downgrade gate that only blocks those.
+        expensive_models: [opus]
+```
+
+How the period is computed (all in UTC):
+
+| `period`  | Window                                       |
+| --------- | -------------------------------------------- |
+| `day`     | The current calendar day                     |
+| `week`    | ISO week — Monday through the current day    |
+| `month`   | The 1st of the current month through today   |
+| `quarter` | The first day of the calendar quarter onward |
+| `year`    | January 1 of the current year onward         |
+
+Behavior matches the daily policy:
+
+- **Soft checkpoints** (`ask_thresholds_usd`) ASK the first time the period's
+  spend crosses each value. An approval is recorded per user, so the same
+  checkpoint won't re-prompt that user again this period — including from a
+  different session. A decline blocks just that turn or tool call.
+- **Hard limit** (`max_cost_usd`) DENYs the turn (request phase) or each tool
+  call once the period's spend reaches it. With `expensive_models` set, only
+  the named tiers are blocked so the user can `/model` down to a cheaper one;
+  without it, every model is blocked.
+- The policy abstains when the period's spend is `0.0` or the session has no
+  owner (single-user mode), so it never trips on missing data.
+
+`ask_thresholds_usd` values must each be greater than `0` and less than
+`max_cost_usd`, and `max_cost_usd` must be greater than `0`.
+
+Configure **one** period policy per policy set. A `user_daily_cost_budget`
+policy can sit alongside it, but stacking several `user_period_cost_budget`
+policies with different periods (for example weekly + monthly) is not
+supported.
 
 #### Keep sessions focused
 

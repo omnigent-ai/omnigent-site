@@ -49,6 +49,12 @@ const SECTIONS = [
           { href: "/docs/build/scheduled-tasks", label: "Scheduled Tasks" },
         ],
       },
+      {
+        title: "Company Knowledge",
+        collapsed: true,
+        href: "/docs/use/company-knowledge",
+        pages: [],
+      },
     ],
   },
   {

@@ -214,6 +214,11 @@
     "description": "Run Claude Code or Codex through Omnigent with one command and get a web UI, persistent sessions, collaboration, mobile, and policies.",
     "eyebrow": "Use Cases"
   },
+  "/docs/use/company-knowledge": {
+    "title": "Company Knowledge",
+    "description": "Connect your agents to the tickets, chat threads, docs and pull requests behind your code, so they answer with sources and each person sees only what they're allowed to.",
+    "eyebrow": "Use Cases"
+  },
   "/docs/use/custom-agents": {
     "title": "Custom Agents",
     "description": "Define a custom agent in a short YAML file, with no code or frameworks, and get the full Omnigent platform around it.",

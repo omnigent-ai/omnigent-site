@@ -194,7 +194,7 @@ filter which events you care about:
 | `request`     | User sends a message                              | `user_content` (typed text), `attachments` (list of `{filename, content_type, text}`)    |
 | `tool_call`   | Omnigent is about to call a tool                  | `name` (tool name), `arguments` (dict)                                                   |
 | `tool_result` | A tool has returned a result                      | `result` (tool output); `event["request_data"]` carries the original `tool_call` payload |
-| `response`    | Omnigent is about to deliver an assistant message | The assistant message text                                                               |
+| `response`    | Assistant text is about to be persisted           | The assistant text segment; see [Response segments and `turn_final`](#response-segments-and-turn_final) |
 
 Return `None` for event types you don't handle.
 
@@ -224,6 +224,49 @@ Every event also carries:
 | `model`                | `str \| None` | Active model, e.g. `"databricks-claude-sonnet-4-6"`. `None` when unknown.                  |
 | `harness`              | `str \| None` | Active harness, e.g. `"codex-native"`. `None` on web / API paths.                          |
 | `labels`               | `dict`        | Read-only snapshot of the conversation's guardrail labels.                                 |
+| `turn_final`           | `bool \| None` | `response` events only: whether this text segment ends a successfully completed turn. `None` on other event types. See below. |
+
+<span id="response-segments-and-turn_final" />
+
+### Response segments and `turn_final`
+
+`response` policies receive assistant text in `event["data"]`. In runner-relayed
+sessions, they run before each nonempty text segment is persisted, including
+progress text emitted before tool calls — so a single turn can invoke a `response`
+policy more than once. Use `event["context"]["turn_final"]` to decide whether to
+perform completion-specific work:
+
+| Value   | Meaning                                                                                                   |
+| ------- | --------------------------------------------------------------------------------------------------------- |
+| `True`  | The final text segment of a successfully completed relayed turn.                                          |
+| `False` | An intermediate segment, or text from a failed, cancelled, or incomplete relayed turn.                    |
+| `None`  | The calling path does not distinguish segments. Also the value outside the `response` event type.        |
+
+Within a `response` policy, skip only an explicit `False` so that callers which
+supply `None` keep working. `None` does not assert successful completion. For
+example, a policy that counts completed responses:
+
+```python
+from omnigent.policies.schema import PolicyEvent, PolicyResponse
+
+def count_responses(event: PolicyEvent) -> PolicyResponse | None:
+    if event["type"] != "response":
+        return None
+    if event.get("context", {}).get("turn_final") is False:
+        return None
+    return {
+        "result": "ALLOW",
+        "state_updates": [{"key": "responses", "action": "increment", "value": 1}],
+    }
+```
+
+Content checks (for example, redaction or blocked-phrase rules) should inspect
+every segment, including those marked `False` — a `DENY` on any segment replaces
+that segment with the `[Denied by policy: ...]` sentinel before it is persisted.
+The relay skips empty and whitespace-only segments, so a turn that ends with a
+tool call and no trailing text has no final `response` invocation. `turn_final`
+describes the current evaluation; it does not guarantee exactly one callback per
+turn.
 
 <span id="reference-policyresponse" />
 

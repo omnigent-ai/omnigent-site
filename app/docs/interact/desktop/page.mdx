@@ -28,6 +28,8 @@ showing how many sessions are waiting, and multiple independent windows.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
+{/* TODO(doc-drafter): screenshot may be stale — the Workspace rail no longer shows a fixed Browser (globe) tab; Browser now opens as a closable soft tab from the rail's + menu. */}
+
 <img
   src="/images/docs/desktop-app.png"
   alt="Omnigent native desktop app showing the session chat and file workspace"
@@ -47,8 +49,9 @@ same as the web UI.
 ## Embedded browser
 
 The desktop app includes an embedded browser pane your agent can drive directly.
-Five framework-owned tools are always available to every agent — you don't declare
-them in your agent YAML:
+It lives in the right **Workspace** rail as one or more closable **Browser**
+tabs (see [Browser tabs](#browser-tabs) below). Five framework-owned tools are
+always available to every agent — you don't declare them in your agent YAML:
 
 <table>
   <thead>
@@ -63,8 +66,9 @@ them in your agent YAML:
         <code>browser_navigate</code>
       </td>
       <td>
-        Opens or navigates the pane to a URL, auto-opening the pane if it isn't
-        open yet.
+        Opens or navigates the agent's Browser tab to a URL, creating and
+        selecting that tab (and expanding the Workspace rail) if it isn't open
+        yet.
       </td>
     </tr>
     <tr>
@@ -118,6 +122,39 @@ Because the browser runs inside the desktop window, these tools require the Omni
 desktop app to be running with the session open. If no desktop window is subscribed,
 the action fails cleanly with `browser action timed out — is the session open in the
 Omnigent desktop app?` rather than hanging.
+
+### Browser tabs
+
+The Browser is not a fixed destination in the Workspace rail's tab strip (which
+holds **Files**, **Changes**, **GitHub**, and **Agents**). Instead it opens as a
+**soft tab** — like file, shell, and side-chat tabs — that you can close when
+you're done:
+
+- **Open one yourself.** Click the rail's **`+`** (`Open new`) button and choose
+  **Browser**. Each pick adds a new, independent tab (`Browser 1`, `Browser 2`,
+  …) with its own address bar and navigation history; the tab appears last in
+  the rail and is selected immediately. Repeat to open several pages side by
+  side.
+- **Agent navigation opens one automatically.** When the agent calls
+  `browser_navigate` — or you click a chat link with in-app link opening turned
+  on — the session's agent Browser tab is created (or re-selected if it's
+  already open) and brought to the front, expanding the rail if it was
+  collapsed. The agent's tools always drive this reserved tab, not the ones you
+  opened from `+`; if you close it, the next navigation simply recreates it.
+- **Close a tab** with its `✕` (`Close Browser N`). Closing the last Browser tab
+  while nothing else is selected returns the rail to your default Workspace
+  tab (Files, or the first tab available in that session); if a file or shell
+  tab is active, it stays active.
+
+All Browser tabs in a session share that session's cookies and storage; tabs
+belonging to different sessions stay isolated. Open Browser tabs are remembered
+per session in this app's local state, so they come back after a reload or
+restart.
+
+The **`+` → Browser** option appears only when the shell can host the embedded
+browser: the desktop app with a current build. A plain web build, or an older
+desktop build that predates the browser bridge, hides it entirely rather than
+offering a tab whose actions would do nothing.
 
 ### Local network permission
 

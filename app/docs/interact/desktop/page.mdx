@@ -251,6 +251,45 @@ Notifications and badge counts are combined across all connected servers.
   style={{ width: "100%", borderRadius: "8px" }}
 />
 
+## Sign in to a Databricks workspace
+
+When the server URL is a Databricks workspace, the app signs you in through
+your **system browser** rather than inside the window, and stores the resulting
+credentials for that workspace.
+
+- **Connect reuses stored credentials.** Clicking **Connect** first tries the
+  credentials saved for the workspace you entered and only opens the system
+  browser when they can't sign you in. Saved-server launches, additional
+  windows, server switches, and `omnigent://` links also use stored credentials
+  without opening a browser automatically.
+- **Sign in with a different account.** When the URL you've entered is a
+  Databricks workspace, a **Sign in with a different account** link appears
+  under **Connect**. It always opens the system browser for a fresh sign-in,
+  skipping the stored credentials.
+- **Rejected sessions.** If the workspace rejects a session minted from stored
+  credentials, you're returned to the setup screen with
+  **Session expired. Connect to sign in again.** The next **Connect** signs in
+  through the browser instead of retrying the rejected credentials.
+
+### Reconnecting
+
+If the workspace becomes briefly unreachable — a VPN reconnecting after your
+machine wakes, a workspace IP access list refusing the network you're on, or
+the workspace answering with HTTP 5xx or 429 — the window keeps the page you
+were on and dims it under a **Reconnecting to Databricks…** overlay. The
+overlay blocks input to the page underneath, shows a short hint (for example
+_Check your network connection_ or _Databricks blocked this network_), and has
+a **Cancel** button.
+
+Behind the overlay the app retries silently: **every 5 seconds for a minute,
+then every 10 seconds for another minute**. As soon as a retry succeeds, the
+overlay disappears and you're back where you were. Clicking **Cancel**, or
+running out of retries, returns you to the setup screen with the reason — for
+example **Couldn't reach Databricks. Check your network connection, then click
+Connect.** — and the server URL pre-filled. Starting a new connection,
+choosing **Server > Change Server**, or closing the window also stops the
+retries.
+
 ## Managed servers (macOS MDM)
 
 On macOS, administrators can publish a list of server URLs through MDM

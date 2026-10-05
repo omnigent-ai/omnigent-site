@@ -71,6 +71,61 @@ picker shows on this browser — no account or host state is touched — and fai
 open: when no host is connected or readiness information is unavailable, nothing
 is hidden.
 
+### Inspect an MCP server's tools
+
+**Settings → Harnesses** lists the user-level MCP servers each native coding
+harness loads on the selected host — Claude Code, Codex, and Cursor. To see what
+a server actually exposes, expand its row: open a configured harness's card (or
+its gear) and go to the **MCP servers** tab, or open **Plugins → _plugin_ →
+MCPs** for a server bundled by a Claude plugin, then click the row's chevron.
+
+Nothing is probed until you expand a row. On expansion, the host that owns the
+configuration connects to that one server, lists its tools, and the row fills
+in with:
+
+- a **tool count** (`· 3 tools`; a trailing `+` means more than 500 were
+  reported and only the first 500 are listed),
+- a **status dot** — green for **Connected**, red for anything else, with the
+  reason in the dot's tooltip and in the expanded panel:
+  - **Authentication required** — the server answered `401`, or its
+    configuration needs a credential (for example a Codex
+    `bearer_token_env_var`) that isn't set in the host's environment.
+    Harness sign-in credentials are not reused for probes.
+  - **Couldn't reach this MCP server** — the process didn't start or the
+    endpoint didn't answer.
+  - **MCP probe timed out** — no reply within 10 seconds.
+  - **This MCP configuration cannot be probed from the host** — an unsupported
+    transport or a `${...}` substitution the host can't resolve.
+- the **tool names and descriptions** the server reported.
+
+Collapse the row to hide the list. The host caches each probe for five
+minutes, so reopening a row within that window reuses the result instead of
+reconnecting. A host probes at most two servers at a time; if both slots are
+busy the row reads **Host is busy probing other MCP servers. Collapse and
+reopen to retry.**
+
+A few things to know about what the probe sees:
+
+- It runs on the host, in an isolated process, using the server's user-level
+  configuration as written — workspace-level overrides are not applied.
+- HTTP servers are reached with the host's proxy and certificate environment
+  (`HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, `SSL_CERT_FILE`, `SSL_CERT_DIR`,
+  and their lowercase variants).
+- Only tool names, descriptions, and the connection status leave the host.
+  Commands, URLs, headers, and environment variables stay in the server
+  configuration on that machine and never appear in the UI or server logs.
+- Servers from a **disabled** Claude plugin stay listed but can't be expanded;
+  enable the plugin in Claude Code to inspect them.
+- Expansion needs an up-to-date host. On an older host the row shows
+  **Update _host_ to list tools.** (or, for plugin servers, **Update _host_ to
+  inspect installed plugin MCP tools.**) and the server list stays as plain
+  rows until the host is upgraded.
+
+The same lookup is available to scripts as
+`POST /v1/hosts/{host_id}/mcp-servers/tools` with a JSON body of
+`{"harness": "claude" | "codex" | "cursor", "server": "<name>", "plugin": "<plugin or null>"}`;
+it returns `tools`, `connection`, and `truncated`. The caller must own the host.
+
 ### Projects
 
 Organize related sessions into a named `Project`. Each project is a collapsible

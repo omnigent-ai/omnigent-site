@@ -405,6 +405,63 @@ tab isn't available in a given session (for example, GitHub only appears in
 coding-agent sessions, and Files/Changes need an on-disk workspace), the rail
 falls back to the first available tab.
 
+## Harness settings
+
+**Settings → Harnesses** shows what each harness on a connected host brings into
+Omnigent sessions. Pick a host and a harness (or open the **Settings** gear on a
+harness card), then switch between its **MCPs**, **Skills**, and **Plugins**
+tabs. The page is a gated release feature: an operator enables it
+deployment-wide by including `harness_settings_ui` in the server's release
+features (the same `OMNIGENT_FEATURES` list described under
+[Canvas](#canvas)).
+
+### Installed Claude Code plugins
+
+For **Claude Code** (`claude-native`), the **Plugins** tab is an inventory of the
+plugins installed on the selected host, read from Claude Code's user-level
+plugin registry (`plugins/installed_plugins.json` and each plugin's
+`.claude-plugin/plugin.json` manifest). Each row shows the plugin's name,
+version, marketplace, whether it is **Enabled** or **Disabled**, how many
+skills and MCP servers it bundles, **Hooks** / **Commands** labels when the
+plugin ships a `hooks/` or `commands/` directory (or declares them in its
+manifest), and its description. Open a row to read the description and browse
+the plugin's **Skills** and **MCPs** tabs; the **Plugins** button returns you to
+the list.
+
+Two things set this apart from the derived listing other harnesses show:
+
+- **Disabled plugins stay visible.** The inventory lists every installed
+  plugin, including ones you have switched off in Claude Code and ones that
+  carry only hooks or commands (and therefore never surface a skill or MCP
+  server). Codex and Cursor keep their existing listing, which is derived from
+  the skills and MCP servers the host reports and so only covers enabled
+  plugins that contribute at least one of those.
+- **Bundled MCP servers appear by name.** A plugin's `mcp_servers` names (from
+  its manifest or its `.mcp.json`) are listed under the plugin's **MCPs** tab
+  even when the plugin is disabled.
+
+Only metadata travels from the host to the server: plugin names, versions,
+marketplace, description, skill and MCP-server **names**, and the hook/command
+flags. Install paths, MCP server commands, environment, and hook scripts stay on
+the host. The host caps the inventory at 128 plugins, 128 skills and 128 MCP
+servers per plugin, 256-character names, and 1000-character descriptions.
+
+The inventory is served by `GET /v1/hosts/{host_id}/plugins`, which only the
+host's owner may call (see the [REST API reference](/reference)). It needs an
+up-to-date host — one that advertises the `plugins` capability when it connects
+— and an up-to-date server:
+
+- An older host answers `501` ("update the host to see installed plugins"), and
+  an older server has no route (`404`). In both cases the **Plugins** tab falls
+  back to the derived listing described above, so enabled plugins with skills
+  or MCP servers still appear.
+- If the host can't read its plugin registry (`502`), or doesn't answer within
+  15 seconds (`504`), the tab shows an inventory error instead of a list.
+
+The import-review step of onboarding keeps showing the active (derived) skills,
+MCP servers, and plugins a harness carries; it doesn't fetch the installed
+inventory.
+
 ## File editor
 
 A full markdown editor with syntax highlighting for browsing and editing every file your

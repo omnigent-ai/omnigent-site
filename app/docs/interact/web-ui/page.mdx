@@ -156,7 +156,32 @@ either direction — a project can force worktrees on, or opt out even when the
 global default is on. Only projects that leave the setting unset inherit the
 global default.
 
+{/* TODO(doc-drafter): screenshot may be stale — Settings › Git gained a "Delete worktrees for archived sessions" toggle below Default base branch */}
 ![Setting a default base branch for worktrees](/images/docs/git_worktree_setting.gif)
+
+#### Delete worktrees when archiving
+
+Archiving a session keeps its history but, by default, leaves its git worktree
+directory on disk. When you archive a session that has a worktree — from the
+sidebar row's `⋯` menu, the header menu, or the bulk-action bar — the first
+time Omnigent asks **Also delete the worktree?**:
+
+- **Yes, delete worktree** removes the worktree directory, including any
+  uncommitted changes. The branch is kept.
+- **No, archive only** archives the session and leaves the worktree in place.
+
+Tick **Remember my choice** to skip the prompt from then on. Dismissing the
+dialog cancels the archive. When you archive several sessions at once, one
+prompt covers every selected session that has a worktree; sessions without a
+worktree are archived without asking.
+
+The remembered choice lives under **Settings › Git › Delete worktrees for
+archived sessions**, where you can change it any time. The toggle is off until
+you choose; while unset, the archive prompt appears instead. Cleanup runs after
+the archive's Undo grace, once the session's runner has been torn down, so
+undoing the archive in time keeps the worktree. The prompt and setting appear
+only when the server supports archive worktree cleanup; against an older
+server, archiving never touches the worktree.
 
 ### Choose the launch model
 

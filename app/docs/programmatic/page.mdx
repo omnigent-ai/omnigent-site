@@ -530,6 +530,20 @@ curl --fail-with-body -X PATCH "http://127.0.0.1:6767/v1/sessions/$SESSION_ID" \
   -d '{"archived": true}' | jq
 ```
 
+Add `"delete_worktree": true` (default `false`) to also remove the session's
+server-created git worktree directory once the archive teardown runs, after the
+Undo grace. The branch is kept. The flag is ignored for sessions with no
+worktree and rejected with `400` unless `archived` is `true`:
+
+```bash
+curl --fail-with-body -X PATCH "http://127.0.0.1:6767/v1/sessions/$SESSION_ID" \
+  -H 'Content-Type: application/json' \
+  -d '{"archived": true, "delete_worktree": true}' | jq
+```
+
+Servers that support this advertise `"archive_worktree_cleanup": true` in
+`GET /v1/info`; older servers reject the unknown field.
+
       </td>
     </tr>
     <tr>

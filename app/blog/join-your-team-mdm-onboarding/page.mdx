@@ -1,0 +1,70 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Roll Omnigent out to your whole team: one 'Join your team' click on managed laptops",
+  "On a managed Mac, the desktop app's welcome screen now shows a single Join your team button for your organization's server. Pick where you work, a remote environment or this laptop, and Omnigent installs, connects, and opens with that choice already selected.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/join-your-team-mdm-onboarding",
+  },
+);
+
+export const meta = {
+  title:
+    "Roll Omnigent out to your whole team: one 'Join your team' click on managed laptops",
+  date: "2026-10-05",
+  category: "Governance",
+  author: "omnigent",
+  heroArt: "/images/blog/join-your-team-mdm-onboarding.png",
+};
+
+<BlogPostHeader slug="join-your-team-mdm-onboarding" />
+
+If you run Omnigent for a team and hand out company Macs through MDM, new
+teammates can now get from a fresh desktop install to a working session with
+one click. The welcome screen shows a single **Join your team** button, labeled
+with your server's name, and the rest of setup follows from it.
+
+Before this, every new person had to know the server URL, type it in, sign in,
+and then work out how to connect a runner on their own. Now the app reads the
+server your organization publishes through macOS Managed Preferences and asks
+one question: where do you work today? Pick a remote environment, if your
+server offers one, or **My laptop** (the card explains that the server will be
+able to run agents on it). **Install Omnigent** then installs anything missing,
+connects the runner you chose, shows progress while it signs in and opens the
+server, and you can cancel at any point. Your first new-session screen opens
+with that runner preselected, so the only thing left to do is start a chat.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: a fresh desktop install on a managed Mac showing the "Join your team (Engineering)" button, the "Where do you work today?" radio cards, the install/connect progress, and the new-session screen with the runner preselected. */}
+
+Nothing is forced on anyone. The button's dropdown still lists your other
+managed servers, recent servers, and a field for any server URL. To set it up,
+publish your server list through MDM under the `ai.omnigent.desktop` domain and
+give each server a display name with an `omnigentServerName` query parameter
+(Omnigent strips it before connecting). The first server's name becomes the
+button label.
+
+```xml
+<key>serverUrls</key>
+<array>
+  <string>https://omnigent.corp.example.com/?omnigentServerName=Engineering</string>
+</array>
+```
+
+Server operators can also name a deployment from the server side with
+`branding.server_name` in the server config; the desktop app shows that name
+next to the host wherever it lists servers, and an MDM-provided name wins when
+both are set.
+
+```yaml
+branding:
+  server_name: "Acme Engineering"
+```
+
+Managed servers are read on macOS. See the
+[desktop app guide](/docs/interact/desktop#managed-servers-macos-mdm) for the
+full preference reference and an example MDM profile.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

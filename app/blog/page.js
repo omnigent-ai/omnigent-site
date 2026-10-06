@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { getBlogPosts } from "@/lib/blog";
+import { productionSiteUrl } from "@/lib/site";
 
 export const metadata = {
   title: "Blog",
   description: "Product updates and feature deep-dives from the Omnigent team.",
-  alternates: { canonical: "/blog" },
+  alternates: { canonical: `${productionSiteUrl}/blog` },
 };
 
 // The /blog index (MLflow-style): the newest post gets a large featured card,

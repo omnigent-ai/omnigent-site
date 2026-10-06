@@ -94,6 +94,95 @@ for an IdP you trust to vouch for the claim. When set, the claim value is
 trimmed and normalized like an email address. This applies to the generic-OIDC
 path only; GitHub always requires a verified primary email.
 
+### Public PKCE clients and explicit endpoints
+
+The generic-OIDC path (Okta, Auth0, Keycloak, Entra ID, and any other IdP that
+publishes `/.well-known/openid-configuration`) accepts two further
+operator-level options. Both configure **Omnigent login** only — not upstream
+MCP credentials or shared-session credential ownership — and neither relaxes
+the signature, expiration, email-verification, admission, or reauthentication
+checks that run on every sign-in.
+
+#### Public clients (no client secret)
+
+If you registered Omnigent with your IdP as a **public client**, opt in with
+`OMNIGENT_OIDC_TOKEN_ENDPOINT_AUTH_METHOD=none` and leave
+`OMNIGENT_OIDC_CLIENT_SECRET` unset:
+
+```
+OMNIGENT_OIDC_ISSUER=https://identity.example.com
+OMNIGENT_OIDC_CLIENT_ID=omnigent
+OMNIGENT_OIDC_TOKEN_ENDPOINT_AUTH_METHOD=none
+```
+
+Omnigent still sends its client ID, redirect URI, and PKCE verifier to the
+token endpoint, but omits the `client_secret` field entirely. PKCE S256 is
+used in both modes, so the IdP must enforce PKCE and one-time authorization
+codes.
+
+This is an explicit opt-in. The default, `client_secret_post`, continues to
+require `OMNIGENT_OIDC_CLIENT_SECRET` — a missing secret never silently
+switches you to public-client mode. The server refuses to start if you set
+`none` together with a client secret, if you set any other value, or if you
+combine `none` with GitHub login (GitHub always needs the secret). If you are
+migrating from a custom integration that inferred public-client mode from an
+absent secret, add `OMNIGENT_OIDC_TOKEN_ENDPOINT_AUTH_METHOD=none` explicitly.
+
+#### Explicit endpoints (skip discovery)
+
+When discovery is unavailable, or advertises endpoints that don't suit your
+deployment, set **all three** overrides and the server skips the discovery
+fetch at startup:
+
+```
+OMNIGENT_OIDC_ISSUER=https://identity.example.com
+OMNIGENT_OIDC_CLIENT_ID=omnigent
+OMNIGENT_OIDC_TOKEN_ENDPOINT_AUTH_METHOD=none
+OMNIGENT_OIDC_AUTHORIZATION_ENDPOINT=https://login.example.com/authorize
+OMNIGENT_OIDC_TOKEN_ENDPOINT=https://tokens.example.com/token
+OMNIGENT_OIDC_JWKS_URI=https://keys.example.com/jwks
+OMNIGENT_OIDC_REDIRECT_URI=https://omnigent.example.com/auth/callback
+OMNIGENT_OIDC_COOKIE_SECRET=<64-hex-chars>
+```
+
+- Setting only one or two of the overrides fails at startup rather than mixing
+  endpoint sources; leave all three unset to keep using discovery.
+- Overrides work with confidential clients too, and public-client mode works
+  with discovery — the two options are independent.
+- Overrides are not supported for GitHub login, which keeps its fixed
+  endpoints.
+- Endpoint hosts may differ from the issuer, but the ID token's `iss` must
+  still match `OMNIGENT_OIDC_ISSUER` exactly and its `aud` must match the
+  client ID.
+- Query parameters on the authorization endpoint (for example `?p=policy`)
+  are preserved. Omnigent's own OAuth parameters win on name collisions.
+
+<div className="note">
+
+**Only trusted operators should set these addresses.** The token endpoint
+receives authorization codes and, for confidential clients, the client secret;
+the JWKS endpoint decides which signing keys are trusted. Each override must be
+an absolute HTTPS URL with no embedded credentials or fragment. Plain HTTP is
+accepted only for `localhost`, `127.0.0.1`, or `[::1]` for local testing.
+
+</div>
+
+#### Signing algorithms
+
+ID tokens signed with **PS256** are verified alongside the existing RSA
+(`RS256`/`RS384`/`RS512`) and EC (`ES256`/`ES384`/`ES512`) algorithms.
+
+#### Verifying the setup
+
+Restart the server with the new settings, sign in from a private browser
+window, then run `omni login <server-url>` and complete the browser flow.
+Both should identify the same expected account.
+
+If your enterprise directory omits `email_verified`, the separate
+`OMNIGENT_OIDC_SKIP_EMAIL_VERIFICATION=1` setting (see
+[Custom email claim](#custom-email-claim)) remains an explicit operator
+choice — the options above never enable it for you.
+
 ## Header-based auth
 
 If your server sits behind an existing SSO proxy (e.g. OAuth2 Proxy, Cloudflare Access) that

@@ -101,6 +101,37 @@ fields are handled differently depending on your harness:
 If you need `disable-model-invocation` or `allowed-tools` behavior, use the
 `claude-native` harness and place those skills in `.claude/skills/`.
 
+#### Portable `.agents` skills on `claude-native`
+
+Claude Code itself reads only `.claude/skills/`. On the `claude-native` harness,
+Omnigent bridges the portable `.agents/skills/` tiers too, so a skill you keep in
+`<project>/.agents/skills/` (or any ancestor directory, or `~/.agents/skills/`)
+shows up in the session's skills menu and works as a `/name` slash command in
+the Claude terminal, with its supporting files available.
+
+At launch, Omnigent stages links to the selected skill folders in a
+session-owned directory and passes it to the Claude CLI with `--add-dir`. The
+skill keeps its bare command name, and the links are rebuilt on every launch.
+On systems where directory symlinks can't be created (for example Windows
+without the required privilege), the skill folder is copied instead.
+
+A few rules decide which portable skills are bridged:
+
+- **Nearest wins.** The same skill name in the workspace, an ancestor
+  directory, and `~/.agents/skills/` resolves to the nearest copy.
+- **Native skills win collisions.** A `.claude/skills/` skill whose name (or
+  folder name) matches a portable skill, compared case-insensitively, takes
+  precedence; the portable one is not bridged. Only one portable spelling of a
+  case-insensitive name is kept.
+- **Command-safe names only.** The `name` in a portable skill's SKILL.md
+  frontmatter becomes a directory name in the staged overlay, so it must match
+  `[A-Za-z0-9_-]` and be 1–255 characters. Skills with other names (spaces,
+  slashes, `plugin:skill`-style namespaces) are skipped with a warning in the
+  logs.
+- **The skills filter applies.** `skills: none` bridges nothing, and a named
+  list bridges only the listed portable skills (see
+  [Filter discovered skills](#filter-discovered-skills)).
+
 ### Existing Codex skills and plugins
 
 On the Codex harnesses (`codex` and `codex-native`), Omnigent also surfaces the
@@ -250,6 +281,11 @@ skills:
 This only affects discovered skills (from `.agents/skills/` and `.claude/skills/`,
 and on the Codex harnesses, standalone Codex skills and Codex plugin skills).
 Bundled skills in the agent's own `skills/` directory are always available regardless.
+
+On the `claude-native` harness, a named list narrows the skills menu and the
+portable `.agents/skills/` that Omnigent bridges, but Claude Code still loads
+every `.claude/skills/` skill it finds on its own, so those remain invocable
+from the terminal even when not listed.
 
 For Codex plugin skills, a list entry matches either the bare skill name or the
 namespaced form, so both `review` and `toolkit:review` select `toolkit:review`.

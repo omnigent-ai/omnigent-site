@@ -170,6 +170,82 @@ tools:
       # max_results: 5            # 1-20 (default 5)
 ```
 
+### `web_read`
+
+A unified page reader: fetches one URL's content as clean markdown through a
+managed retrieval backend that renders JavaScript, so client-rendered pages —
+or sites that refuse a bare request — return real text where a plain
+`web_fetch` returns an empty or error page. Use it to read a specific URL you
+already have (articles, docs, product pages); use [`web_search`](#websearch) to
+find URLs first.
+
+The model calls it with a single `url` argument (an `http://` or `https://`
+URL). It reads one page — it is not a crawler — and only public,
+non-authenticated pages are supported: it does not access logins or paywalls,
+and URLs with embedded credentials (`user:pass@host`) are rejected.
+
+Like `web_search`, the backend is chosen explicitly with `read_provider`. There
+is no default and no env var fallback; with no `read_provider` set (or an
+unknown one), the tool returns an error naming the options.
+
+| `read_provider` | API key | Options | Notes |
+| --- | --- | --- | --- |
+| `jina` | Optional | — | Jina Reader. Keyless by default (rate-limited); `api_key` lifts the limit. Lightest-weight of the three. |
+| `nimble` | Required | `driver`, `output_format` | Nimble Web API. Browser-rendered for JavaScript-heavy pages. |
+| `firecrawl` | Required | `proxy` | Firecrawl. LLM-native markdown; self-hostable. |
+
+```
+tools:
+  builtins:
+    - name: web_read
+      read_provider: jina                # keyless (rate-limited)
+      # api_key: ${JINA_API_KEY}         # optional — lifts the rate limit
+```
+
+```
+tools:
+  builtins:
+    - name: web_read
+      read_provider: nimble
+      api_key: ${NIMBLE_API_KEY}
+      # driver: vx8                      # auto | vx8 (default) | vx10 | vx12 | *-pro | vx6 (plain HTTP)
+      # output_format: markdown          # markdown (default) | html
+```
+
+```
+tools:
+  builtins:
+    - name: web_read
+      read_provider: firecrawl
+      api_key: ${FIRECRAWL_API_KEY}
+      # proxy: auto                      # basic | enhanced | auto (default)
+```
+
+Backend-specific options:
+
+- **`nimble`** — `driver` selects Nimble's collection tier: `vx8` (default,
+  renders JavaScript), the higher tiers `vx10` / `vx12` and their `-pro`
+  variants (`vx8-pro`, `vx10-pro`, `vx12-pro`), `auto` (Nimble picks and
+  escalates per domain), and the plain-HTTP tiers `vx6` / `media-vx6` /
+  `fast-vx6`, which do not execute JavaScript. `output_format` is `markdown`
+  (default, with boilerplate stripped) or `html`. If a page comes back as a
+  captcha or access-denied interstitial, the tool reports a challenge response
+  (naming the driver) instead of returning it as content, so you can retry on a
+  higher tier.
+- **`firecrawl`** — `proxy` selects an escalating proxy tier: `basic`,
+  `enhanced`, or `auto` (default: start basic, escalate if needed). The legacy
+  name `stealth` is accepted as an alias for `enhanced`.
+
+Options are validated against the chosen backend: a key that belongs to a
+different backend (for example `output_format` under `jina`) is rejected with
+an error naming the backend it applies to, rather than silently ignored.
+
+Successful reads are prefixed with a one-line `Source: <url>` header so the
+model can cite the page, and are capped at 50,000 characters (longer pages end
+with `[content truncated]`). Because every backend is rate-limited or paid,
+prompt the agent to use `web_read` deliberately — prefer `web_fetch` for simple
+public pages and reach for `web_read` when that fails.
+
 ### Hindsight long-term memory
 
 Three built-in tools give an agent memory that survives across runs and sessions,
@@ -262,7 +338,8 @@ tools:
 ```
 
 Nimble is also a [`web_search`](#websearch) provider for quick lookups that
-don't need a research run. For the full config reference (polling, agent
+don't need a research run, and a [`web_read`](#webread) provider for reading a
+single page as markdown. For the full config reference (polling, agent
 instances, extract templates, and where to get an API key), see
 [Nimble's Omnigent connector docs](https://docs.nimbleway.com/integrations/connectors/omnigent).
 

@@ -254,7 +254,10 @@ terminal to prompt on.
 
 The web UI ships a set of global keyboard shortcuts. Press `⌘/` (`Ctrl+/` on
 Windows/Linux) at any time to open the in-app shortcuts overlay, which lists the
-current bindings for your platform.
+current bindings for your platform. Many controls also show their shortcut
+inline: hover the sidebar's collapse, **Search**, or **Settings** button or a
+Workspace tab, or open the Workspace rail's **+** menu, and the keycaps appear
+in the tooltip or menu row.
 
 ### Platform-aware modifiers
 
@@ -266,6 +269,8 @@ only that modifier fires it:
   readline/emacs editing keys (`Ctrl+A`, `Ctrl+K`, …) keep working in the
   composer and terminal.
 - On **Windows/Linux** the shortcuts use **Ctrl**, and only Ctrl triggers them.
+
+Exceptions: `Ctrl+Shift+M` (model picker), `Ctrl+Shift+L` (focus chat input), and `Ctrl+Tab` (desktop recent sessions) use Control on every platform.
 
 What you see in the shortcuts overlay is what fires: the overlay shows ⌘ on
 macOS and Ctrl elsewhere.
@@ -282,6 +287,9 @@ text-editing meaning, so they fire even while the composer is focused; inside a
 terminal or the code editor — which bind `⌘[` / `⌘]` themselves (indent/outdent,
 or forwarding to the PTY) — the shortcut yields to that surface.
 
+In the [desktop app](/docs/interact/desktop#keyboard-shortcuts), `Ctrl+Tab`
+additionally opens a switcher over your five most recent sessions.
+
 ### Find a session by name
 
 Press `⌘⌥S` (`Ctrl+Alt+S` on Windows/Linux) to jump straight to the
@@ -296,20 +304,55 @@ command palette (`⌘K`), which searches sessions _and_ runs commands. The
 search loads more sessions as you narrow the query; when there are more matches
 than fit, a **Search older sessions** control pulls in older pages.
 
+### Workspace sidebar and tabs
+
+`⌘⌥]` (`Ctrl+Alt+]` on Windows/Linux) is a keyboard path into the right
+**Workspace** rail rather than a plain toggle:
+
+- Pressed from anywhere outside the rail, it opens the rail if it's collapsed
+  (or hidden behind the Terminal panel) and moves focus into the rail's tab
+  strip, landing on the currently selected tab. If the rail is already open,
+  it only moves focus there. Reopening brings back the file you last had
+  selected.
+- Pressed while focus is already inside the tab strip, the same chord closes
+  the rail — so two presses in a row open and then close it.
+
+Once the tab strip has focus, press a plain digit to jump to one of the
+permanent tabs: `1`–`4` select **Files**, **Changes**, **GitHub**, and
+**Agents** in the order they appear in the strip. Your
+[Default Workspace tab](#default-workspace-tab) comes first when it's
+available, and tabs that aren't available in the session (GitHub outside
+coding-agent sessions, Files/Changes without an on-disk workspace) are skipped
+so the numbers stay contiguous. Hover a tab to see its number in the tooltip.
+The digits only act while the tab strip is focused, so typing numbers in the
+composer, the editor, or a terminal is unaffected.
+
 ### Other global shortcuts
 
-| Action                                                      | Shortcut                                    |
-| ----------------------------------------------------------- | ------------------------------------------- |
-| Open the command palette                                    | `⌘K` (`Ctrl+K`)                             |
-| Find a session by name                                      | `⌘⌥S` (`Ctrl+Alt+S`)                        |
-| New session                                                 | `⌘N` (`Ctrl+N`)                             |
-| Open the model picker                                       | `⌘⇧M` (`Ctrl+Shift+M`)                      |
-| Toggle the left (Conversations) / right (Workspace) sidebar | `⌘⌥[` / `⌘⌥]` (`Ctrl+Alt+[` / `Ctrl+Alt+]`) |
-| Toggle voice dictation                                      | `⌘⌥V` (`Ctrl+Alt+V`)                        |
-| Approve a pending request                                   | `⌘↵` (`Ctrl+Enter`)                         |
-| Show the shortcuts overlay                                  | `⌘/` (`Ctrl+/`)                             |
+| Action                                       | Shortcut                                       |
+| -------------------------------------------- | ---------------------------------------------- |
+| Open the command palette                     | `⌘K` (`Ctrl+K`)                                |
+| Find a session by name                       | `⌘⌥S` (`Ctrl+Alt+S`)                           |
+| New session                                  | `⌘⌥N` (`Ctrl+Alt+N`)                           |
+| Open Settings                                | `⌘⌥,` (`Ctrl+Alt+,`)                           |
+| Open the model picker                        | `⌃⇧M` (`Ctrl+Shift+M` on every platform)       |
+| Focus the chat input                         | `⌃⇧L` (`Ctrl+Shift+L` on every platform)       |
+| Toggle the left (Conversations) sidebar      | `⌘⌥[` (`Ctrl+Alt+[`)                           |
+| Focus or close the right (Workspace) sidebar | `⌘⌥]` (`Ctrl+Alt+]`)                           |
+| Select a Workspace tab                       | `⌘⌥]` then `1`–`4` (`Ctrl+Alt+]` then `1`–`4`) |
+| Open a new browser tab (desktop app only)    | `⌘⌥B` (`Ctrl+Alt+B`)                           |
+| Open a new shell                             | `⌘⌥T` (`Ctrl+Alt+T`)                           |
+| Toggle voice dictation                       | `⌘⌥V` (`Ctrl+Alt+V`)                           |
+| Approve a pending request                    | `⌘↵` (`Ctrl+Enter`)                            |
+| Show the shortcuts overlay                   | `⌘/` (`Ctrl+/`)                                |
 
-`⌘⇧M` is the keyboard equivalent of typing `/model` in the composer: it opens
+`⌘⌥N` opens a clean, focused new-session composer from any page — the same
+destination as the command palette's new-session action. `⌘⌥,` jumps straight
+to **Settings** from anywhere in the app. `⌘⌥B` is available only in the
+[desktop app](/docs/interact/desktop#keyboard-shortcuts), where the embedded
+browser lives; the shortcuts overlay lists it only there.
+
+`Ctrl+Shift+M` is the keyboard equivalent of typing `/model` in the composer: it opens
 the model picker without leaving the keyboard. It works both in an existing
 session's composer and on the new-chat screen, where it opens the agent/model
 picker and drills straight into the selected harness's model submenu. The chord
@@ -374,8 +417,9 @@ to the default look.
 
 New chats start with the right **Workspace** rail **collapsed** by default, so a
 session stays visually stable while its runner and workspace hydrate. Expand it
-at any time from the header's **Expand right panel** control (or toggle it with
-`⌘⌥]` / `Ctrl+Alt+]`).
+at any time from the header's **Expand right panel** control, or press
+`⌘⌥]` / `Ctrl+Alt+]`, which opens the rail and focuses its tab strip (see
+[Workspace sidebar and tabs](#workspace-sidebar-and-tabs)).
 
 To make new chats open the rail automatically instead, set the **Workspace
 panel** default under **Settings → Appearance** to **Open**. The two choices

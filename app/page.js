@@ -7,6 +7,14 @@ import PillarsTabs from "@/components/PillarsTabs";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { DiscordIcon, CalendarIcon } from "@/components/icons";
 import { DISCORD_URL, EVENTS_URL } from "@/components/links";
+import { productionSiteUrl } from "@/lib/site";
+
+// Title, description, and social cards come from the root layout. Only the
+// canonical is set here: a canonical in the root layout would be inherited by
+// every page that doesn't set its own, pointing them all at the homepage.
+export const metadata = {
+  alternates: { canonical: `${productionSiteUrl}/` },
+};
 
 export default function Home() {
   return (

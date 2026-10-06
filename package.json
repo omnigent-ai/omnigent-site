@@ -8,6 +8,7 @@
     "dev": "node scripts/gen-og-manifest.mjs && next dev",
     "build": "node scripts/gen-og-manifest.mjs && next build && node scripts/build-search-index.mjs",
     "start": "next start",
+    "test": "bun test",
     "lint": "next lint",
     "lint:links": "node scripts/check-links.mjs",
     "fmt": "prettier --write .",

@@ -4,6 +4,7 @@ export const metadata = {
   title: "API Reference",
   description:
     "REST API reference for the Omnigent server — create and drive sessions, manage agents, hosts, runners, contextual policies, comments, and session resources.",
+  alternates: { canonical: "/reference" },
 };
 
 export default function ReferencePage() {

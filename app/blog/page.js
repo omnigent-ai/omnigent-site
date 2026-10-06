@@ -4,6 +4,7 @@ import { getBlogPosts } from "@/lib/blog";
 export const metadata = {
   title: "Blog",
   description: "Product updates and feature deep-dives from the Omnigent team.",
+  alternates: { canonical: "/blog" },
 };
 
 // The /blog index (MLflow-style): the newest post gets a large featured card,

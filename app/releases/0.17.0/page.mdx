@@ -1,0 +1,45 @@
+{/* Auto-generated from the GitHub Release for v0.17.0. Edit the GitHub Release, not this file. */}
+
+# v0.17.0
+
+_Released 2026-10-06_ · 3 min read · Omnigent maintainers
+
+Omnigent 0.17.0 is a major release focused on making everyday work on a shared server smoother and safer, from signing in to the desktop app in the first place to keeping agent spend within a budget. Headline additions include browser-based OIDC sign-in with silent renewal for the desktop app, a set of keyboard shortcuts that let you move between workspace tabs, views and recent sessions without reaching for the mouse, and policies that can now enforce period-based cost budgets with richer per-event context.
+
+## 1. OIDC sign-in through the system browser in the desktop app
+
+Signing in to a company-run Omnigent server should feel like signing in to any other SSO-protected app, not like configuring a client. The desktop app now hands OIDC sign-in off to your system browser, so you authenticate with your identity provider in the browser you already use, and the app picks up the session from there. Once you are in, tokens renew silently in the background, so you are not bounced back to a login screen in the middle of a session.
+
+The flow supports public PKCE clients and lets you specify explicit provider endpoints when discovery alone is not enough for your identity provider. Operators can also set a server name that the desktop app shows next to each host, so when you work across several servers you can tell at a glance which one you are connected to.
+
+_Learn more in [Single sign-on (OIDC)](/docs/collaborate/auth#single-sign-on-oidc)._
+
+## 2. Keyboard shortcuts and a more scannable sidebar
+
+Driving an agent is faster when your hands stay on the keyboard. This release adds shortcuts for switching between workspace tabs, jumping to common views and reopening recent sessions, plus Ctrl+Shift+L to put the cursor straight back in the chat input from anywhere in the app. Together they make the move from reading a diff or a file to telling the agent what to do next a single keystroke.
+
+The sidebar's agent hierarchy has also been reworked to be easier to scan, so parent sessions and their sub-agents are clearer at a glance. And when you archive a session that was working on its own worktree, you can now choose to delete that worktree at the same time instead of cleaning it up by hand later.
+
+_Learn more in [Keyboard shortcuts](/docs/interact/web-ui#keyboard-shortcuts)._
+
+## 3. Period-based cost budgets and richer PolicyEvent context
+
+Capping what a single session can spend is useful, but most teams think about spend per day or per week rather than per conversation. Policies can now enforce period-based cost budgets, so you can set a limit for a window of time and have Omnigent ask before crossing the thresholds you set and block expensive models once the limit is reached, without watching a dashboard.
+
+Custom policies also get more to work with. The `PolicyEvent` context now carries the `conversation_id`, so a policy can key its decisions and state to a specific session, and RESPONSE-phase checks receive a `turn_final` indicator that tells you whether the response you are inspecting is the last one in the turn, letting you reserve expensive or conclusive checks for the moment the agent is actually done.
+
+_Learn more in [Built-in policies: per-user period budgets](/docs/policies/builtin#per-user-monthly-or-weekly-quarterly-yearly-budget) and the [PolicyEvent reference](/docs/policies/custom#reference-policyevent)._
+
+Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
+
+## What's Next
+
+Install or upgrade Omnigent:
+
+```bash
+uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
+```
+
+- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
+- Join the conversation on our [Discord](https://discord.gg/omnigent).
+- Browse the [docs](https://omnigent.ai/docs) to go deeper.

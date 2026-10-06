@@ -301,6 +301,21 @@ is rejected.
 
 Managed servers are read only on macOS; other platforms ignore the preference.
 
+### Display names
+
+To give a server a display name, add an `omnigentServerName` query parameter
+to its `serverUrls` entry. Omnigent removes the parameter before connecting, so
+it never reaches the server:
+
+```text
+https://my-workspace.cloud.databricks.com/?o=123&omnigentServerName=Engineering
+```
+
+Encode spaces as `%20`, and write `&` as `&amp;` inside a plist. Unnamed
+servers show their host. The first managed server's name labels the connect
+screen's **Join your team** button; names also label the organization's servers
+in its dropdown and in the in-app server switcher.
+
 ### How they appear
 
 Managed servers show up under **Provided by your organization** on the connect
@@ -330,7 +345,7 @@ this as a custom settings or managed preferences payload):
       <dict>
         <key>serverUrls</key>
         <array>
-          <string>https://omnigent.corp.example.com</string>
+          <string>https://omnigent.corp.example.com/?omnigentServerName=Engineering</string>
           <string>https://my-workspace.cloud.databricks.com/ml/omnigents</string>
         </array>
       </dict>
@@ -338,14 +353,6 @@ this as a custom settings or managed preferences payload):
   </array>
 </dict>
 ```
-
-{/* eslint-disable-next-line @next/next/no-img-element */}
-
-<img
-  src="/images/docs/desktop-connect.png"
-  alt="Omnigent desktop app setup screen prompting for the server URL to connect to"
-  style={{ width: "100%", borderRadius: "8px" }}
-/>
 
 ## Open a session from a link
 

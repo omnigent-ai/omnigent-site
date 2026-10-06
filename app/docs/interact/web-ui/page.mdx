@@ -584,7 +584,9 @@ A side chat lets you ask the agent something off to the side of a conversation
 transcript. Side chats work on every harness. Each one opens as its own tab
 (`Side chat 1`, `Side chat 2`, …) in the right **Workspace** rail, beside the
 still-active main chat: you stay in the main conversation while the side chat
-streams next to it. The rail opens automatically when a side chat starts.
+streams next to it. The rail opens automatically when a side chat starts. On a
+phone, where the rail is hidden, side chats open in a full-screen **Side chats**
+drawer instead (see [On a phone](#side-chats-on-a-phone)).
 
 Start one from any of these places:
 
@@ -634,6 +636,40 @@ tabs: they survive reloads and restarts on this device but don't follow you to
 another device. Switching to another conversation shows that conversation's own
 side-chat tabs. Close a tab with its `✕` (or a middle-click) to stop the side
 chat's runner and drop the tab.
+
+Text and attachments you've typed into a side chat's composer but not yet sent
+are kept while you switch to another rail tab, collapse the rail, or rotate a
+phone between layouts; they're dropped only when you send them or close the
+side-chat tab. The same goes for a `/side` question that is still waiting on
+the fork to come up: it is sent once the side chat is ready, even if you've
+moved away from the tab in the meantime.
+
+A side chat is revealed only in the conversation that started it. If you move
+to another conversation before the fork resolves, the new tab waits until you
+come back rather than opening over the conversation on screen.
+
+### Side chats on a phone
+
+On a phone-sized screen the Workspace rail is hidden, so side chats live in a
+full-screen **Side chats** drawer instead:
+
+- Open it from the chat header's **Conversation actions** menu and choose
+  **Side chats**. The entry appears on sessions whose harness supports side
+  chats.
+- Starting a side chat from any of the entry points above (`/side`, the
+  composer's `+` tray, or **Ask in side chat** on selected text) opens the
+  drawer automatically.
+- The drawer has the same tabs as the rail (`Side chat 1`, `Side chat 2`, …),
+  each with its own `✕`, plus a **`+`** (`New side chat`) button. With no side
+  chats yet, it reads **Tap + to ask a question without affecting the main
+  conversation.**
+- Closing the drawer with **Close** does not end the side chat: an in-flight
+  turn keeps running and unsent composer text is kept, exactly as when the
+  desktop rail is collapsed. Reopen the drawer from the same menu to return to
+  it. Closing a side chat's tab (its `✕`) stops it, as on desktop.
+- Opening a file, shell, agents or GitHub drawer — including tapping a file link
+  in a side chat's reply — closes the side-chats drawer so the new panel isn't
+  covered.
 
 Side chats are distinct from Claude Code's `/btw` overlay (below), which answers
 a one-off question inline without creating a session.

@@ -1,79 +1,45 @@
-{/* Curated from the published GitHub Release for v0.17.0. */}
-
-import { pageMeta } from "@/lib/og";
-
-export const metadata = pageMeta(
-  "Omnigent v0.17.0",
-  "What's new in Omnigent v0.17.0 — release highlights, improvements, and fixes.",
-  {
-    eyebrow: "Release",
-    path: "/releases/0.17.0",
-    absoluteTitle: true,
-  },
-);
+{/* Auto-generated from the GitHub Release for v0.17.0. Edit the GitHub Release, not this file. */}
 
 # v0.17.0
 
-_Released 2026-10-06_ · Omnigent maintainers
+_Released 2026-10-06_ · 3 min read · Omnigent maintainers
 
-Omnigent 0.17.0 adds desktop OIDC sign-in through your system browser, new keyboard shortcuts, and period-based cost budgets for policies. Review the breaking changes below before upgrading.
+Omnigent 0.17.0 is a major release focused on making everyday work on a shared server smoother and safer, from signing in to the desktop app in the first place to keeping agent spend within a budget. Headline additions include browser-based OIDC sign-in with silent renewal for the desktop app, a set of keyboard shortcuts that let you move between workspace tabs, views and recent sessions without reaching for the mouse, and policies that can now enforce period-based cost budgets with richer per-event context.
 
-## Major new features
+## 1. OIDC sign-in through the system browser in the desktop app
 
-### Desktop OIDC sign-in through your system browser
+Signing in to a company-run Omnigent server should feel like signing in to any other SSO-protected app, not like configuring a client. The desktop app now hands OIDC sign-in off to your system browser, so you authenticate with your identity provider in the browser you already use, and the app picks up the session from there. Once you are in, tokens renew silently in the background, so you are not bounced back to a login screen in the middle of a session.
 
-Sign in to OIDC servers through your system browser from the desktop app, with silent renewal, public PKCE clients and explicit provider endpoints, plus operator-set server names shown next to each host.
+The flow supports public PKCE clients and lets you specify explicit provider endpoints when discovery alone is not enough for your identity provider. Operators can also set a server name that the desktop app shows next to each host, so when you work across several servers you can tell at a glance which one you are connected to.
 
-Learn more about [public PKCE clients and explicit endpoints](/docs/collaborate/auth#public-pkce-clients-and-explicit-endpoints).
+_Learn more in [Single sign-on (OIDC)](/docs/collaborate/auth#single-sign-on-oidc)._
 
-([#8897](https://github.com/omnigent-ai/omnigent/pull/8897), [#8894](https://github.com/omnigent-ai/omnigent/pull/8894), [#8895](https://github.com/omnigent-ai/omnigent/pull/8895), [#8898](https://github.com/omnigent-ai/omnigent/pull/8898), [#8776](https://github.com/omnigent-ai/omnigent/pull/8776), [@fanzeyi](https://github.com/fanzeyi), [@dhruv0811](https://github.com/dhruv0811))
+## 2. Keyboard shortcuts and a more scannable sidebar
 
-### Keyboard shortcuts and sidebar improvements
+Driving an agent is faster when your hands stay on the keyboard. This release adds shortcuts for switching between workspace tabs, jumping to common views and reopening recent sessions, plus Ctrl+Shift+L to put the cursor straight back in the chat input from anywhere in the app. Together they make the move from reading a diff or a file to telling the agent what to do next a single keystroke.
 
-Keyboard shortcuts for workspace tabs, common views and recent sessions, Ctrl+Shift+L to focus the chat input, a more scannable sidebar agent hierarchy, and optional worktree deletion when archiving a session.
+The sidebar's agent hierarchy has also been reworked to be easier to scan, so parent sessions and their sub-agents are clearer at a glance. And when you archive a session that was working on its own worktree, you can now choose to delete that worktree at the same time instead of cleaning it up by hand later.
 
-Learn more about [keyboard shortcuts](/docs/interact/web-ui#keyboard-shortcuts).
+_Learn more in [Keyboard shortcuts](/docs/interact/web-ui#keyboard-shortcuts)._
 
-([#8802](https://github.com/omnigent-ai/omnigent/pull/8802), [#8800](https://github.com/omnigent-ai/omnigent/pull/8800), [#8877](https://github.com/omnigent-ai/omnigent/pull/8877), [#8970](https://github.com/omnigent-ai/omnigent/pull/8970), [#8910](https://github.com/omnigent-ai/omnigent/pull/8910), [#8616](https://github.com/omnigent-ai/omnigent/pull/8616), [@ajayalfred](https://github.com/ajayalfred), [@yaoharry](https://github.com/yaoharry), [@daniellok-db](https://github.com/daniellok-db))
+## 3. Period-based cost budgets and richer PolicyEvent context
 
-### Period-based cost budgets and richer policy events
+Capping what a single session can spend is useful, but most teams think about spend per day or per week rather than per conversation. Policies can now enforce period-based cost budgets, so you can set a limit for a window of time and have Omnigent ask before crossing the thresholds you set and block expensive models once the limit is reached, without watching a dashboard.
 
-Policies gain period-based cost budgets, `conversation_id` in the `PolicyEvent` context, and a `turn_final` indicator for RESPONSE-phase checks.
+Custom policies also get more to work with. The `PolicyEvent` context now carries the `conversation_id`, so a policy can key its decisions and state to a specific session, and RESPONSE-phase checks receive a `turn_final` indicator that tells you whether the response you are inspecting is the last one in the turn, letting you reserve expensive or conclusive checks for the moment the agent is actually done.
 
-Learn more about [per-user cost budgets](/docs/policies/builtin#per-user-monthly-or-weekly-quarterly-yearly-budget).
-
-([#5211](https://github.com/omnigent-ai/omnigent/pull/5211), [#8467](https://github.com/omnigent-ai/omnigent/pull/8467), [#8653](https://github.com/omnigent-ai/omnigent/pull/8653), [@terrytangyuan](https://github.com/terrytangyuan), [@ArshSiddiqui](https://github.com/ArshSiddiqui))
-
-## Breaking changes
-
-- `POST /v1/sessions/{id}/switch-agent` now returns 410 Gone; clients that switched a session's agent in place must fork the session into another agent instead ([#8795](https://github.com/omnigent-ai/omnigent/pull/8795), [@dhruv0811](https://github.com/dhruv0811))
-
-To change a session's agent, fork the session into another agent: pass `agent_id` to `POST /v1/sessions/{id}/fork`, or use **Clone session** in the web UI. Learn more about [forking sessions](/docs/programmatic#fork-archive-or-stop-work).
-
-## Bug fixes
-
-- 🔌 Sessions survive server restarts, brief runner and host drops, and replica handoffs without stale "Working…" or "connection dropped" cards, and the desktop app reconnects to Databricks automatically after network or VPN drops ([#8578](https://github.com/omnigent-ai/omnigent/pull/8578), [#8492](https://github.com/omnigent-ai/omnigent/pull/8492), [#9020](https://github.com/omnigent-ai/omnigent/pull/9020), [#9001](https://github.com/omnigent-ai/omnigent/pull/9001), [#9043](https://github.com/omnigent-ai/omnigent/pull/9043), [#9108](https://github.com/omnigent-ai/omnigent/pull/9108), [#8644](https://github.com/omnigent-ai/omnigent/pull/8644), [#8426](https://github.com/omnigent-ai/omnigent/pull/8426), [@fanzeyi](https://github.com/fanzeyi), [@dbczumar](https://github.com/dbczumar), [@yaoharry](https://github.com/yaoharry), [@TomeHirata](https://github.com/TomeHirata), [@bbqiu](https://github.com/bbqiu))
-- 📝 `/compact` now follows the chat queue and Always steer preference across Claude Code, Claude SDK, Codex and Pi, Tab completes slash commands without submitting, and autocomplete preserves adjacent text ([#8560](https://github.com/omnigent-ai/omnigent/pull/8560), [#8613](https://github.com/omnigent-ai/omnigent/pull/8613), [#8620](https://github.com/omnigent-ai/omnigent/pull/8620), [#8609](https://github.com/omnigent-ai/omnigent/pull/8609), [#8723](https://github.com/omnigent-ai/omnigent/pull/8723), [#8529](https://github.com/omnigent-ai/omnigent/pull/8529), [#8783](https://github.com/omnigent-ai/omnigent/pull/8783), [@serena-ruan](https://github.com/serena-ruan), [@yaoharry](https://github.com/yaoharry))
-- 🧩 Sub-agent status is reported from confirmed outcomes: no premature `cancelled`, no early stops shown as completed, no parent turns failed by a Claude Code subagent, and finished subsessions no longer show as disconnected ([#8211](https://github.com/omnigent-ai/omnigent/pull/8211), [#8297](https://github.com/omnigent-ai/omnigent/pull/8297), [#8516](https://github.com/omnigent-ai/omnigent/pull/8516), [#8672](https://github.com/omnigent-ai/omnigent/pull/8672), [#9130](https://github.com/omnigent-ai/omnigent/pull/9130), [#9076](https://github.com/omnigent-ai/omnigent/pull/9076), [@omni-resolve-agent[bot]](https://github.com/apps/omni-resolve-agent), [@eaespinoza0](https://github.com/eaespinoza0), [@dhruv0811](https://github.com/dhruv0811), [@bbqiu](https://github.com/bbqiu), [@yaoharry](https://github.com/yaoharry), [@TomeHirata](https://github.com/TomeHirata))
-- ⚡ Huge PR diffs, sidebar query-cache scans and source files beyond 2,000 lines no longer freeze the app ([#8822](https://github.com/omnigent-ai/omnigent/pull/8822), [#8753](https://github.com/omnigent-ai/omnigent/pull/8753), [#8933](https://github.com/omnigent-ai/omnigent/pull/8933), [@yaoharry](https://github.com/yaoharry), [@fapaul](https://github.com/fapaul), [@dbczumar](https://github.com/dbczumar))
-- 💸 Session cost prices cached prompt tokens at the cache-read rate for openai-agents and Codex-native sessions, and `omnigent codex` honors built-in Bedrock, Ollama and LM Studio providers from `~/.codex/config.toml` ([#8687](https://github.com/omnigent-ai/omnigent/pull/8687), [#8739](https://github.com/omnigent-ai/omnigent/pull/8739), [#8013](https://github.com/omnigent-ai/omnigent/pull/8013), [@omni-resolve-agent[bot]](https://github.com/apps/omni-resolve-agent))
-
-### 💜 Thanks to our community
-
-This release was shaped by the people who filed issues, opened PRs, and talked through feature requests with us on our Discord! Thank you for building omnigent with us, keep the bug reports, ideas and contributions coming :)
-
-[@agharsallah](https://github.com/agharsallah), [@ajayalfred](https://github.com/ajayalfred), [@aravind-segu](https://github.com/aravind-segu), [@ArshSiddiqui](https://github.com/ArshSiddiqui), [@bbqiu](https://github.com/bbqiu), [@daniellok-db](https://github.com/daniellok-db), [@dbczumar](https://github.com/dbczumar), [@dhruv0811](https://github.com/dhruv0811), [@eaespinoza0](https://github.com/eaespinoza0), [@Edwinhe03](https://github.com/Edwinhe03), [@fanzeyi](https://github.com/fanzeyi), [@fapaul](https://github.com/fapaul), [@hzub](https://github.com/hzub), [@james-fletcher-db](https://github.com/james-fletcher-db), [@jasonhernandez](https://github.com/jasonhernandez), [@Leemoonsoo](https://github.com/Leemoonsoo), [@moomindani](https://github.com/moomindani), [@omni-resolve-agent[bot]](https://github.com/apps/omni-resolve-agent), [@omnigent-ci[bot]](https://github.com/apps/omnigent-ci), [@PattaraS](https://github.com/PattaraS), [@serena-ruan](https://github.com/serena-ruan), [@shekharkadyan](https://github.com/shekharkadyan), [@terrytangyuan](https://github.com/terrytangyuan), [@TomeHirata](https://github.com/TomeHirata), [@yaoharry](https://github.com/yaoharry), [@zhengwin](https://github.com/zhengwin)
+_Learn more in [Built-in policies: per-user period budgets](/docs/policies/builtin#per-user-monthly-or-weekly-quarterly-yearly-budget) and the [PolicyEvent reference](/docs/policies/custom#reference-policyevent)._
 
 Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
 
-## Install or upgrade
+## What's Next
+
+Install or upgrade Omnigent:
 
 ```bash
-uv tool install --python 3.12 --upgrade omnigent
+uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
 ```
 
-For a pip-managed environment, use `pip install --upgrade omnigent`.
-
-- Read the [GitHub release](https://github.com/omnigent-ai/omnigent/releases/tag/v0.17.0).
-- Join the conversation on [Discord](https://discord.gg/omnigent).
-- Browse the [docs](/docs).
+- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
+- Join the conversation on our [Discord](https://discord.gg/omnigent).
+- Browse the [docs](https://omnigent.ai/docs) to go deeper.

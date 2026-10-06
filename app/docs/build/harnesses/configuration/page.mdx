@@ -279,8 +279,8 @@ above applies to the native `agy`-wrapping `antigravity-native` harness.
 ## Codex
 
 The native Codex harness (`codex-native`, launched by `omni codex`) decides how
-a session authenticates before it starts the Codex CLI. The first source that
-applies wins:
+a session authenticates before it starts the Codex CLI. In roughly this order,
+the first source that applies wins:
 
 1. A provider configured for the codex harness — the agent spec's
    `executor.auth` when you launch a custom agent, otherwise the provider you
@@ -298,8 +298,8 @@ If plain `codex` already runs on your machine because `~/.codex/config.toml`
 selects a built-in provider that brings its own credentials, `omni codex` routes
 the same way instead of failing the first turn with *"Codex is not signed in and
 no Omnigent provider routes the codex harness"*. Every built-in Codex provider
-except `openai` qualifies — Amazon Bedrock (`amazon-bedrock`), Ollama
-(`ollama`), and LM Studio. An explicit `model_provider = "openai"` still defers
+except `openai` qualifies — Amazon Bedrock (`amazon-bedrock`, `amazon-bedrock-runtime`), Ollama
+(`ollama`), and LM Studio (`lmstudio`). An explicit `model_provider = "openai"` still defers
 to Codex's own login.
 
 ```toml

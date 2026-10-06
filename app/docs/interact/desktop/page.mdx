@@ -211,6 +211,8 @@ doesn't rewrite those headers.
 
 ## Get started
 
+{/* TODO(doc-drafter): screenshot may be stale — the setup screen's action button now reads "Open Omnigent" for remote servers ("Install Omnigent" only for a local install without the CLI). */}
+
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
 <img
@@ -222,6 +224,15 @@ doesn't rewrite those headers.
 1. **Launch the app.** On first launch, you'll see a setup screen.
 2. **Enter your server URL.** `http://localhost:6767` if running locally, or your deployed server URL (e.g. `https://your-app.onrender.com`).
 3. **Start working.** The app connects and shows the same UI you'd see in a browser.
+
+The setup screen's action button tells you what will happen. A remote server
+shows **Open Omnigent**: the app connects to it directly and never installs the
+Omnigent CLI on this machine, since a remote server doesn't need one. Only an
+explicit local setup installs the CLI — picking the local installation
+(`http://localhost:6767`) shows **Install Omnigent** when the CLI is missing, and
+choosing to run agents on this machine during setup installs it before
+connecting (in-app install is offered on macOS). Managed servers opened from
+**Join your team** behave like any other remote server: no CLI install.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
@@ -346,6 +357,79 @@ this as a custom settings or managed preferences payload):
   alt="Omnigent desktop app setup screen prompting for the server URL to connect to"
   style={{ width: "100%", borderRadius: "8px" }}
 />
+
+### Arca hosts on Databricks-managed servers
+
+On macOS, when an administrator has enabled Databricks-internal features
+through managed preferences and the window is connected to a Databricks-managed
+server, the app can connect your Arca dev instance to that server as a host —
+**Run on Arca** in the new-session host picker, or the remote environment
+offered during setup. The app runs the host command on the instance over
+`arca ssh`, non-interactively:
+
+```text
+arca ssh -o ClearAllForwardings=yes isaac omni host --server '<server-url>' --background --non-interactive
+```
+
+A remote host needs its **own** renewable Omnigent OAuth grant. Signing in to
+the desktop app in your browser, or the instance's generic Arca credentials, does
+not stand in for it. When the host command reports that sign-in is required
+(`OMNIGENT_AUTH_REQUIRED`, `not signed in`, or `authentication failed (HTTP 401)`
+in its output), the app offers to sign in **on the instance** by running:
+
+```text
+arca ssh -o ClearAllForwardings=yes isaac omni login '<server-url>'
+```
+
+How that sign-in is offered depends on where you started:
+
+- **Setup.** Clicking the setup action authorizes the sign-in. The setup
+  terminal logs the login command, prints
+  `Signing in on Arca. If a browser window opens, finish signing in there.`,
+  and after a successful sign-in prints `Signed in. Connecting Arca…` and
+  retries the host command once. Closing the setup window cancels a sign-in
+  that only it is waiting on.
+- **Connect console.** The **Run on Arca** console reports
+  `This instance needs an Omnigent sign-in. Sign in through your browser, then we'll retry the connection.`
+  and shows a **Sign in and retry** button. Clicking it runs the login command
+  (the status line reads `Complete sign-in in your browser. Credentials stay on the Arca instance.`)
+  and, on success, retries the host command once. Closing the console cancels
+  the sign-in. If the retry still fails, the error is shown and no further
+  sign-in is offered in that console.
+- **Auto-connect.** The passive launch-time auto-connect never starts a
+  sign-in. If it failed because sign-in is required, choosing **Run on Arca**
+  opens the connect console so you can sign in explicitly.
+
+Arca Companion opens the browser and routes the OAuth callback to the remote
+CLI. The login command's output — which can include an OAuth ticket — is never
+streamed into the app; only the outcome is shown. A sign-in that doesn't finish
+within the connect timeout fails with
+`Arca sign-in timed out. Check Arca Companion, finish browser sign-in, and try again.`
+
+If the remote environment fails to start during setup, the terminal step
+offers **Retry** and **Continue anyway** next to **Back**. **Continue anyway**
+opens the server without the remote environment. It is only offered for a
+remote-environment failure — not when the CLI install, the local-host setup, or
+the connection to the server itself failed.
+
+**Workspaces and multiple windows.** A managed server entry can select a
+workspace with `/omnigent?o=<workspace-id>`; the same full server URL is used
+for both the remote sign-in and the host command. Connection status, in-flight
+sign-ins, and host results are tracked per full target including `?o=`, so two
+workspace selectors on the same origin never share a sign-in or a host result.
+Setup windows that target the same server share one in-flight sign-in: closing
+one window leaves it running for the others, and closing the last waiting
+window cancels it.
+
+**Requirements.** The Arca instance must run an Isaac release that supports
+Omnigent-app login (`isaac omni login`) and the `OMNIGENT_AUTH_REQUIRED`
+startup diagnostic.
+
+Relatedly, when the desktop app's host CLI is a managed `isaac omni` command,
+connecting this machine as a host always runs the Omnigent login step first —
+even if an existing token passes the server's auth probe — because a legacy
+token can't supply the managed host's OAuth grant. A browser sign-in may
+therefore open where it previously didn't.
 
 ## Open a session from a link
 

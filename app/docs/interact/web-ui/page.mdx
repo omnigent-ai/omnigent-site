@@ -269,6 +269,8 @@ only that modifier fires it:
   composer and terminal.
 - On **Windows/Linux** the shortcuts use **Ctrl**, and only Ctrl triggers them.
 
+Exceptions: `Ctrl+Shift+M` (model picker), `Ctrl+Shift+L` (focus chat input), and `Ctrl+Tab` (desktop recent sessions) use Control on every platform.
+
 What you see in the shortcuts overlay is what fires: the overlay shows ⌘ on
 macOS and Ctrl elsewhere.
 
@@ -332,7 +334,8 @@ composer, the editor, or a terminal is unaffected.
 | Find a session by name                       | `⌘⌥S` (`Ctrl+Alt+S`)                           |
 | New session                                  | `⌘⌥N` (`Ctrl+Alt+N`)                           |
 | Open Settings                                | `⌘⌥,` (`Ctrl+Alt+,`)                           |
-| Open the model picker                        | `⌘⇧M` (`Ctrl+Shift+M`)                         |
+| Open the model picker                        | `⌃⇧M` (`Ctrl+Shift+M` on every platform)       |
+| Focus the chat input                         | `⌃⇧L` (`Ctrl+Shift+L` on every platform)       |
 | Toggle the left (Conversations) sidebar      | `⌘⌥[` (`Ctrl+Alt+[`)                           |
 | Focus or close the right (Workspace) sidebar | `⌘⌥]` (`Ctrl+Alt+]`)                           |
 | Select a Workspace tab                       | `⌘⌥]` then `1`–`4` (`Ctrl+Alt+]` then `1`–`4`) |
@@ -348,7 +351,7 @@ to **Settings** from anywhere in the app. `⌘⌥B` is available only in the
 [desktop app](/docs/interact/desktop#keyboard-shortcuts), where the embedded
 browser lives; the shortcuts overlay lists it only there.
 
-`⌘⇧M` is the keyboard equivalent of typing `/model` in the composer: it opens
+`Ctrl+Shift+M` is the keyboard equivalent of typing `/model` in the composer: it opens
 the model picker without leaving the keyboard. It works both in an existing
 session's composer and on the new-chat screen, where it opens the agent/model
 picker and drills straight into the selected harness's model submenu. The chord

@@ -244,6 +244,65 @@ row. To sign out, delete the credential file:
 rm ~/.kimi-code/credentials/kimi-code.json
 ```
 
+## OpenCode
+
+The native OpenCode harness (`opencode-native`, alias `opencode`) brings **its
+own provider auth** — Omnigent stores no OpenCode credential. OpenCode reaches a
+provider through any of three routes, and `omni setup` reads each one (without
+touching the secrets) to report which providers OpenCode can reach:
+
+1. **Stored login** — run `opencode auth login`; the credential lands in
+   `~/.local/share/opencode/auth.json`, keyed by provider id.
+2. **Provider API-key variables** — a common provider key such as
+   `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, or
+   `DEEPSEEK_API_KEY` set in the environment where `omnigent host` runs.
+3. **Amazon Bedrock** — see below.
+
+A host where none of these is present shows `opencode-native` as **needs-auth**
+and the web picker disables its row; `omni setup` offers to run OpenCode's
+native login.
+
+### Amazon Bedrock
+
+Bedrock is the exception to the API-key pattern: OpenCode loads it from the AWS
+credential chain and the AWS SDK authenticates at run time, so there is no
+`auth.json` entry or provider key to detect. Omnigent treats OpenCode as ready
+for Bedrock when **either** of the following holds:
+
+- Any of these AWS credential-chain variables is set (any non-empty value):
+  `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_PROFILE`, `AWS_REGION`,
+  `AWS_BEARER_TOKEN_BEDROCK`, `AWS_WEB_IDENTITY_TOKEN_FILE`,
+  `AWS_CONTAINER_CREDENTIALS_FULL_URI`, or
+  `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`. `omni setup` lists this as
+  `env: Amazon Bedrock`.
+- Your OpenCode config (`~/.config/opencode/opencode.json` or `.jsonc`)
+  declares a `provider.amazon-bedrock` block — an empty `{}` is enough. `omni
+  setup` lists this as `config: amazon-bedrock`.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "amazon-bedrock": { "options": { "profile": "work" } }
+  },
+  "model": "amazon-bedrock/anthropic.claude-sonnet-4-5-20250929-v1:0"
+}
+```
+
+Two things do **not** count on their own: an `enabled_providers` list naming
+`amazon-bedrock` (it only filters which providers OpenCode shows), and AWS
+variables OpenCode's Bedrock loader ignores — `AWS_SESSION_TOKEN`,
+`AWS_DEFAULT_REGION`, and `AWS_SHARED_CREDENTIALS_FILE`. A malformed config
+file credits nothing.
+
+<div className="note">
+
+**Note:** The readiness probe only checks that Bedrock is declared — it never
+contacts AWS. A host can read as ready with a profile or key that AWS later
+rejects; the failure surfaces when OpenCode makes its first model call.
+
+</div>
+
 ## Antigravity
 
 The native Antigravity harness (`antigravity-native`) wraps Google's `agy` CLI.

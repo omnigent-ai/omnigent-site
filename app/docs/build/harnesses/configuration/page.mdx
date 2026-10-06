@@ -335,6 +335,74 @@ above applies to the native `agy`-wrapping `antigravity-native` harness.
 
 </div>
 
+## Codex
+
+The native Codex harness (`codex-native`, launched by `omni codex`) decides how
+a session authenticates before it starts the Codex CLI. In roughly this order,
+the first source that applies wins:
+
+1. A provider configured for the codex harness — the agent spec's
+   `executor.auth` when you launch a custom agent, otherwise the provider you
+   set up with `omni setup` (API key, gateway, or Databricks).
+2. A provider Omnigent auto-detects on the machine when nothing has been
+   configured yet.
+3. A **self-sufficient built-in Codex provider** selected by your own Codex
+   `config.toml` (`~/.codex/config.toml`). Codex authenticates these providers
+   itself, so no Omnigent provider and no Codex login is needed.
+4. The Codex CLI's own login (`codex login`).
+
+### Use your Codex `config.toml` provider
+
+If plain `codex` already runs on your machine because `~/.codex/config.toml`
+selects a built-in provider that brings its own credentials, `omni codex` routes
+the same way instead of failing the first turn with *"Codex is not signed in and
+no Omnigent provider routes the codex harness"*. Every built-in Codex provider
+except `openai` qualifies — Amazon Bedrock (`amazon-bedrock`, `amazon-bedrock-runtime`), Ollama
+(`ollama`), and LM Studio (`lmstudio`). An explicit `model_provider = "openai"` still defers
+to Codex's own login.
+
+```toml
+# ~/.codex/config.toml
+model = "openai.gpt-5.6-terra"
+model_provider = "amazon-bedrock"
+
+[model_providers.amazon-bedrock.aws]
+region = "us-east-1"
+```
+
+With this file and no Omnigent provider configured, `omni codex` launches with
+`model_provider="amazon-bedrock"` and Codex resolves the AWS credential chain
+itself. The session's provider summary names the built-in provider so you can
+see which route was taken. A provider configured through `omni setup` (tier 1
+above) still takes precedence over the ambient `config.toml` selection.
+
+Omnigent also leaves built-in provider tables such as
+`[model_providers.amazon-bedrock]` untouched when it writes the session's private
+`config.toml`; only custom `[model_providers.<name>]` tables receive Omnigent's
+retry settings (`request_max_retries` and friends), because Codex discards the
+whole config when a built-in table carries fields it doesn't recognize.
+
+### Select a Codex profile with `--profile`
+
+The ambient config is read through the `--profile` (or `-p`) you pass to
+Codex, whether as a CLI pass-through arg or via
+[`harness.codex-native.args`](#override-the-harness-binary-and-launch-args).
+Omnigent layers the selected profile over `~/.codex/config.toml` exactly the way
+Codex does at start:
+
+- A file profile at `~/.codex/<name>.config.toml` is layered when it exists —
+  with or without a base `config.toml`.
+- Otherwise the legacy inline `[profiles.<name>]` table in `config.toml` is
+  used (Codex versions before 0.134 keep profiles inline).
+
+So `omni codex --profile bedrock` routes through Bedrock when that profile sets
+`model_provider = "amazon-bedrock"`, even if the base config doesn't, and
+`--profile openai` over a Bedrock base keeps Codex's own login. A profile that
+exists nowhere leaves this tier alone (the launch falls through to Codex login),
+and a malformed selector — a missing value, a repeated `--profile`, or an
+invalid profile name — is reported by launch-arg validation when the session
+starts rather than during routing.
+
 ## Pi
 
 The native Pi harness (`pi`, alias `pi-native`) runs the Pi CLI against the

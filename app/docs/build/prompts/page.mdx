@@ -110,6 +110,9 @@ your bundled and discovered skills:
 - **Standalone Codex skills** in the Codex home's `skills/` directory. These are
   listed by **directory name** (the name Codex registers the slash command
   under), not by the `name` in their frontmatter.
+- **Shared skills** in `~/.agents/skills/`. Both Codex harnesses scan this
+  directory too, so a skill installed there for every agent on your machine is
+  also available in Codex sessions.
 - **Skills from installed Codex plugins.** Omnigent runs `codex plugin list --json`
   against the session's Codex home and loads skills from every plugin that is
   installed **and enabled**, reading the exact version the inventory reports
@@ -131,7 +134,12 @@ skill folder or a directory of skill folders), falling back to the plugin's
 A few practical notes:
 
 - `codex-native` sessions use the session's Codex home; the in-process `codex`
-  (SDK) harness uses `~/.codex`.
+  (SDK) harness uses `~/.codex`. Both read `~/.agents/skills/` regardless of
+  which Codex home is in use.
+- Skill directories are scanned in priority order: the agent's bundled
+  `skills/` first, then the Codex home's `skills/`, then `~/.agents/skills/`.
+  When two directories contain a skill with the same name, the earlier one wins
+  — a bundled skill shadows a host skill of the same name.
 - Plugin discovery needs the Codex CLI on the machine running the agent. If the
   CLI is missing, times out (5 seconds), or returns something unparseable,
   plugin skills are simply omitted — standalone Codex skills and everything

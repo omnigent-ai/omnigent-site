@@ -39,6 +39,7 @@ showing how many sessions are waiting, and multiple independent windows.
 - **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing.
 - **Dock badge.** See at a glance how many sessions need your attention, without switching to the app.
 - **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
+- **Recent-session switcher.** Hold `Ctrl` and press `Tab` to flip between your five most recent sessions — see [Keyboard shortcuts](#keyboard-shortcuts).
 - **One-click host reconnect.** When a session's host is this machine and it has gone offline, the app restarts the host for you instead of asking you to run a command in a terminal.
 
 Everything else (sessions, file editor, inline comments, collaboration) works exactly the
@@ -160,6 +161,43 @@ on this permission, and approving it doesn't bypass CORS, TLS certificate
 validation, or the agent's navigation policy. A local helper that rejects the
 site through its own CORS policy must itself be configured to allow it; the pane
 doesn't rewrite those headers.
+
+## Keyboard shortcuts
+
+The desktop app supports every
+[web UI shortcut](/docs/interact/web-ui#keyboard-shortcuts) and adds two of
+its own. Both appear in the in-app shortcuts overlay (`⌘/` / `Ctrl+/`) only
+when you're running the desktop app.
+
+### Switch recent sessions
+
+Hold **Control** and press **Tab** (`⌃Tab` on macOS, `Ctrl+Tab` on
+Windows/Linux — this chord uses Control, not ⌘, on every platform) to open a
+switcher listing your **five most recent sessions**, ordered by last activity,
+each with its agent name. While holding Control:
+
+- press `Tab` again to move down the list, or `Shift+Tab` to move up (the
+  selection wraps);
+- release Control to switch to the highlighted session;
+- press `Esc` to cancel and stay where you are.
+
+The highlight starts on the session just after the one you're viewing, so a
+quick `Ctrl+Tab`-and-release jumps back to the session you used before this
+one. Archived sessions aren't listed. The gesture also works while an embedded
+[Browser](#embedded-browser) page has keyboard focus — the app forwards it to
+the switcher instead of letting the page handle it.
+
+### Open a new browser tab
+
+Press `⌘⌥B` (`Ctrl+Alt+B` on Windows/Linux) to open a new **Browser** soft tab
+in the Workspace rail — the same action as **+ → Browser** in the rail's menu,
+which shows the keycaps next to the Browser row. If the rail is collapsed or
+hidden behind the Terminal panel, it's revealed with the new tab selected. The
+shortcut yields while you're typing in the code editor or a terminal, and is
+only bound where the embedded browser is available.
+
+`Cmd+N` still opens a new window; starting a new session is `⌘⌥N`
+(`Ctrl+Alt+N`), as in the web UI.
 
 ## Prerequisites
 
@@ -301,6 +339,21 @@ is rejected.
 
 Managed servers are read only on macOS; other platforms ignore the preference.
 
+### Display names
+
+To give a server a display name, add an `omnigentServerName` query parameter
+to its `serverUrls` entry. Omnigent removes the parameter before connecting, so
+it never reaches the server:
+
+```text
+https://my-workspace.cloud.databricks.com/?o=123&omnigentServerName=Engineering
+```
+
+Encode spaces as `%20`, and write `&` as `&amp;` inside a plist. Unnamed
+servers show their host. The first managed server's name labels the connect
+screen's **Join your team** button; names also label the organization's servers
+in its dropdown and in the in-app server switcher.
+
 ### How they appear
 
 Managed servers show up under **Provided by your organization** on the connect
@@ -330,7 +383,7 @@ this as a custom settings or managed preferences payload):
       <dict>
         <key>serverUrls</key>
         <array>
-          <string>https://omnigent.corp.example.com</string>
+          <string>https://omnigent.corp.example.com/?omnigentServerName=Engineering</string>
           <string>https://my-workspace.cloud.databricks.com/ml/omnigents</string>
         </array>
       </dict>
@@ -338,14 +391,6 @@ this as a custom settings or managed preferences payload):
   </array>
 </dict>
 ```
-
-{/* eslint-disable-next-line @next/next/no-img-element */}
-
-<img
-  src="/images/docs/desktop-connect.png"
-  alt="Omnigent desktop app setup screen prompting for the server URL to connect to"
-  style={{ width: "100%", borderRadius: "8px" }}
-/>
 
 ## Open a session from a link
 

@@ -244,6 +244,65 @@ row. To sign out, delete the credential file:
 rm ~/.kimi-code/credentials/kimi-code.json
 ```
 
+## OpenCode
+
+The native OpenCode harness (`opencode-native`, alias `opencode`) brings **its
+own provider auth** — Omnigent stores no OpenCode credential. OpenCode reaches a
+provider through any of three routes, and `omni setup` reads each one (without
+touching the secrets) to report which providers OpenCode can reach:
+
+1. **Stored login** — run `opencode auth login`; the credential lands in
+   `~/.local/share/opencode/auth.json`, keyed by provider id.
+2. **Provider API-key variables** — a common provider key such as
+   `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, or
+   `DEEPSEEK_API_KEY` set in the environment where `omnigent host` runs.
+3. **Amazon Bedrock** — see below.
+
+A host where none of these is present shows `opencode-native` as **needs-auth**
+and the web picker disables its row; `omni setup` offers to run OpenCode's
+native login.
+
+### Amazon Bedrock
+
+Bedrock is the exception to the API-key pattern: OpenCode loads it from the AWS
+credential chain and the AWS SDK authenticates at run time, so there is no
+`auth.json` entry or provider key to detect. Omnigent treats OpenCode as ready
+for Bedrock when **either** of the following holds:
+
+- Any of these AWS credential-chain variables is set (any non-empty value):
+  `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_PROFILE`, `AWS_REGION`,
+  `AWS_BEARER_TOKEN_BEDROCK`, `AWS_WEB_IDENTITY_TOKEN_FILE`,
+  `AWS_CONTAINER_CREDENTIALS_FULL_URI`, or
+  `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`. `omni setup` lists this as
+  `env: Amazon Bedrock`.
+- Your OpenCode config (`~/.config/opencode/opencode.json` or `.jsonc`)
+  declares a `provider.amazon-bedrock` block — an empty `{}` is enough. `omni
+  setup` lists this as `config: amazon-bedrock`.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "amazon-bedrock": { "options": { "profile": "work" } }
+  },
+  "model": "amazon-bedrock/anthropic.claude-sonnet-4-5-20250929-v1:0"
+}
+```
+
+Two things do **not** count on their own: an `enabled_providers` list naming
+`amazon-bedrock` (it only filters which providers OpenCode shows), and AWS
+variables OpenCode's Bedrock loader ignores — `AWS_SESSION_TOKEN`,
+`AWS_DEFAULT_REGION`, and `AWS_SHARED_CREDENTIALS_FILE`. A malformed config
+file credits nothing.
+
+<div className="note">
+
+**Note:** The readiness probe only checks that Bedrock is declared — it never
+contacts AWS. A host can read as ready with a profile or key that AWS later
+rejects; the failure surfaces when OpenCode makes its first model call.
+
+</div>
+
 ## Antigravity
 
 The native Antigravity harness (`antigravity-native`) wraps Google's `agy` CLI.
@@ -275,6 +334,74 @@ that resolves its own Gemini API key at runtime. The `GEMINI_API_KEY` behavior
 above applies to the native `agy`-wrapping `antigravity-native` harness.
 
 </div>
+
+## Codex
+
+The native Codex harness (`codex-native`, launched by `omni codex`) decides how
+a session authenticates before it starts the Codex CLI. In roughly this order,
+the first source that applies wins:
+
+1. A provider configured for the codex harness — the agent spec's
+   `executor.auth` when you launch a custom agent, otherwise the provider you
+   set up with `omni setup` (API key, gateway, or Databricks).
+2. A provider Omnigent auto-detects on the machine when nothing has been
+   configured yet.
+3. A **self-sufficient built-in Codex provider** selected by your own Codex
+   `config.toml` (`~/.codex/config.toml`). Codex authenticates these providers
+   itself, so no Omnigent provider and no Codex login is needed.
+4. The Codex CLI's own login (`codex login`).
+
+### Use your Codex `config.toml` provider
+
+If plain `codex` already runs on your machine because `~/.codex/config.toml`
+selects a built-in provider that brings its own credentials, `omni codex` routes
+the same way instead of failing the first turn with *"Codex is not signed in and
+no Omnigent provider routes the codex harness"*. Every built-in Codex provider
+except `openai` qualifies — Amazon Bedrock (`amazon-bedrock`, `amazon-bedrock-runtime`), Ollama
+(`ollama`), and LM Studio (`lmstudio`). An explicit `model_provider = "openai"` still defers
+to Codex's own login.
+
+```toml
+# ~/.codex/config.toml
+model = "openai.gpt-5.6-terra"
+model_provider = "amazon-bedrock"
+
+[model_providers.amazon-bedrock.aws]
+region = "us-east-1"
+```
+
+With this file and no Omnigent provider configured, `omni codex` launches with
+`model_provider="amazon-bedrock"` and Codex resolves the AWS credential chain
+itself. The session's provider summary names the built-in provider so you can
+see which route was taken. A provider configured through `omni setup` (tier 1
+above) still takes precedence over the ambient `config.toml` selection.
+
+Omnigent also leaves built-in provider tables such as
+`[model_providers.amazon-bedrock]` untouched when it writes the session's private
+`config.toml`; only custom `[model_providers.<name>]` tables receive Omnigent's
+retry settings (`request_max_retries` and friends), because Codex discards the
+whole config when a built-in table carries fields it doesn't recognize.
+
+### Select a Codex profile with `--profile`
+
+The ambient config is read through the `--profile` (or `-p`) you pass to
+Codex, whether as a CLI pass-through arg or via
+[`harness.codex-native.args`](#override-the-harness-binary-and-launch-args).
+Omnigent layers the selected profile over `~/.codex/config.toml` exactly the way
+Codex does at start:
+
+- A file profile at `~/.codex/<name>.config.toml` is layered when it exists —
+  with or without a base `config.toml`.
+- Otherwise the legacy inline `[profiles.<name>]` table in `config.toml` is
+  used (Codex versions before 0.134 keep profiles inline).
+
+So `omni codex --profile bedrock` routes through Bedrock when that profile sets
+`model_provider = "amazon-bedrock"`, even if the base config doesn't, and
+`--profile openai` over a Bedrock base keeps Codex's own login. A profile that
+exists nowhere leaves this tier alone (the launch falls through to Codex login),
+and a malformed selector — a missing value, a repeated `--profile`, or an
+invalid profile name — is reported by launch-arg validation when the session
+starts rather than during routing.
 
 ## Pi
 

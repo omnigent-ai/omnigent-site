@@ -278,10 +278,7 @@ Behavior matches the daily policy:
 `ask_thresholds_usd` values must each be greater than `0` and less than
 `max_cost_usd`, and `max_cost_usd` must be greater than `0`.
 
-Configure **one** period policy per policy set. A `user_daily_cost_budget`
-policy can sit alongside it, but stacking several `user_period_cost_budget`
-policies with different periods (for example weekly + monthly) is not
-supported.
+Configure **one** `user_period_cost_budget` policy per policy set. Don't combine it with `user_daily_cost_budget`; to cap daily spend, use `period: day`. Stacking several period policies (for example weekly + monthly) isn't supported.
 
 #### Keep sessions focused
 

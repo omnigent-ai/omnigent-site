@@ -244,12 +244,48 @@ Each window connects to one server. To work with multiple servers at the same ti
 Notifications and badge counts are combined across all connected servers.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
+{/* TODO(doc-drafter): screenshot may be stale — the connect screen no longer has a "Sign in with a different account" link under Connect for Databricks workspaces */}
 
 <img
   src="/images/docs/desktop-connect.png"
   alt="Omnigent desktop app setup screen prompting for the server URL to connect to"
   style={{ width: "100%", borderRadius: "8px" }}
 />
+
+## Sign out of a server
+
+When the desktop app signs you in through your browser — a Databricks
+workspace, or a server using [single sign-on (OIDC)](/docs/collaborate/auth#single-sign-on-oidc)
+— it keeps that sign-in and reuses it on later launches, new windows, server
+switches, and `omnigent://` links without opening a browser again. To drop it,
+sign the server out from the app itself:
+
+- **Server > Sign Out of Server** in the menu bar. The item is enabled only
+  while the focused window is connected to a server whose sign-in the app
+  manages; on other servers it stays greyed out.
+- **Sign out of &lt;server&gt;** at the bottom of the server picker in the
+  sidebar (the row showing the current host). It appears only on such
+  servers, and only when the server is running a web UI that includes it.
+
+Either one forgets the saved sign-in for that server (the stored OAuth token
+for a Databricks workspace, or the refresh grant for an OIDC server), clears the
+session cookie, and returns **every window on that server** to the connect
+screen with _You're signed out of &lt;server&gt;._ Windows on other servers are
+unaffected. The next **Connect** signs in through the browser, which is how you
+switch to a different account — the connect screen no longer has a separate
+"sign in with a different account" link. For an OIDC server your browser stays
+signed in to the identity provider, so that Connect may finish without a
+prompt; sign out of the IdP in the browser too if you want a different account.
+
+Signing out from **Settings > Account** inside the web UI has the same effect on
+these servers, since the desktop app handles that sign-out itself.
+
+If some part of the sign-out can't be completed, the connect screen says so —
+_Couldn't finish signing out of &lt;server&gt;; its saved sign-in may still be
+used. Connect, then sign out again._ — and the sidebar picker shows
+_Couldn't sign out of &lt;server&gt;_. For a Databricks workspace the next
+Connect still goes through the browser, so you can switch accounts even if
+old credentials linger.
 
 ## Managed servers (macOS MDM)
 

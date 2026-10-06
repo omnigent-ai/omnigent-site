@@ -249,6 +249,70 @@ Sign-in still happens in the foreground, before the spawn: pointing
 the browser login in your terminal first, since the detached daemon has no
 terminal to prompt on.
 
+## Inbox
+
+The **Inbox** (`/inbox` in the sidebar) gathers everything that needs you,
+across all your sessions, in one list:
+
+- **Approvals** — sessions whose agent is paused on a pending prompt (a policy
+  approval or a question). Each shows as an approval card you can answer in
+  place; the newest is expanded by default. Resolving the prompt (or the prompt
+  timing out) is what clears it — there is no dismiss.
+- **Comments** — file comments you haven't seen yet, with an **Open file** link
+  that opens the session with the comments panel on that file.
+- **Unread sessions** — sessions whose latest agent output you haven't opened
+  yet. These use the same read-state as the sidebar's unread dot, so the two
+  always agree on what counts as unread.
+
+The header summarizes the whole inbox regardless of the selected tab, for
+example `1 approval · 2 comments · 3 unread`.
+
+### Unread sessions
+
+Agents often finish a turn with output that needs follow-up but raise no
+approval. Those sessions appear in the Inbox as compact rows, newest first,
+listed after any approvals and comments. Each row shows:
+
+- a kind badge — **Done** for a finished turn, or **Error** when the turn
+  failed;
+- the session title, followed by a one-line preview of the latest reply (or,
+  for a failed turn, its error headline);
+- how long ago the session was last updated, and the same unread dot the
+  sidebar uses.
+
+Click a row to expand it to the fuller preview and two actions:
+
+- **Mark as read** — clears the row without leaving the Inbox.
+- **Open session** — opens the session at `/c/<session-id>`. Opening is
+  reading: the row clears, even for a session you had explicitly marked unread
+  from the sidebar.
+
+Marking a session read from the sidebar clears its Inbox row immediately too.
+When a new reply later lands in that session, the row comes back (collapsed) like
+any other new unread row.
+
+A few sessions never show as unread rows: sessions that are still **running**,
+**archived** sessions, and sessions **awaiting an approval** — the last are
+already listed as approval cards, so one session never appears twice. If a
+row's preview can't be loaded, the row still renders (without a preview) and
+can still be marked read.
+
+### Filter tabs
+
+Three tabs above the list narrow what's shown:
+
+| Tab                   | Shows                                    |
+| --------------------- | ---------------------------------------- |
+| **All** (default)     | Approvals, comments, and unread sessions |
+| **Unread**            | Unseen comments and unread sessions      |
+| **Awaiting response** | Approvals only                           |
+
+The selected tab is a per-device preference stored in your browser, so a viewer
+who only wants approvals — or only new agent replies — lands on that view again
+after a reload. Each tab has its own empty state: **Nothing waiting on you**
+(All), **You're all caught up** (Unread), and **No approvals waiting**
+(Awaiting response).
+
 ## Keyboard shortcuts
 
 The web UI ships a set of global keyboard shortcuts. Press `⌘/` (`Ctrl+/` on

@@ -8,6 +8,9 @@ import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { DiscordIcon, CalendarIcon } from "@/components/icons";
 import { DISCORD_URL, EVENTS_URL } from "@/components/links";
 import { productionSiteUrl } from "@/lib/site";
+import JsonLd from "@/components/JsonLd";
+import { getReleases } from "@/lib/releases";
+import { softwareApplication } from "@/lib/structured-data";
 
 // Title, description, and social cards come from the root layout. Only the
 // canonical is set here: a canonical in the root layout would be inherited by
@@ -17,8 +20,10 @@ export const metadata = {
 };
 
 export default function Home() {
+  const latestRelease = getReleases()[0];
   return (
     <>
+      <JsonLd data={softwareApplication({ version: latestRelease?.version })} />
       <Nav />
 
       <main>

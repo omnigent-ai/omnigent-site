@@ -2,6 +2,8 @@ import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import "./globals.css";
 import { siteUrl } from "@/lib/site";
+import JsonLd from "@/components/JsonLd";
+import { siteGraph } from "@/lib/structured-data";
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
@@ -39,6 +41,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+        <JsonLd data={siteGraph()} />
         {children}
         <Analytics />
         {/* Privacy-friendly analytics by Plausible */}

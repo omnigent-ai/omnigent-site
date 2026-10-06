@@ -85,7 +85,7 @@ A session is a conversation. Every message, tool call, and file change lives in 
 continuous thread. Sessions are the core unit of work in Omnigent, and three properties make
 them useful:
 
-- **Agent-independent.** A session belongs to you, not to a specific agent. Fork it into another agent at any point: start with a planner, fork to a coder, bring in a reviewer (`omni run ./my-agent/ --fork <conversation_id>`). The fork carries the full history forward; a session's bound agent can't be changed in place.
+- **Agent-independent.** A session belongs to you, not to a specific agent. Fork it at any point to continue on a copy (`omni run --fork <conversation_id>`). To continue on a different agent, use **Clone session** in the web UI or pass `agent_id` to `POST /v1/sessions/{id}/fork`. A session's bound agent can't be changed in place.
 - **Persistent.** Every session has a conversation ID and lives beyond the current terminal window. Close your laptop, come back tomorrow, resume where you left off: `omni resume <conversation_id>`
 - **Shared.** Any omnigent can read the history of other sessions you have access to. When you spin up a new task, the agent already has context from previous work.
 

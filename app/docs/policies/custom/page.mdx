@@ -198,6 +198,12 @@ filter which events you care about:
 
 Return `None` for event types you don't handle.
 
+`tool_call` policies also see one synthetic call that is not a real tool: at
+launch, the runner replays them over a `sys_agent_start` probe so that
+transform policies such as `enforce_sandbox` can reshape the agent's sandbox.
+A `DENY` or `ASK` on that probe is logged and ignored rather than blocking the
+launch — see [Force a sandbox at agent start](/docs/policies/builtin#force-a-sandbox-at-agent-start).
+
 For `request` events, text/code attachments (e.g. a CSV) carry their decoded
 content in `text`. Archives, Office documents, and databases (`.zip`, `.docx`,
 `.xlsx`, `.pptx`, `.db`, `.sqlite`, `.sqlite3`) are listed with their

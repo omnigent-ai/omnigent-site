@@ -29,7 +29,7 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `deny_pii_in_llm_request`         | Scans outgoing messages for PII and blocks or flags them.                                                                                                                                                                                                                                                                                                                                                                                                                              | `pii_types` (string[]), `action` (`"DENY"` or `"ASK"`)                                                                                                                                                                                  |
 | `detect_thrashing`                | Detects when an agent is failing repeatedly by tracking tool-result outcomes in a rolling window. Fires when consecutive errors cross a threshold or the window error rate is too high. Error detection is heuristic — no server LLM required.                                                                                                                                                                                                                                         | `consecutive_threshold` (int, default `5`; `0` disables), `window` (int, default `10`), `window_error_rate` (number `0.0`–`1.0`, default `0.8`; `0` disables), `action` (`"ASK"` or `"DENY"`, default `"ASK"`)                          |
 | `detect_loop`                     | ASKs when the agent is stuck retrying the same tool call. Hashes each `(tool, arguments)` pair and, when an identical call repeats `threshold` times within a sliding `window` of recent calls, routes it to human approval. Catches a token-waste pattern `max_tool_calls_per_session` can't see, since that policy only counts total calls.                                                                                                                                          | `window` (int, default `10`, min `1`), `threshold` (int, default `3`, min `1`)                                                                                                                                                          |
-| `enforce_sandbox`                 | Forces a sandbox configuration on agent start.                                                                                                                                                                                                                                                                                                                                                                                                                                         | `sandbox_type`, `allow_network`, `write_paths` (string entries, or `{path, copy_on_write}` objects for [disposable copy-on-write writes](/docs/reference/configuration/os-sandbox#disposable-copy-on-write-writes-linux)), `read_paths` |
+| `enforce_sandbox`                 | Forces a sandbox configuration on agent start. See [Force a sandbox at agent start](#force-a-sandbox-at-agent-start) for how the start probe is evaluated.                                                                                                                                                                                                                                                                                                                             | `sandbox_type`, `allow_network`, `write_paths` (string entries, or `{path, copy_on_write}` objects for [disposable copy-on-write writes](/docs/reference/configuration/os-sandbox#disposable-copy-on-write-writes-linux)), `read_paths` |
 | `gcalendar_policy`                | Controls Google Calendar. Defaults to read-only.                                                                                                                                                                                                                                                                                                                                                                                                                                       | None                                                                                                                                                                                                                                    |
 | `gdrive_policy`                   | Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to agent-created files by default. Optionally enforces Bell-LaPadula "no write-down": once the session reads a confidential file, its writes are confined to that set.                                                                                                                                                                                                                                       | `read_all`, `allow_create`, `write_files`, `read_files`, `comment_files`, `confidential_files` (string[]), `write_down_action` (`"DENY"` or `"ASK"`, default `"DENY"`)                                                                  |
 | `github_policy`                   | Controls GitHub read/write access across MCP tools and shell commands. Irreversible destructive operations (deletes) are denied by default even on allowed repos, unless `allow_destructive` is set. `git push` force flags (`--force`, `-f`, `--force-with-lease`, `--force-if-includes`), bundled short flags containing `f` (e.g. `-uf`), and `+refspec` force prefixes are denied by default regardless of the repo/branch allowlists, unless `deny_force_push` is set to `false`. | `read_all`, `write_repos`, `write_branches`, `allow_destructive` (bool, default `false`), `deny_force_push` (bool, default `true`)                                                                                                      |
@@ -55,6 +55,55 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `user_daily_cost_budget`          | Same as `cost_budget`, but enforced per-user daily across all sessions.                                                                                                                | `max_cost_usd` (required), `ask_thresholds_usd`, `expensive_models`                                                          |
 
 ### Usage examples
+
+#### Force a sandbox at agent start
+
+`enforce_sandbox` overrides the sandbox declared in an agent's `os_env` so the
+agent always launches inside the sandbox you choose, regardless of what the
+spec says:
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  force_bwrap:
+    type: function
+    handler: omnigent.policies.builtins.safety.enforce_sandbox
+    factory_params:
+      sandbox_type: linux_bwrap
+      allow_network: false
+```
+
+**How the start probe is evaluated.** There is no dedicated agent-start policy
+phase. Instead, when the runner is about to launch an agent it replays the
+agent's `tool_call` policies over a synthetic tool call named `sys_agent_start`,
+whose `arguments` carry the `agent_name`, `harness`, and declared `sandbox`.
+Only a **transform** takes effect on this probe: a policy that returns `ALLOW`
+with a replacement `data` payload (keeping the `name` and `arguments` fields,
+as `enforce_sandbox` does) reshapes the launch, and later policies see the
+transformed payload.
+
+A plain `DENY` or `ASK` on the probe does **not** block the agent from
+starting. The verdict is logged and skipped, and any `data` it carries is
+dropped. A general-purpose tool allowlist or cost gate that happens to reject
+the `sys_agent_start` name therefore cannot stop the agent from launching — and
+it still enforces normally on the agent's real tool calls once it is running.
+Do not rely on a `tool_call` `DENY` to control which agents may launch.
+
+The runner refuses to start the agent (fails closed) only when a `tool_call`
+policy **cannot be evaluated** on the probe, because its intended sandbox
+transform is then unknown:
+
+- the policy raised while evaluating the probe,
+- the policy could not be resolved (for example, a `handler` path that does not
+  exist), or
+- the policy returned a transform that drops the probe's `name` / `arguments`
+  shape.
+
+In that case session creation fails with the error code
+`agent_start_policy_unevaluable` and a message naming the offending policy. A
+policy declared only on `tool_result` can never transform the launch, so a
+resolution failure there still denies the agent's tool calls but does not
+block session start.
 
 #### Confine confidential Google Drive data
 

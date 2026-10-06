@@ -71,6 +71,49 @@ picker shows on this browser — no account or host state is touched — and fai
 open: when no host is connected or readiness information is unavailable, nothing
 is hidden.
 
+### Create or import a custom agent
+
+The new-chat agent picker has a **Custom agents** group with a **Create custom
+agent** action. The dialog it opens builds a one-off agent from a name, an
+optional description, a harness, a model, and zero or more MCP servers, then
+selects it for the session.
+
+The **Name** field accepts only letters, numbers, hyphens, and underscores — the
+same rule the server applies to agent names. Anything else shows an inline
+**Use only letters, numbers, hyphens, and underscores.** error and keeps
+**Create** disabled.
+
+#### Import bundle
+
+If you already have an agent packaged as a bundle — the `.tar.gz` of an agent
+directory, the same shape `omnigent agent add` uploads — you don't have to
+rebuild it in the form. Open **Create custom agent** and choose **Import
+bundle**, then pick the `.tar.gz` (or `.tgz`) file. The browser uploads it to
+the server (`POST /v1/agents`), which validates the bundle without running it
+and installs (or replaces) it as one of your reusable agents.
+
+On success the dialog closes and the imported agent is selected in the picker.
+Because it's installed on the server rather than built for one session, it
+stays listed under your agents after a reload.
+
+A few states to know about:
+
+- **While the import is in flight** the button reads **Importing…** and
+  **Cancel** and **Create** are locked, so the result always has somewhere to
+  land.
+- **If the server rejects the bundle** — for example because its name collides
+  with a built-in agent — the dialog stays open and shows the server's reason
+  inline. Fix the bundle and pick it again.
+- **If the agent installs but can't be selected** (it's missing from the
+  refreshed agent list), the dialog stays open with a message of the form
+  **Installed `<name>`, but couldn't select it: …**. The agent is still
+  installed.
+- **Import bundle** is only offered on servers that support agent install; on
+  other servers the dialog shows just the form.
+
+See [Custom Agents](/docs/use/custom-agents) for how to write the `config.yaml`
+that goes in a bundle.
+
 ### Projects
 
 Organize related sessions into a named `Project`. Each project is a collapsible

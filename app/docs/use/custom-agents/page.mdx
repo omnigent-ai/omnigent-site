@@ -43,6 +43,16 @@ root. You can place the directory anywhere on disk. Run it with:
 omni run ./my-agent/              # directory containing config.yaml
 ```
 
+### Import it in the web UI
+
+To reuse the same agent from the browser, package the directory as a `.tar.gz`
+bundle and import it from the new-chat agent picker: open **Custom agents →
+Create custom agent → Import bundle** and pick the file. The server validates
+the bundle, installs it as one of your agents, and selects it — it stays in the
+picker after a reload. See
+[Create or import a custom agent](/docs/interact/web-ui#create-or-import-a-custom-agent)
+in the Web UI docs for the details and failure states.
+
 ## What you can configure
 
 The config file supports these sections:

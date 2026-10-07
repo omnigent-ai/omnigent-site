@@ -101,6 +101,32 @@ rejected at startup. For the full list of reserved segments, the auth variables
 to pair with it, and how the local managed server remembers the prefix, see
 [Serving under a subpath](/docs/deploy/overview#serving-under-a-subpath).
 
+## Release features
+
+| Setting | Value                                                                               |
+| ------- | ----------------------------------------------------------------------------------- |
+| Key     | `OMNIGENT_FEATURES` environment variable                                            |
+| Scope   | Server process only (environment); not a `config.yaml` key                          |
+| Type    | Comma-separated set of feature names, e.g. `usage_page,harness_install`              |
+| Default | Unset — every release feature is off                                                |
+
+Turns on deployment-wide release features that are otherwise hidden. The set is
+resolved once when the server starts, so every request handled by that process
+sees the same values; the server advertises them to the web UI, which shows or
+hides the matching surfaces. Whitespace around names and empty entries are
+ignored; an unknown name fails startup rather than silently applying a typo.
+
+| Feature               | What it enables                                                                                            |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `usage_page`          | The Usage page.                                                                                            |
+| `canvas`              | The [Canvas](/docs/interact/web-ui#canvas) page and its sidebar entry.                                     |
+| `harness_settings_ui` | The work-in-progress [**Settings → Harnesses** page](/docs/interact/web-ui#harnesses-settings).            |
+| `harness_install`     | Web-driven harness setup.                                                                                  |
+
+```bash
+OMNIGENT_FEATURES=canvas,harness_settings_ui omni server
+```
+
 ## Attachment limits
 
 | Setting | Value                                                                                                                                                    |

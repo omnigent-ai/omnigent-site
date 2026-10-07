@@ -114,3 +114,22 @@ most recent sessions** button on the empty home screen (importing across all
 harnesses from your online machine), plus a **Choose what to import** link into
 the Settings picker. Importing from the web UI requires an online machine —
 start one with `omnigent host` from your terminal if none are connected.
+
+#### Review what your harnesses bring over
+
+The first time this browser sees a newly connected machine, an import review
+modal lists the logins, MCP servers, skills, and plugins that machine's
+harnesses carry over. Click **Confirm** to dismiss it; it stays dismissed on
+reload.
+
+To look at that inventory again, open **Settings › Import sessions** and scroll
+to **Harness imports**. Each online machine has a **Review imports** button that
+reopens the modal for that machine (the machine's name is shown in the dialog
+when more than one is online). If none of your machines are online, the section
+says so and reminds you to start one with `omnigent host`.
+
+**Harness imports** appears only while the `harness_settings_ui` release feature
+is off (the default). When an operator enables it, the inventory moves to the
+dedicated [**Settings → Harnesses** page](/docs/interact/web-ui#harnesses-settings),
+the import review modal gains a **See more** button that opens that page, and
+**Import sessions** keeps only session imports.

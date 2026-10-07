@@ -11,7 +11,8 @@ const probe = `
   console.log(JSON.stringify(sitemap()));
 `;
 
-const redirectSources = (await nextConfig.redirects()).map((r) => r.source);
+const redirects = await nextConfig.redirects();
+const redirectSources = redirects.map((r) => r.source);
 
 for (const override of [
   undefined,
@@ -111,6 +112,10 @@ test("no page redirects with next/navigation", () => {
 
 test("section roots redirect from next.config.mjs", () => {
   for (const source of ["/docs", "/quickstart"]) {
-    expect(redirectSources).toContain(source);
+    const rule = redirects.find((r) => r.source === source);
+    expect(rule).toMatchObject({
+      destination: "/quickstart/install",
+      permanent: false,
+    });
   }
 });

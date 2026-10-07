@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
+import { readdirSync, readFileSync } from "node:fs";
 import nextConfig from "../next.config.mjs";
 import { getBlogPosts } from "../lib/blog";
 import { getReleases } from "../lib/releases";
@@ -44,7 +45,6 @@ for (const override of [
       expect(byPath.has(source)).toBe(false);
     }
     expect([...byPath.keys()].some((p) => p.startsWith("/og"))).toBe(false);
-    // app/docs/page.js and app/quickstart/page.js only call redirect().
     expect(byPath.has("/docs")).toBe(false);
     expect(byPath.has("/quickstart")).toBe(false);
 
@@ -92,3 +92,25 @@ for (const override of [
     }
   });
 }
+
+// A prerendered page that calls redirect() answers 307 with no Location
+// header (Search Console: "Redirect error") and would be listed in the
+// sitemap. Redirects belong in next.config.mjs instead.
+test("no page redirects with next/navigation", () => {
+  const pages = readdirSync(new URL("../app", import.meta.url), {
+    recursive: true,
+  }).filter((file) => /(^|\/)page\.(jsx?|mdx?)$/.test(file));
+  expect(pages.length).toBeGreaterThan(0);
+  const offenders = pages.filter((file) =>
+    /\b(?:redirect|permanentRedirect)\b[^;]*from\s*["']next\/navigation["']/.test(
+      readFileSync(new URL(`../app/${file}`, import.meta.url), "utf8"),
+    ),
+  );
+  expect(offenders).toEqual([]);
+});
+
+test("section roots redirect from next.config.mjs", () => {
+  for (const source of ["/docs", "/quickstart"]) {
+    expect(redirectSources).toContain(source);
+  }
+});

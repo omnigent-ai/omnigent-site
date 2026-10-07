@@ -6,9 +6,9 @@ import { productionSiteUrl } from "../lib/site";
 
 // Served by Next at /sitemap.xml and generated at build time from the
 // filesystem: every app/**/page.{js,jsx,md,mdx} becomes an entry, so new docs,
-// blog posts, and releases appear without editing a route list. Redirecting
-// pages, redirect sources in next.config.mjs (which have no page file), and
-// non-page routes such as app/og/route.js are left out.
+// blog posts, and releases appear without editing a route list. Redirect
+// sources in next.config.mjs (which have no page file) and non-page routes
+// such as app/og/route.js are left out.
 //
 // URLs always use productionSiteUrl so preview/tunnel overrides of siteUrl
 // never leak into the sitemap (same rule as canonical URLs).
@@ -21,10 +21,6 @@ import { productionSiteUrl } from "../lib/site";
 
 const APP_DIR = path.join(process.cwd(), "app");
 const PAGE_FILE_RE = /^page\.(jsx?|mdx?)$/;
-// Pages that import Next's redirect helpers (e.g. app/docs/page.js) answer
-// with a 307 instead of content, so they are not sitemap URLs.
-const REDIRECT_PAGE_RE =
-  /import\s*\{[^}]*\b(?:redirect|permanentRedirect)\b[^}]*\}\s*from\s*["']next\/navigation["']/;
 
 function routeFromSegments(segments) {
   const out = [];
@@ -49,8 +45,6 @@ function discoverRoutes(dir = APP_DIR, segments = []) {
         ]),
       );
     } else if (entry.isFile() && PAGE_FILE_RE.test(entry.name)) {
-      const source = fs.readFileSync(path.join(dir, entry.name), "utf8");
-      if (REDIRECT_PAGE_RE.test(source)) continue;
       const route = routeFromSegments(segments);
       if (route) routes.push(route);
     }

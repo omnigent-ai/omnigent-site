@@ -1,6 +1,6 @@
 // Logo grid of OpenAI-/Anthropic-compatible gateways shown on the Models page.
 const gateways = [
-  { logo: "databricks", name: "Databricks Unity AI Gateway" },
+  { logo: "databricks", name: "Databricks Unity Gateway" },
   { logo: "mlflow", name: "MLflow AI Gateway" },
   { logo: "openrouter", name: "OpenRouter" },
   { logo: "litellm", name: "LiteLLM" },

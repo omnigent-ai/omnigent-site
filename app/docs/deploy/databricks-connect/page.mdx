@@ -2,7 +2,7 @@ import { pageMeta } from "@/lib/og";
 
 export const metadata = pageMeta(
   "Connect Databricks",
-  "Wire a Databricks OAuth app so signed-in users can connect their workspace and their managed sandboxes reach the Databricks AI Gateway as them.",
+  "Wire a Databricks OAuth app so signed-in users can connect their workspace and their managed sandboxes reach the Databricks Unity Gateway as them.",
   {
     eyebrow: "Deploy",
     path: "/docs/deploy/databricks-connect",
@@ -15,8 +15,8 @@ Omnigent supports **per-user Databricks connect**: once a server admin registers
 a Databricks OAuth app, a signed-in user can go to **Settings → Sandbox
 Integrations → Connect Databricks**, supply their workspace URL, and authorize
 their Databricks workspace. Their managed sandboxes then reach the workspace's
-**AI Gateway** (MCP + model serving) as them, using a short-lived, per-user
-OAuth token instead of a shared personal access token.
+**Unity Gateway** (formerly AI Gateway; MCP + model serving) as them, using a
+short-lived, per-user OAuth token instead of a shared personal access token.
 
 This mirrors [Connect GitHub](/docs/deploy/github-connect): same short-lived,
 user-bound token model, same **Settings → Sandbox Integrations** entry point.
@@ -49,7 +49,7 @@ Databricks connect logs an error and stays disabled.
   profile pointing at the owner's per-user credential broker (workspace host
   only — the token is never persisted on sandbox disk). The command-based
   harnesses (codex, claude, pi) mint a fresh token on demand from the broker and
-  refresh as it nears expiry, so long sessions stay authenticated to the AI
+  refresh as it nears expiry, so long sessions stay authenticated to the Unity
   Gateway.
 
 ## Register a Databricks OAuth app
@@ -72,7 +72,7 @@ databricks account custom-app-integration create --json '{
   (or the value Omnigent derives from `OMNIGENT_DOMAIN`, which is exactly this
   shape).
 - `offline_access` is required to receive a refresh token for server-side
-  refresh. `all-apis` covers the AI Gateway surface — narrow it once you confirm
+  refresh. `all-apis` covers the Unity Gateway surface — narrow it once you confirm
   the specific scopes your gateway needs.
 - `confidential: true` yields a client secret, which Omnigent requires.
 
@@ -125,4 +125,4 @@ and the Docker image read the same env vars.
    Omnigent. The panel now shows **Connected to `<workspace>` as `<user>`**.
    **Disconnect** removes the stored token.
 3. Start a sandbox session and confirm the agent's Databricks calls (model
-   serving / MCP) route through the workspace's AI Gateway as you.
+   serving / MCP) route through the workspace's Unity Gateway as you.

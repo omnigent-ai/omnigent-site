@@ -338,6 +338,31 @@ combine comma-separated with other features like `usage_page,harness_install`).
 Once enabled, a **Canvas** entry appears in the sidebar navigation and the page
 is served at `/canvas`.
 
+## Harnesses settings
+
+**Settings → Harnesses** is a work-in-progress page that shows what each
+connected machine's harnesses bring over — their configured harness cards,
+startup configuration (command, environment, and arguments), skills, MCP
+servers, and installed plugins.
+
+It is **off by default** and gated behind the `harness_settings_ui` release
+feature, the same way as Canvas: an operator turns it on deployment-wide with
+`OMNIGENT_FEATURES=harness_settings_ui` (comma-separate it with other features,
+for example `canvas,harness_settings_ui`). See
+[release features](/docs/reference/configuration#release-features) for the
+full list.
+
+- **Enabled** — a **Harnesses** entry appears in the Settings sidebar right
+  after **Appearance**, served at `/settings/harnesses` (one detail page per
+  harness, such as `/settings/harnesses/claude-native`). The import review modal
+  shown for a newly connected machine gains a **See more** button that dismisses
+  the modal and opens this page.
+- **Disabled** (the default) — the sidebar entry is hidden and a direct link to
+  `/settings/harnesses` falls back to **Settings → General** rather than showing
+  an empty page. The import review modal has only **Confirm**, and you can
+  reopen it later from **Settings → Import sessions → Harness imports** (see
+  [Import from the web UI](/docs/use/coding-agents#import-from-the-web-ui)).
+
 ## Install as an app
 
 The web UI is an installable [Progressive Web App (PWA)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps).

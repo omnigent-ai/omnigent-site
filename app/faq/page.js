@@ -60,7 +60,7 @@ export default function Page() {
             <h3>Is it ready for production?</h3>
             <p className="muted">
               Teams use Omnigent for real work today. It also moves quickly:
-              releases ship often and can include breaking changes, which the{" "}
+              releases ship often and can include breaking changes, which recent{" "}
               <Link href="/releases">release notes</Link> call out. Pin a
               version, read the notes before you upgrade, and tell us on Discord
               where it breaks.

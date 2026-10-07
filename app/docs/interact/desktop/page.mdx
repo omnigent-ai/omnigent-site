@@ -39,10 +39,36 @@ showing how many sessions are waiting, and multiple independent windows.
 - **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing.
 - **Dock badge.** See at a glance how many sessions need your attention, without switching to the app.
 - **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
-- **One-click host reconnect.** When a session's host is this machine and it has gone offline, the app restarts the host for you instead of asking you to run a command in a terminal.
+- **One-click host reconnect.** When a session's host is this machine and it has gone offline, the app restarts the host for you instead of asking you to run a command in a terminal. A session on your remembered Arca host gets an explicit **Reconnect Arca** action in the same dialog — see [Reconnect a session's host](#reconnect-a-sessions-host).
 
 Everything else (sessions, file editor, inline comments, collaboration) works exactly the
 same as the web UI.
+
+## Reconnect a session's host
+
+When the host behind a session goes offline, the chat shows a reconnect
+affordance, and the composer's host picker offers **Reconnect host**. What
+happens next depends on which host the session belongs to. Only the session's
+owner can reconnect a host; viewers are asked to clone the session instead.
+
+- **This machine.** If the session's host is the desktop you're using, the app
+  restarts the host directly. The **Host is offline** dialog opens only if that
+  fails or the host can't be matched, and it shows the terminal command as a
+  fallback.
+- **Your Arca host.** If the session's host is the Arca host this desktop
+  remembers, the app doesn't start anything on its own. The **Host is offline**
+  dialog opens with the message _This session's Arca host is offline. Reconnect
+  it below, or run the command from a terminal._ and a **Reconnect Arca**
+  button. Reconnecting begins only when you click it; the button then reads
+  **Reconnecting Arca…** and is disabled until the request finishes.
+
+When an Arca reconnect succeeds, the dialog closes and a toast confirms it —
+**Arca reconnect requested.**, or **Arca host is connected.** if the host was
+already running — and the host picker flips back to online once the host
+reports in. If you cancel the reconnect or the app shows its result in the
+console, the dialog stays open without an error. If the reconnect fails, the
+dialog stays open and shows the error beneath the button so you can retry or
+fall back to the terminal command.
 
 ## Embedded browser
 

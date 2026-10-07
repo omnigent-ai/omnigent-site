@@ -71,6 +71,47 @@ picker shows on this browser — no account or host state is touched — and fai
 open: when no host is connected or readiness information is unavailable, nothing
 is hidden.
 
+### Harnesses settings
+
+**Settings → Harnesses** shows the harnesses on your selected machine. It is
+always available: pick **Harnesses** in the Settings sidebar (between
+**Appearance** and **Git**), or go straight to `/settings/harnesses`. Each
+harness has its own detail page at `/settings/harnesses/<harness-id>`, for
+example `/settings/harnesses/claude-native`. Open a configured harness's card
+(or its gear) → **Settings** to inspect what that machine's harness brings to
+Omnigent:
+
+- **Startup configuration** (Claude Code and Codex) — one read-only block with
+  the **Command**, **Environment**, and **Arguments** the host launches the
+  harness with, plus the source they came from: the `harness.claude-native` /
+  `harness.codex-native` entries in that machine's `~/.omnigent/config.yaml`
+  (see [Override the harness binary and launch
+  args](/docs/build/harnesses/configuration#override-the-harness-binary-and-launch-args)).
+  Session and workspace config can add to or override these host defaults.
+  Other harnesses show only their credential card.
+- **Skills** — open a plain or plugin skill to read its `SKILL.md`.
+- **MCP servers** — expand a server to probe it; probes run only on expansion.
+- **Plugins** (Claude Code) — installed plugins, including disabled and
+  hook/command-only ones, with their metadata and bundled skills and MCPs.
+
+The first time a newly connected machine shows up on a device, the web UI opens
+a one-time review of what its harnesses bring over (logins, MCP servers,
+skills, and plugins). **See more** on that dialog dismisses it and opens
+**Settings → Harnesses**; **Confirm** just dismisses it. **Settings › Import
+sessions** holds only session imports — the earlier **Harness imports**
+section there is gone, so use **Settings → Harnesses** to look at a machine's
+harness inventory later.
+
+<div className="note">
+
+**Note for operators:** Harnesses settings used to sit behind the
+`harness_settings_ui` [release feature](/docs/reference/configuration#release-features).
+That feature is now enabled by default and always reported as on, so no
+`OMNIGENT_FEATURES` change is needed, and older web clients that still check
+the flag keep the page without any deployment change.
+
+</div>
+
 ### Projects
 
 Organize related sessions into a named `Project`. Each project is a collapsible
@@ -334,7 +375,8 @@ per project, so each project keeps its own layout.
 Canvas is **off by default**. It's a gated release feature: an operator enables
 it deployment-wide by including `canvas` in the server's release features
 (`OMNIGENT_FEATURES=canvas`, or `--features canvas` on a Databricks deploy —
-combine comma-separated with other features like `usage_page,harness_install`).
+combine comma-separated with other features like `usage_page,harness_install`;
+see [Release features](/docs/reference/configuration#release-features)).
 Once enabled, a **Canvas** entry appears in the sidebar navigation and the page
 is served at `/canvas`.
 

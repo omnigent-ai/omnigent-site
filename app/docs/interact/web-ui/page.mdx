@@ -38,6 +38,34 @@ a new top-level session; turn it off to keep the default session name and
 rename sessions yourself. This is a per-user preference stored on the server, so
 it follows your account across browsers and devices.
 
+### Stop a session
+
+**Stop session** ends a running session without deleting it. Open the session's
+row menu (`⋯`) in the sidebar or right-click the row and choose **Stop
+session**; on mobile, open the sidebar drawer and long-press the row. A
+confirmation dialog explains what will happen before anything stops:
+
+- A **hosted session** (one bound to a host) stops its runner, including any
+  side chats and sub-agents running on that runner. Every affected transcript is
+  kept; a stopped side chat shows **Side chat history is kept.** in its pane.
+- A **hostless session** (for example, one started from the CLI) stops only
+  that conversation. Side chats that run on their own separate runner must be
+  closed individually.
+
+Stop session is a lifecycle action for the whole session and requires owner
+access; it is separate from the composer's interrupt control, which cancels the
+current turn but leaves the session connected.
+
+If the host that owns the runner is unreachable, Stop doesn't pretend to
+succeed: the request fails with **Couldn't confirm the session's runner
+stopped. Please try again.** The in-progress turn is left intact and finishes
+once the host reconnects, after which you can retry Stop.
+
+A stopped hosted session can be used again by sending it a new message or by
+starting a new side chat from it — the latter relaunches the parent first, and
+the new side chat then shares its replacement runner (see [Side
+chats](#side-chats)).
+
 ### Export a session
 
 Save a conversation as a local file without leaving the browser: open the
@@ -614,18 +642,22 @@ agent has the parent conversation's full context.
   its transcript with the notice **This side chat has ended and can't be
   continued.**
 - **Every other harness** forks the conversation server-side (a
-  `POST /v1/sessions/{id}/fork` with `"side_chat": true`) and launches a runner
-  for the fork on the **same host as the source session** — local or managed,
-  with no new sandbox. When the source session is on a git branch, the fork runs
-  in its own worktree on a `side-chat/<id>` branch cut from the source branch,
-  so it never touches the parent's working tree; otherwise it runs in the
-  source's workspace. If the session has no host or workspace to launch on, or
-  the fork fails, a toast reads **Couldn't start a side chat for this session.**
-  and your typed question stays in the composer so you can retry.
+  `POST /v1/sessions/{id}/fork` with `"side_chat": true`) and binds the fork to
+  the **parent's live runner** — no new runner, sandbox, or worktree is
+  launched, and the side chat works in the parent's current workspace. If the
+  parent is hosted but its runner has stopped, starting a side chat relaunches
+  the parent first and the side chat then shares that replacement runner. If
+  the parent's runner can't be reached, or the fork fails, a toast reads
+  **Couldn't start a side chat for this session.** and your typed question
+  stays in the composer so you can retry.
 
-A side chat is otherwise a normal session with its own runner and transcript,
-but it is stamped with the `omnigent.side_chat` label and hidden from the left
-sidebar's session list — it surfaces only as a rail tab.
+A side chat keeps its own transcript but shares its parent's runner. It is
+stamped with the `omnigent.side_chat` label and hidden from the left sidebar's
+session list — it surfaces only as a rail tab. The server also records which
+session it was forked from in the `omnigent.side_chat.source_id` label; this
+label is server-internal and is rejected if a client tries to set it. Because
+the parent's runner is shared, **Stop session** on a hosted parent stops its
+side chats too (see [Stop a session](#stop-a-session)).
 
 ### Side-chat tabs
 
@@ -633,7 +665,15 @@ Side-chat tabs are stored in your browser, like the rail's file and browser
 tabs: they survive reloads and restarts on this device but don't follow you to
 another device. Switching to another conversation shows that conversation's own
 side-chat tabs. Close a tab with its `✕` (or a middle-click) to stop the side
-chat's runner and drop the tab.
+chat and drop the tab. Only that chat stops — the parent and any other side
+chats on the same runner keep working, and the closed chat's history is kept.
+If the side chat's resources can't be released (for example, its runner is
+unreachable), the tab stays open and a toast reads **Couldn't close side chat.
+Try again.**
+
+A side chat also has a direct URL (`/c/<child_id>`). A chat-only side chat —
+one without a workspace of its own — can send messages from that URL without
+being asked to choose a workspace.
 
 Side chats are distinct from Claude Code's `/btw` overlay (below), which answers
 a one-off question inline without creating a session.
@@ -690,22 +730,23 @@ saved on the parent (for example, from a worktree created on another machine)
 is neither required nor reused. Where it runs depends on how the parent is
 placed:
 
-- **Hosted sessions** (bound to a host and workspace) launch a separate runner
-  for the fork on the parent's host, in the parent's workspace.
-- **CLI sessions** with an online runner but no host reuse the parent's
-  existing runner.
+- **Sessions with a live runner** — hosted or CLI-launched — reuse the parent's
+  existing runner. No separate runner is launched for the fork.
 - **In-process sessions** with neither a host nor a runner use normal server
   dispatch.
 
-If the parent is on a dormant resumable managed host, starting a side chat
-wakes the host first and then launches on the refreshed placement. If neither
-the parent's host nor its runner is reachable, the side chat isn't created and
-the composer shows **This session is disconnected. Reconnect it before starting
-a side chat.**
+If the parent is hosted and its runner has stopped (because the host is still
+online, or is a dormant resumable managed host), starting a side chat
+relaunches the parent first and then shares its replacement runner. If the
+parent's runner is offline and can't be relaunched, the side chat isn't created
+and the composer shows **This session is disconnected. Reconnect it before
+starting a side chat.**
 
-Closing a side-chat tab stops the forked session only; the parent keeps
-working and you can continue chatting in it. Codex native sessions handle `/side`
-natively (an in-process fork) instead of using this generic flow.
+Closing a side-chat tab stops the forked chat only; the parent and any sibling
+side chats keep working and you can continue chatting in them. Stopping the
+hosted parent (see [Stop a session](#stop-a-session)) stops every side chat on
+its runner, and all of their histories are kept. Codex native sessions handle
+`/side` natively (an in-process fork) instead of using this generic flow.
 
 ## Scheduled tasks
 

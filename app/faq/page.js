@@ -59,8 +59,11 @@ export default function Page() {
 
             <h3>Is it ready for production?</h3>
             <p className="muted">
-              No. It is alpha. Expect rough edges, and tell us where it breaks
-              on Discord.
+              Teams use Omnigent for real work today. It also moves quickly:
+              releases ship often and can include breaking changes, which recent{" "}
+              <Link href="/releases">release notes</Link> call out. Pin a
+              version, read the notes before you upgrade, and tell us on Discord
+              where it breaks.
             </p>
           </section>
         </div>

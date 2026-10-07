@@ -223,6 +223,44 @@ doesn't rewrite those headers.
 2. **Enter your server URL.** `http://localhost:6767` if running locally, or your deployed server URL (e.g. `https://your-app.onrender.com`).
 3. **Start working.** The app connects and shows the same UI you'd see in a browser.
 
+### How typed URLs are read
+
+You can leave off the scheme. The setup screen fills it in the same way the
+`omnigent://` [link handler](#open-a-session-from-a-link) does: `http` for a
+loopback host (`localhost`, `127.0.0.1`, `[::1]`), `https` for any other host.
+Typing `example.com` connects to `https://example.com/`; typing
+`localhost:6767` connects to `http://localhost:6767/`. An explicit `http://` or
+`https://` is kept as written, and non-web schemes such as `file:` are
+rejected.
+
+The URL is reduced to its origin — any path or fragment you paste is dropped —
+with one exception: a Databricks workspace URL keeps its `?o=<organization>`
+query so the right workspace is selected.
+
+### Unencrypted connections
+
+If you connect to a remote server over plain `http://`, the app asks you to
+confirm first, since anyone on the network path can act as that server.
+Choosing **Cancel** leaves the setup screen on **Connection cancelled.** so you
+can pick another server or retry. The same confirmation appears before the app
+registers this machine as a runner on an unencrypted server. Loopback servers
+(`http://localhost`, `http://127.0.0.1`, `http://[::1]`) and all `https://`
+servers connect without a prompt.
+
+### Installing the CLI by hand
+
+Running a server locally needs the `omnigent` CLI. On platforms where the app
+can't install it for you, choosing **Install Omnigent** shows an **Install the
+Omnigent CLI** screen instead of running an installer. It links to the
+[installation instructions](/quickstart/install#install-omnigent); install the
+CLI in a terminal, confirm `omnigent --version` works in a new terminal, then
+return to the app and press **Check again**. If the CLI still isn't found, make
+sure `omnigent` is on your `PATH` and check again.
+
+If you already have a local server to open, a **Continue anyway** button lets
+you connect to it right away without installing the CLI or starting a new
+server. Joining a remote server never requires the CLI.
+
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
 <img

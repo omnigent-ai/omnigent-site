@@ -405,6 +405,49 @@ tab isn't available in a given session (for example, GitHub only appears in
 coding-agent sessions, and Files/Changes need an on-disk workspace), the rail
 falls back to the first available tab.
 
+## Harnesses settings
+
+Open **Settings → Harnesses** (it sits right after **Appearance** in the
+Settings sidebar) to see what each harness brings to a connected machine. The
+page is always available — it no longer has to be switched on per deployment —
+and you can deep-link to it at `/settings/harnesses`, or straight to one
+harness's detail page such as `/settings/harnesses/claude-native`.
+
+Pick a host, then open a configured harness's card (or its gear icon) to browse:
+
+- **Startup configuration** — for the native Claude Code and Codex harnesses,
+  one read-only block showing the **Command**, **Environment**, and
+  **Arguments** the selected host launches the harness with, plus where those
+  values come from. They're read from the host's `harness.claude-native` /
+  `harness.codex-native` entries in `~/.omnigent/config.yaml` (see
+  [Override the harness binary and launch args](/docs/build/harnesses/configuration#override-the-harness-binary-and-launch-args));
+  session and workspace config can add to or override them. Other harnesses
+  show their credential card only.
+- **Skills** — the plain and plugin skills installed for the harness. Open one
+  to read its `SKILL.md`.
+- **MCP servers** — expand a server to probe the tools it exposes. Probes run
+  only when you expand a server.
+- **Plugins** — installed Claude Code plugins, including disabled and hook- or
+  command-only ones, with name, version, marketplace, and enabled state. Open a
+  plugin to read its description and browse its **Skills** and **MCPs** tabs.
+
+This page is also where the import review modal sends you. When a newly
+connected machine (or one you've asked to review) shows the modal summarizing
+what its harnesses carry over, click **See more** to dismiss it and open
+**Settings → Harnesses** without confirming the import. **Settings → Import
+sessions** contains only session imports — there is no longer a separate
+**Harness imports** section for reopening that modal.
+
+<div className="note">
+
+**Note for operators:** no `OMNIGENT_FEATURES` entry is needed for this page.
+The server advertises the `harness_settings_ui` release feature as enabled by
+default so older web clients that still gate Harnesses on it keep the entry;
+listing it in `OMNIGENT_FEATURES` is accepted and changes nothing. Any names you
+do set in `OMNIGENT_FEATURES` are added on top of that default.
+
+</div>
+
 ## File editor
 
 A full markdown editor with syntax highlighting for browsing and editing every file your

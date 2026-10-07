@@ -262,7 +262,8 @@ preference domain is the desktop app's bundle identifier:
 ai.omnigent.desktop
 ```
 
-Set the `serverUrls` key to an array of server URLs, most-preferred first:
+Set the `serverUrls` key to an array of server URLs, most-preferred first.
+Organizations on Databricks can also set `databricksInternalFeaturesEnabled`:
 
 <table>
   <thead>
@@ -289,6 +290,21 @@ Set the `serverUrls` key to an array of server URLs, most-preferred first:
         <code>https://</code>. At most 10.
       </td>
     </tr>
+    <tr>
+      <td>
+        <code>databricksInternalFeaturesEnabled</code>
+      </td>
+      <td>Boolean</td>
+      <td>No</td>
+      <td>
+        <code>false</code>
+      </td>
+      <td>
+        Defaults macOS apps to the V2 onboarding flow and enables
+        Databricks-internal features on supported servers. Only an explicit
+        boolean <code>true</code> enables it.
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -313,6 +329,25 @@ screen and in the in-app server switcher. They are offered, not enforced:
 - Values are read from macOS on demand, not copied into the app's settings, so
   applying or removing a profile takes effect the next time the connect screen
   loads or the server switcher opens.
+
+### Onboarding flow
+
+The desktop app has two setup screens: the legacy connect page and the V2
+onboarding flow (landing → deployment mode → server select). Which one opens is
+decided in this order:
+
+1. **Environment override.** `OMNIGENT_SERVER_SELECTOR_V2=1` forces V2 on every
+   platform, regardless of any saved choice.
+2. **Your saved choice.** The switch on the setup screen persists an explicit
+   choice (`server_selector_v2` in the app's `settings.json`) on every platform,
+   and that choice wins over the managed default below.
+3. **Managed default.** On macOS, when the `databricksInternalFeaturesEnabled`
+   preference is `true`, V2 is the default for both new and existing profiles.
+   This does not require `serverUrls` or a connected server.
+4. **Legacy default.** Everyone else — public macOS users and all Windows/Linux
+   users — gets the legacy connect page.
+
+Whichever flow is the default, a saved server still reconnects on launch.
 
 ### Example MDM profile
 

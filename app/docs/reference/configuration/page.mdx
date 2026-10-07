@@ -158,6 +158,32 @@ Request-phase [custom policies](/docs/policies/custom#reference-policyevent)
 receive the filename and content type of these attachments with an empty `text`
 value; their contents are not scanned as text.
 
+## Release features
+
+| Setting | Value                                                                                           |
+| ------- | ----------------------------------------------------------------------------------------------- |
+| Key     | `OMNIGENT_FEATURES` environment variable                                                        |
+| Scope   | Server process only (environment); not a `config.yaml` key                                      |
+| Type    | Comma-separated feature names: `usage_page`, `harness_install`, `canvas`, `harness_settings_ui` |
+| Default | `harness_settings_ui` enabled; every other feature off                                          |
+
+Deployment-wide switches for features that ship before they are on for
+everyone. The set is resolved once when the server process starts, so every
+request that process handles sees the same values, and the web UI reads them
+from the server to decide what to show (for example the
+[Canvas](/docs/interact/web-ui#canvas) page).
+
+```
+OMNIGENT_FEATURES=usage_page,harness_install
+```
+
+Names you list are **added** to the defaults: `harness_settings_ui` stays
+enabled whether or not you include it, so
+[Harnesses settings](/docs/interact/web-ui#harnesses-settings) cannot be
+turned off through this variable (listing it is accepted and has no further
+effect). Whitespace around names and empty entries are ignored; an unknown name
+fails startup rather than being silently dropped.
+
 ## Managed sandboxes
 
 - [Kubernetes sandbox configuration](/docs/reference/configuration/kubernetes)

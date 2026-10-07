@@ -233,9 +233,9 @@ const docsRoutes = [
   },
   {
     section: "Policies And Sandboxing",
-    href: "/docs/policies/os-sandbox",
+    href: "/docs/reference/configuration/os-sandbox",
     label: "OS Sandbox Config",
-    source: "app/docs/policies/os-sandbox/page.mdx",
+    source: "app/docs/reference/configuration/os-sandbox/page.mdx",
     description:
       "Filesystem, network, and environment restrictions for Omnibox sandboxing.",
   },

@@ -141,6 +141,11 @@ const ALL_PAGES = [
     section: "Collaboration",
   },
   {
+    href: "/docs/deploy/community-git-providers",
+    label: "Community Git Providers",
+    section: "Collaboration",
+  },
+  {
     href: "/docs/policies/overview",
     label: "Overview",
     section: "Contextual Policies",

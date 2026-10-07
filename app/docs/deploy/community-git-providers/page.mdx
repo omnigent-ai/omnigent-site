@@ -1,0 +1,222 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Community Git Providers",
+  "Teach Omnigent to recognize repository and pull request URLs on another git forge by installing a provider descriptor through the omnigent.git_providers entry-point group.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/community-git-providers",
+  },
+);
+
+# Community Git Providers
+
+A **git provider** tells Omnigent which forge owns a git remote or pull request
+URL. GitHub (github.com and GitHub Enterprise Server) is built in. A third-party
+Python package can register another forge through the `omnigent.git_providers`
+entry-point group, so stored pull request references carry the right provider
+ID, host, full repository path, and request number instead of being assumed to
+be GitHub.
+
+A provider descriptor only **recognizes URLs**. It imports nothing beyond the
+Python standard library and makes no network calls, so any Omnigent process can
+resolve a URL cheaply. The rest of a provider — connections, credentials, pull
+request access, and policy — is described as optional **facets** that are
+imported only by a caller that needs them.
+
+<div className="note">
+
+The session **GitHub** tab in the [web UI](/docs/interact/web-ui#github) still
+reads and links **GitHub pull requests only**. Associations recorded for other
+providers are stored with the session but are not shown or editable there, and
+linking a non-GitHub URL from that tab is rejected with
+`This resource supports only GitHub pull requests`. Installing a provider makes
+Omnigent recognize and persist its URLs; it does not add a forge-specific panel.
+
+</div>
+
+## How URLs resolve
+
+Resolution asks the providers that claim the URL's host first, then the rest, in
+registration order (built-ins before installed plugins). The first provider that
+parses the URL wins. A descriptor that raises is logged once and treated as not
+recognizing the URL, so one broken plugin never stops the other providers.
+
+The built-in GitHub provider claims a host when it is any of:
+
+- `github.com`;
+- the value of `GH_HOST`;
+- a host listed in `OMNIGENT_GIT_PROVIDER_GITHUB_HOSTS` (see
+  [Configure instances](#configure-instances));
+- a host the `gh` CLI is signed in to, read from its `hosts.yml`. The config
+  directory is chosen in `gh`'s own order: `GH_CONFIG_DIR`, else
+  `$XDG_CONFIG_HOME/gh`, else `%AppData%\GitHub CLI` on Windows, else
+  `~/.config/gh`.
+
+GitHub Enterprise pull request URLs keep parsing as before: an HTTPS
+`https://<host>/<owner>/<repo>/pull/<number>` link (optionally ending in
+`/files`, `/commits`, or `/checks`) normalizes to
+`https://<host>/<owner>/<repo>/pull/<number>`. URLs that embed credentials, use
+a non-HTTPS scheme, or are not pull request paths are rejected.
+
+References stored before git providers existed have no provider ID and continue
+to mean GitHub.
+
+## Configure instances
+
+`OMNIGENT_GIT_PROVIDER_<ID>_HOSTS` supplies a comma-separated list of
+self-hosted instances for the provider whose ID is `<ID>` (upper-cased). Entries
+are trimmed and lower-cased. Each provider decides how configured instances map
+to its URLs and authentication.
+
+```bash
+# A GitHub Enterprise Server host, in addition to GH_HOST and gh's hosts.yml.
+OMNIGENT_GIT_PROVIDER_GITHUB_HOSTS=ghe.example.com
+
+# A self-hosted instance of an installed provider with id "example".
+OMNIGENT_GIT_PROVIDER_EXAMPLE_HOSTS=git.example.internal
+```
+
+Set the variable in the environment of the Omnigent **host** process that
+resolves the URLs. One configured host per provider is the supported case today;
+the list form leaves room for more.
+
+## Add an installed provider
+
+Install a Python package into the same environment as the Omnigent host and
+declare an entry point in the `omnigent.git_providers` group:
+
+```toml
+# pyproject.toml
+[project]
+name = "omnigent-example-forge"
+dependencies = ["omnigent"]
+
+[project.entry-points."omnigent.git_providers"]
+example = "example_forge:PROVIDER"
+```
+
+The entry point exposes either a descriptor object or a **zero-argument
+factory** that returns one. Use the `GitProvider` protocol in
+`omnigent.git_providers` as the contract:
+
+```python
+# example_forge.py
+from omnigent.git_providers import (
+    FacetModules,
+    Instances,
+    ParsedPullRequest,
+    ParsedRemote,
+)
+
+
+class ExampleProvider:
+    id = "example"                 # stable, lowercase; stored with each reference
+    display_name = "Example Forge"
+    default_hosts = ("example-forge.com",)
+    request_name = "merge request"  # optional; default "pull request"
+    number_prefix = "!"             # optional; default "#"
+    facets = FacetModules()         # module paths of optional facets
+
+    def matches_host(self, host: str, instances: Instances) -> bool:
+        return host in self.default_hosts or host in instances.hosts_for(self.id)
+
+    def parse_remote_url(self, url: str, instances: Instances) -> ParsedRemote | None:
+        ...  # return ParsedRemote(provider=self.id, host=..., repository=...)
+
+    def parse_pr_url(self, url: str, instances: Instances) -> ParsedPullRequest | None:
+        ...  # return ParsedPullRequest(provider=self.id, host=..., repository=...,
+            #                           number=..., url=<canonical URL>)
+
+
+PROVIDER = ExampleProvider()
+```
+
+### Descriptor contract
+
+- **`id`** — a stable lowercase identifier matching `[a-z][a-z0-9_-]*`. It is
+  stored with every reference, so do not change it after release. Built-in IDs
+  (`github`) cannot be overridden.
+- **`display_name`** — a non-empty human-readable name.
+- **`default_hosts`** — lower-cased hosts the provider owns without any
+  configuration.
+- **`facets`** — a `FacetModules` value with optional module paths for
+  `connection`, `credential`, `pull_requests`, and `policy`. An unset facet
+  means that capability is unavailable. A facet module is imported only when a
+  caller asks for it (`load_facet(provider_id, kind)`) and exposes the facet as
+  an upper-cased attribute (`CONNECTION`, `CREDENTIAL`, `PULL_REQUESTS`,
+  `POLICY`).
+- **`matches_host(host, instances)`** — whether a lower-cased host belongs to
+  this provider. `instances.hosts_for(id)` returns the hosts configured through
+  `OMNIGENT_GIT_PROVIDER_<ID>_HOSTS`.
+- **`parse_remote_url(url, instances)`** — parse an HTTP(S), SSH, `git://`, or
+  scp-style remote into a `ParsedRemote(provider, host, repository)`, or return
+  `None`. `provider` must equal the descriptor's `id`; `host` and `repository`
+  must be non-empty.
+- **`parse_pr_url(url, instances)`** — parse a pull request URL into a
+  `ParsedPullRequest(provider, host, repository, number, url)`, or return
+  `None`. `number` must be a positive `int` and `url` the canonical URL you want
+  stored and displayed.
+- **`request_name`** / **`number_prefix`** _(optional)_ — labels for shared UI
+  surfaces, for example `"merge request"` and `"!"`. The defaults are
+  `"pull request"` and `"#"`.
+
+Keep descriptors to the standard library and free of network calls. Treat URLs
+from tools and repositories as untrusted input: reject credentials embedded in
+request URLs, preserve the full repository path, and validate a destination
+before sending credentials to it. Resolve authentication at the provider
+boundary — URL parsing must never fetch credentials or talk to the network.
+
+### Discovery
+
+Discovery runs **once per process**; restart Omnigent after installing or
+upgrading a provider. Built-in providers load first, then installed entry points
+sorted by name. A contribution that is not a valid descriptor, reuses an ID that
+is already defined, or fails to import is logged with a warning and skipped, so
+the remaining providers stay available.
+
+## How associations are stored
+
+Session pull request associations live on the host, under the data
+directory's `github/session-prs/` folder. The original per-session file stays
+**GitHub-only**; associations for other providers are kept in a sibling
+`<session>.providers.json` file, coordinated by the same per-session lock. Both
+files are written atomically, and a mixed file written by an earlier prerelease
+is migrated to this layout on first read without losing titles, removal
+history, or replay protection.
+
+This layout protects a **host downgrade**: an older Omnigent host sees and
+updates only the GitHub associations, and any GitHub edits or removals it makes
+are preserved. Other providers' associations remain saved but unavailable until
+the host is upgraded again. (This is local host downgrade protection, separate
+from server/host wire compatibility.)
+
+Reads of the registry take the per-session lock with a one-second timeout. If
+another process holds it, the read fails with `PR tracking is busy; try again.`
+rather than returning a partial snapshot; retrying succeeds once the writer is
+done.
+
+## Verify
+
+From the Python environment where the provider is installed:
+
+```python
+from omnigent.git_providers import providers, resolve_pr_url, resolve_remote
+
+print([p.id for p in providers()])
+print(resolve_remote("git@example-forge.com:group/project.git"))
+print(resolve_pr_url("https://example-forge.com/group/project/-/merge_requests/7"))
+```
+
+If your provider is missing from `providers()`, confirm the package is
+installed in the host's environment, the entry-point group is exactly
+`omnigent.git_providers`, the process has been restarted since installing, and
+check the host log for a `Failed to load git provider` warning naming the entry
+point.
+
+<div className="note">
+
+Provider descriptors execute Python in the Omnigent host process. Install only
+provider packages you trust.
+
+</div>

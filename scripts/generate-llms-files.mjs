@@ -1,7 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const SITE_URL = "https://omnigent.ai";
-const LASTMOD = "2026-06-23";
 
 const docsRoutes = [
   {
@@ -11,7 +10,6 @@ const docsRoutes = [
     source: "app/quickstart/install/page.mdx",
     description:
       "Requirements, installation, credentials, launching Debby, and adding the macOS app.",
-    priority: "0.9",
   },
   {
     section: "Quickstart",
@@ -20,7 +18,6 @@ const docsRoutes = [
     source: "app/quickstart/coding-agent/page.mdx",
     description:
       "Start a coding agent, give it a task, use comments, edit files, paste images, fork sessions, and add policies.",
-    priority: "0.8",
   },
   {
     section: "Quickstart",
@@ -29,7 +26,6 @@ const docsRoutes = [
     source: "app/quickstart/polly/page.mdx",
     description:
       "Run Polly, Omnigent's multi-AI coding orchestrator, and follow progress in the UI.",
-    priority: "0.8",
   },
   {
     section: "Quickstart",
@@ -38,7 +34,6 @@ const docsRoutes = [
     source: "app/quickstart/collaborate/page.mdx",
     description:
       "Deploy a shared server, connect from laptop and phone, share a session, and run a cloud sandbox host.",
-    priority: "0.8",
   },
   {
     section: "Quickstart",
@@ -47,7 +42,6 @@ const docsRoutes = [
     source: "app/quickstart/policies/page.mdx",
     description:
       "Add plain-language policies and see soft and hard limits in action.",
-    priority: "0.8",
   },
   {
     section: "Agent Use Cases",
@@ -239,9 +233,9 @@ const docsRoutes = [
   },
   {
     section: "Policies And Sandboxing",
-    href: "/docs/policies/os-sandbox",
+    href: "/docs/reference/configuration/os-sandbox",
     label: "OS Sandbox Config",
-    source: "app/docs/policies/os-sandbox/page.mdx",
+    source: "app/docs/reference/configuration/os-sandbox/page.mdx",
     description:
       "Filesystem, network, and environment restrictions for Omnibox sandboxing.",
   },
@@ -260,14 +254,12 @@ const optionalRoutes = [
     href: "/",
     label: "Homepage",
     description: "Product overview and architecture.",
-    priority: "1.0",
   },
   {
     href: "/faq",
     label: "FAQ",
     description:
       "Answers to common questions about Omnigent, models, custom agents, safety, Databricks, and production readiness.",
-    priority: "0.6",
   },
 ];
 
@@ -454,37 +446,5 @@ function buildLlmsFullTxt() {
   return lines.join("\n").replace(/\n{4,}/g, "\n\n\n");
 }
 
-function buildSitemap() {
-  const sitemapRoutes = [
-    optionalRoutes.find((route) => route.href === "/"),
-    ...docsRoutes,
-    optionalRoutes.find((route) => route.href === "/faq"),
-  ];
-
-  const lines = [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    "",
-  ];
-
-  for (const route of sitemapRoutes) {
-    const priority =
-      route.priority ?? (route.href.startsWith("/quickstart/") ? "0.8" : "0.7");
-    lines.push(
-      "  <url>",
-      `    <loc>${absolute(route.href)}</loc>`,
-      `    <lastmod>${LASTMOD}</lastmod>`,
-      "    <changefreq>weekly</changefreq>",
-      `    <priority>${priority}</priority>`,
-      "  </url>",
-      "",
-    );
-  }
-
-  lines.push("</urlset>", "");
-  return lines.join("\n");
-}
-
 writeFileSync("public/llms.txt", buildLlmsTxt());
 writeFileSync("public/llms-full.txt", buildLlmsFullTxt());
-writeFileSync("public/sitemap.xml", buildSitemap());

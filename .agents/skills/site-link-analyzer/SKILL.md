@@ -23,8 +23,9 @@ Find and fix broken links across the site. The work splits in two:
 The checker re-derives the valid route set from the filesystem using Next.js App
 Router conventions (`app/**/page.{js,jsx,ts,tsx,md,mdx}`, with route groups,
 parallel slots, private folders, and `[param]`/`[...catch-all]` segments) and
-treats files under `public/` as valid assets, so its results match what the site
-actually serves. It has no dependencies — it runs on plain Node or Bun.
+treats files under `public/` as valid assets and static redirect/rewrite sources
+in `next.config.mjs` (such as `/docs`) as valid routes, so its results match what
+the site actually serves. It has no dependencies — it runs on plain Node or Bun.
 
 ## Before you start: branch
 

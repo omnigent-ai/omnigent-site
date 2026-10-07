@@ -9,6 +9,19 @@ const nextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx"],
   async redirects() {
     return [
+      // Section roots have no page of their own. Redirect here rather than with
+      // redirect() in a page: a prerendered redirect() page answers 307 with
+      // no Location header, which Search Console reports as a redirect error.
+      {
+        source: "/docs",
+        destination: "/quickstart/install",
+        permanent: false,
+      },
+      {
+        source: "/quickstart",
+        destination: "/quickstart/install",
+        permanent: false,
+      },
       {
         source: "/docs/policies/os-sandbox",
         destination: "/docs/reference/configuration/os-sandbox",

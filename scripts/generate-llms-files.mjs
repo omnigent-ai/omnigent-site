@@ -300,7 +300,7 @@ No. Omnigent is open source and runs on your own machine and models. Databricks 
 
 ## Is it ready for production?
 
-No. Omnigent is alpha.`;
+Teams use Omnigent for real work today. It also moves quickly: releases ship often and can include breaking changes, which the release notes call out. Pin a version and read the release notes before you upgrade.`;
 
 function absolute(href) {
   return `${SITE_URL}${href}`;

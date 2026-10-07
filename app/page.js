@@ -138,7 +138,7 @@ export default function Home() {
               className="muted"
               style={{ maxWidth: "38rem", margin: "0 auto 1.8rem" }}
             >
-              Omnigent is alpha and built in the open. Try it and give us
+              Omnigent is open source and built in the open. Try it and give us
               feedback on Discord.
             </p>
             <div className="hero-cta">

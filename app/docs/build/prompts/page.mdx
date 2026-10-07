@@ -45,7 +45,8 @@ The first file found becomes the system prompt. No merge, first wins.
 Skills are reusable instruction bundles that your agent can load at runtime via the
 `/skill-name` slash command or the built-in `load_skill` tool. Each skill is a
 markdown file with structured instructions. Think of it as a recipe the agent
-follows for a specific task.
+follows for a specific task. The `skill-name` in the command is the skill's
+folder name — see [Skill names and display names](#skill-names-and-display-names).
 
 ### How skills are discovered
 
@@ -64,8 +65,8 @@ my-agent/
 ```
 
 Skills in the agent's `skills/` directory are always available. The agent can
-invoke each skill by its slash command, such as `/code-review`, or load it with
-`load_skill`.
+invoke each skill by its slash command, such as `/code-review` for the
+`skills/code-review/` folder, or load it with `load_skill`.
 
 **2. Project and user skills**, discovered from the filesystem:
 
@@ -86,13 +87,16 @@ picks it up automatically.
 If you already have skills in `.claude/skills/`, they work alongside Omnigent
 bundled skills automatically. Omnigent discovers them during its directory walk.
 
+Like Claude Code, Omnigent invokes a skill by its folder name and treats the
+frontmatter `name` as a label, so the same `/command` works in both.
+
 One caveat: Omnigent's skill loader reads only `name`, `description`, and
 `user-invocable` from SKILL.md frontmatter. Claude Code's additional frontmatter
 fields are handled differently depending on your harness:
 
 | Frontmatter field | Omnigent skill loader | `claude-native` harness |
 | --- | --- | --- |
-| `name` | Parsed | Parsed |
+| `name` | Parsed (display label) | Parsed (display label) |
 | `description` | Parsed | Parsed |
 | `user-invocable` | Parsed | Parsed |
 | `disable-model-invocation` | Ignored | Honored |
@@ -109,7 +113,7 @@ your bundled and discovered skills:
 
 - **Standalone Codex skills** in the Codex home's `skills/` directory. These are
   listed by **directory name** (the name Codex registers the slash command
-  under), not by the `name` in their frontmatter.
+  under), like every other discovered skill.
 - **Skills from installed Codex plugins.** Omnigent runs `codex plugin list --json`
   against the session's Codex home and loads skills from every plugin that is
   installed **and enabled**, reading the exact version the inventory reports
@@ -122,7 +126,9 @@ skill from a plugin whose manifest is named `toolkit` shows up as
 `toolkit:review`. The namespace is the `name` from the plugin manifest
 (`.codex-plugin/plugin.json`, or `.claude-plugin/plugin.json` for plugins
 authored for Claude Code); the skill part is the `name` from the skill's
-SKILL.md frontmatter. Within a plugin, skills are read from the manifest's
+SKILL.md frontmatter, because that is how Codex keys plugin skills — this is
+the one place the frontmatter `name`, not the folder name, forms the command.
+Within a plugin, skills are read from the manifest's
 `skills` paths (a `./`-relative path or list of paths, each either a single
 skill folder or a directory of skill folders), falling back to the plugin's
 `skills/` directory, plus any commands Codex migrated into
@@ -185,11 +191,52 @@ description: >-
 
 | Field | Description |
 | --- | --- |
-| `name` | Unique skill identifier. Used in slash commands (`/code-review`) and `load_skill` calls. |
+| `name` | Human-facing label for the skill. Shown in the `/` menu; the slash command itself comes from the folder name (see below). |
 | `description` | One-line description. Shown to the agent so it knows when to use the skill. |
 
 The markdown body after the frontmatter is the full instruction set. It can be as long and
 detailed as needed.
+
+### Skill names and display names
+
+A skill's **folder name** is its invocation identifier: it is the slash command
+(`skills/code-review/` → `/code-review`) and the name you pass to `load_skill`.
+Folder names of bundled skills must match `[a-z0-9-]+`; a bundle whose skill
+folder breaks that rule fails validation with
+`skill directory name must match [a-z0-9-]+`.
+
+The frontmatter `name` is a **display name**. It is free-form and may contain
+spaces, so a skill can live in a short folder while carrying a descriptive
+label:
+
+```
+skills/
+  asd-ste100/
+    SKILL.md      # name: Simplified Technical English (ASD-STE100)
+```
+
+This skill is typed as `/asd-ste100`. When the display name differs from the
+folder name, the slash menu in the web UI and the terminal shows it ahead of
+the description (`Simplified Technical English (ASD-STE100) — <description>`),
+and typing part of the display name also matches the command — ranked after
+matches on the command itself, so Tab-completion still prefers name hits. When
+the frontmatter `name` equals the folder name, nothing extra is shown.
+
+The display name also works as an **alias** for the folder name wherever a skill
+is selected by name: in a `skills:` list in your agent YAML, and in
+`load_skill` calls. This keeps agents written before folder-name invocation
+working — a `skills/review/` folder whose frontmatter says `name: code-review`
+still answers to `code-review`. A name that more than one skill answers to is
+left unresolved rather than guessed.
+
+For backward compatibility, a bundled skill whose folder name is *not* a valid
+identifier but whose frontmatter `name` is (for example `skills/Code_Review/`
+with `name: code-review`) still loads, under the frontmatter name.
+
+Two discovery sources keep frontmatter-`name` keying rather than folder names:
+skills from [Codex plugins](#existing-codex-skills-and-plugins) (the
+`<skill>` part of `<plugin>:<skill>`) and skills discovered for the Antigravity
+harness.
 
 ### Resource files
 
@@ -250,6 +297,10 @@ skills:
 This only affects discovered skills (from `.agents/skills/` and `.claude/skills/`,
 and on the Codex harnesses, standalone Codex skills and Codex plugin skills).
 Bundled skills in the agent's own `skills/` directory are always available regardless.
+
+A list entry names a skill by its folder name (the slash command). The skill's
+frontmatter `name` is accepted as an alias, so `code-review` also selects a
+`review/` folder labelled `name: code-review`.
 
 For Codex plugin skills, a list entry matches either the bare skill name or the
 namespaced form, so both `review` and `toolkit:review` select `toolkit:review`.

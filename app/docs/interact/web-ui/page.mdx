@@ -71,6 +71,37 @@ picker shows on this browser — no account or host state is touched — and fai
 open: when no host is connected or readiness information is unavailable, nothing
 is hidden.
 
+### Pinned sessions
+
+Pin a session to keep it at the top of the sidebar in its own `Pinned`
+section. Hover a row and click its pin icon, use the row's `⋯` (or right-click)
+menu, or choose **Pin** from the session's header menu; the same controls unpin
+it. Pinning a session moves it out of its project folder into the flat `Pinned`
+section, and the section is ordered by when each session was pinned — a new pin
+lands at the bottom — rather than by recent activity, so a pinned session keeps
+its slot when new messages arrive.
+
+#### Reordering pinned sessions
+
+To arrange the `Pinned` section yourself, drag a pinned row onto another pinned
+row. A line shows where it will land: above the target row when you drag
+upward, below it when you drag downward. The new order is saved on the server,
+so it persists across reloads and follows you to other browsers. Because the
+`⌘1`…`⌘0` (`Ctrl+Alt+1`… in a browser tab) shortcuts jump to pinned sessions
+by position, reordering also changes which session each digit opens.
+
+You can also drop an **unpinned** row onto a pinned row: the session is pinned
+and inserted just above the row you dropped it on, instead of at the bottom.
+Dropping it on the `Pinned` section itself (not on a row) still pins it at the
+bottom.
+
+Pin changes are saved one at a time. While a pin, unpin, or reorder is still
+saving, the pin controls are disabled (the row's pin icon reads **Saving pins…**)
+and pinned rows don't accept drops; trying another pin action meanwhile shows
+**Still saving your pins. Try again in a moment.** If a reorder fails to save,
+the sidebar reverts to the order the server actually stored and shows
+**Couldn't save the pinned order.**
+
 ### Projects
 
 Organize related sessions into a named `Project`. Each project is a collapsible

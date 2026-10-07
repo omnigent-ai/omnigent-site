@@ -119,6 +119,65 @@ desktop app to be running with the session open. If no desktop window is subscri
 the action fails cleanly with `browser action timed out — is the session open in the
 Omnigent desktop app?` rather than hanging.
 
+### Open a page yourself
+
+You can also browse manually, without asking the agent. Open the session's
+**Workspace** rail, click **`+`** and choose **Browser**. The toolbar (back /
+forward / reload, DevTools, and an editable URL bar) is shown even before a page
+is open; type a URL in the address bar and press <kbd>Enter</kbd>. Here
+`localhost` means the desktop machine, not the agent's host — to preview an app
+running on a remote host, use a port-forwarding tool to bring its port to your
+machine and enter the forwarded URL (the local port may differ from the remote
+one). Omnigent doesn't set up or verify the forwarding.
+
+Hiding and reopening the Workspace rail, or switching tabs or sessions and
+coming back, retains the existing page without navigating or reloading it.
+Closing the **Browser** tab destroys that view; opening a new tab doesn't
+restore it. The Browser tab you open this way is separate from the agent's
+browser view and isn't targeted by the session's browser tools. Manual browsing
+is desktop-only; it isn't available in the plain web UI.
+
+### Where the agent can navigate
+
+Agent-issued navigation — `browser_navigate` and the redirects or
+new-window links that follow from it — is limited to `http(s)` URLs on
+non-internal hosts. Loopback addresses (`localhost`, `127.0.0.1`, `[::1]`),
+private-network and cloud-metadata destinations, and non-web schemes are
+blocked, and a blocked navigation creates no view. Opening a page yourself
+doesn't loosen this: a page you open manually in the agent's view stays
+available for the agent to inspect and interact with (including navigation
+caused by interacting with it), but `browser_navigate` keeps its restrictions.
+URLs you type into the address bar are not subject to the agent policy.
+
+#### Arca sessions on a Databricks-managed server
+
+On a Databricks-managed server with internal desktop features enabled, an
+agent whose session runs on your Arca host may navigate to HTTP(S)
+`localhost`, `127.0.0.1`, or `[::1]` — for example an app it started on the
+box and that you've forwarded to your machine. Give the agent the actual
+forwarded URL; its local port may differ from the remote port. Other loopback
+addresses, private-network and metadata destinations, and non-web schemes stay
+blocked, and existing tool approvals are unchanged — whether a `browser_*`
+call asks for approval still depends on the harness and its policy.
+
+Eligibility works like this:
+
+- The desktop captures the Arca daemon's exact host ID during the **Run on
+  Arca** connect flow, including when the daemon was already running. Only a
+  session on that host — or a subagent inheriting it — is eligible. The
+  remembered host-picker label alone doesn't grant anything, and an older CLI
+  or a failed, missing, or unrecognized identity leaves localhost denied.
+- Eligibility is scoped to the selected server/workspace, not to every session
+  on a Databricks server.
+- After restarting the desktop app, or if automatic connect fails, open **New
+  session > Host > Reconnect to Arca** (shown as **Run on Arca** when the host
+  isn't remembered), complete the connect console, then select your original
+  session in the sidebar and retry the browser tool. Reconnecting recaptures
+  identity from an already-running daemon; it doesn't create a new session or
+  change automatic-connect preferences. On a Databricks-managed server where
+  no Arca identity has been captured yet, a blocked `localhost` navigation
+  includes this reconnect hint in its error message.
+
 ### Local network permission
 
 Sites in the embedded pane can ask for **local network access** — for example a
@@ -157,7 +216,7 @@ permissions remain denied.
 This controls Chromium's local-network permission answers — it is **not a
 network firewall**. Not every Electron version gates every local-network fetch
 on this permission, and approving it doesn't bypass CORS, TLS certificate
-validation, or the agent's navigation policy. A local helper that rejects the
+validation, or the [agent's navigation policy](#where-the-agent-can-navigate). A local helper that rejects the
 site through its own CORS policy must itself be configured to allow it; the pane
 doesn't rewrite those headers.
 

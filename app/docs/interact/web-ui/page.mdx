@@ -484,6 +484,15 @@ stays out of the list until you link it again, even if the agent keeps touching
 it. When a session tracks no PRs yet, the tab's empty state offers the same
 `Link a PR` action.
 
+The URL is resolved by Omnigent's registered
+[git providers](/docs/deploy/community-git-providers). GitHub is built in;
+installed provider plugins let the host recognize and record URLs from other
+forges, but this tab reads and links **GitHub pull requests only** — a URL for
+another provider is rejected with
+`This resource supports only GitHub pull requests`. If another process is
+updating the session's PR list at the same moment, a read may briefly fail with
+`PR tracking is busy; try again.`; retrying succeeds once the write completes.
+
 The composer status line mirrors this: it shows `#123` for a single tracked PR
 or `N PRs` when several are tracked, and clicking it opens the GitHub tab.
 

@@ -440,7 +440,9 @@ Coding-agent sessions have a **GitHub** tab in the right workspace rail. It
 tracks the pull requests associated with the session and shows the selected
 one's summary (PR description and comments), CI checks, and a stacked diff with
 a file-tree navigator. Nothing is pushed or mutated — recording an association
-never touches the remote PR.
+never touches the remote PR. The same panel also works with repositories on
+Azure DevOps Services; the workspace's git remote selects the provider (see
+[Azure DevOps](#azure-devops) below).
 
 ### Tracked pull requests
 
@@ -486,6 +488,83 @@ it. When a session tracks no PRs yet, the tab's empty state offers the same
 
 The composer status line mirrors this: it shows `#123` for a single tracked PR
 or `N PRs` when several are tracked, and clicking it opens the GitHub tab.
+
+### Azure DevOps
+
+When the workspace's remote points at Azure DevOps Services, the Pull Requests
+panel shows that repository's pull requests instead. Azure requests are
+labelled with `!` (for example `!42`) in the panel, the composer status line,
+and Canvas cards. The panel reads each remote's configured URL (before any
+`url.<base>.insteadOf` rewrite) and uses the first Azure DevOps remote, with
+`origin` checked first. These remote forms are recognized, with or without a
+`.git` suffix:
+
+- `https://dev.azure.com/{org}/{project}/_git/{repo}` (including the
+  `https://{org}@dev.azure.com/...` form from the clone dialog)
+- `https://dev.azure.com/{org}/_git/{repo}` — a project's default repository
+- `https://{org}.visualstudio.com/[DefaultCollection/]{project}/_git/{repo}`
+- `git@ssh.dev.azure.com:v3/{org}/{project}/{repo}` and
+  `ssh://git@ssh.dev.azure.com/v3/{org}/{project}/{repo}`, and the same SSH
+  forms on `vs-ssh.visualstudio.com`
+
+**Sign in on the host.** The panel calls the Azure DevOps REST API with the
+execution host's own credential, using the first one it finds:
+
+1. `AZURE_DEVOPS_EXT_PAT` — a personal access token with **Code (Read)** scope
+   (the same variable the `az devops` CLI extension reads). A PAT works without
+   the Azure CLI installed.
+2. An `az login` session. The host runs `az account get-access-token` for the
+   Azure DevOps resource and reuses the token until five minutes before it
+   expires. `az` is looked up on `PATH`, then at `/opt/homebrew/bin/az` and
+   `/usr/local/bin/az`, since processes started by a service manager or desktop
+   app often run without Homebrew on `PATH`. When nobody is signed in, it
+   retries after a minute.
+
+REST requests and the `az` call time out after 15 seconds; set
+`OMNIGENT_AZURE_DEVOPS_TIMEOUT_SECONDS` to change that. The client only ever
+contacts `https://dev.azure.com` — it never calls the `vssps.dev.azure.com`
+identity service (which corporate TLS proxies often intercept), never looks up
+users by name or email, and never runs `az devops` or `az repos` itself.
+
+**Linking a request by URL.** Paste the pull request's web URL into
+`Link a PR`: `https://dev.azure.com/{org}/{project}/_git/{repo}/pullrequest/{id}`,
+or the same path on a `visualstudio.com` host. The query string and fragment
+are dropped, and the stored URL is normalized to `dev.azure.com` with the
+organization, project, and repository lower-cased (Azure DevOps names are not
+case sensitive).
+
+**Tracked requests.** The session records Azure DevOps pull requests the agent
+creates or changes from the JSON printed by `az repos pr create` and
+`az repos pr update`, and from pull request web URLs printed in tool output.
+`az repos pr set-vote` and the `reviewer`, `work-item`, and `policy` commands
+print no pull request, so they record nothing; reads such as `show` and `list`
+never add an association.
+
+**Partial results.** Panel requests use an eight-second budget and show
+whatever loaded within it. Failed lookups show a warning; partially loaded
+checks, comments, and file lists keep what was loaded and are marked
+incomplete (the first 100 comments are shown, with a `+` count when more exist).
+A missing diff shows a reason rather than implying there are no changes.
+
+**Limits of the first version:**
+
+- **No sandbox credentials.** A managed sandbox has no Azure DevOps credential,
+  so the panel works only on a host where you signed in yourself.
+- **No account switching.** The host's single credential reads every pull
+  request; there is no account or remote selector.
+- **No diff for a request outside the workspace's remotes.** The whole-PR diff
+  comes from local git, so it shows only when the request's repository is one
+  of the workspace's remotes. When commits are missing, the panel fetches the
+  target branch, the source branch, then `refs/pull/<id>/merge` from that
+  remote in the background (for up to two minutes, without credential prompts);
+  a fetch that outlasts one request lands for a later one, and a failed fetch
+  is not retried for a minute.
+- **No line counts.** Azure DevOps does not return added/removed line counts
+  for changed files.
+- **Slow local diffs.** Local git commands have separate 30-second timeouts, so
+  large or slow checkouts can exceed the runner proxy's request limit.
+- **Azure DevOps Services only.** Azure DevOps Server (on-premises) is not
+  supported.
 
 ## Mentioning workspace files
 

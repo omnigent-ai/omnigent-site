@@ -1,0 +1,58 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "See every MCP server, skill, and plugin your harnesses bring — in one place",
+  "Settings › Harnesses lists the MCP servers, skills, and plugins each coding agent on each of your machines already has, with tool lists, skill instructions, and plugin details, read straight from the host.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/harness-inventory-settings",
+  },
+);
+
+export const meta = {
+  title:
+    "See every MCP server, skill, and plugin your harnesses bring — in one place",
+  date: "2026-10-05",
+  category: "Multi-harness",
+  author: "omnigent",
+  heroArt: "/images/blog/harness-inventory-settings.png",
+};
+
+<BlogPostHeader slug="harness-inventory-settings" />
+
+If you run Claude Code, Codex, or another coding agent through Omnigent on more
+than one machine, you can now see what each of them already has set up without
+opening a terminal on that machine. Settings › Harnesses shows, per host and per
+harness, the MCP servers, skills, and plugins that agent brings with it.
+
+Until now that inventory lived in scattered config files on each laptop or
+sandbox, and the only way to check "does this host's Claude have the Figma
+plugin?" was to go look. Now you pick a machine, open a harness card, and read
+the answer. Expand an MCP server to see the tools it offers and whether it
+connects; open a skill to read its instructions; open a plugin to see its
+version, marketplace, enabled state, and the skills and MCP servers it bundles.
+For Claude Code and Codex, a read-only Settings tab also shows which binary the
+host launches and how many startup arguments it is configured with. Everything
+is read from the host on demand and only summaries reach the server: raw
+config, argument values, and secrets stay on the machine.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: open Settings › Harnesses, switch between two hosts, open the Claude Code card, expand an MCP server to reveal its tools and Connected status, then open a plugin and one of its skills. */}
+
+Open Settings › Harnesses, choose a host, and click a configured harness (or its
+gear icon to land on launch settings). The same inventory also appears when a
+new machine connects: a one-time review dialog lists the logins, MCP servers,
+skills, and plugins its harnesses bring over, and you can reopen it any time
+from Settings › Import with "Review imports". The page is a gated release
+feature; an operator enables it deployment-wide by adding `harness_settings_ui`
+to the server's release features:
+
+```bash
+OMNIGENT_FEATURES=harness_settings_ui
+```
+
+See the [Web UI guide](/docs/interact/web-ui) for how release features are
+enabled and for the rest of the Settings pages.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

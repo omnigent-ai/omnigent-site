@@ -45,7 +45,13 @@ const nextConfig = {
       {
         source: "/download/mac",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.17.0-arm64.dmg",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.17.1-arm64.dmg",
+        permanent: false,
+      },
+      {
+        source: "/download/mac/v0.17.1",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.17.1-arm64.dmg",
         permanent: false,
       },
       {
@@ -81,7 +87,13 @@ const nextConfig = {
       {
         source: "/download/mac-x64",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.17.0-x64.dmg",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.17.1-x64.dmg",
+        permanent: false,
+      },
+      {
+        source: "/download/mac-x64/v0.17.1",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.17.1-x64.dmg",
         permanent: false,
       },
       {
@@ -141,19 +153,19 @@ const nextConfig = {
       {
         source: "/download/windows",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/win/Omnigent%20Setup%200.17.0.exe",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/win/Omnigent%20Setup%200.17.1.exe",
         permanent: false,
       },
       {
         source: "/download/linux-deb",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/linux/omnigent-desktop-electron_0.17.0_amd64.deb",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/linux/omnigent-desktop-electron_0.17.1_amd64.deb",
         permanent: false,
       },
       {
         source: "/download/linux-appimage",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/linux/Omnigent-0.17.0.AppImage",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/linux/Omnigent-0.17.1.AppImage",
         permanent: false,
       },
       // Desktop auto-update feed. The manifests (latest-mac.yml /

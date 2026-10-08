@@ -114,6 +114,21 @@ p {
   margin: 0 0 1rem;
 }
 
+/* Hidden visually but kept in the DOM, the accessibility tree and extracted
+   text (unlike display: none). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 hr {
   border: none;
   border-top: 1px solid var(--border);
@@ -498,7 +513,8 @@ pre .copy-btn:hover {
 }
 .docs-main h1:hover .heading-anchor,
 .docs-main h2:hover .heading-anchor,
-.docs-main h3:hover .heading-anchor {
+.docs-main h3:hover .heading-anchor,
+.docs-main .release-heading:hover .heading-anchor {
   opacity: 1;
 }
 .heading-anchor:hover {
@@ -907,6 +923,12 @@ figcaption {
 .section h2 {
   text-align: center;
 }
+/* FAQ questions are h2s (under the page h1) but keep the global h3 look. */
+.section h2.faq-question {
+  font-size: 1.12rem;
+  margin: 2rem 0 0.5rem;
+  text-align: inherit;
+}
 .section-pillars {
   padding-top: 1.75rem;
 }
@@ -1264,6 +1286,29 @@ figcaption {
 }
 .docs-main h3 {
   font-size: 1.2rem;
+}
+/* The /releases feed demotes each release body's headings two levels so they
+   nest under the month <h2> (app/releases/page.js). These classes keep them
+   looking like the h1/h2/h3 they are on the standalone release pages. */
+.docs-main .release-heading {
+  position: relative;
+  scroll-margin-top: 5rem;
+  font-family: var(--font-sans);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+.docs-main .release-title {
+  font-size: 2.1rem;
+  margin: 0 0 1rem;
+}
+.docs-main .release-section {
+  font-size: 1.5rem;
+  margin: 1.5rem 0 1rem;
+}
+.docs-main .release-subsection {
+  font-size: 1.2rem;
+  margin: 2rem 0 0.5rem;
 }
 .docs-main ul,
 .docs-main ol {

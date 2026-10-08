@@ -211,3 +211,23 @@ the fork in the same checkout. You can point the fork at a different repository
 
 See the [fork endpoint](/reference) in the REST API reference for the `host_type`,
 `sandbox_provider`, and `workspace` request fields.
+
+### Sessions that can't be forked or moved
+
+Sessions running on a **Databricks Sandbox** or **Arclet** host can't be forked
+or switched to another host yet. In the web UI the controls stay visible but
+disabled — **Clone Session** in the header menu, the sidebar row menu, and the
+message actions, plus the **Clone** tab and **Switch host** button in the
+reconnect dialog. Hover or focus a disabled control to read why it is
+unavailable. The restriction follows the source session, so it also applies to
+shared sessions you open from someone else's link.
+
+Sessions on other sandbox providers can still be forked, but no sandbox-backed
+session can switch hosts: the composer's host menu shows **Switch host…**
+disabled with an explanation when you have write access, and read-only viewers
+don't see a switching control at all.
+
+While the web UI is still checking a session's capabilities, these actions are
+briefly disabled with a *Checking session capabilities…* note. If that check
+fails, the control explains that it couldn't verify support and asks you to
+reload.

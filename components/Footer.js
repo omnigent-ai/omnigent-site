@@ -5,7 +5,6 @@ import {
   XIcon,
   LinkedInIcon,
   YouTubeIcon,
-  PyPIIcon,
 } from "./icons";
 import {
   GITHUB_URL,
@@ -13,7 +12,6 @@ import {
   X_URL,
   LINKEDIN_URL,
   YOUTUBE_URL,
-  PYPI_URL,
 } from "./links";
 
 // Icon-only profile links, shown after GitHub and Discord. Their URLs are the
@@ -22,7 +20,6 @@ export const FOOTER_PROFILE_LINKS = [
   { href: X_URL, label: "Omnigent on X", Icon: XIcon },
   { href: LINKEDIN_URL, label: "Omnigent on LinkedIn", Icon: LinkedInIcon },
   { href: YOUTUBE_URL, label: "Omnigent on YouTube", Icon: YouTubeIcon },
-  { href: PYPI_URL, label: "Omnigent on PyPI", Icon: PyPIIcon },
 ];
 
 export default function Footer() {

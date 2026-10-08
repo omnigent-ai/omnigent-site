@@ -30,11 +30,14 @@ export default function Home() {
         {/* Hero */}
         <section className="hero wrap">
           <h1 className="hero-logo">
+            <span className="visually-hidden">
+              Omnigent: a meta-harness for AI agents
+            </span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="theme-light-only"
               src="/images/hero-logo.svg"
-              alt="Omnigent, a meta-harness for AI agents"
+              alt=""
               width={366}
               height={118}
             />
@@ -42,7 +45,7 @@ export default function Home() {
             <img
               className="theme-dark-only"
               src="/images/hero-logo-dark.svg"
-              alt="Omnigent, a meta-harness for AI agents"
+              alt=""
               width={366}
               height={118}
             />

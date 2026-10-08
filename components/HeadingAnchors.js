@@ -25,7 +25,7 @@ export default function HeadingAnchors({
   useEffect(() => {
     if (requireSelector && !document.querySelector(requireSelector)) return;
     const headings = document.querySelectorAll(
-      `${containerSelector} h1, ${containerSelector} h2, ${containerSelector} h3`,
+      `${containerSelector} h1, ${containerSelector} h2, ${containerSelector} h3, ${containerSelector} .release-heading`,
     );
     headings.forEach((h) => {
       const id = h.id || slugify(h.textContent.replace(/#$/, "").trim());

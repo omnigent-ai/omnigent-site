@@ -101,6 +101,44 @@ rejected at startup. For the full list of reserved segments, the auth variables
 to pair with it, and how the local managed server remembers the prefix, see
 [Serving under a subpath](/docs/deploy/overview#serving-under-a-subpath).
 
+## Host launch timeout
+
+| Setting | Value                                                                  |
+| ------- | ---------------------------------------------------------------------- |
+| Key     | `OMNIGENT_HOST_LAUNCH_TIMEOUT_S` environment variable                  |
+| Scope   | Server process only (environment); not a `config.yaml` key             |
+| Type    | Number of seconds, `1` to `3600` inclusive; fractions such as `2.5` ok |
+| Default | `30`                                                                   |
+
+How long the server waits for a connected host to answer a runner-launch request
+before it gives up on that launch. A healthy launch only spawns a runner
+subprocess and answers within seconds, so the default is slack for a busy
+machine. A host whose launch does real set-up first — creating a container
+sandbox, pulling an image, or starting the app the agent will test — can
+legitimately take longer, and exceeding the budget fails a session that nothing
+was wrong with. Raise the bound on such deployments:
+
+```bash
+OMNIGENT_HOST_LAUNCH_TIMEOUT_S=300 omni server --config /path/to/config.yaml
+```
+
+One value covers both launch paths, and each timeout message names the variable
+so an operator can act on it (the number shown is the configured budget):
+
+- Creating a session with a `host_id` (`POST /v1/sessions`) still returns the
+  bound session; the recorded launch error is
+  `host launch timed out after 30s (raise OMNIGENT_HOST_LAUNCH_TIMEOUT_S if this launch needs longer)`.
+- The dedicated host launch route fails with HTTP 504,
+  `host did not respond to launch request within 30s (raise OMNIGENT_HOST_LAUNCH_TIMEOUT_S if this launch needs longer)`,
+  and rolls back the session it had started.
+
+An unset or blank value (including whitespace, as from a Compose file that
+always exports the variable) uses the default. A value that is not a number,
+is below `1`, is above `3600`, or is `nan`/`inf` is ignored with a single
+warning in the server log and the default is used — a typo never fails server
+startup or session creation. The value is read once per server process, so a
+change takes effect only after a server restart.
+
 ## Attachment limits
 
 | Setting | Value                                                                                                                                                    |

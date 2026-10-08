@@ -2,9 +2,10 @@ import { expect, mock, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 
-// Nav/Footer need a mounted App Router; they carry no page headings we test.
+// Nav needs a mounted App Router (usePathname); it carries no page headings we
+// test. Footer is left real: bun's mock.module leaks across test files, and a
+// default-only Footer mock breaks tests/footer.test.jsx's named imports.
 mock.module("@/components/Nav", () => ({ default: () => null }));
-mock.module("@/components/Footer", () => ({ default: () => null }));
 
 const { default: Home } = await import("../app/page.js");
 const { default: Faq } = await import("../app/faq/page.js");

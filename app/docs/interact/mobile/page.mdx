@@ -69,6 +69,57 @@ than hosting sessions itself.
 The app shows foreground notifications and updates the app badge while it's open. It does not
 do background polling, so notifications arrive when the app is in the foreground.
 
+### Signing in with SSO
+
+When the server uses [single sign-on (OIDC)](/docs/collaborate/auth#single-sign-on-oidc),
+the iOS app signs you in through Apple's system sign-in sheet rather than inside its own
+web view. The sheet shares Safari's cookies, so an existing session with your identity
+provider, passkeys, and saved passwords all work there, and providers that reject embedded
+browsers (such as Google) work too. The identity provider never appears inside the app's
+web view.
+
+Before loading a server, the app reads its unauthenticated `/.well-known/omnigent.json`
+manifest and uses the sheet only when the server advertises OIDC with the app's redirect
+(`ai.omnigent.ios:/oauth/callback`) in `auth.native_redirect_uris`. Everything else is
+unchanged:
+
+| Server                                                     | Sign-in                                                   |
+| ---------------------------------------------------------- | --------------------------------------------------------- |
+| OIDC server that lists the app's redirect                  | System sign-in sheet                                      |
+| OIDC server without the app's redirect (older servers)     | Ticket sign-in in Safari, as before (deprecated, 0.5.0)   |
+| Built-in accounts (username + password)                    | The server's own form, in the web view                    |
+| Header-based auth, custom providers, no auth               | Unchanged                                                 |
+| No `auth` in the manifest (older servers, subpath proxies) | Unchanged                                                 |
+| Databricks workspaces and Databricks Apps                  | Unchanged: detected by URL, the manifest isn't read       |
+
+How the sheet-based flow behaves:
+
+- **Connecting, switching servers, relaunching, deep links, and notification taps**
+  reuse your existing session when the server still accepts it, otherwise renew it silently
+  from a stored refresh grant. The sheet opens only when neither works. The first time, iOS
+  asks for permission to use the server's host to sign in; after you sign in, the sheet
+  closes itself and the app loads the page. **Signing in…** with a **Cancel** button shows
+  meanwhile; cancelling, or closing the sheet, returns to the connect screen with the URL
+  kept.
+- **A refused sign-in** (for example, an account outside the server's
+  [domain allowlist](/docs/collaborate/auth#domain-allowlist)) shows the server's reason on
+  the connect screen. The next launch shows the connect screen with that server prefilled
+  instead of reopening it.
+- **While connected,** the app renews the session before it expires and when it returns to
+  the foreground with the session due. If the web app itself asks you to sign in again and
+  renewal fails, a **Sign in again?** prompt names the cause (expired, ended by the server,
+  or sign-in required); only tapping **Sign In** opens the sheet. An unreachable server shows
+  a connection error instead.
+- **Sign out** from the web app's settings, **Sign Out** in the native server menu, or
+  **Sign out of &lt;server&gt;** in the sidebar server picker forgets the stored grant,
+  clears the session, stops reopening that server on launch, and shows "You're signed out
+  of &lt;host&gt;." Safari stays signed in to your identity provider, so the next sign-in may
+  finish without a prompt.
+
+The refresh grant is stored per server in the device Keychain, on this device only (never
+synced). Databricks workspace connections keep their own native OAuth flow and never share
+credentials with this one.
+
 ## Android app
 
 The Omnigent Android app is available on

@@ -585,7 +585,11 @@ ACCESS_TOKEN="<access-token>"
 
 For a specific user, `level` is **1** for read access, **2** to also send
 messages and interact with the session, or **3** to also manage sharing.
-Public access is always read-only (`level: 1`).
+Public access is capped by the server's
+[maximum public permission](/docs/collaborate/auth#maximum-public-permission):
+`level: 1` by default, or up to `level: 2` when an admin has raised the ceiling
+to `edit`. Check `public_sharing_max_level` on `GET /v1/info` before requesting
+more than read.
 
 <div style={{ overflowX: "auto" }}>
 <table style={{ tableLayout: "fixed", minWidth: "36rem" }}>
@@ -616,9 +620,12 @@ curl --fail-with-body -X PUT "$SERVER_URL/v1/sessions/$SESSION_ID/permissions" \
       <td>Make the session public</td>
       <td>
 
-Grant `__public__` read access so anyone who can sign in to the server can
-view the session through its URL, without an individual grant. The server
-must have public sharing enabled; this does not bypass sign-in.
+Grant `__public__` access so anyone who can sign in to the server can open the
+session through its URL, without an individual grant. The server must have
+public sharing enabled; this does not bypass sign-in. Use `level: 2` to let
+every signed-in user co-drive — the server rejects it unless its public
+permission ceiling is `edit`, and lowering the ceiling later limits the grant
+to read without deleting it.
 
 ```bash
 curl --fail-with-body -X PUT "$SERVER_URL/v1/sessions/$SESSION_ID/permissions" \
@@ -672,7 +679,9 @@ You can also let an agent share sessions through `sys_session_share`. Set
 with users, or `agent_session_sharing: public` to also allow public grants.
 The tool accepts `user_id`, `level` (`"read"`, `"edit"`, or `"manage"`), and an
 optional `session_id` that defaults to the calling session. The caller's
-permissions and server sharing settings still apply.
+permissions and server sharing settings still apply, including the public
+permission ceiling: a `__public__` grant is capped at read unless the server
+permits edit.
 
 ## API endpoints reference
 

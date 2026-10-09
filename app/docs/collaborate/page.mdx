@@ -39,6 +39,17 @@ Great for pairing or handing the keyboard to a domain expert mid-investigation.
         </a>
         .
       </li>
+      <li>
+        To share with everyone who can sign in to the server rather than
+        named teammates, set <strong>General access</strong> in the Share
+        dialog to <strong>Read</strong> (the default ceiling) or{" "}
+        <strong>Edit</strong>. <strong>Edit</strong> is offered only when an
+        admin has raised the server's{" "}
+        <Link href="/docs/collaborate/auth#maximum-public-permission">
+          maximum public permission
+        </Link>
+        . A public link still requires sign-in.
+      </li>
     </ul>
   </li>
   <li>
@@ -55,10 +66,12 @@ connected viewer.
 <div className="note">
 
 An admin can restrict or disable sharing server-wide (read-only, or off
-entirely), turn off public "anyone-with-the-link" access, or make new sessions
-start with public read access by default. If the **Share** control is missing
-or capped at read-only, or a new session is already public, that's the server's
-sharing policy — see [Session sharing](/docs/collaborate/auth#session-sharing).
+entirely), turn off public "anyone-with-the-link" access, cap how much a public
+link may grant (read by default, optionally edit), or make new sessions start
+with public read access by default. If the **Share** control is missing or
+capped at read-only, **General access** offers no **Edit** option, or a new
+session is already public, that's the server's sharing policy — see
+[Session sharing](/docs/collaborate/auth#session-sharing).
 
 </div>
 

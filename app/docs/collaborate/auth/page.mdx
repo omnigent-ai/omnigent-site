@@ -197,9 +197,12 @@ roll back to the old version against the upgraded schema.
 ### Session sharing
 
 Admins set a **server-wide sharing policy** that governs how users can share
-sessions with each other. It applies to every session on the server and changes
-only _new_ grants — revoke, listing existing grants, session ownership, and
-grants already in place keep working in every mode. Configure it two ways:
+sessions with each other. It applies to every session on the server. The
+sharing mode, public-access switch, and default visibility change only _new_
+grants — revoke, listing existing grants, session ownership, and grants already
+in place keep working in every mode. The one exception is the
+[maximum public permission](#maximum-public-permission), which also caps
+existing public grants. Configure it two ways:
 
 - **At boot**, with the `OMNIGENT_SHARING_MODE` environment variable.
 - **At runtime**, from **Settings > Sharing** in the web UI. This persists an
@@ -227,9 +230,10 @@ subdirectory of a home (e.g. `/home/alice/proj`) stays shareable.
 #### Public access
 
 Separately from the tiers above, a **public-access** switch controls whether a
-session can be shared with _anyone who has the link_ (public read access). It
-is independent of the sharing mode — you can keep normal user-to-user sharing
-on while disabling public links.
+session can be shared with _anyone who has the link_. A public link does not
+bypass sign-in: it lets anyone who can sign in to the server open the session
+without an individual grant. The switch is independent of the sharing mode —
+you can keep normal user-to-user sharing on while disabling public links.
 
 ```
 OMNIGENT_PUBLIC_SHARING=off omni server start
@@ -237,9 +241,66 @@ OMNIGENT_PUBLIC_SHARING=off omni server start
 
 Public access is enabled unless the value is explicitly falsy
 (`0` / `false` / `no` / `off`); unset or unrecognized fails open to enabled. It
-is also editable at runtime from **Settings > Sharing**. When disabled, the
-Share dialog hides its **Public access** toggle and the server rejects new
-public grants; sessions already shared publicly stay public until revoked.
+is also editable at runtime from **Settings > Sharing**.
+
+In the Share dialog, public access is the **General access** dropdown
+("Anyone with the link, sign-in required") with the options **No access**,
+**Read**, and — when the server allows it (see below) — **Edit**. When public
+access is disabled, the server rejects new public grants and the dropdown's
+**Read** / **Edit** options are unavailable; sessions already shared publicly
+remain accessible, and the dropdown still appears for them so the owner can
+set **No access** to revoke the grant.
+
+#### Maximum public permission
+
+By default a public grant is capped at **Read**. Admins can raise the
+**maximum public permission** to **Edit** so a session owner can let everyone
+who can sign in co-drive a session, not just watch it:
+
+```
+OMNIGENT_PUBLIC_SHARING_MAX_LEVEL=edit omni server start
+```
+
+The value is `read` (default) or `edit`. Like default visibility, this setting
+fails **closed**: an unset or unrecognized value resolves to `read`. It is also
+editable at runtime from **Settings > Sharing > Maximum public permission**, or
+via `public_sharing_max_level` on `PUT /v1/sharing`; the runtime override is
+persisted next to the other sharing overrides and takes effect immediately.
+The current ceiling is reported by `GET /v1/info` as `public_sharing_max_level`.
+
+Once the ceiling is `edit`, the Share dialog's **General access** dropdown
+offers **Edit** alongside **Read**, and the `__public__` grant on
+`PUT /v1/sessions/{id}/permissions` accepts `level: 2`. A grant above the
+ceiling is rejected with `Public access is limited to read (level 1)`. The
+sharing mode still applies on top: under `read_only` or
+`restricted_read_only` the public **Edit** option stays disabled, because those
+tiers cap every new grant at read.
+
+Unlike the other sharing settings, the ceiling is enforced **live** against
+existing grants as well as new ones:
+
+- Lowering it from `edit` back to `read` immediately limits every existing
+  public Edit grant to read access — including on sessions that are open at
+  the time. The stored grant is not rewritten, so raising the ceiling again
+  restores edit access.
+- Raising it never upgrades a session's existing public **Read** grant; the
+  owner must choose **Edit** in the Share dialog explicitly.
+
+A user who holds both a direct grant and access through the public grant gets
+the higher of the two (after the ceiling is applied).
+
+**Edit requires authenticated multi-user access** — built-in accounts,
+[OIDC](#single-sign-on-oidc), or a trusted-header deployment where missing
+credentials are denied rather than mapped to the local user. In local
+single-user mode, or on a server without a permission store, the ceiling is
+always `read`: **Settings > Sharing** offers only **Read**, and `PUT
+/v1/sharing` rejects `edit` with `Public edit access requires authenticated
+multi-user access.`
+
+Public **Edit** carries the same risk as sharing Edit with a named user: every
+signed-in user can drive the agent, which
+[grants code execution on the host](/docs/collaborate#code-execution-risk).
+Prefer it for sessions running on a [cloud sandbox host](/docs/deploy/cloud-sandbox-host).
 
 #### Default visibility for new sessions
 
@@ -257,8 +318,9 @@ sessions start with public read access instead. It has three options:
 OMNIGENT_DEFAULT_PUBLIC_SESSIONS=sandbox omni server start
 ```
 
-Unlike the two settings above, this one fails **closed**: an unset or
-unrecognized value resolves to `off`, so a typo never exposes sessions. It is
+Like the public permission ceiling (and unlike the sharing mode and
+public-access switch), this setting fails **closed**: an unset or unrecognized
+value resolves to `off`, so a typo never exposes sessions. It is
 also editable at runtime from **Settings > Sharing**, or via
 `default_public_sessions` on `PUT /v1/sharing`.
 
@@ -281,10 +343,10 @@ the saved choice returns once the blocker is lifted.
 
 <div className="note">
 
-When a deployment manages the sharing mode, public access, or default visibility
-itself (for example a managed service that injects its own policy),
-**Settings > Sharing** shows the current value as read-only and cannot change it
-here.
+When a deployment manages the sharing mode, public access, maximum public
+permission, or default visibility itself (for example a managed service that
+injects its own policy), **Settings > Sharing** shows the current value as
+read-only and cannot change it here.
 
 </div>
 

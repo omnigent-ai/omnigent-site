@@ -1,12 +1,12 @@
-version: 0.17.1
+version: 0.17.2
 files:
-  - url: Omnigent-0.17.1.AppImage
-    sha512: Srhpc3Ls5XeyrCJBju7Y5lpbYBkTRD36OwLVchZcO+V2fSZF5/35m/fo/ZtDA2g7nWb0ozabrLY/K0b2xJ9c6w==
-    size: 130852215
-    blockMapSize: 136587
-  - url: omnigent-desktop-electron_0.17.1_amd64.deb
-    sha512: EgdQNOsWeKp/Hrf3RRR4mZX6rN55gkmUzX5GaW8eZOrTa0eyMLAhmK5stRezQwqpcxMcg7zstapWH9YjwVxUyQ==
-    size: 102227864
-path: Omnigent-0.17.1.AppImage
-sha512: Srhpc3Ls5XeyrCJBju7Y5lpbYBkTRD36OwLVchZcO+V2fSZF5/35m/fo/ZtDA2g7nWb0ozabrLY/K0b2xJ9c6w==
-releaseDate: '2026-10-08T01:15:56.537Z'
+  - url: Omnigent-0.17.2.AppImage
+    sha512: gjyR14gLvxklsQ9PkTVADmmMXNjm81dgIc3X4rVe55wKl9TGEmDhVu7tsqEULU4QSE0Nt/bm3P9rkcWpklDWmQ==
+    size: 130852313
+    blockMapSize: 136685
+  - url: omnigent-desktop-electron_0.17.2_amd64.deb
+    sha512: fMe+fa43SDlbyibgHPOvop+cHWln6Y8ZA4BPCUvUOAC67ZOVzIbKF5SntDq8AQs2GbzDBk97+iD1l4Jr3FyIWA==
+    size: 102229472
+path: Omnigent-0.17.2.AppImage
+sha512: gjyR14gLvxklsQ9PkTVADmmMXNjm81dgIc3X4rVe55wKl9TGEmDhVu7tsqEULU4QSE0Nt/bm3P9rkcWpklDWmQ==
+releaseDate: '2026-10-09T22:33:06.060Z'

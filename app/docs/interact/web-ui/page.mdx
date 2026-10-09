@@ -596,14 +596,42 @@ Start one from any of these places:
 - Open the Workspace rail's **`+`** (`Open new`) menu and choose **Side chat**.
   This opens an empty side-chat tab first; the side chat itself is created when
   you send its first message there.
-- Select text in a reply and choose **Ask in side chat** — the quoted selection
-  and your question are sent to the side chat instead of the main conversation.
+- Select text in a reply and choose **Ask in side chat** — the selection is
+  added as a quote to the side chat's composer (see [Quoting into a side
+  chat](#quoting-into-a-side-chat)). Nothing is sent until you type your
+  question and send it there.
 
 Inside the tab you get a scoped composer (attachments and dictation included).
 Follow-ups go to the side chat, not the main conversation, and any approval
 request the agent raises there is answered there too. The side chat starts
 visually empty — the history it inherited from the parent is hidden — but the
 agent has the parent conversation's full context.
+
+### Quoting into a side chat
+
+Selecting text in a transcript shows a floating popup with a **Reply** action
+and, when the session supports side chats, an **Ask in side chat** action. Both
+add the selection as a quote card above the composer; neither sends anything.
+Type your question under the quote and send when ready. The quote travels with
+the message as a `>` block ahead of your text.
+
+- **Ask in side chat** (from the main conversation) targets the side-chat tab
+  that is currently visible in the Workspace rail and still writable — including
+  an unsent tab opened from the rail's **Side chat** menu. The quote is appended
+  to that tab's composer, keeping any draft text, attachments, and earlier
+  quotes you already had there. Select another passage and choose **Ask in side
+  chat** again to stack several quotes in one question. When no eligible tab is
+  visible — the rail is hidden, the selected tab has ended, or it is still
+  starting its side chat — a new unsent side-chat tab opens with the selection
+  quoted instead.
+- **Reply** (inside a side chat) quotes text from the side chat's own transcript
+  into that chat's composer. It works in the rail's side-chat pane and in the
+  side-chat drawer on phone-width layouts. Ended side chats and side chats that
+  are still starting don't offer **Reply**.
+
+Remove a quote card before sending with its **Remove quote** button; the rest
+of your draft stays in place. Quotes added this way stay in the side chat
+— they never appear in the parent conversation's transcript.
 
 ### How a side chat is created
 
@@ -662,10 +690,12 @@ resumable after a runner restart. If a `/side` request can't be opened, the
 session posts a visible notice so the question is never silently dropped.
 
 You can also start a side chat from selected text. Select part of a message and
-choose **Ask in side chat**: the selection is added as a quote card, and when
-you send, it's forwarded as a `/side` command carrying the quoted text and your
-question. On a harness without side-chat support this action degrades to an
-ordinary quoted reply in the main chat.
+choose **Ask in side chat**: the selection is added as a quote card in the
+visible side-chat tab's composer, or in a new unsent tab when none is eligible
+(see [Quoting into a side chat](#quoting-into-a-side-chat)). When you send,
+the quoted text and your question are routed into the side chat rather than the
+main conversation. On a harness without side-chat support this action degrades
+to an ordinary quoted reply in the main chat.
 
 ## Side chats with `/side`
 

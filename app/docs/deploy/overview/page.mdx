@@ -179,6 +179,71 @@ and — for the `agent_sandbox` provider — opt-in
 [native warm pools](/docs/reference/configuration/kubernetes#native-warm-pools-for-agentsandbox-warmpool)
 that keep spare Pods ready before a session arrives.
 
+#### Multiple server replicas
+
+The `deploy/kubernetes/` manifests deploy a single server replica. Running more
+than one replica needs one extra piece: a host and its runners keep outbound
+WebSocket tunnels to the server, and a tunnel belongs to the server process that
+accepted it. Sharing Postgres gives every replica the saved sessions, but not
+each other's open connections — if the browser asks replica B to read a file
+through a runner connected to replica A, B cannot serve it. The browser, the
+host, and its runners therefore have to land on the same replica, which a
+cookie or client IP cannot guarantee (the host is a separate client, often on a
+different network). Instead they all send the same `host_id` for requests about
+that host, and the ingress uses consistent hashing on that ID to pick a replica
+(**host sharding** — live host connections are divided among replicas; the
+database and artifact storage stay shared).
+
+Host routing is **off by default** for self-hosted servers. Opt in on both
+sides:
+
+- **Host.** Start it with `OMNIGENT_HOST_SLICE_KEY_ENABLED=1`. The host passes
+  the setting to the runners it spawns, and the Python client then sends the
+  host ID on HTTP requests (the `X-Databricks-Omnigent-Slice-Key` header) and
+  on tunnel connections.
+
+  ```
+  OMNIGENT_HOST_SLICE_KEY_ENABLED=1 omni host <server-url>
+  ```
+
+- **Web UI.** Build it with `VITE_OMNIGENT_HOST_ROUTING=true` so the browser
+  sends the host ID too. HTTP requests use the same header; browser WebSockets
+  (terminal attach, session updates) carry it as `?omnigent_slice_key=...`
+  because the browser WebSocket API cannot set request headers. The server
+  Dockerfile exposes this as a build arg
+  (`--build-arg VITE_OMNIGENT_HOST_ROUTING=true`; default `false`). The browser
+  keeps the host ID on terminal reconnects, since dropping it could send the
+  next connection to a different replica.
+
+Only the exact value `1` enables host routing on a self-hosted server;
+`OMNIGENT_HOST_SLICE_KEY_ENABLED=0` turns the routing header off. With both
+options unset, tunnel handling and the host/runner reconnect loops behave as
+before.
+
+A worked example lives in `deploy/kubernetes/multi_replica/` in the repo: two
+server pods behind the **F5 NGINX Ingress Controller OSS 5.2.1**
+(`nginx/nginx-ingress`) on a local [kind](https://kind.sigs.k8s.io/) cluster,
+with shared Postgres and an artifact volume. Its README explains how the
+ingress hashes `host_id` onto a replica, how a rolling update (`maxSurge: 1`,
+`maxUnavailable: 0`, a short NGINX `worker-shutdown-timeout`) causes the host,
+runners, and browser to reconnect to the same replica, and why the community
+`ingress-nginx` controller is not a drop-in replacement. `run.sh up` creates the
+cluster and serves the app at `http://localhost:18081`, `run.sh verify` replaces
+both server pods during an active agent turn and checks that file browsing, the
+shell, and the live event stream recover, `run.sh rollout` triggers another
+rollout, and `run.sh down` removes everything.
+
+<div className="note">
+
+The example is a local experiment with authentication disabled, disposable
+database credentials, and a `ReadWriteOnce` artifact volume that only works
+because both pods share one node. A multi-node deployment needs shared artifact
+storage (S3 or a `ReadWriteMany` volume), authentication, TLS, and shared auth
+secrets. Managed-host startup, scheduled and background jobs, other ingress
+controllers, and abrupt node loss have not been validated with host routing.
+
+</div>
+
 ### Serving under a subpath
 
 By default the server and web UI are served from the origin root (`/`). To

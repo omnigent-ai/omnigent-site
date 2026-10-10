@@ -101,6 +101,35 @@ rejected at startup. For the full list of reserved segments, the auth variables
 to pair with it, and how the local managed server remembers the prefix, see
 [Serving under a subpath](/docs/deploy/overview#serving-under-a-subpath).
 
+## Host routing for multiple server replicas
+
+| Setting | Value                                                                                                               |
+| ------- | ------------------------------------------------------------------------------------------------------------------- |
+| Keys    | `OMNIGENT_HOST_SLICE_KEY_ENABLED` environment variable (host); `VITE_OMNIGENT_HOST_ROUTING` build variable (web UI) |
+| Scope   | Host process (inherited by the runners it spawns); web UI build time. Not a `config.yaml` key                       |
+| Type    | `OMNIGENT_HOST_SLICE_KEY_ENABLED`: `1` or `0`; `VITE_OMNIGENT_HOST_ROUTING`: `true` or `false`                      |
+| Default | Off — no routing key is sent to a self-hosted server                                                                |
+
+When several server replicas sit behind an ingress, a host, its runners, and the
+browser must all reach the replica that holds that host's WebSocket tunnels.
+These settings make every client send the session's `host_id` as a routing
+key so the ingress can hash it onto one replica:
+
+- `OMNIGENT_HOST_SLICE_KEY_ENABLED=1` on the `omni host` process adds the
+  `X-Databricks-Omnigent-Slice-Key` header to HTTP requests and keys the host's
+  and runners' tunnel connections. Only the exact value `1` enables it on a
+  self-hosted server; `0` disables the header (including on Databricks
+  workspace deployments, where routing is otherwise on by default); any other
+  value leaves a self-hosted server unrouted.
+- `VITE_OMNIGENT_HOST_ROUTING=true` at web UI build time makes the browser send
+  the same header on HTTP requests and `?omnigent_slice_key=<host_id>` on
+  WebSocket connections. The server Dockerfile accepts it as a build arg
+  (default `false`).
+
+The ingress does the replica selection; the server itself is unchanged. See
+[Multiple server replicas](/docs/deploy/overview#multiple-server-replicas) for
+the NGINX example and its limits.
+
 ## Attachment limits
 
 | Setting | Value                                                                                                                                                    |

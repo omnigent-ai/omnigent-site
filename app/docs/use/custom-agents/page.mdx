@@ -144,3 +144,57 @@ policies:
     factory_params:
       limit: 50
 ```
+
+## Install it on a server
+
+`omni run` launches an agent from your local checkout. To register it on a
+server so it shows up in the agent picker for every session, install it with
+`omni agent add`:
+
+```
+omni agent add ./orion                                    # agent directory
+omni agent add ./orion.tar.gz --server https://myserver.com
+```
+
+`SOURCE` can be an agent directory, a YAML file, a `.tar.gz` bundle, or a
+GitHub repo. Re-adding an agent with the same name replaces your copy in
+place; workers, skills, guardrails, and supporting files in the directory are
+all kept. For a local directory, `${VAR}` references are resolved from your
+shell, as `omni run` does. A YAML file or tarball is uploaded as is.
+
+### From GitHub
+
+Pass `owner/repo` (or a `github:owner/repo` / `https://github.com/owner/repo`
+form) to install agents straight from a repository:
+
+```
+omni agent add acme/agents --list                          # see what's there
+omni agent add acme/agents@orion                           # one agent by name
+omni agent add https://github.com/acme/agents/tree/main/orion
+```
+
+The repo is shallow-cloned and every agent in it (each outermost directory
+holding a `config.yaml`; nested ones are workers) is listed, then installed
+once you confirm. Narrow the source with:
+
+- `/path` — only look under that directory of the repo.
+- `@agent` — install just the agent with that name (case-insensitive). The
+  name comes from `name` in its `config.yaml`, falling back to the directory
+  name.
+- `/tree/<ref>` — clone a branch or tag. Refs can't contain `/`, and commit
+  SHAs aren't supported.
+- `--list` — print the agents found and install none. Only applies to a GitHub
+  source.
+- `--yes` / `-y` — skip the confirmation prompt.
+
+Only install agents from repos you trust. Repo-sourced agents are handled more
+strictly than local ones: `${VAR}` references are **not** resolved from your
+shell, symlinks and Git LFS pointers are refused, and `.git` is skipped. Two
+agents in the same source sharing a name is an error. If one agent fails to
+install (for example, its name conflicts with a built-in), the rest are still
+installed and the command exits non-zero. Installing from GitHub needs `git`
+on your `PATH`.
+
+Each install prints the agent's name, version, and id. When a new version
+replaces an existing agent, sessions using it pick up the new version on their
+next turn; terminal sessions do when they relaunch.

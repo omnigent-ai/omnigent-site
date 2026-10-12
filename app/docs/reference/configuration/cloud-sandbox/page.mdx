@@ -31,6 +31,7 @@ sandbox:
 | `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `openshell`, `boxlite`, or `microsandbox`. |
 | `server_url`  | Yes      | Public Omnigent server URL that the remote runner connects back to.                                     |
 | `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).    |
+| `model_discovery` | No   | Server-side discovery credentials for gateways in `host_config.providers`, so the model picker can list their models before a sandbox exists. See [Model options before a host exists](#model-options-before-a-host-exists). |
 | `git_clone`   | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).               |
 
 Provider-specific blocks are optional. Omit one to use that provider's defaults.
@@ -446,3 +447,72 @@ untouched.
 Do not put secrets in `host_config`. Use `api_key_ref: env:VAR`; the variable
 is resolved inside the sandbox from its provider-specific credential source.
 Inline `api_key` values are rejected. The server validates the block at startup.
+
+### Model options before a host exists
+
+When you pick **New Sandbox** in the composer, no host exists yet, so there is
+no host catalog for the model picker to read. A sandbox target can still offer
+a catalog by letting the **server** list the models of a gateway declared in
+`host_config.providers`. Add a `model_discovery` mapping keyed by the same
+provider name, holding the `base_url` and the credential reference the server
+uses for the listing:
+
+```yaml
+sandbox:
+  provider: islo
+  server_url: https://your-server.example.com
+  host_config:
+    providers:
+      team_gateway:
+        kind: gateway
+        display_name: Team AI Gateway
+        openai:
+          base_url: https://gateway.example.com/v1
+          api_key_ref: env:SANDBOX_GATEWAY_KEY # resolved inside the sandbox
+          wire_api: responses
+  model_discovery:
+    team_gateway:
+      base_url: https://gateway.example.com/v1
+      api_key_ref: env:GATEWAY_DISCOVERY_KEY # resolved on the server
+```
+
+The two credentials stay separate: the server resolves only the
+`model_discovery` reference when it lists models, and the sandbox resolves its
+own `host_config` reference at launch. Providers of kind `gateway`, `key`, or
+`local` are eligible; a provider without a matching `model_discovery` entry is
+not listed.
+
+With this in place the server advertises `default_models` for the target in
+`/v1/info` (`sandbox_provider_capabilities.<provider>.default_models`), and
+`GET /v1/sandbox-providers/{provider}/harnesses/{harness}/model-options` returns
+the gateway's harness-compatible models with `configured: false`. In the
+composer, the model picker shows those rows under the provider's label together
+with a **Default** row. Picking a model sends it as `model_override` (and the
+chosen `reasoning_effort`, when the listing reports reasoning metadata for that
+model) on session creation; the server does not validate the choice against a
+saved catalog, so the harness still validates it at launch. Leaving **Default**
+selected launches the harness on its own configured default, exactly as before.
+
+This is advisory only — "default" names the *source* of the choices, not a
+pre-selected model:
+
+- No model is marked as the default and no inference profile is bound; nothing
+  is saved or pinned (there is no `inference_configuration_revision`).
+- If discovery fails, the picker reports the error and **Default** remains
+  launchable. A gateway that serves no models for the harness reports
+  `The gateway lists no usable models for this harness.`
+- A harness the gateway cannot serve keeps its ordinary picker.
+- When several gateways are discoverable, the provider marked `default` for the
+  harness's model family wins; otherwise the first configured one is used.
+- An agent that carries its own provider or inference profile keeps that
+  configuration and is not offered the sandbox catalog.
+- Connected hosts and targets with an `inference.harnesses` binding are
+  unchanged; a bound target advertises `inference_models` instead.
+
+Programmatic deployments that construct `ManagedSandboxConfig` directly can
+supply the same capability without `model_discovery` through the optional
+`default_model_options` callable. It receives the harness id and the
+authenticated user id, must return rows that each carry a model `id`, and is
+given 10 seconds to answer; those rows appear under the **AI Gateway** label,
+and a failure or timeout shows `Could not load AI Gateway models. You can use
+Default.` while keeping the default launch available.

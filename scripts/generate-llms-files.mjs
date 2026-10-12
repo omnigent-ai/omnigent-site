@@ -1,267 +1,50 @@
-import { readFileSync, writeFileSync } from "node:fs";
+// Generates public/llms.txt and public/llms-full.txt.
+//
+// Runs before `next build` (and `next dev`); the outputs are gitignored. See
+// docs in the PR that introduced this for the storage decision.
+//
+// Inclusion rules (nothing here lists individual pages, so a new page.mdx is
+// picked up automatically):
+//   - every app/quickstart/**/page.mdx and app/docs/**/page.mdx
+//   - every blog post from getBlogPosts() (lib/blog.js)
+//   - every release from getReleases() (lib/releases.js)
+//   - plus the homepage and FAQ summaries below (those pages are JSX, not MDX)
+// llms.txt links docs/quickstart in full and keeps blog posts and releases
+// under "Optional"; llms-full.txt contains the full text of everything.
+//
+// Output is deterministic: no timestamps, network, or LLM calls, and a stable
+// sort. It fails (non-zero exit) only on real breakage: a missing source file
+// or MDX that does not parse.
 
-const SITE_URL = "https://omnigent.ai";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+import { getBlogPosts } from "../lib/blog.js";
+import { getReleases } from "../lib/releases.js";
+import { discoverPages } from "../lib/routes.js";
+import { productionSiteUrl } from "../lib/site.js";
+import { convertMdx } from "./llms/mdx-to-markdown.mjs";
 
-const docsRoutes = [
-  {
-    section: "Quickstart",
-    href: "/quickstart/install",
-    label: "Install Omnigent",
-    source: "app/quickstart/install/page.mdx",
-    description:
-      "Requirements, installation, credentials, launching Debby, and adding the macOS app.",
-  },
-  {
-    section: "Quickstart",
-    href: "/quickstart/coding-agent",
-    label: "Tutorial: Coding Agent",
-    source: "app/quickstart/coding-agent/page.mdx",
-    description:
-      "Start a coding agent, give it a task, use comments, edit files, paste images, fork sessions, and add policies.",
-  },
-  {
-    section: "Quickstart",
-    href: "/quickstart/polly",
-    label: "Tutorial: Polly",
-    source: "app/quickstart/polly/page.mdx",
-    description:
-      "Run Polly, Omnigent's multi-AI coding orchestrator, and follow progress in the UI.",
-  },
-  {
-    section: "Quickstart",
-    href: "/quickstart/collaborate",
-    label: "Tutorial: Collaborate",
-    source: "app/quickstart/collaborate/page.mdx",
-    description:
-      "Deploy a shared server, connect from laptop and phone, share a session, and run a cloud sandbox host.",
-  },
-  {
-    section: "Quickstart",
-    href: "/quickstart/policies",
-    label: "Tutorial: Contextual Policies",
-    source: "app/quickstart/policies/page.mdx",
-    description:
-      "Add plain-language policies and see soft and hard limits in action.",
-  },
-  {
-    section: "Agent Use Cases",
-    href: "/docs/use/coding-agents",
-    label: "Coding Agents",
-    source: "app/docs/use/coding-agents/page.mdx",
-    description: "Use Omnigent with coding agents and shared agent sessions.",
-  },
-  {
-    section: "Agent Use Cases",
-    href: "/docs/use/builtin-agents",
-    label: "Built-in Multi-AI Agents",
-    source: "app/docs/use/builtin-agents/page.mdx",
-    description: "Overview of Omnigent's built-in multi-agent workflows.",
-  },
-  {
-    section: "Agent Use Cases",
-    href: "/docs/use/builtin-agents/polly",
-    label: "Polly",
-    source: "app/docs/use/builtin-agents/polly/page.mdx",
-    description:
-      "Multi-AI coding orchestrator, workflow, skills, and when to use it.",
-  },
-  {
-    section: "Agent Use Cases",
-    href: "/docs/use/builtin-agents/debby",
-    label: "Debby",
-    source: "app/docs/use/builtin-agents/debby/page.mdx",
-    description: "Model debate agent, debate workflow, and when to use it.",
-  },
-  {
-    section: "Agent Use Cases",
-    href: "/docs/use/custom-agents",
-    label: "Custom Agents",
-    source: "app/docs/use/custom-agents/page.mdx",
-    description:
-      "Create custom agents in YAML and configure harnesses, models, prompts, skills, tools, and policies.",
-  },
-  {
-    section: "Harnesses",
-    href: "/docs/build/harnesses",
-    label: "Overview",
-    source: "app/docs/build/harnesses/page.mdx",
-    description: "Understand harnesses and how to launch or select one.",
-  },
-  {
-    section: "Harnesses",
-    href: "/docs/build/harnesses/supported",
-    label: "Supported Harnesses",
-    source: "app/docs/build/harnesses/supported/page.mdx",
-    description:
-      "Compare available harnesses, ids, aliases, execution modes, and support status.",
-  },
-  {
-    section: "Harnesses",
-    href: "/docs/build/harnesses/configuration",
-    label: "Configuration",
-    source: "app/docs/build/harnesses/configuration/page.mdx",
-    description:
-      "Configure authentication, ACP integrations, runtime selection, and launch overrides.",
-  },
-  {
-    section: "Harnesses",
-    href: "/docs/build/harnesses/community",
-    label: "Community Harnesses",
-    source: "app/docs/build/harnesses/community/page.mdx",
-    description: "Package and register a new harness as a community plugin.",
-  },
-  {
-    section: "Build Custom Agents",
-    href: "/docs/build/models",
-    label: "Models & Credentials",
-    source: "app/docs/build/models/page.mdx",
-    description:
-      "Declare models and configure API keys, subscriptions, gateways, and Databricks credentials.",
-  },
-  {
-    section: "Build Custom Agents",
-    href: "/docs/build/prompts",
-    label: "Prompts & Skills",
-    source: "app/docs/build/prompts/page.mdx",
-    description:
-      "Shape agent behavior with system prompts and reusable skills.",
-  },
-  {
-    section: "Build Custom Agents",
-    href: "/docs/build/tools",
-    label: "MCP & Tools",
-    source: "app/docs/build/tools/page.mdx",
-    description:
-      "Add MCP servers, Python function tools, sub-agent tools, authentication, and tool inheritance.",
-  },
-  {
-    section: "Build Custom Agents",
-    href: "/docs/build/scheduled-tasks",
-    label: "Scheduled Tasks",
-    source: "app/docs/build/scheduled-tasks/page.mdx",
-    description:
-      "Run an agent on a recurring RRULE schedule with the built-in sys_scheduled_task_* tools.",
-  },
-  {
-    section: "Interfaces",
-    href: "/docs/interact/terminal",
-    label: "Terminal",
-    source: "app/docs/interact/terminal/page.mdx",
-    description: "Start and manage sessions from the command line.",
-  },
-  {
-    section: "Interfaces",
-    href: "/docs/interact/web-ui",
-    label: "Web UI",
-    source: "app/docs/interact/web-ui/page.mdx",
-    description:
-      "Browser session management, file editing, code diffs, inline comments, multimodal input, and collaboration.",
-  },
-  {
-    section: "Interfaces",
-    href: "/docs/interact/mobile",
-    label: "Mobile",
-    source: "app/docs/interact/mobile/page.mdx",
-    description: "Access Omnigent sessions from mobile devices.",
-  },
-  {
-    section: "Interfaces",
-    href: "/docs/interact/desktop",
-    label: "Desktop App",
-    source: "app/docs/interact/desktop/page.mdx",
-    description:
-      "Install and use the native desktop app with one or more servers.",
-  },
-  {
-    section: "Collaboration And Deployment",
-    href: "/docs/collaborate",
-    label: "Pair Programming",
-    source: "app/docs/collaborate/page.mdx",
-    description: "Co-drive and fork shared live sessions.",
-  },
-  {
-    section: "Collaboration And Deployment",
-    href: "/docs/collaborate/auth",
-    label: "Auth & SSO",
-    source: "app/docs/collaborate/auth/page.mdx",
-    description:
-      "Built-in accounts, OIDC SSO, header-based auth, access control, and migration.",
-  },
-  {
-    section: "Collaboration And Deployment",
-    href: "/docs/deploy/overview",
-    label: "Shared Server",
-    source: "app/docs/deploy/overview/page.mdx",
-    description:
-      "Deploy the Omnigent server, runner, UI, and collaboration stack.",
-  },
-  {
-    section: "Collaboration And Deployment",
-    href: "/docs/deploy/database",
-    label: "Database",
-    source: "app/docs/deploy/database/page.mdx",
-    description: "Postgres, SQLite, comparison, and first boot behavior.",
-  },
-  {
-    section: "Collaboration And Deployment",
-    href: "/docs/deploy/cloud-sandbox-host",
-    label: "Cloud Sandbox Host",
-    source: "app/docs/deploy/cloud-sandbox-host/page.mdx",
-    description: "Configure server-managed or CLI cloud sandbox hosts.",
-  },
-  {
-    section: "Policies And Sandboxing",
-    href: "/docs/policies/overview",
-    label: "Contextual Policies",
-    source: "app/docs/policies/overview/page.mdx",
-    description:
-      "Policy concepts, enforcement targets, levels, and configuration.",
-  },
-  {
-    section: "Policies And Sandboxing",
-    href: "/docs/policies/builtin",
-    label: "Builtin Policies",
-    source: "app/docs/policies/builtin/page.mdx",
-    description: "Safety and cost-control policies.",
-  },
-  {
-    section: "Policies And Sandboxing",
-    href: "/docs/policies/custom",
-    label: "Custom Policies",
-    source: "app/docs/policies/custom/page.mdx",
-    description: "Write, register, and use custom policy functions.",
-  },
-  {
-    section: "Policies And Sandboxing",
-    href: "/docs/reference/configuration/os-sandbox",
-    label: "OS Sandbox Config",
-    source: "app/docs/reference/configuration/os-sandbox/page.mdx",
-    description:
-      "Filesystem, network, and environment restrictions for Omnibox sandboxing.",
-  },
-  {
-    section: "Policies And Sandboxing",
-    href: "/docs/omnibox",
-    label: "Omnibox",
-    source: "app/docs/omnibox/page.mdx",
-    description:
-      "Filesystem isolation, network isolation, and credential injection.",
-  },
+const SITE_URL = productionSiteUrl;
+
+// Optional overrides. Everything is derived from the filesystem; this only
+// controls how sections are labelled and ordered. A page whose route matches
+// no rule still appears, in a section named after its first path segments.
+// First matching prefix wins.
+const SECTION_RULES = [
+  { prefix: "/quickstart", title: "Quickstart" },
+  { prefix: "/docs/use", title: "Agent Use Cases" },
+  { prefix: "/docs/build/harnesses", title: "Harnesses" },
+  { prefix: "/docs/build", title: "Build Custom Agents" },
+  { prefix: "/docs/interact", title: "Interfaces" },
+  { prefix: "/docs/collaborate", title: "Collaboration And Deployment" },
+  { prefix: "/docs/deploy", title: "Collaboration And Deployment" },
+  { prefix: "/docs/policies", title: "Policies" },
+  { prefix: "/docs/omnibox", title: "Omnibox" },
+  { prefix: "/docs/programmatic", title: "Programmatic Usage" },
+  { prefix: "/docs/reference", title: "Reference" },
 ];
-
-const optionalRoutes = [
-  {
-    href: "/",
-    label: "Homepage",
-    description: "Product overview and architecture.",
-  },
-  {
-    href: "/faq",
-    label: "FAQ",
-    description:
-      "Answers to common questions about Omnigent, models, custom agents, safety, Databricks, and production readiness.",
-  },
-];
+const RELEASES_LISTED_FIRST = 5; // newest releases get a description in llms.txt
 
 const homepageSummary = `# Omnigent
 
@@ -302,81 +85,137 @@ No. Omnigent is open source and runs on your own machine and models. Databricks 
 
 Teams use Omnigent for real work today. It also moves quickly: releases ship often and can include breaking changes, which recent release notes call out. Pin a version and read the release notes before you upgrade.`;
 
+const compare = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
 function absolute(href) {
-  return `${SITE_URL}${href}`;
+  return new URL(href, `${SITE_URL}/`).toString();
 }
 
-function cleanMdx(sourcePath) {
-  const source = readFileSync(sourcePath, "utf8");
-  const lines = source.split("\n");
-  const kept = [];
-  let skippingMetadata = false;
-
-  for (const line of lines) {
-    if (line.startsWith("import ")) continue;
-    if (line.startsWith("export const metadata = pageMeta")) {
-      skippingMetadata = true;
-      continue;
-    }
-    if (skippingMetadata) {
-      if (line.trim() === ");" || line.trim() === "});") {
-        skippingMetadata = false;
-      }
-      continue;
-    }
-    kept.push(line);
-  }
-
-  return kept
-    .join("\n")
-    .replace(
-      /<InstallCommandTabs \/>/g,
-      [
-        "```sh",
-        "curl -fsSL https://omnigent.ai/install.sh | sh",
-        "# or",
-        "uv tool install omnigent",
-        "# or",
-        "pip install omnigent",
-        "# or",
-        "brew install omnigent-ai/tap/omnigent",
-        "```",
-      ].join("\n"),
-    )
-    .replace(
-      /<MacDownloadButton \/>/g,
-      "[Download macOS App for Apple silicon](https://omnigent.ai/download/mac) · [Download macOS App for Intel](https://omnigent.ai/download/mac-x64)",
-    )
-    .replace(
-      /<ProviderKeyTable \/>/g,
-      "Provider credentials can be configured for supported model providers using API keys, subscriptions, gateways, or Databricks profiles.",
-    )
-    .replace(
-      /<GatewayLogos \/>/g,
-      "Supported OpenAI- or Anthropic-compatible gateways include OpenRouter, LiteLLM, Ollama, Azure, vLLM, and similar providers.",
-    )
-    .replace(/^<ContentTabs[^\n]*>\n?/gm, "")
-    .replace(/^<\/ContentTabs>\n?/gm, "")
-    .replace(/\{\/\*[\s\S]*?\*\/\}/g, "")
-    .replace(/<img\s+([\s\S]*?)\/>/g, (_match, attrs) => {
-      const src = attrs.match(/src="([^"]+)"/)?.[1];
-      const alt = attrs.match(/alt="([^"]+)"/)?.[1] ?? "";
-      return src ? `![${alt}](${src})` : "";
-    })
-    .replace(/\{" "\}/g, " ")
-    .replace(/<Link href="([^"]+)">([^<]+)<\/Link>/g, "[$2]($1)")
-    .replace(/<[^>\n]+>/g, "")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+function titleCase(segment) {
+  return segment
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
-function buildLlmsTxt() {
-  const sections = new Map();
-  for (const route of docsRoutes) {
-    if (!sections.has(route.section)) sections.set(route.section, []);
-    sections.get(route.section).push(route);
+function sectionFor(route) {
+  const rule = SECTION_RULES.find(
+    ({ prefix }) => route === prefix || route.startsWith(`${prefix}/`),
+  );
+  if (rule) return { title: rule.title, rank: SECTION_RULES.indexOf(rule) };
+  const [, first, second] = route.split("/");
+  const title =
+    first === "docs" && second ? titleCase(second) : titleCase(first);
+  return { title, rank: SECTION_RULES.length };
+}
+
+function truncate(text, max) {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const sentence = cut.match(/^(.*[.!?])\s/s);
+  return sentence && sentence[1].length > max / 2
+    ? sentence[1]
+    : `${cut.slice(0, cut.lastIndexOf(" "))}\u2026`;
+}
+
+async function loadPage({ href, file, fallbackTitle }) {
+  if (!existsSync(file)) {
+    throw new Error(`llms: ${href} has no source file at ${file}`);
+  }
+  const converted = await convertMdx({
+    source: readFileSync(file, "utf8"),
+    file,
+    siteUrl: SITE_URL,
+  });
+  return {
+    href,
+    file,
+    title: converted.title ?? converted.h1 ?? fallbackTitle,
+    description: converted.description ?? converted.firstParagraph ?? "",
+    h1: converted.h1,
+    markdown: converted.markdown,
+    warnings: converted.warnings,
+  };
+}
+
+/**
+ * Builds both files in memory.
+ * @returns {Promise<{ llmsTxt: string, llmsFullTxt: string, pages: object[] }>}
+ */
+export async function buildLlmsFiles() {
+  // 1. Docs and quickstart: auto-discovered from the filesystem.
+  const docs = [];
+  for (const { route, file } of discoverPages()) {
+    if (!file.endsWith(".mdx")) continue;
+    if (!(route.startsWith("/quickstart/") || route.startsWith("/docs/"))) {
+      continue;
+    }
+    const page = await loadPage({
+      href: route,
+      file,
+      fallbackTitle: titleCase(route.split("/").at(-1)),
+    });
+    docs.push({ ...page, kind: "docs", section: sectionFor(route) });
+  }
+  docs.sort(
+    (a, b) =>
+      a.section.rank - b.section.rank ||
+      compare(a.section.title, b.section.title) ||
+      compare(a.href, b.href),
+  );
+
+  // 2. Blog posts and releases from their existing discovery helpers.
+  const blog = [];
+  for (const post of [...getBlogPosts()].sort(
+    (a, b) => compare(b.date ?? "", a.date ?? "") || compare(a.slug, b.slug),
+  )) {
+    const page = await loadPage({
+      href: post.href,
+      file: `app/blog/${post.slug}/page.mdx`,
+      fallbackTitle: post.title,
+    });
+    blog.push({
+      ...page,
+      kind: "blog",
+      date: post.date,
+      category: post.category,
+    });
+  }
+  const releases = [];
+  for (const release of getReleases()) {
+    const page = await loadPage({
+      href: release.href,
+      file: `app/releases/${release.version}/page.mdx`,
+      fallbackTitle: `v${release.version}`,
+    });
+    releases.push({
+      ...page,
+      kind: "release",
+      date: release.date,
+      version: release.version,
+    });
   }
 
+  const pages = [...docs, ...blog, ...releases];
+  const warnings = pages.flatMap((page) => page.warnings);
+  for (const warning of warnings) console.warn(`llms: warning: ${warning}`);
+
+  return {
+    llmsTxt: buildLlmsTxt({ docs, blog, releases }),
+    llmsFullTxt: buildLlmsFullTxt({ docs, blog, releases }),
+    pages,
+    warnings,
+  };
+}
+
+function link(page, description = page.description) {
+  const text = description
+    ? `: ${description.replace(/\s+/g, " ").trim()}`
+    : "";
+  return `- [${page.title}](${absolute(page.href)})${text}`;
+}
+
+function buildLlmsTxt({ docs, blog, releases }) {
   const lines = [
     "# Omnigent",
     "",
@@ -388,36 +227,71 @@ function buildLlmsTxt() {
     "",
   ];
 
-  for (const [section, routes] of sections) {
-    lines.push(`## ${section}`, "");
-    for (const route of routes) {
-      lines.push(
-        `- [${route.label}](${absolute(route.href)}): ${route.description}`,
-      );
+  let current = null;
+  for (const page of docs) {
+    if (page.section.title !== current) {
+      if (current !== null) lines.push("");
+      current = page.section.title;
+      lines.push(`## ${current}`, "");
     }
-    lines.push("");
+    lines.push(link(page, truncate(page.description, 220)));
   }
+  lines.push("");
 
   lines.push("## Optional", "");
-  for (const route of optionalRoutes) {
-    lines.push(
-      `- [${route.label}](${absolute(route.href)}): ${route.description}`,
-    );
-  }
   lines.push(
+    `- [Homepage](${absolute("/")}): Product overview and architecture.`,
+    `- [FAQ](${absolute("/faq")}): Answers to common questions about Omnigent, models, custom agents, safety, Databricks, and production readiness.`,
+  );
+  lines.push("", "### Blog", "");
+  for (const post of blog)
+    lines.push(link(post, truncate(post.description, 220)));
+  lines.push(
+    "",
+    `### Releases`,
+    "",
+    `Release notes for all ${releases.length} versions are in [llms-full.txt](${absolute("/llms-full.txt")}); the newest are summarized here.`,
+    "",
+  );
+  releases.forEach((release, i) => {
+    const date = release.date ? `Released ${release.date}. ` : "";
+    const summary =
+      i < RELEASES_LISTED_FIRST ? truncate(release.description, 160) : "";
+    lines.push(
+      `- [${release.title}](${absolute(release.href)}): ${`${date}${summary}`.trim()}`,
+    );
+  });
+  lines.push(
+    "",
+    "### Other",
+    "",
     "- [GitHub repository](https://github.com/omnigent-ai/omnigent-site): Website source code.",
     `- [Sitemap](${absolute("/sitemap.xml")}): Full public route index.`,
     "",
   );
-
   return lines.join("\n");
 }
 
-function buildLlmsFullTxt() {
+function fullEntry(page) {
+  const body = [];
+  if (!page.h1) {
+    body.push(`# ${page.title}`);
+    if (page.kind === "blog") {
+      const byline = [page.date && `Published ${page.date}`, page.category]
+        .filter(Boolean)
+        .join(" \u00b7 ");
+      if (byline) body.push(`_${byline}_`);
+    }
+  }
+  body.push(page.markdown);
+  return ["---", "", `## ${absolute(page.href)}`, "", body.join("\n\n"), ""];
+}
+
+function buildLlmsFullTxt({ docs, blog, releases }) {
   const lines = [
     "# Omnigent Full Documentation",
     "",
-    "> Expanded LLM context for Omnigent. This file contains the homepage summary and cleaned Markdown content for the primary quickstart and documentation pages listed in /llms.txt.",
+    "> Expanded LLM context for Omnigent. This file contains the homepage summary and cleaned Markdown content for every quickstart, documentation, blog, and release page listed in /llms.txt.",
     "",
     `Source: ${SITE_URL}`,
     "Generated from: https://github.com/omnigent-ai/omnigent-site",
@@ -429,22 +303,28 @@ function buildLlmsFullTxt() {
     homepageSummary,
     "",
   ];
-
-  for (const route of docsRoutes) {
-    lines.push(
-      "---",
-      "",
-      `## ${absolute(route.href)}`,
-      "",
-      cleanMdx(route.source),
-      "",
-    );
-  }
-
+  for (const page of docs) lines.push(...fullEntry(page));
   lines.push("---", "", `## ${absolute("/faq")}`, "", faqSummary, "");
-
-  return lines.join("\n").replace(/\n{4,}/g, "\n\n\n");
+  for (const page of [...blog, ...releases]) lines.push(...fullEntry(page));
+  return lines.join("\n");
 }
 
-writeFileSync("public/llms.txt", buildLlmsTxt());
-writeFileSync("public/llms-full.txt", buildLlmsFullTxt());
+export async function writeLlmsFiles(outDir = "public") {
+  const { llmsTxt, llmsFullTxt, pages } = await buildLlmsFiles();
+  mkdirSync(outDir, { recursive: true });
+  writeFileSync(path.join(outDir, "llms.txt"), llmsTxt);
+  writeFileSync(path.join(outDir, "llms-full.txt"), llmsFullTxt);
+  return { llmsTxt, llmsFullTxt, pages };
+}
+
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  try {
+    const { llmsTxt, llmsFullTxt, pages } = await writeLlmsFiles();
+    console.log(
+      `llms: wrote public/llms.txt (${llmsTxt.length} bytes) and public/llms-full.txt (${llmsFullTxt.length} bytes) from ${pages.length} pages`,
+    );
+  } catch (error) {
+    console.error(`llms: ${error.message}`);
+    process.exit(1);
+  }
+}

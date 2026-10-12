@@ -41,6 +41,28 @@ test("FAQ has one H1 and its questions are h2s with no skipped levels", () => {
   expect(skippedLevels(hs)).toEqual([]);
 });
 
+test("homepage describes local and cloud sandboxes accurately", () => {
+  const html = renderToStaticMarkup(<Home />);
+  const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  expect(text).toContain("Secure Sandboxes");
+  expect(text).toContain("local OS sandbox or a remote cloud sandbox");
+  expect(text).toContain("Linux and macOS, restrict filesystem");
+  expect(html).toContain("illustrating sandboxed agents.");
+  expect(html).not.toContain("isolates every agent");
+  expect(text).not.toContain("sandboxed, uniform session");
+  expect(text).not.toContain("Run YOLO mode safely");
+});
+
+test("FAQ describes local and cloud sandbox capabilities", () => {
+  const html = renderToStaticMarkup(<Faq />);
+  const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  expect(text).toContain("local OS sandbox or a remote cloud sandbox");
+  expect(text).toContain("On Linux and macOS, the OS sandbox restricts");
+  expect(html).toContain('href="/docs/deploy/cloud-sandbox-host"');
+  expect(html).toContain('href="/docs/omnibox"');
+  expect(text).not.toContain("Every command runs in an OS-level sandbox");
+});
+
 test("release feed demotes headings two levels and merges classes", () => {
   const { h1, h2, h3, h4, h5, h6 } = demotedHeadings;
   const html = renderToStaticMarkup(

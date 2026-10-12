@@ -93,10 +93,11 @@ export default function Home() {
               </li>
               <li>
                 <strong>
-                  <Link href="/docs/omnibox">Secure OS Sandbox</Link>:
+                  <Link href="/docs/omnibox">Secure Sandboxes</Link>:
                 </strong>{" "}
-                restrict filesystem and network access. Hide credentials from
-                the agent, and broker access to them. Run YOLO mode safely.
+                run any agent in a local OS sandbox or a remote cloud sandbox.
+                On Linux and macOS, restrict filesystem and network access and
+                broker credentials without exposing them to the agent.
               </li>
             </ul>
           </div>
@@ -116,9 +117,10 @@ export default function Home() {
 
             <h2>Architecture</h2>
             <p className="arch-outro">
-              A runner wraps any agent in a sandboxed, uniform session. A server
-              adds policies and shared history, and exposes every session over
-              the terminal, the web, a native app, mobile, and a REST API.
+              A runner wraps any agent in a uniform session that can run in a
+              local OS sandbox or a remote cloud sandbox. A server adds policies
+              and shared history, and exposes every session over the terminal,
+              the web, a native app, mobile, and a REST API.
             </p>
             <figure className="section-graphic">
               {/* eslint-disable-next-line @next/next/no-img-element */}

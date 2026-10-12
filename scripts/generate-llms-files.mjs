@@ -48,14 +48,14 @@ const RELEASES_LISTED_FIRST = 5; // newest releases get a description in llms.tx
 
 const homepageSummary = `# Omnigent
 
-Omnigent is a common layer over Claude Code, Codex, Pi, and custom agents. It lets teams swap or combine harnesses without rewriting agents, govern them with policies and OS sandboxing, and collaborate in real time on the same live session from terminal, web, desktop, mobile, or API interfaces.
+Omnigent is a common layer over Claude Code, Codex, Pi, and custom agents. It lets teams swap or combine harnesses without rewriting agents, govern them with policies and secure sandboxes, and collaborate in real time on the same live session from terminal, web, desktop, mobile, or API interfaces.
 
 Core capabilities:
 
 - Built-in multi-AI agents, including Polly for coding orchestration and Debby for model debate.
 - Custom agents written in YAML with configurable harnesses, models, prompts, skills, tools, and policies.
 - Contextual policies for safety, spend caps, model routing, and risk-based escalation.
-- OS sandboxing for filesystem, network, environment, and credential boundaries.
+- Secure sandboxes for any agent: local OS sandboxing on Linux and macOS for filesystem, network, environment, and credential boundaries, or remote cloud sandbox hosts.
 - Shared sessions, comments, forks, and multi-device collaboration.
 - Deployable shared server with database, authentication, and cloud sandbox host options.`;
 
@@ -63,7 +63,7 @@ const faqSummary = `# FAQ
 
 ## What is Omnigent?
 
-Omnigent is a framework that runs AI agents behind one interface. It wraps Claude Code, Codex, and Pi, plus custom agents written in YAML, and gives each one a server, UI, sandboxing, and policies.
+Omnigent is a framework that runs AI agents behind one interface. It wraps Claude Code, Codex, and Pi, plus custom agents written in YAML, and gives them a shared server and UI, with configurable sandboxing and policies.
 
 ## Which models can I use?
 
@@ -75,7 +75,7 @@ Write a YAML file with a prompt and harness, then run \`omni run\` on it. See th
 
 ## Is it safe to let an agent run on my machine?
 
-Every command runs in an OS-level sandbox, and policies can pause, block, or cap what an agent does.
+Omnigent can run agents in a local OS sandbox or a remote [cloud sandbox](${absolute("/docs/deploy/cloud-sandbox-host")}). On Linux and macOS, the [OS sandbox](${absolute("/docs/omnibox")}) restricts filesystem and network access and brokers credentials without exposing them to the agent. Policies can also pause, block, or cap what an agent does.
 
 ## Do I need Databricks?
 
@@ -219,7 +219,7 @@ function buildLlmsTxt({ docs, blog, releases }) {
   const lines = [
     "# Omnigent",
     "",
-    "> Omnigent is an open-source meta-harness for AI agents. It provides a common layer over Claude Code, Codex, Pi, and custom agents, with shared sessions, contextual policies, OS sandboxing, model and credential configuration, real-time collaboration, and multiple interfaces.",
+    "> Omnigent is an open-source meta-harness for AI agents. It provides a common layer over Claude Code, Codex, Pi, and custom agents, with shared sessions, contextual policies, local and cloud sandboxing, model and credential configuration, real-time collaboration, and multiple interfaces.",
     "",
     "Use this file to find the most relevant Omnigent documentation for coding agents, custom agents, deployment, collaboration, policies, sandboxing, and end-user interfaces.",
     "",

@@ -122,7 +122,9 @@ sandbox. Web users log in to Omnigent, not the sandbox provider.
 ### 3. Configure a provider
 
 Add a `sandbox` section to your server config YAML (`~/.omnigent/config.yaml` on a laptop,
-`/data/config.yaml` in Docker). A typical Modal configuration looks like this:
+`/data/config.yaml` in Docker, or the file named by `OMNIGENT_CONFIG` on a
+[self-managed Databricks Apps deployment](/docs/deploy/overview#databricks)). A
+typical Modal configuration looks like this:
 
 ```yaml
 sandbox:

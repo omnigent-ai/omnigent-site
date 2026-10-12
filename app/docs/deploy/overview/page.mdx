@@ -154,6 +154,19 @@ API-only and ignore the Canvas opt-in. To ship additional extensions, pass
 repeatable `--extension-wheel` arguments; every extension wheel must also fit
 under the 10 MB Databricks Apps source-file cap.
 
+**Managed sandbox hosts.** The self-managed app reads the server config YAML
+named by the optional `OMNIGENT_CONFIG` environment variable — the same file
+its branding and title keys come from. Add a
+[`sandbox:` section](/docs/deploy/cloud-sandbox-host#3-configure-a-provider) to
+that file and the app offers server-managed sandbox hosts (`host_type: "managed"`
+sessions, **New Sandbox** in the web UI's host picker). The section is parsed
+exactly as `omnigent server` parses it, so the
+[cloud sandbox configuration reference](/docs/reference/configuration/cloud-sandbox)
+applies unchanged. Without a `sandbox:` section, managed hosts stay off and each
+user runs `omnigent host` locally before starting a session. A malformed
+`sandbox:` section fails the app's startup instead of surfacing as an error on
+the first managed session.
+
 ### Kubernetes
 
 Deploy the Omnigent server to a Kubernetes cluster with the kustomize manifests

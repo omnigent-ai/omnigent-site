@@ -386,7 +386,9 @@ async def main():
         session_id = "conv_abc123"
         session = await client.sessions.get(session_id)
         print(session.status)
-        print(await client.sessions.list_items(session_id))
+        page = await client.sessions.list_items(session_id)
+        for item in page.data:
+            print(item)
 
 asyncio.run(main())
 ```
@@ -396,9 +398,25 @@ For live events, iterate over `client.sessions.stream(session_id)`. Use
 `await client.sessions.subtree_busy(session_id)` to check whether any of its
 descendants are busy.
 
-History is paginated. Use the last item's `id` as `after` in the next
-`list_items` call to read further. Live events do not replay history; retrieve
-the snapshot and history again after reconnecting.
+History is paginated. `list_items` returns a `PaginatedList` (importable from
+`omnigent_client`) with `data`, `has_more`, `first_id`, and `last_id`. When
+`has_more` is true, pass `last_id` as `after` in the next call to read further:
+
+```python
+items = []
+after = None
+while True:
+    page = await client.sessions.list_items(session_id, limit=100, after=after)
+    items.extend(page.data)
+    if not page.has_more:
+        break
+    after = page.last_id
+```
+
+`client.sessions.child_sessions(session_id)` lists a session's sub-agent
+sessions the same way: it returns a `PaginatedList` and accepts the same
+`after` cursor. Live events do not replay history; retrieve the snapshot and
+history again after reconnecting.
 
   </div>
   <div>

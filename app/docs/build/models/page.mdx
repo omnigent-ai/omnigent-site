@@ -200,3 +200,35 @@ Model names are prefixed with `databricks-` so Omnigent routes them through your
 workspace automatically. See the
 [Databricks Foundation Model API docs](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/supported-models)
 for the full list of available models.
+
+#### Codex on Databricks
+
+When the `codex` harness uses a Databricks profile, Omnigent never hands the
+Codex CLI a workspace token. Every model request is signed by a per-session
+signer bound to the workspace's AI Gateway Codex route, so the agent can only
+reach the model endpoint the signer is willing to sign. A few things follow
+from that:
+
+- **Codex CLI version.** Brokered authentication requires a **stable Codex
+  0.146.0 or newer**. Omnigent checks `codex --version` before launch and
+  refuses to start on anything older, on pre-release or post-release builds
+  (for example `0.159.2-alpha.1` or `0.146.0.post1`), or on a version it cannot
+  parse, with `unsupported Codex wire version <version>; brokered authentication
+  requires a stable Codex 0.146.0 or newer`. The signer rebuilds each request
+  strictly, so a newer Codex that sends an unexpected request fails that turn
+  instead of reaching the model.
+- **Sandbox is always on.** If the spec has no `os_env.sandbox`, or sets
+  `type: none`, Omnigent runs Codex in the
+  [platform default sandbox](/docs/reference/configuration/os-sandbox#choosing-or-disabling-the-backend)
+  anyway. A spec that declares `os_env` has its sandbox updated in place, so the
+  session's OS tools share the worker's sandbox; a spec without `os_env` is
+  contained the same way but gains no OS tools. `os_env.sandbox.egress_rules`
+  is not supported on this route and is rejected at launch.
+- **Model egress defaults to the provider route.** Without an explicit
+  `model_egress` grant, the signer allows only the provider's single model
+  route — `POST <workspace-host>/ai-gateway/codex/v1/responses` — which is
+  the most it ever signs. Set `model_egress` yourself only when you need to
+  narrow it further.
+
+Setting `HARNESS_CODEX_GATEWAY_AUTH_COMMAND` is an error on this route; the
+signer is the only supported authority for Databricks-routed Codex.

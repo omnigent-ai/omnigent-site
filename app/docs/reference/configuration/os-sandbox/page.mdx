@@ -265,6 +265,10 @@ By default, the proxy also blocks connections to private IPs (RFC1918, loopback,
 metadata like `169.254.169.254`). Set
 `egress_allow_private_destinations: true` if your agent needs to reach internal services.
 
+`egress_rules` covers HTTP(S) only. To let a sandboxed `git` reach a repository over
+SSH without handing it the private key, use [`git_ssh`](#git-over-ssh) — it isolates
+the sandbox network the same way `egress_rules` does, and the two can be combined.
+
 ### Environment
 
 ```
@@ -350,6 +354,66 @@ As with every credential-proxy type, you must list each workspace host in
 sessions survive the ~1h token expiry. `databricks_cli` requires the `databricks`
 extra (`pip install omnigent[databricks]`) and only works on `linux_bwrap` — the Go
 CLI ignores `SSL_CERT_FILE` on macOS, so `darwin_seatbelt` is rejected.
+
+</div>
+
+### Git over SSH
+
+`git_ssh` grants a sandboxed `git` access to **one repository and one SSH operation
+at a time** without exposing the SSH private key. The trusted parent process runs
+OpenSSH with the key; the sandbox only receives a Git transport helper
+(`GIT_SSH_COMMAND`) and a private Unix socket. It cannot read the key or connect to
+the SSH host directly. Use a read-only deploy key for `fetch` when the server supports
+one.
+
+```
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    type: auto                      # resolves to linux_bwrap or darwin_seatbelt
+    git_ssh:
+      - host: github.com
+        port: 22
+        username: git
+        repository: my-org/my-repo.git
+        operations: [fetch]
+        identity_file: /home/runner/.ssh/my-repo-deploy-key
+        known_hosts_file: /home/runner/.ssh/github-pinned-host-key
+```
+
+Inside the sandbox, `git clone git@github.com:my-org/my-repo.git` and `git fetch` work
+as usual, from `sys_os_shell` and from sandboxed terminals alike. The binding only
+matches an exact `username@host`, port, and repository path, so add a separate
+binding for each submodule or additional repository. Add `push` to `operations` only
+for a write-capable key.
+
+- `known_hosts_file` must contain one exact host key entry for `host`, for example
+  `github.com ssh-ed25519 <public-key>`. Record the expected key through a trusted
+  channel; don't accept an unverified `ssh-keyscan` result.
+- `identity_file` and `known_hosts_file` take literal absolute paths — `~` is **not**
+  expanded. Keep both files outside the sandbox's read and write paths; Omnigent
+  protects them from the sandbox like other credential sources.
+- The parent resolves DNS for each connection and every returned address must be
+  allowed. Public addresses need no extra setting. For a private SSH server, set
+  `allowed_cidrs` on that binding to the narrow range containing its addresses. The
+  parent pins the chosen address for the SSH connection and verifies the host key
+  against the configured `host`.
+- Loopback stays blocked unless a local-development binding uses a loopback IP literal
+  as `host`, its exact `/32` CIDR in `allowed_cidrs`, and `allow_loopback: true`
+  together. Don't use that for a shared or production SSH server.
+- The grant covers Git's `git-upload-pack` (`fetch`) and, when explicitly allowed,
+  `git-receive-pack` (`push`). It does not grant a shell, arbitrary SSH commands, or
+  Git LFS HTTP authentication.
+
+<div className="note">
+
+`git_ssh` requires `linux_bwrap` or `darwin_seatbelt`; other backends reject the
+setting. The host running the sandbox needs the OpenSSH client at `/usr/bin/ssh`.
+Like `egress_rules`, `git_ssh` isolates the sandbox network — only the broker socket
+(and the egress proxy, if `egress_rules` is also set) is reachable — and it is
+incompatible with `allow_sandbox_override: true` on a terminal, since an override to
+`none` would drop the enforcement.
 
 </div>
 
@@ -443,3 +507,21 @@ Omnigent errors instead of quietly running unsandboxed. The only opt-out is
 | `egress_rules`                      | string[]             | none             | HTTP(S) allow-list. Default-deny when set.                                                                                                                                                         |
 | `egress_allow_private_destinations` | bool                 | `false`          | Allow connections to private/metadata IPs                                                                                                                                                          |
 | `credential_proxy`                  | block[]              | none             | Secretless auth entries; requires `egress_rules`                                                                                                                                                   |
+| `git_ssh`                           | block[]              | none             | Repository-scoped [Git-over-SSH](#git-over-ssh) bindings brokered by the parent; requires `linux_bwrap` or `darwin_seatbelt`                                                                        |
+
+### `os_env.sandbox.git_ssh[]`
+
+Each entry binds one SSH identity to one repository on one destination. Entries
+with the same `host`, `port`, `username`, and `repository` are rejected as duplicates.
+
+| Field              | Type     | Default     | Description                                                                                                             |
+| ------------------ | -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `host`             | string   | required    | Exact ASCII DNS name or IPv4 address of the SSH server                                                                  |
+| `port`             | int      | `22`        | SSH port (1–65535)                                                                                                      |
+| `username`         | string   | `git`       | SSH user                                                                                                                |
+| `repository`       | string   | required    | Repository path as Git sends it, e.g. `my-org/my-repo.git`                                                              |
+| `operations`       | string[] | `[fetch]`   | `fetch` and/or `push`                                                                                                   |
+| `identity_file`    | string   | required    | Absolute path to the private key; `~` is not expanded                                                                   |
+| `known_hosts_file` | string   | required    | Absolute path to a file with one exact host key entry for `host`; `~` is not expanded                                   |
+| `allowed_cidrs`    | string[] | `[]`        | Address ranges the resolved host must fall in. Empty allows only public addresses.                                      |
+| `allow_loopback`   | bool     | `false`     | Permit a loopback destination. Requires a loopback IP literal `host` and exactly its `/32` in `allowed_cidrs`.           |

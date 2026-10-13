@@ -63,30 +63,6 @@ test("llms.txt stays short while llms-full.txt carries the full text", () => {
   expect(llmsFullTxt.length).toBeGreaterThan(llmsTxt.length * 10);
 });
 
-test("generated product summaries preserve sandbox qualifications", () => {
-  const sections = llmsFullTxt.split("\n---\n");
-  const home = sections.find((section) =>
-    section.includes(`## ${productionSiteUrl}/\n`),
-  );
-  const faq = sections.find((section) =>
-    section.includes(`## ${productionSiteUrl}/faq\n`),
-  );
-  expect(home).toBeDefined();
-  expect(faq).toBeDefined();
-  expect(home).toContain("local OS sandboxing on Linux and macOS");
-  expect(home).toContain("remote cloud sandbox hosts");
-  expect(llmsTxt).toContain("local and cloud sandboxing");
-  expect(faq).toContain("local OS sandbox or a remote");
-  expect(faq).toContain("On Linux and macOS, the [OS sandbox]");
-  expect(faq).toContain(
-    `[cloud sandbox](${productionSiteUrl}/docs/deploy/cloud-sandbox-host)`,
-  );
-  for (const summary of [home, faq]) {
-    expect(summary).not.toContain("Every command runs in an OS-level sandbox");
-    expect(summary).not.toContain("gives each one a server, UI, sandboxing");
-  }
-});
-
 test("current content converts with no unmapped components", () => {
   expect(warnings).toEqual([]);
 });

@@ -418,8 +418,9 @@ acp:
 
 **Note:** The generic ACP harness has no fixed binary — each agent owns its own
 install and login, so a missing binary is a hint, not a hard gate. A sandboxed
-generic ACP agent gets read access to its binary directory, the cwd, and write
-access to `/tmp`; an agent that must write its own config directory needs
+generic ACP agent gets read access to its binary directory and the cwd, plus
+private scratch space for writes — it is **not** granted write access to the
+host's `/tmp`; an agent that must write its own config directory needs
 `sandbox: none` (the default) for now.
 
 </div>

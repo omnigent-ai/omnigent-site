@@ -125,6 +125,19 @@ sandbox:
     - ~/.config/private
 ```
 
+#### Host temporary directory
+
+Do not add the host's temporary root (`/tmp`, or whatever `$TMPDIR` points at)
+to `write_paths` or `write_files` for a sandbox that launches a harness CLI.
+Omnigent writes the sandboxed launcher script into that directory, so a write
+grant covering it would let the sandboxed process tamper with its own launcher;
+the launch is rejected with an error asking you to grant a dedicated scratch
+directory instead. Sandboxed harness CLIs (Pi, Qwen, Kimi, Goose, and generic
+ACP agents) are no longer given a host `/tmp` write grant automatically — they
+get only their own install directory (read) and config directory (write). A
+sandboxed Pi, for example, creates its per-session scratch directory under
+`~/.pi`.
+
 ### Disposable copy-on-write writes (Linux)
 
 A `write_paths` entry can also be an object with `copy_on_write: true`. On the

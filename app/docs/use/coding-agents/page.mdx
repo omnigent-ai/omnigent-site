@@ -80,16 +80,21 @@ one harness, so combining `all` with `--session` is a usage error.
 Re-importing a source session that was already imported is rejected by default.
 Pass `--force` to replace the previous import instead — Omnigent deletes the old
 conversation and re-imports the transcript in place, keeping the same session
-ID:
+ID. The old conversation is only removed once the new transcript has been
+validated and is ready to persist, so a re-import that fails validation leaves
+the previous import untouched:
 
 ```
 omnigent import --harness claude --session <session-id> --force
 ```
 
 When importing a batch, sessions that were already imported are skipped and a
-session that fails to import doesn't stop the rest. Omnigent prints a summary of
-how many sessions were imported, already imported, and failed, and exits with a
-non-zero status if any failed.
+session that fails to import doesn't stop the rest. This includes a session
+whose source machine stops being yours partway through the batch — it is
+recorded as failed ("This session's host is no longer available to you.") and
+the remaining sessions still import. Omnigent prints a summary of how many
+sessions were imported, already imported, and failed, and exits with a non-zero
+status if any failed.
 
 ### Import from the web UI
 

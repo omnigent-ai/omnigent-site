@@ -288,6 +288,36 @@ tools:
 The JSON Schema under `parameters` is optional. If you omit it, Omnigent
 auto-generates the schema from the function's type annotations and signature.
 
+### Uploaded agents on shared servers
+
+Server-side code tools run in-process on the runner, so on a multi-user server
+an **uploaded** agent bundle may not declare them. Bundle validation rejects:
+
+- Python `callable:` tools, which import an arbitrary dotted module path on the
+  runner.
+- Server-side Python or TypeScript **source-file** tools (a tool whose `path`
+  ends in `.py` or `.ts`), whose module body is imported and executed on the
+  runner at tool discovery. This restriction is new in 0.18.0.
+
+The check covers nested agents too — a disallowed tool inside a sub-agent fails
+the whole bundle. Existing uploaded agents that still declare these tools also
+fail validation when you add, update, or delete their MCP-server settings (see
+[Only the owner can change the agent](/docs/collaborate#owner-only-agent-changes)),
+so removing an MCP server from an old agent does not bypass the check.
+
+To migrate an existing uploaded agent:
+
+1. Expose its custom tools through an MCP server and replace the source-file
+   tool entries with `type: mcp` entries (see [Custom servers](#custom-servers)).
+   Update nested agents too.
+2. Upload the corrected bundle and start a new session with it. Re-uploading
+   creates a new agent version; it does not rewrite existing sessions.
+3. Make subsequent MCP configuration changes on the migrated agent.
+
+Operator-authored bundles on trusted single-user/local servers keep their Python
+and TypeScript tool support. Changing a tool's declared runtime alone is not a
+migration: client tools require a client-provided implementation.
+
 ## Sub-agent tools
 
 Declare agents as tools so a supervisor agent can delegate work to them. You can define a

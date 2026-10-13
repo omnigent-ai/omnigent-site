@@ -32,8 +32,9 @@ The OS sandbox applies to the built-in OS tools (`sys_os_read`, `sys_os_write`,
 **Requirements:** Linux: install bubblewrap (`apt install bubblewrap` or
 `dnf install bubblewrap`). macOS: `sandbox-exec` ships with stock macOS. If you ask for a
 sandbox and the backend isn't available, Omnigent errors rather than running unsandboxed.
-Windows: Omnigent uses job objects, which group the agent's processes so they all
-terminate together; they don't restrict filesystem or network access.
+Windows: job objects provide process-tree cleanup for OS-tool helpers; they don't
+restrict filesystem or network access. For full sandboxing on Windows, run Omnigent
+under WSL or use a [cloud sandbox host](/docs/deploy/cloud-sandbox-host).
 
 </div>
 
@@ -59,7 +60,7 @@ default; the two resolve identically.
 | -------- | ------------------- | -------------------------------- |
 | Linux    | `linux_bwrap`       | Bubblewrap namespaces + seccomp  |
 | macOS    | `darwin_seatbelt`   | `sandbox-exec` SBPL profiles     |
-| Windows  | `windows_jobobject` | Job objects (process grouping)   |
+| Windows  | `windows_jobobject` | Job objects (process cleanup)    |
 | Other    | `none`              | No sandboxing (explicit opt-out) |
 
 ### Choosing or disabling the backend

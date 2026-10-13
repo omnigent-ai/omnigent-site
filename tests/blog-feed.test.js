@@ -1,4 +1,6 @@
 import { expect, test } from "bun:test";
+import fs from "fs";
+import path from "path";
 import { getBlogPosts } from "../lib/blog";
 import { blogFeedXml, FEED_PATH } from "../lib/feed";
 
@@ -6,6 +8,26 @@ test("blog posts only include folders with a post page", () => {
   const slugs = getBlogPosts().map((post) => post.slug);
   expect(slugs.length).toBeGreaterThan(0);
   expect(slugs).not.toContain("rss.xml");
+});
+
+// getBlogPosts() only counts folders with a page.mdx, so a post added as
+// page.js/page.tsx (or with a misnamed file) would still be served at its URL
+// but silently drop out of /blog, the RSS feed, the sitemap and the llms files.
+// Every folder under app/blog must be either an MDX post or a route handler
+// such as rss.xml/route.js.
+test("every blog folder is an MDX post or a route handler", () => {
+  const blogDir = path.join(process.cwd(), "app", "blog");
+  const problems = fs
+    .readdirSync(blogDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .filter((name) => {
+      const files = fs.readdirSync(path.join(blogDir, name));
+      const isPost = files.includes("page.mdx");
+      const isRoute = files.some((file) => /^route\.(js|ts)$/.test(file));
+      return !isPost && !isRoute;
+    });
+  expect(problems).toEqual([]);
 });
 
 test("feed lists every post with production URLs and its own dates", () => {

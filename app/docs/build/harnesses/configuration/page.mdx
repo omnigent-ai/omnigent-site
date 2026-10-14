@@ -327,6 +327,38 @@ curl -fsSL https://antigravity.google/cli/install.sh | bash
 `omni setup` shows the harness as configured once the `agy` binary is present
 and either the API key or an OAuth login is detected.
 
+### Permission prompts
+
+When Antigravity asks before running a command, Omnigent republishes its prompt
+as an approval card — in the session's Chat and in the sidebar **Inbox**, so you
+can answer without opening the session. The card shows the command Antigravity
+wants to run together with agy's own action description (for example *Running
+pwd command*) and offers the same choices as the `agy` terminal prompt:
+
+- **Approve** — allow this one command (agy's *Yes, run command*).
+- **Allow commands starting with `<pattern>` for this session** — agy's
+  *always allow in this conversation* choice.
+- **Always allow commands starting with `<pattern>`** — agy's persist choice,
+  which saves a rule to the session's isolated agy `settings.json`.
+- **Reject** — agy's *No, cancel*.
+
+The two always-allow buttons are pattern-scoped, not blanket grants: `<pattern>`
+is the prefix agy itself proposes to remember (typically the command word), and
+the buttons appear only when agy's own prompt offers that choice. Omnigent types
+these selections into agy's native menu so agy records the rule itself; it
+cannot confirm that the rule was saved, so the answered card reads **Session
+allow requested** or **Always allow requested** rather than *Approved*.
+
+<div className="note">
+
+**Note:** Saved rules belong to the current Omnigent session — each session
+runs agy with its own isolated settings, so a new session starts with no
+remembered rules. If Antigravity changes its prompt while a card is pending,
+Omnigent never applies your answer to the changed prompt; when agy times out
+and retries with a different prompt, a fresh card asks for consent again.
+
+</div>
+
 <div className="note">
 
 **Note:** The in-process `antigravity` SDK harness is a separate integration

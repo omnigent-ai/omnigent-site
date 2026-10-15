@@ -1,0 +1,69 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Import your OpenClaw coding agents into Omnigent",
+  "Reuse the ACP agents registered in OpenClaw or acpx. Import their launch commands into Omnigent, or try one for a single run.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/import-openclaw-agents",
+  },
+);
+
+export const meta = {
+  title: "Import your OpenClaw coding agents into Omnigent",
+  date: "2026-10-15",
+  category: "Multi-harness",
+  author: "omnigent",
+  heroArt: "/images/blog/import-openclaw-agents.png",
+};
+
+<BlogPostHeader slug="import-openclaw-agents" />
+
+If you have ACP coding agents registered in OpenClaw or acpx, import their
+launch commands into Omnigent instead of adding each one by hand. Each agent
+continues to use its own CLI login.
+
+Run `omni setup` and choose **Import from OpenClaw** under **Configure harnesses**:
+
+```bash
+omni setup
+```
+
+Select the registry at `~/.acpx/config.json` or `~/.openclaw/openclaw.json`, or
+choose another file. Review the commands and confirm the import. The agents are
+saved in Omnigent's config and become available as `acp:<slug>` harnesses, such
+as `acp:gemini-cli`.
+
+<figure>
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcSet="/images/blog/import-openclaw-dark.png"
+    />
+    <img
+      src="/images/blog/import-openclaw-light.png"
+      alt="Omnigent setup lists Gemini CLI and Qwen Code from an acpx registry, then confirms that both agents were imported."
+      width={2178}
+      height={978}
+      style={{ width: "100%", borderRadius: "8px" }}
+    />
+  </picture>
+  <figcaption>
+    Importing Gemini CLI and Qwen Code from an example acpx registry.
+  </figcaption>
+</figure>
+
+To try one agent without saving it to your config, use its registry name:
+
+```bash
+omni run --from-openclaw "Gemini CLI"
+```
+
+See the [import guide](/docs/build/harnesses/configuration#import-agents-from-openclaw)
+for details. For OpenClaw's routing, memory, and channels,
+[connect the OpenClaw Gateway](/docs/build/harnesses/configuration#drive-the-openclaw-gateway)
+separately.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

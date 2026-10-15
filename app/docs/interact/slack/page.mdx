@@ -226,10 +226,17 @@ bot auto-detects the server's auth mode and picks the matching flow:
   grant** (`OMNIGENT_DEVICE_GRANT_ENABLED=1` — it is off by default). Set the
   bot's `OMNIGENT_DEVICE_CLIENT_SECRET` to match the server's so only this bot
   can drive the flow.
-- **`oidc` mode** — the server's cli-login ticket flow. The user signs in at
-  your IdP in their browser; the bot receives the server's regular session JWT.
-  There is no refresh token, so after the session's TTL (default 8 hours) the
-  user logs in again.
+- **`oidc` mode** — the server's PKCE-bound cli-login ticket flow (the same
+  one `omni login` uses; see
+  [CLI, mobile, and Slack sign-in](/docs/collaborate/auth#cli-mobile-and-slack-sign-in)).
+  The modal shows a login link and a confirmation code. The user signs in at
+  your IdP in their browser, then explicitly approves the request on the
+  server's **Authorize sign-in** page after checking that the code matches the
+  one in Slack. The bot receives the server's regular session JWT. There is no
+  refresh token, so after the session's TTL (default 8 hours) the user logs in
+  again. If the bot is older than the server, the link opens an **Update
+  Omnigent to sign in** page instead and the login cannot complete until the
+  integration is updated — update the bot **before** upgrading the server.
 - **`header` / proxy mode** — auto-detect can't drive a per-user login here,
   since identity is asserted by an upstream proxy. When the server is deployed
   as a **Databricks App**, set `OMNIGENT_SLACK_SERVER_AUTH=databricks` and the
@@ -344,5 +351,10 @@ the conversation.
   `/omnigent` again.
 - **Login never completes on an accounts-mode server** — check that the server
   sets `OMNIGENT_DEVICE_GRANT_ENABLED=1`.
+- **OIDC login shows "Update Omnigent to sign in" or is reported as rejected** —
+  the bot predates the server's PKCE-bound ticket flow. Reinstall the `slack`
+  extra at a version matching the server and restart the bot; users then rerun
+  `/omnigent`. An OIDC login also stays pending until the user clicks
+  **Approve** in the browser — signing in alone is not enough.
 - **Events arrive but nothing happens** — set `LOG_LEVEL=DEBUG` in `.env` and
   check `omni integration slack logs -f`.

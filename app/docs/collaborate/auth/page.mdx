@@ -175,13 +175,104 @@ ID tokens signed with **PS256** are verified alongside the existing RSA
 #### Verifying the setup
 
 Restart the server with the new settings, sign in from a private browser
-window, then run `omni login <server-url>` and complete the browser flow.
-Both should identify the same expected account.
+window, then run `omni login <server-url>`, complete the browser flow, and
+approve the request on the **Authorize sign-in** page (see
+[CLI, mobile, and Slack sign-in](#cli-mobile-and-slack-sign-in)). Both should
+identify the same expected account.
 
 If your enterprise directory omits `email_verified`, the separate
 `OMNIGENT_OIDC_SKIP_EMAIL_VERIFICATION=1` setting (see
 [Custom email claim](#custom-email-claim)) remains an explicit operator
 choice — the options above never enable it for you.
+
+### CLI, mobile, and Slack sign-in
+
+Clients that cannot hold a browser session themselves — `omni login`, the iOS
+and Android apps, and the [Slack bot](/docs/interact/slack#authentication) —
+sign in to an OIDC server through a **PKCE-bound login ticket** that you
+approve in your browser. Browser sign-in to the web UI is unchanged; this
+section only covers the ticket flow.
+
+From the user's side:
+
+1. Run `omni login <server-url>`. The CLI opens your browser and prints a
+   short confirmation code: `Confirm this code in the browser: XXXX-XXXX`.
+   (The Slack modal shows the same link and code.)
+2. Sign in at your IdP. The ticket always asks the IdP for a **fresh**
+   authentication, even if you are already signed in to the web UI in that
+   browser. GitHub login may reuse its provider session but still requires
+   this ticket-specific sign-in.
+3. The browser lands on an **Authorize sign-in** page naming the account and
+   showing the code. Check that it matches the one in your terminal or Slack,
+   then click **Approve**. The waiting client receives its session and reports
+   `Logged in as <you>`.
+4. Click **Deny** if you did not just start this sign-in. The CLI exits with
+   `Login request was denied in the browser`. Closing the tab without deciding
+   leaves the client waiting; the ticket expires after 5 minutes.
+
+The native mobile apps use the same ticket and approval page but currently do
+not display the code in the app, so rely on the "did I just start this?"
+check when approving from a phone.
+
+Only the browser session created by that ticket's sign-in can approve it. An
+ordinary web-UI session, a runner token, or a refresh-issued token cannot
+approve someone else's ticket, and the client must present the PKCE verifier
+that matches the ticket it created to collect the session — so a leaked ticket
+id alone is useless to an attacker.
+
+#### Older clients must upgrade
+
+The ticket flow requires PKCE and explicit approval; there is no legacy
+fallback. A CLI, mobile app, Slack integration, or custom client built before
+this change can still **open** a login page, but it is an **Update Omnigent to
+sign in** page: no ticket or credentials are created and the attempt never
+completes. Because old clients hide the server's detailed error text, the
+terminal or Slack message may only say the login was rejected or expired.
+
+- **CLI:** run [`omni upgrade`](/quickstart/install#upgrade-the-cli), then run
+  `omnigent login` again.
+- **iOS / Android:** update the app through your app store or your
+  organization's distribution channel, then start sign-in again.
+- **Slack:** ask your administrator to update the Omnigent Slack integration,
+  then restart setup in Slack.
+
+Existing sessions and refresh grants are unaffected and keep their normal
+expiry and revocation behavior; only the _next_ login from an old client fails.
+
+#### Operator checklist
+
+- **Ship clients before the server.** Make CLI, mobile, and Slack builds with
+  the PKCE update available first and announce that older clients must upgrade
+  to sign in again. Update a centrally managed Slack bot before the server —
+  the old bot's error modal can replace the upgrade link before the user opens
+  it.
+- **Check your IdP.** The generic-OIDC path requests fresh authentication with
+  `prompt=login` and `max_age=0` and requires a signed ID token whose
+  `auth_time` is at or after the request. Verify that your IdP honors these
+  parameters and supplies `auth_time`; missing or stale claims fail closed and
+  the ticket cannot be approved.
+- **Check your proxies.** Updated clients send their PKCE proof in the
+  `X-Omnigent-Code-Verifier` header; proxies must forward it and must not log
+  it. Query-based proof (`code_verifier=`) remains accepted for API
+  compatibility, so do not retain `/auth/cli-poll` query strings in access
+  logs either — a ticket and verifier together can redeem an approved login.
+  Polling responses, including the successful one, are sent with
+  `Cache-Control: no-store`; do not cache them.
+- **Test on staging** with your real IdP and both an old and an updated
+  client. The old client must show the upgrade page without signing in; the
+  updated client must complete a fresh sign-in and browser approval. Include
+  the actual native apps before publishing a mobile build.
+- **Don't roll back the enforcement.** If you roll back for an unrelated
+  deployment issue, keep PKCE and consent enforcement in place.
+
+For custom clients: `POST /auth/cli-login` now requires a JSON body with
+`code_challenge` (S256) and `code_challenge_method: "S256"` and returns
+`ticket`, `login_url`, `user_code`, and `expires_in` (300 seconds). An empty
+request returns HTTP 200 with a fixed, non-redeemable `ticket` notice marker
+and a `login_url` pointing at the upgrade page; polling that marker returns a
+terminal HTTP 410, and invalid PKCE data returns HTTP 400. `GET /auth/cli-poll`
+answers 202 while pending, 200 once approved, and 400 / 403 / 410 as terminal
+errors (bad or missing verifier, verifier mismatch, expired or denied ticket).
 
 ## Header-based auth
 

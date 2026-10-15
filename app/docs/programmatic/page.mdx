@@ -836,6 +836,12 @@ credentials and tool permissions suitable for unattended work.
 You can later ask, "Move Weekday code review to 10am," or "Delete Weekday code
 review." The agent uses the list and update or delete tools to make the change.
 
+Creating or updating a task from an agent always pauses for your approval
+before anything is saved, even when no policies are configured — review the
+agent, prompt, host, and permission settings in the prompt before accepting.
+Listing and deleting tasks do not ask. See
+[Approval for create and update](/docs/build/scheduled-tasks#approval-for-create-and-update).
+
 See [Scheduled Tasks](/docs/build/scheduled-tasks) for the full configuration.
 Scripts can also manage tasks through `/v1/scheduled-tasks`; machine
 client-credentials tokens do not grant access to that endpoint.

@@ -192,6 +192,13 @@ Route models through your Databricks workspace using the
 [Foundation Model API](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/).
 Omnigent resolves credentials from your `~/.databrickscfg` profile.
 
+The [installer script](/quickstart/install#install-omnigent) includes the
+`databricks` extra and the Databricks CLI by default (omit them with
+`--no-databricks`). If you installed with `uv` or `pip` directly, use
+`omnigent[databricks]` and install the
+[Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/install)
+separately. Then select Databricks in `omni setup`.
+
 ```
 executor:
   harness: claude-sdk

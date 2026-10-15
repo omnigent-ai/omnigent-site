@@ -29,11 +29,29 @@ time. Run the same command to upgrade an existing installation.
 
 <InstallCommandTabs />
 
+The installer script includes Databricks support: it installs the `databricks`
+extra and the [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/install)
+alongside Omnigent, or reuses an existing CLI that supports workspace login
+(`databricks auth login`). Pass `--no-databricks` to omit both. Installing with
+`uv` or `pip` directly does not include the extra or the CLI — add
+`omnigent[databricks]` and install the Databricks CLI separately.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/install_oss.sh | sh -s -- --no-databricks
+```
+
+<div className="note">
+
+The `antigravity` SDK extra conflicts with the Databricks dependencies. Install
+it with `--no-databricks --extra antigravity`.
+
+</div>
+
 Available extras:
 
 | Category           | Extras                                                                                 |
 | ------------------ | -------------------------------------------------------------------------------------- |
-| Model providers    | `databricks`, `bedrock`, `vertex`                                                      |
+| Model providers    | `databricks` (included by default with the installer script), `bedrock`, `vertex`      |
 | Sandbox providers  | `modal`, `daytona`, `blaxel`, `boxlite`, `cwsandbox`, `e2b`, `openshell`, `kubernetes` |
 | SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                                       |
 | Storage and memory | `postgres`, `s3`, `hindsight`                                                          |
@@ -185,6 +203,10 @@ To actually remove the CLI and the installer-managed PATH entries, add
 ```
 omni uninstall --yes
 ```
+
+Shared dependencies that the installer may have set up — `uv`, `node`, `npm`,
+`tmux`, `bwrap`, and the Databricks CLI (`databricks`) — are reported but not
+removed.
 
 To also delete Omnigent state under `~/.omnigent`, add `--purge`. Omnigent
 archives that state to a backup outside the target (under

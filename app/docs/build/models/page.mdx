@@ -61,6 +61,11 @@ dispatch that doesn't pass its own effort. Precedence, highest first:
 2. `executor.reasoning_effort` from the spec.
 3. The harness CLI default.
 
+In the Web UI, `claude-sdk` and `codex` sessions also expose an in-session
+**Effort** dial that overrides the spec default for that session and applies on
+the next turn without losing history — see
+[Change reasoning effort mid-session](/docs/interact/web-ui#change-reasoning-effort-mid-session).
+
 <div className="note">
 
 **Back-compat:** the older `llm.reasoning_effort` key is still accepted and is

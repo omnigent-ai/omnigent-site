@@ -333,13 +333,13 @@ When Antigravity asks before running a command, Omnigent republishes its prompt
 as an approval card — in the session's Chat and in the sidebar **Inbox**, so you
 can answer without opening the session. The card shows the command Antigravity
 wants to run together with agy's own action description (for example *Running
-pwd command*) and offers the same choices as the `agy` terminal prompt:
+pwd command*). Depending on agy's prompt, the available choices are:
 
 - **Approve** — allow this one command (agy's *Yes, run command*).
 - **Allow commands starting with `<pattern>` for this session** — agy's
   *always allow in this conversation* choice.
 - **Always allow commands starting with `<pattern>`** — agy's persist choice,
-  which saves a rule to the session's isolated agy `settings.json`.
+  which asks agy to save a rule to the session's isolated `settings.json`.
 - **Reject** — agy's *No, cancel*.
 
 The two always-allow buttons are pattern-scoped, not blanket grants: `<pattern>`
@@ -351,11 +351,15 @@ allow requested** or **Always allow requested** rather than *Approved*.
 
 <div className="note">
 
-**Note:** Saved rules belong to the current Omnigent session — each session
-runs agy with its own isolated settings, so a new session starts with no
-remembered rules. If Antigravity changes its prompt while a card is pending,
-Omnigent never applies your answer to the changed prompt; when agy times out
-and retries with a different prompt, a fresh card asks for consent again.
+**Note:** Rules saved through these cards stay in the current Omnigent session's
+isolated agy settings and do not carry over to other sessions. A new session
+starts from a copy of your existing agy settings, which may already contain
+saved rules.
+
+If Antigravity changes its prompt while a card is pending, Omnigent discards
+your answer instead of applying it to the changed prompt. A different prompt
+on a new request requires fresh consent; an unchanged retry can reuse your
+previous answer.
 
 </div>
 

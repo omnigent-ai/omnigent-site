@@ -569,13 +569,25 @@ sees exactly what you're referring to and revises it.
 **Addressing** closes the loop: resolve a comment and the Omnigent acts on the
 feedback. The workflow is: Omnigent proposes, you annotate, Omnigent revises.
 
+The comments panel (`Show comments` in the file viewer toolbar) sorts comments
+into two tabs, each with a count badge:
+
+- **Open** — comments you've left that haven't been sent to the Omnigent yet.
+- **Sent** — comments that have been dispatched to the Omnigent. Each card in
+  this tab carries a `Sent` status label. (This tab was previously labelled
+  **Addressed**; the underlying comment status is still `addressed`.)
+
+`Address All` sends every open comment to the Omnigent in a single message and
+moves them from **Open** to **Sent**. When a comment's status changes from
+elsewhere, its card moves tabs live — no reload needed.
+
 Where this matters most:
 
 - **Reviewing plans before execution.** Annotate the steps you want changed before the Omnigent starts building.
 - **Editing drafted docs.** Leave line-level feedback instead of rewriting in chat.
 - **Iterating on configs.** Flag the fields that need adjustment.
 
-![Addressing an inline comment](/images/docs/address-comment.png)
+![An inline comment in the Open tab, with Open and Sent counts and the Address All button](/images/docs/address-comment.png)
 
 ## Multi-modal input
 

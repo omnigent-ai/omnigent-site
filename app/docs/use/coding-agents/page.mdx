@@ -106,8 +106,27 @@ You can also import from the web UI without touching the terminal. Open
 
 Then click **Import**. The transcripts live on your machine, so the read
 happens on that connected machine over its tunnel — the server never sees your
-local files. Sessions already imported are skipped, and each newly imported
-session is linked in the result so you can jump straight into it.
+local files. Sessions already imported are skipped. While the import runs, the
+panel shows a spinner with a live count (**Importing sessions… N imported**)
+and the machine, mode, harness, count, and session-ID controls are locked
+until it finishes. When it's done, the panel shows a compact summary — how many
+were imported, already imported, and failed — plus a **View sessions** link
+back to the session list. The result doesn't list each imported session
+individually; imported sessions simply appear in the normal sidebar list,
+which refreshes every few seconds while the import is in flight.
+
+You don't have to stay on the Settings page. Go **Back** to the session list
+mid-import and the **Sessions** heading in the sidebar shows an
+**Importing (N)** indicator with a spinner; it links back to the Import panel
+(where the same in-flight progress and your original selection are still
+shown) and disappears once every session has landed. On phones, tapping the
+indicator opens the Import panel directly; the panel's header arrow returns
+you to the Settings menu.
+
+If some sessions couldn't be imported, the summary offers a **View N failed
+sessions** disclosure that expands to each failure's reason and source session
+ID, and a **Retry failed** button that re-runs the import with the same
+machine, harness, count, and session ID you originally chose.
 
 A brand-new account with no sessions yet also gets a one-click **Import your 25
 most recent sessions** button on the empty home screen (importing across all

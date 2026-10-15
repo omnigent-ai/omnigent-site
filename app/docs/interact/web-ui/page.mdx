@@ -486,9 +486,9 @@ the referenced file themselves.
 
 Coding-agent sessions have a **GitHub** tab in the right workspace rail. It
 tracks the pull requests associated with the session and shows the selected
-one's summary (PR description and comments), CI checks, and a stacked diff with
-a file-tree navigator. Nothing is pushed or mutated — recording an association
-never touches the remote PR.
+one's summary (reviewers, CI checks, and the PR description), its conversation
+comments, and a stacked diff with a file-tree navigator. Nothing is pushed or
+mutated — recording an association never touches the remote PR.
 
 ### Tracked pull requests
 
@@ -521,6 +521,23 @@ policy) a missing merge base or unfetched base branch produces an error naming
 the `git fetch` command to run, rather than a misleading branch-tip comparison.
 File content that cannot be read is also reported as an error, never shown as
 an added or deleted file.
+
+### Summary tab
+
+The **Summary** tab opens with a **Reviewers** section, followed by CI checks
+and the PR description. Each assigned reviewer is listed with its current review
+state — **Pending**, **Approved**, **Commented**, **Changes requested**, or
+**Dismissed**. Team reviewers are marked `(team)`. A reviewer whose review has
+been re-requested shows as **Pending** even if they approved earlier. A PR with
+no reviewers reads `No reviewers assigned.`
+
+Reviewer data comes from the same `gh pr view` call as the rest of the PR. If
+GitHub refuses the reviewer fields for the active token (or the host's `gh` is
+too old to know them), Omnigent re-fetches the PR without them: the Reviewers
+section is simply omitted and the summary, checks, and comments still load.
+
+In the **Comments** tab, each author's avatar initial gets a distinct color
+within the thread so you can follow who said what at a glance.
 
 ### Link or unlink a PR
 

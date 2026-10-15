@@ -1,0 +1,64 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Run each agent in a hardware-isolated microVM on your own machine",
+  "The microsandbox provider boots each managed host in its own libkrun microVM on the machine running Omnigent: hardware isolation with its own kernel, sub-second boots, and no daemon, cloud account, or API key.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/local-microvm-sandboxes",
+  },
+);
+
+export const meta = {
+  title: "Run each agent in a hardware-isolated microVM on your own machine",
+  date: "2026-09-09",
+  category: "Sandbox",
+  author: "omnigent",
+  heroArt: "/images/blog/local-microvm-sandboxes.png",
+};
+
+<BlogPostHeader slug="local-microvm-sandboxes" />
+
+If you run Omnigent locally and want agents kept away from the rest of your
+machine, you can now put each managed host in its own hardware-isolated microVM
+without signing up for a cloud sandbox. Set `sandbox.provider: microsandbox` and
+every session runs in a libkrun microVM on the same machine as your server.
+
+Until now, real isolation for agent work meant reaching for a remote sandbox
+provider, which brings a cloud account, an API key, and a daemon to run. The
+microsandbox provider keeps everything local: the runtime is embedded in the
+Omnigent process, each VM has its own kernel rather than sharing the host's, and
+a cached image boots in well under a second. Idle VMs drain themselves to free
+compute and memory while keeping their workspace, then resume in place in about
+100ms when the next message arrives.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: a session starting a fresh microVM host in under a second, running an agent turn inside it, then draining on idle and resuming in place on the next message. */}
+
+Install the extra, then point your server config at the provider. Managed
+sessions get a VM automatically, provisioned on create and removed when the
+session is deleted.
+
+```bash
+pip install 'omnigent[microsandbox]'
+```
+
+```yaml
+sandbox:
+  provider: microsandbox
+  server_url: http://host.microsandbox.internal:8799
+```
+
+You can also bootstrap a host from the CLI, which builds your local wheels,
+boots a VM, and attaches in the foreground:
+
+```bash
+omnigent sandbox create --provider microsandbox --server https://omnigent.example.com
+```
+
+It needs hardware virtualization on the machine running Omnigent: Apple Silicon
+macOS, or Linux with KVM. See the
+[sandbox host guide](/docs/deploy/cloud-sandbox-host) for the full setup.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

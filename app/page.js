@@ -7,21 +7,37 @@ import PillarsTabs from "@/components/PillarsTabs";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { DiscordIcon, CalendarIcon } from "@/components/icons";
 import { DISCORD_URL, EVENTS_URL } from "@/components/links";
+import { productionSiteUrl } from "@/lib/site";
+import JsonLd from "@/components/JsonLd";
+import { getReleases } from "@/lib/releases";
+import { softwareApplication } from "@/lib/structured-data";
+
+// Title, description, and social cards come from the root layout. Only the
+// canonical is set here: a canonical in the root layout would be inherited by
+// every page that doesn't set its own, pointing them all at the homepage.
+export const metadata = {
+  alternates: { canonical: `${productionSiteUrl}/` },
+};
 
 export default function Home() {
+  const latestRelease = getReleases()[0];
   return (
     <>
+      <JsonLd data={softwareApplication({ version: latestRelease?.version })} />
       <Nav />
 
       <main>
         {/* Hero */}
         <section className="hero wrap">
           <h1 className="hero-logo">
+            <span className="visually-hidden">
+              Omnigent: a meta-harness for AI agents
+            </span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="theme-light-only"
               src="/images/hero-logo.svg"
-              alt="Omnigent, a meta-harness for AI agents"
+              alt=""
               width={366}
               height={118}
             />
@@ -29,7 +45,7 @@ export default function Home() {
             <img
               className="theme-dark-only"
               src="/images/hero-logo-dark.svg"
-              alt="Omnigent, a meta-harness for AI agents"
+              alt=""
               width={366}
               height={118}
             />
@@ -77,10 +93,11 @@ export default function Home() {
               </li>
               <li>
                 <strong>
-                  <Link href="/docs/omnibox">Secure OS Sandbox</Link>:
+                  <Link href="/docs/omnibox">Secure Sandboxes</Link>:
                 </strong>{" "}
-                restrict filesystem and network access. Hide credentials from
-                the agent, and broker access to them. Run YOLO mode safely.
+                run any agent in a local OS sandbox or a remote cloud sandbox.
+                On Linux and macOS, restrict filesystem and network access and
+                broker credentials without exposing them to the agent.
               </li>
             </ul>
           </div>
@@ -100,9 +117,10 @@ export default function Home() {
 
             <h2>Architecture</h2>
             <p className="arch-outro">
-              A runner wraps any agent in a sandboxed, uniform session. A server
-              adds policies and shared history, and exposes every session over
-              the terminal, the web, a native app, mobile, and a REST API.
+              A runner wraps any agent in a uniform session that can run in a
+              local OS sandbox or a remote cloud sandbox. A server adds policies
+              and shared history, and exposes every session over the terminal,
+              the web, a native app, mobile, and a REST API.
             </p>
             <figure className="section-graphic">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -125,7 +143,7 @@ export default function Home() {
               className="muted"
               style={{ maxWidth: "38rem", margin: "0 auto 1.8rem" }}
             >
-              Omnigent is alpha and built in the open. Try it and give us
+              Omnigent is open source and built in the open. Try it and give us
               feedback on Discord.
             </p>
             <div className="hero-cta">

@@ -36,7 +36,27 @@ Available extras:
 | Model providers    | `databricks`, `bedrock`, `vertex`                                                      |
 | Sandbox providers  | `modal`, `daytona`, `blaxel`, `boxlite`, `cwsandbox`, `e2b`, `openshell`, `kubernetes` |
 | SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                                       |
-| Storage and memory | `s3`, `hindsight`                                                                      |
+| Storage and memory | `postgres`, `s3`, `hindsight`                                                          |
+
+## Homebrew source builds behind a mirror
+
+The Homebrew tap installs a prebuilt bottle by default. If you build from source
+on a network that requires internal package mirrors, point the build at them with
+two optional environment variables:
+
+```bash
+HOMEBREW_PIP_INDEX_URL='https://pypi.example.com/simple' \
+HOMEBREW_CARGO_INDEX_URL='https://cargo.example.com/index/' \
+  brew install --build-from-source omnigent-ai/tap/omnigent
+```
+
+- `HOMEBREW_PIP_INDEX_URL` routes pip through your mirror, including pip's
+  isolated build dependencies.
+- `HOMEBREW_CARGO_INDEX_URL` takes a sparse registry index URL ending in `/`,
+  without the `sparse+` prefix.
+
+Both overrides are optional and do not affect prebuilt-bottle installs. Replace
+the example URLs with your own mirrors.
 
 ## Set up credentials
 
@@ -85,6 +105,21 @@ browser can't, like notifications and a dock badge.
 
 See the [Desktop app](/docs/interact/desktop) reference for all platforms and
 details.
+
+## Upgrade the CLI
+
+Self-upgrade an existing install to the latest release with:
+
+```
+omni upgrade
+```
+
+Add `--check` to report whether a newer version is available and exit without
+changing anything.
+
+`omni update` is an alias for `omni upgrade`: it runs the same command with the
+same options, so either spelling works. The alias is not listed in
+`omnigent --help` to avoid a duplicate entry.
 
 ## Nightly builds
 

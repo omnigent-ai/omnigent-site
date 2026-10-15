@@ -1,0 +1,464 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Cloud Sandbox Configuration",
+  "Reference for configuring managed cloud sandbox providers, lifecycle settings, credentials, and host configuration.",
+  {
+    eyebrow: "Reference",
+    path: "/docs/reference/configuration/cloud-sandbox",
+  },
+);
+
+# Cloud sandbox configuration
+
+The server can provision remote runner hosts through several sandbox providers.
+See [Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host) for installation,
+provider authentication, and launch steps. To add a provider from a separate
+Python package, see [Community Sandbox Providers](/docs/deploy/community-sandbox-providers).
+
+## Common settings
+
+Add the top-level `sandbox` block to the server configuration:
+
+```yaml
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+```
+
+| Field         | Required | Description                                                                                             |
+| ------------- | -------- | ------------------------------------------------------------------------------------------------------- |
+| `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `openshell`, `boxlite`, or `microsandbox`. |
+| `server_url`  | Yes      | Omnigent server URL reachable from the sandbox.                                                         |
+| `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).    |
+| `git_clone`   | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).               |
+
+Provider-specific blocks are optional. Omit one to use that provider's defaults.
+
+## Git clone options
+
+The optional `git_clone` mapping reduces the Git history a managed sandbox
+downloads when it creates a repository checkout. A useful starting point for
+short coding sessions:
+
+```yaml
+sandbox:
+  provider: kubernetes
+  server_url: https://your-server.example.com
+  git_clone:
+    depth: 50
+    single_branch: true
+```
+
+This checks out every file on the selected branch with up to 50 commits of
+history. It applies to each requested repository, including repositories cloned
+after claiming a warm-pool Pod, and needs no prepared workspace image. Restart
+the server after changing the block, then create a new sandbox to try it.
+
+| Setting         | Default | Behavior                                                                                                                                                                                                                                |
+| --------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `depth`         | `null`  | Full history. A positive integer requests a shallow clone with that many commits.                                                                                                                                                       |
+| `single_branch` | `null`  | Keep the existing rule: a pinned repo branch selects only that branch; otherwise all branches are fetched. `true` selects only the requested (or default) branch; `false` fetches all branches.                                         |
+| `filter`        | `null`  | `blob:none` enables a partial clone: commit history is kept and file contents are fetched on demand. The initial checkout still includes every file. Requires remote filter support; Git can warn and fall back to an unfiltered clone. |
+| `tags`          | `true`  | Normal tag following. `false` passes `--no-tags`, which persists for later fetches. `true` does not promise every remote tag is fetched.                                                                                                |
+
+Only these four keys are accepted; any other key, or any non-null, non-mapping value, fails
+server startup. Omitting `git_clone` preserves the existing clone commands.
+Setting only `depth` keeps the existing branch selection — Omnigent explicitly
+counters Git's implicit single-branch default for shallow clones. Fetching every
+branch of a repository with many branch tips can erase most of the speed
+benefit; set `single_branch: true` when that tradeoff fits the workload.
+
+The policy applies only when a checkout has to be created. Retained checkouts
+are not reset, truncated, or reconfigured when a session wakes; an
+agent-sandbox wake that lost its ephemeral workspace recreates it with the
+current policy. Each entry in a `sandbox.providers` list can override the
+entire shared `git_clone` mapping; use `git_clone: {}` on an entry to restore
+the defaults.
+
+Kubernetes (including agent-sandbox warm pools) and providers that use the
+standard exec clone implementation support these options. Gensee, Islo, and
+custom workspace materializers must implement support explicitly; with
+nondefault settings the launch, replacement, or resume is rejected before any
+sandbox is provisioned, naming the provider. Third-party providers advertise
+support with `SandboxCapabilities.git_clone_options=True` and honor
+`RepoWorkspace.git_clone`; exec providers that override `materialize_workspace`
+must accept its optional `git_clone` argument when opting in. With default
+settings, legacy overrides receive no new keyword.
+
+Clone settings carry no credentials. Initial clones keep using the owner-bound
+[GitHub broker](/docs/deploy/github-connect), and later Git operations use the
+host's existing credential helper. Deepening a private repo or lazily fetching
+blobs requires continued access to the remote.
+
+### Getting more history later
+
+Inside a shallow checkout:
+
+```bash
+git fetch --deepen=100 origin
+# Or restore full history for the configured branch selection:
+git fetch --unshallow origin
+```
+
+Neither command widens a single-branch fetch refspec or re-enables tags. To
+fetch another branch, for example for a PR comparison, name its remote-tracking
+destination:
+
+```bash
+git fetch origin '+refs/heads/main:refs/remotes/origin/main'
+# If both branches need more history, include both refspecs:
+git fetch --deepen=100 origin \
+  '+refs/heads/main:refs/remotes/origin/main' \
+  '+refs/heads/feature:refs/remotes/origin/feature'
+git fetch --tags origin  # explicitly fetch tags if needed
+```
+
+When a local PR diff cannot find a merge base because history is shallow, or
+the base branch was never fetched, Omnigent reports an actionable error with
+these commands rather than showing a misleading branch-tip comparison. A failed
+lazy file fetch is also an error; unavailable content is never treated as an
+added or deleted file.
+
+Keep the full-history defaults for history-heavy development, offline work, or
+tools that expect broad history. `blob:none` is opt-in because it moves work to
+later reads: a first historical `git show` or `git blame` can fetch more data
+and take longer. Sparse checkout, submodule recursion, and LFS behavior are
+unchanged.
+
+## Modal
+
+```yaml
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+  modal:
+    image: ghcr.io/omnigent-ai/omnigent-host:latest
+    secrets: [omnigent-llm]
+```
+
+- `image` defaults to the official Omnigent host image.
+- `secrets` names [Modal secrets](https://modal.com/docs/guide/secrets) to inject
+  into the runner. Values remain in Modal's secret store.
+
+## Daytona
+
+```yaml
+sandbox:
+  provider: daytona
+  server_url: https://your-server.example.com
+  daytona:
+    image: docker.io/you/omnigent-host:latest
+    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]
+```
+
+- `image` defaults to the official Omnigent host image.
+- `env` lists server environment variables copied into each sandbox. A listed
+  variable that is not set fails the launch.
+
+Daytona has no platform lifetime cap. Omnigent disables Daytona's 15-minute
+idle auto-stop when it provisions a sandbox, so a host survives gaps between
+turns, and deletes the sandbox when its session is deleted. If a managed
+sandbox is stopped or archived out-of-band, the next message resumes the same
+sandbox in place, preserving its filesystem and workspace; an archived sandbox
+may first need a restore, so the wake waits up to 15 minutes (the same budget
+as a cold create). A sandbox that is mid-transition (starting, stopping, or
+archiving) is waited on rather than replaced. Only when the sandbox has been
+deleted does Omnigent create a replacement with a fresh workspace; a sandbox
+that is still being deleted, or a provider error during the wake, fails the
+turn with a retryable error and leaves the existing sandbox binding intact.
+
+Daytona Tier 1 and 2 organizations restrict outbound traffic to a
+[fixed allowlist](https://www.daytona.io/docs/en/network-limits). The
+`server_url` and model endpoints must be reachable from Daytona. Tier 3 and
+higher lift that restriction. On the free tier, use a Cloudflare Worker relay
+on the allowlisted `*.workers.dev` domain; the repository includes an example
+under `deploy/daytona/`. Modal has full egress on its entry tier.
+
+## Islo
+
+```yaml
+sandbox:
+  provider: islo
+  server_url: https://your-server.example.com
+  islo:
+    image: ghcr.io/omnigent-ai/omnigent-host:latest
+    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]
+    idle_pause_after_s: 900
+```
+
+- `image` defaults to the official Omnigent host image.
+- `env` lists server environment variables copied into each sandbox. A listed
+  variable that is not set fails the launch.
+- `idle_pause_after_s` defaults to `900`. Set it to `null` to disable idle
+  pause.
+
+When a new message arrives for a paused Islo host, Omnigent resumes the same
+sandbox and restarts the runner. Changing `idle_pause_after_s` affects new
+sandboxes, not existing ones. Deleting the session still deletes the sandbox.
+
+The provider uses `ISLO_API_KEY`. `ISLO_BASE_URL` and `ISLO_COMPUTE_URL` can
+override its service endpoints.
+
+## Blaxel
+
+```yaml
+sandbox:
+  provider: blaxel
+  server_url: https://your-server.example.com
+  blaxel:
+    image: blaxel/omnigent-host:latest
+    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]
+    region: us-was-1
+    memory_mb: 4096
+    ttl: 24h
+```
+
+- `image` defaults to `blaxel/omnigent-host:latest`.
+- `env` lists server environment variables copied into each sandbox.
+- `region` defaults to `BL_REGION` or the Blaxel default.
+- `memory_mb` defaults to `4096`.
+- `ttl` defaults to `24h` and accepts `w`, `d`, `h`, `m`, and `s`, alone or
+  combined, such as `1h30m`.
+
+`ttl` is the sandbox's maximum age from creation, not an idle timeout. Blaxel
+deletes the sandbox at that age even while its session is active. The launch
+token lasts for `ttl + 1h`; provider command output is capped at 4 MiB.
+
+The default image combines the Omnigent host runtime with Blaxel's required
+`sandbox-api`. Pin a published tag with `image` when deployments must remain
+stable across releases.
+
+Managed sandboxes use the server process's Blaxel workspace and credentials.
+Omnigent users are not mapped to individual Blaxel workspaces. Set
+`OMNIGENT_BLAXEL_HOST_IMAGE` to override the default image without changing the
+configuration. The Blaxel SDK's telemetry is disabled; keep `DO_NOT_TRACK=1`
+set on the server to preserve that behavior.
+
+## OpenShell
+
+```yaml
+sandbox:
+  provider: openshell
+  server_url: https://your-server.example.com
+  openshell:
+    image: ghcr.io/omnigent-ai/omnigent-host:latest
+    env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]
+    cluster: my-gateway
+    workspace: team-alpha
+```
+
+- `image` defaults to the official Omnigent host image.
+- `env` lists server environment variables copied into each sandbox.
+- `cluster` defaults to the active OpenShell gateway from
+  `$OPENSHELL_GATEWAY` or `~/.config/openshell/active_gateway`.
+- `workspace` defaults to `$OMNIGENT_OPENSHELL_WORKSPACE`, then `default`.
+
+When a server-managed OpenShell sandbox goes dormant, its persistent volume is
+retained and the session reports a wakeable "asleep" state. The next message
+resumes the same sandbox in place, preserving its name and volume, and waits
+for it to become ready before continuing.
+
+In-place resume requires `SandboxClient.start`, added in `openshell` 0.0.105.
+With an older SDK, the host remains offline instead of advertising an
+unsupported wake action; upgrade with
+`uv pip install --upgrade 'omnigent[openshell]'`. Resume is currently a cold
+restart rather than a warm snapshot restore.
+
+## Microsandbox
+
+The `microsandbox` provider runs each managed session in a micro-VM on the
+same machine as the server. Because the guest runs untrusted agent code next
+to the server, its default `host` network mode exposes only an explicit TCP
+port allowlist rather than the entire host.
+
+```yaml
+sandbox:
+  provider: microsandbox
+  server_url: http://host.microsandbox.internal:6767
+  microsandbox:
+    host_ports: [8317]
+```
+
+Use your server's port in `server_url`; `localhost` inside the VM refers to the
+VM itself. The example also allows a host-local service on port `8317`.
+
+Optional `sandbox.microsandbox` settings:
+
+- `image` selects a host image; the official Omnigent host image is the default.
+- `env` lists server environment variable names to copy into the VM, such as
+  `[OPENAI_API_KEY]`. Set the values on the server, not in this YAML.
+- `cpus` defaults to `2`; `memory_mib` defaults to `4096`.
+- `idle_timeout_s` defaults to `86400` (24 hours); `0` disables idle draining.
+  Draining releases compute and preserves the writable layer, except `/tmp`.
+  The next message resumes the VM.
+- `network` is `host` (default), `public-only`, or `all`. `public-only` allows
+  public internet access and requires a public `server_url`; `all` also permits
+  private networks. `host` adds the scoped host access described below.
+
+`host.microsandbox.internal` is the stable guest hostname for the machine
+running microsandbox. In `host` network mode:
+
+- The `server_url` port is added to the host allowlist only when `server_url`
+  targets `host.microsandbox.internal`. A public `server_url` does not
+  implicitly open the matching port on the host.
+- List any additional host-local services the guest needs in `host_ports`,
+  using integer ports from `1` through `65535`. Everything else on the host
+  remains unreachable.
+
+## Boxlite
+
+```yaml
+sandbox:
+  provider: boxlite
+  server_url: https://your-server.example.com
+  boxlite:
+    image: docker.io/me/omnigent-host:latest
+    env: [OPENAI_API_KEY, GIT_TOKEN]
+    disk_size_gb: 100
+    cloud:
+      endpoint: https://boxlite.example.com:8100
+```
+
+- `image` defaults to the official Omnigent host image.
+- `env` lists server environment variables copied into each sandbox.
+- `disk_size_gb` must be a positive integer. Omit it to use the SDK default.
+
+Provide one mode: `cloud.endpoint` selects cloud mode and uses
+`BOXLITE_API_KEY`; `local.home_dir` and `local.registry` configure local mode.
+Local mode is used when neither block is set.
+
+## Gensee
+
+[Gensee](https://gensee.ai) is a **managed-host provider only**. The server
+talks to the Gensee control plane over HTTPS; no cloud-provider credentials or
+Gensee implementation packages are installed in Omnigent. Creating a managed
+session allocates one sandbox, has its control plane start `omnigent host`, and
+waits for that host to connect back. Gensee does not implement
+`omnigent sandbox create`, remote exec/file-copy primitives, stopped-sandbox
+resume, or workspace fork/merge.
+
+The production endpoint and standard token variable are defaults, so the
+minimal configuration is just `provider` + `server_url`:
+
+```yaml
+sandbox:
+  provider: gensee
+  server_url: https://your-server.example.com
+```
+
+Use an explicit block for a dedicated or development endpoint:
+
+```yaml
+sandbox:
+  provider: gensee
+  server_url: https://your-server.example.com
+  gensee:
+    endpoint: https://sandbox.gensee.ai
+    api_token_env: GENSEE_CONTROLLER_API_TOKEN
+    workspace_root: /mnt/gensee-tclone/workspaces
+    operation_timeout_s: 900
+    poll_interval_s: 2
+    request_timeout_s: 40
+    retry_timeout_s: 60
+    env: []
+```
+
+| Setting               | Default                         | Purpose                                                                                       |
+| --------------------- | ------------------------------- | --------------------------------------------------------------------------------------------- |
+| `endpoint`            | `https://sandbox.gensee.ai`     | Gensee HTTPS control-plane base URL.                                                          |
+| `api_token_env`       | `GENSEE_CONTROLLER_API_TOKEN`   | Server environment variable holding the API token.                                            |
+| `workspace_root`      | `/mnt/gensee-tclone/workspaces` | Absolute workspace root inside each sandbox.                                                  |
+| `operation_timeout_s` | `900`                           | Shared deadline for host-start submission, retries, and polling; late responses are rejected. |
+| `poll_interval_s`     | `2`                             | Interval between operation-status requests.                                                   |
+| `request_timeout_s`   | `40`                            | HTTP I/O timeout, capped by the remaining operation budget during host startup.               |
+| `retry_timeout_s`     | `60`                            | Retry budget for transport errors and HTTP 500/502/503/504; `0` disables retries.             |
+| `env`                 | `[]`                            | Server environment variable names copied into the sandbox secret.                             |
+
+The endpoint must use HTTPS and cannot contain credentials, a query, or a
+fragment. Unknown settings and malformed values stop server startup rather than
+failing on the first user session.
+
+`GENSEE_CONTROLLER_URL` overrides the default endpoint when constructing the
+launcher directly. An explicit `sandbox.gensee.endpoint` takes precedence in the
+server-managed configuration.
+
+The Gensee API token stays in the server and authorizes lifecycle requests. Each
+sandbox receives a separate server-minted Omnigent host token (valid for seven
+days) through Gensee's short-lived secret store; it is not included in the
+durable operation request. By default no model or Git credentials are injected —
+list only variables every sandbox on the server may receive in `env`, or leave
+it empty and let each user sign in from their own sandbox terminal.
+
+## Native harness bridge servers
+
+Native harnesses (for example `claude-native`) run small HTTP servers on the
+sandbox host that the harness's hook and helper subprocesses call back into:
+
+- A **tool relay**, which **by default binds loopback only (`127.0.0.1`)**, so
+  an ordinary host keeps it off every other interface.
+- An **MCP control ingress**, which by default listens on a Unix domain socket
+  under the harness socket root (`/tmp/omnigent-<uid>/mcp-<pid>.sock`, mode
+  `0600`) rather than a TCP port. It therefore needs no network policy, and a
+  session costs no loopback listener for it — which matters under remote-dev
+  port forwarders that mirror every TCP listener to your laptop and cap how
+  many they will. Sockets left behind by a `serve-mcp` process that died
+  without cleanup are reaped by owner pid on the next start. On Windows, the ingress always binds TCP from the port pool.
+
+A sandbox whose SSRF hardening denies loopback destinations unconditionally
+(the `openshell` provider is one such backend) cannot reach a
+loopback-advertised relay, so every prompt fails closed. Opt into an
+all-interfaces bind by setting `OMNIGENT_BRIDGE_BIND_HOST=0.0.0.0` in the
+sandbox host environment: both servers then listen on all interfaces (loopback
+consumers keep working) and advertise the host's routable address so the
+in-sandbox hooks can reach them.
+
+| Environment variable        | Default                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| --------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `OMNIGENT_BRIDGE_BIND_HOST` | loopback-only relay, Unix socket for MCP ingress | Selects the bind posture. Unset is loopback-only (`127.0.0.1`) for the tool relay and a Unix domain socket for the MCP control ingress. `0.0.0.0` binds both servers on all interfaces and advertises the detected routable address (falling back to loopback when the host has none). Any other value pins that exact host for both bind and advertisement. Setting it to a nonblank value moves the MCP ingress onto a TCP port from the pool. |
+| `OMNIGENT_BRIDGE_PORT_POOL` | `28700`–`28715`                                  | Overrides the server port pool. Accepts comma-separated ports and inclusive ranges, e.g. `28700-28703,29000`.                                                                                                                                                                                                                                                                                                                                    |
+
+TCP-bound bridge servers draw their ports from a small stable pool
+(`28700`–`28715` by default) so a sandbox network policy can allowlist them by
+exact host and port. Several servers can coexist per host — one tool relay per
+session, plus the MCP ingress whenever `OMNIGENT_BRIDGE_BIND_HOST` is set — so
+allowlist the **whole** pool, not a single port. When the pool is exhausted the
+servers fall back to an OS-assigned ephemeral port, which an exact-port policy
+cannot cover.
+
+<div className="note">
+
+Every endpoint on these servers (other than `GET /health`) requires a per-relay
+bearer token, so allowlisting their host and ports does not expose
+unauthenticated functionality.
+
+</div>
+
+## Host configuration
+
+The provider-independent `host_config` block contains the
+`~/.omnigent/config.yaml` content installed inside each sandbox before
+`omnigent host` starts:
+
+```yaml
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+  host_config:
+    providers:
+      litellm:
+        kind: gateway
+        default: [pi]
+        openai:
+          base_url: http://litellm.litellm.svc.cluster.local/v1
+          api_key_ref: env:LITELLM_API_KEY
+          wire_api: chat
+```
+
+On launch or resume, the server replaces or removes entries that it previously
+injected. Configuration created inside the sandbox under other names remains
+untouched.
+
+Do not put secrets in `host_config`. Use `api_key_ref: env:VAR`; the variable
+is resolved inside the sandbox from its provider-specific credential source.
+Inline `api_key` values are rejected. The server validates the block at startup.

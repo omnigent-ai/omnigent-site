@@ -56,14 +56,14 @@ docker compose up -d    # Omnigent server + Postgres
 
 Key variables in `.env` (See [Auth & SSO](/docs/collaborate/auth) for details on multi-user auth):
 
-| Variable                      | Purpose                                         |
-| ----------------------------- | ----------------------------------------------- |
-| `DATABASE_URL`                | Postgres connection string                      |
-| `OMNIGENT_AUTH_ENABLED`       | Enable multi-user auth (default: `1` in Docker) |
-| `OMNIGENT_OIDC_COOKIE_SECRET` | Session cookie secret                           |
-| `OMNIGENT_OIDC_ISSUER`        | OIDC issuer URL (enables SSO)                   |
-| `OMNIGENT_OIDC_CLIENT_ID`     | OIDC client ID                                  |
-| `OMNIGENT_OIDC_CLIENT_SECRET` | OIDC client secret                              |
+| Variable                      | Purpose                                                                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                | Postgres connection string                                                                                                         |
+| `OMNIGENT_AUTH_ENABLED`       | Enable multi-user auth (default: `1` in Docker)                                                                                    |
+| `OMNIGENT_OIDC_COOKIE_SECRET` | Session cookie secret                                                                                                              |
+| `OMNIGENT_OIDC_ISSUER`        | OIDC issuer URL (enables SSO)                                                                                                      |
+| `OMNIGENT_OIDC_CLIENT_ID`     | OIDC client ID                                                                                                                     |
+| `OMNIGENT_OIDC_CLIENT_SECRET` | OIDC client secret (omit for [public PKCE clients](/docs/collaborate/auth#public-pkce-clients-and-explicit-endpoints) that opt in) |
 
 <div className="note">
 
@@ -72,6 +72,39 @@ No admin password is auto-generated. On first boot the server reports
 `OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD` in `.env` to preset it for headless deploys.
 
 </div>
+
+### Extra built-in agents
+
+Set `OMNIGENT_BUILTIN_AGENT_DIRS` to load extra built-in agents at server startup.
+In Docker, use colon-separated paths to YAML specs or bundle directories **inside
+the container**.
+
+Place your agents under `deploy/docker/agents/` and create
+`deploy/docker/docker-compose.override.yaml`, which Compose loads alongside
+`docker-compose.yaml`:
+
+```yaml
+services:
+  omnigent:
+    environment:
+      OMNIGENT_BUILTIN_AGENT_DIRS: /agents/my-agent.yaml:/agents/my-bundle
+    volumes:
+      - ./agents:/agents:ro
+```
+
+Replace the example paths with your agents, then apply the configuration from
+`deploy/docker`:
+
+```sh
+docker compose up -d --force-recreate omnigent
+```
+
+After editing a mounted spec, run `docker compose restart omnigent` to reload it.
+Changes to the paths or mounts require the force-recreate command above.
+
+Each agent is available to all users and named after its YAML file stem or bundle
+directory. Use a distinct name unless you intend to replace an existing built-in.
+Invalid or missing entries are logged and skipped.
 
 ### Cloud platforms
 
@@ -140,6 +173,20 @@ service is not available in your region, or when you need something it does
 not expose yet — custom YAML policies, bring-your-own provider API keys, or
 custom egress controls.
 
+The first-party **Canvas** extension is disabled by default. To enable it for
+a specific self-managed app, set the `OMNIGENT_ENABLE_CANVAS=true` deployment
+environment variable when invoking `deploy/databricks/deploy.py`:
+
+```bash
+OMNIGENT_ENABLE_CANVAS=true uv run python deploy/databricks/deploy.py \
+    --app-name <canvas-enabled-app> ...
+```
+
+Leave the variable unset for every other app. `--skip-web-ui` deploys stay
+API-only and ignore the Canvas opt-in. To ship additional extensions, pass
+repeatable `--extension-wheel` arguments; every extension wheel must also fit
+under the 10 MB Databricks Apps source-file cap.
+
 ### Kubernetes
 
 Deploy the Omnigent server to a Kubernetes cluster with the kustomize manifests
@@ -160,8 +207,70 @@ kubectl apply -k deploy/kubernetes/overlays/sandbox-runners
 ```
 
 See the [Kubernetes sandbox configuration reference](/docs/reference/configuration/kubernetes)
-for Pod-start timeouts, persistent storage, and rotation-friendly Secret
-mounts.
+for Pod-start timeouts, persistent storage, rotation-friendly Secret mounts,
+and — for the `agent_sandbox` provider — opt-in
+[native warm pools](/docs/reference/configuration/kubernetes#native-warm-pools-for-agentsandbox-warmpool)
+that keep spare Pods ready before a session arrives.
+
+### Serving under a subpath
+
+By default the server and web UI are served from the origin root (`/`). To
+serve them under a path prefix instead — behind code-server's port proxy at
+`https://<host>/proxy/6767/`, or an nginx/Traefik `location /omnigent/` block —
+set the base path. The environment variable and the CLI flag are equivalent:
+
+```
+OMNIGENT_WEB_BASE_PATH=/proxy/6767 omni server
+# or
+omni server --base-path /proxy/6767
+```
+
+The web UI then prefixes its API, SSE, WebSocket, and asset URLs with that path,
+and the server accepts requests **whether or not** the proxy forwards the
+prefix, so one value covers both kinds of proxy:
+
+- **Prefix-stripping proxies** (code-server's `/proxy/<port>/`) forward
+  `/v1/...` — the server serves it as-is.
+- **Non-rewriting proxies** (code-server's `/absproxy/<port>/`, or an nginx
+  `location` block without a rewrite) forward the full `/proxy/6767/v1/...` —
+  the server strips the configured prefix before routing.
+
+Server-issued redirects stay under the prefix too: login and logout, magic-link
+sign-in, the device-code consent page used by `omni login`, and the GitHub /
+Databricks connection callbacks all return to the prefixed app instead of the
+origin root.
+
+**Value rules.** Use a leading slash and no trailing slash (`/proxy/6767`); a
+missing leading slash is added and a trailing slash is dropped. Unset, empty,
+or `/` means a root deployment (unchanged behavior). The server refuses to
+start with a value that:
+
+- starts with `//`, contains characters outside letters, digits, and `-._~/`
+  (including percent-encoding), or has a `.` / `..` segment;
+- begins with a reserved API segment — `api`, `assets`, `auth`, `docs`,
+  `health`, `oauth`, `openapi.json`, `redoc`, `v1`, `.well-known`;
+- begins with one of the web UI's own top-level routes — `approve`, `c`,
+  `canvas`, `extensions`, `inbox`, `login`, `members`, `policies`, `register`,
+  `settings`, `tasks`, `usage`.
+
+<div className="note">
+
+**Auth behind a subpath.** For built-in accounts, also set
+`OMNIGENT_ACCOUNTS_BASE_URL` to the full public URL including the prefix (e.g.
+`https://<host>/proxy/6767`) so login and invite redirects and cookies resolve
+correctly. For [OIDC](/docs/collaborate/auth#single-sign-on-oidc), set
+`OMNIGENT_OIDC_REDIRECT_URI` to the full public callback URL including the
+prefix (e.g. `https://<host>/proxy/6767/auth/callback`).
+
+</div>
+
+**Local managed server.** `omni server --background --base-path /proxy/6767`
+respawns the detached local server under that prefix. The prefix is remembered:
+later commands that don't set a base path (a plain `omni run`, `connect`, …)
+reuse the running server as-is rather than restarting it at the root, and only
+an explicitly different value triggers a respawn. Browser links the CLI opens or
+prints for that local server (the auto-opened web UI and `/c/<id>` session
+links) include the prefix; links to a remote `--server` are never rewritten.
 
 ## Runner
 

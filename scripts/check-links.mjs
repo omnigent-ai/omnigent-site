@@ -18,7 +18,8 @@
  * conventions (`app/**​/page.{js,jsx,ts,tsx,md,mdx}`), with route groups `(group)`,
  * parallel slots `@slot`, and private `_folders` handled the way Next does, plus
  * `[param]` / `[...catch-all]` dynamic-segment matching. Static assets under
- * `public/` are treated as valid targets.
+ * `public/` and static redirect/rewrite sources in `next.config.mjs` are
+ * treated as valid targets.
  *
  * Output: human summary (default) or JSON (--json). Exit code: 0 = no broken
  * links, 1 = at least one broken link, 2 = usage/internal error.
@@ -196,7 +197,32 @@ function buildModel() {
     publicAssets.add("/" + repoRel(f).replace(/^public\//, ""));
   }
 
-  return { validPaths, dynamicRoutes, publicAssets };
+  return {
+    validPaths,
+    dynamicRoutes,
+    publicAssets,
+    configSources: configSources(),
+  };
+}
+
+/**
+ * Static `source` paths from the redirects/rewrites in next.config.mjs. They
+ * resolve on the live site even without a page file (e.g. `/docs`). Read as
+ * text so the checker stays dependency-free; sources with params or patterns
+ * (`:file`, `(.*)`) are skipped.
+ */
+function configSources() {
+  let src = "";
+  try {
+    src = readFileSync(join(ROOT, "next.config.mjs"), "utf8");
+  } catch {
+    return new Set();
+  }
+  const sources = new Set();
+  for (const m of src.matchAll(/\bsource:\s*["'`]([^"'`]+)["'`]/g)) {
+    if (/^\/[^:()*?+[\]{}]*$/.test(m[1])) sources.add(normalizePath(m[1]));
+  }
+  return sources;
 }
 
 // ---------------------------------------------------------------------------
@@ -486,6 +512,15 @@ function validateTarget(rawTarget, pageUrl, model) {
         status: "ok",
         reason: `route "${norm}"`,
         target: { path: norm, fragment: null },
+      };
+    }
+
+    if (model.configSources.has(norm)) {
+      return {
+        category: "internal",
+        status: "ok",
+        reason: `redirect/rewrite "${norm}" (next.config.mjs)`,
+        target: { path: norm, fragment: frag },
       };
     }
 

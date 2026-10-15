@@ -37,14 +37,14 @@ const PILLARS = [
     body: "Stateful, data-centric policies that track agent actions and enforce guardrails like cost budgets and access controls at the meta-harness layer, not via prompts.",
     icon: {
       src: "/images/sandbox.png",
-      alt: "Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating the OS-level sandbox that isolates every agent.",
+      alt: "Omnigent's mascot supervising smaller agents playing in a sandbox, illustrating sandboxed agents.",
       width: 600,
       height: 473,
     },
     visual: {
       src: "/images/control.png",
       darkSrc: "/images/control-dark.png",
-      alt: "Omnigent approval prompt for a Bash tool call blocked by a session cost budget policy.",
+      alt: "Omnigent's Add Policy dialog for applying a governance policy to an agent session, listing options like limiting tool calls per session, detecting tool-call retry loops, and requiring approval for file and shell operations.",
       width: 1664,
       height: 1286,
       fit: "contain",

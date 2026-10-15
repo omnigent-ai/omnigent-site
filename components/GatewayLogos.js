@@ -1,23 +1,6 @@
-// Logo grid of OpenAI-/Anthropic-compatible gateways shown on the Models page.
-const gateways = [
-  { logo: "databricks", name: "Databricks Unity AI Gateway" },
-  { logo: "mlflow", name: "MLflow AI Gateway" },
-  { logo: "openrouter", name: "OpenRouter" },
-  { logo: "litellm", name: "LiteLLM" },
-  { logo: "portkey", name: "Portkey" },
-  { logo: "helicone", name: "Helicone" },
-  { logo: "cloudflare", name: "Cloudflare AI Gateway" },
-  { logo: "kong", name: "Kong AI Gateway" },
-  { logo: "vercel", name: "Vercel AI Gateway" },
-  { logo: "azure", name: "Azure OpenAI" },
-  { logo: "ollama", name: "Ollama" },
-  { logo: "lmstudio", name: "LM Studio" },
-  { logo: "vllm", name: "vLLM" },
-  { logo: "localai", name: "LocalAI" },
-  { logo: "huggingface", name: "TGI (Hugging Face)" },
-  { logo: "gpt4all", name: "GPT4All" },
-];
+import { gateways } from "@/lib/docs-component-data";
 
+// Logo grid of OpenAI-/Anthropic-compatible gateways shown on the Models page.
 export default function GatewayLogos() {
   return (
     <div

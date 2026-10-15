@@ -104,6 +104,7 @@ const ALL_PAGES = [
   { href: "/docs/interact/web-ui", label: "Web UI", section: "Interact" },
   { href: "/docs/interact/mobile", label: "Mobile", section: "Interact" },
   { href: "/docs/interact/desktop", label: "Desktop App", section: "Interact" },
+  { href: "/docs/interact/slack", label: "Slack", section: "Interact" },
   {
     href: "/docs/collaborate",
     label: "Pair Programming",
@@ -125,8 +126,18 @@ const ALL_PAGES = [
     section: "Collaboration",
   },
   {
+    href: "/docs/deploy/credential-store",
+    label: "Credential Store",
+    section: "Collaboration",
+  },
+  {
     href: "/docs/deploy/cloud-sandbox-host",
     label: "Cloud Sandbox Host",
+    section: "Collaboration",
+  },
+  {
+    href: "/docs/deploy/community-sandbox-providers",
+    label: "Community Sandbox Providers",
     section: "Collaboration",
   },
   {
@@ -145,9 +156,9 @@ const ALL_PAGES = [
     section: "Contextual Policies",
   },
   {
-    href: "/docs/policies/os-sandbox",
+    href: "/docs/omnibox",
     label: "Omnibox",
-    section: "Contextual Policies",
+    section: "Omnibox",
   },
   {
     href: "/docs/reference/configuration",
@@ -157,6 +168,36 @@ const ALL_PAGES = [
   {
     href: "/docs/reference/configuration/kubernetes",
     label: "Kubernetes Sandbox",
+    section: "Reference",
+  },
+  {
+    href: "/docs/reference/configuration/os-sandbox",
+    label: "OS Sandbox",
+    section: "Reference",
+  },
+  {
+    href: "/docs/reference/configuration/cloud-sandbox",
+    label: "Cloud Sandbox",
+    section: "Reference",
+  },
+  {
+    href: "/docs/reference/configuration/routing",
+    label: "Smart Routing",
+    section: "Reference",
+  },
+  {
+    href: "/reference",
+    label: "REST API",
+    section: "Reference",
+  },
+  {
+    href: "/docs/reference/routing-api",
+    label: "Routing Provider API",
+    section: "Reference",
+  },
+  {
+    href: "/docs/deploy/telemetry",
+    label: "Usage Telemetry",
     section: "Reference",
   },
 ];

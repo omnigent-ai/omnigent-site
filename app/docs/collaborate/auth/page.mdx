@@ -94,6 +94,95 @@ for an IdP you trust to vouch for the claim. When set, the claim value is
 trimmed and normalized like an email address. This applies to the generic-OIDC
 path only; GitHub always requires a verified primary email.
 
+### Public PKCE clients and explicit endpoints
+
+The generic-OIDC path (Okta, Auth0, Keycloak, Entra ID, and any other IdP that
+publishes `/.well-known/openid-configuration`) accepts two further
+operator-level options. Both configure **Omnigent login** only — not upstream
+MCP credentials or shared-session credential ownership — and neither relaxes
+the signature, expiration, email-verification, admission, or reauthentication
+checks that run on every sign-in.
+
+#### Public clients (no client secret)
+
+If you registered Omnigent with your IdP as a **public client**, opt in with
+`OMNIGENT_OIDC_TOKEN_ENDPOINT_AUTH_METHOD=none` and leave
+`OMNIGENT_OIDC_CLIENT_SECRET` unset:
+
+```
+OMNIGENT_OIDC_ISSUER=https://identity.example.com
+OMNIGENT_OIDC_CLIENT_ID=omnigent
+OMNIGENT_OIDC_TOKEN_ENDPOINT_AUTH_METHOD=none
+```
+
+Omnigent still sends its client ID, redirect URI, and PKCE verifier to the
+token endpoint, but omits the `client_secret` field entirely. PKCE S256 is
+used in both modes, so the IdP must enforce PKCE and one-time authorization
+codes.
+
+This is an explicit opt-in. The default, `client_secret_post`, continues to
+require `OMNIGENT_OIDC_CLIENT_SECRET` — a missing secret never silently
+switches you to public-client mode. The server refuses to start if you set
+`none` together with a client secret, if you set any other value, or if you
+combine `none` with GitHub login (GitHub always needs the secret). If you are
+migrating from a custom integration that inferred public-client mode from an
+absent secret, add `OMNIGENT_OIDC_TOKEN_ENDPOINT_AUTH_METHOD=none` explicitly.
+
+#### Explicit endpoints (skip discovery)
+
+When discovery is unavailable, or advertises endpoints that don't suit your
+deployment, set **all three** overrides and the server skips the discovery
+fetch at startup:
+
+```
+OMNIGENT_OIDC_ISSUER=https://identity.example.com
+OMNIGENT_OIDC_CLIENT_ID=omnigent
+OMNIGENT_OIDC_TOKEN_ENDPOINT_AUTH_METHOD=none
+OMNIGENT_OIDC_AUTHORIZATION_ENDPOINT=https://login.example.com/authorize
+OMNIGENT_OIDC_TOKEN_ENDPOINT=https://tokens.example.com/token
+OMNIGENT_OIDC_JWKS_URI=https://keys.example.com/jwks
+OMNIGENT_OIDC_REDIRECT_URI=https://omnigent.example.com/auth/callback
+OMNIGENT_OIDC_COOKIE_SECRET=<64-hex-chars>
+```
+
+- Setting only one or two of the overrides fails at startup rather than mixing
+  endpoint sources; leave all three unset to keep using discovery.
+- Overrides work with confidential clients too, and public-client mode works
+  with discovery — the two options are independent.
+- Overrides are not supported for GitHub login, which keeps its fixed
+  endpoints.
+- Endpoint hosts may differ from the issuer, but the ID token's `iss` must
+  still match `OMNIGENT_OIDC_ISSUER` exactly and its `aud` must match the
+  client ID.
+- Query parameters on the authorization endpoint (for example `?p=policy`)
+  are preserved. Omnigent's own OAuth parameters win on name collisions.
+
+<div className="note">
+
+**Only trusted operators should set these addresses.** The token endpoint
+receives authorization codes and, for confidential clients, the client secret;
+the JWKS endpoint decides which signing keys are trusted. Each override must be
+an absolute HTTPS URL with no embedded credentials or fragment. Plain HTTP is
+accepted only for `localhost`, `127.0.0.1`, or `[::1]` for local testing.
+
+</div>
+
+#### Signing algorithms
+
+ID tokens signed with **PS256** are verified alongside the existing RSA
+(`RS256`/`RS384`/`RS512`) and EC (`ES256`/`ES384`/`ES512`) algorithms.
+
+#### Verifying the setup
+
+Restart the server with the new settings, sign in from a private browser
+window, then run `omni login <server-url>` and complete the browser flow.
+Both should identify the same expected account.
+
+If your enterprise directory omits `email_verified`, the separate
+`OMNIGENT_OIDC_SKIP_EMAIL_VERIFICATION=1` setting (see
+[Custom email claim](#custom-email-claim)) remains an explicit operator
+choice — the options above never enable it for you.
+
 ## Header-based auth
 
 If your server sits behind an existing SSO proxy (e.g. OAuth2 Proxy, Cloudflare Access) that
@@ -130,6 +219,69 @@ read-only roster, since identities are owned by your IdP and provisioned on
 first sign-in. Separately, every signed-in account (built-in or OIDC) gets a
 **Settings > Account** section showing who they're signed in as, with a sign-out
 control and, in built-in accounts mode only, `Change password`.
+
+### Removing a member
+
+In built-in accounts mode, `Remove` (`DELETE /auth/users/{id}`) revokes
+everything the account could still use to act, in one database transaction.
+Every authenticated request re-checks the stored account state — including on
+other server replicas — so there is no cache to wait out. After removal:
+
+- **Sign-in stops immediately.** Existing browser cookies and JWTs are
+  rejected, and the account's device/refresh grants (`omni login`, mobile and
+  desktop sign-ins) are revoked, so token refresh fails with `invalid_grant`.
+  Outstanding invite and magic-login links created for or by the user are
+  deleted.
+- **Saved authority is removed.** Session-sharing grants, saved provider
+  connections ([GitHub](/docs/deploy/github-connect),
+  [Databricks](/docs/deploy/databricks-connect)), projects, and daily
+  spending/budget checkpoints are deleted. Sessions that lived in the removed
+  user's projects are detached from the project, not deleted.
+- **Scheduled tasks are disabled.** The user's [scheduled
+  tasks](/docs/build/scheduled-tasks) are marked deleted and never fire again.
+- **Hosts are removed.** Hosts the user registered are torn down as if deleted
+  from the host list: bound sessions are detached and launch credentials
+  cleared. A managed cloud-sandbox host is kept as a tombstone until its
+  sandbox is confirmed terminated.
+- **Session history is retained.** Conversations stay in the database, but no
+  new runner can be launched for them on the removed owner's behalf.
+
+Removal is a database commit boundary, not a kill switch: work that was already
+admitted before the removal committed may finish, but nothing new can be
+granted to that identity afterward. You cannot remove your own account, and
+the last remaining admin cannot be removed.
+
+Usernames are reusable. If you later invite the same username again, it
+becomes a brand-new account: it does not inherit the old account's shared
+sessions, connections, projects, or session ownership, and the old cookies
+still fail.
+
+#### Provisioning a password for a shared-with user
+
+Sharing a session with a username that has never registered creates a
+passwordless entry for that person. To let them sign in, use `Reset` on that
+row in **Settings > Members**: the first reset provisions their credentials
+while preserving the sessions already shared with them, and they can log in
+with the returned password.
+
+#### Upgrading an existing accounts deployment
+
+The release that introduces this revocation model adds a schema migration
+that stamps existing accounts and their saved credentials. Accounts-mode
+deployments must upgrade every server and scheduler that shares the database
+together — old code does not understand the new columns, so mixed versions are
+unsafe.
+
+1. Back up the database.
+2. Stop all writers: every server and scheduler sharing the database.
+3. Upgrade the application and run the migration.
+4. Restart only the new version.
+5. Sign in again in ordinary browser sessions, and restart any provider OAuth
+   connection handshake that began before the upgrade.
+
+Existing refresh grants (CLI, mobile, desktop sign-ins) keep working and renew
+into upgraded tokens; ordinary cookies and JWTs require a fresh login. Do not
+roll back to the old version against the upgraded schema.
 
 ### Session sharing
 
@@ -178,11 +330,50 @@ is also editable at runtime from **Settings > Sharing**. When disabled, the
 Share dialog hides its **Public access** toggle and the server rejects new
 public grants; sessions already shared publicly stay public until revoked.
 
+#### Default visibility for new sessions
+
+By default every session starts private and its owner shares it explicitly. A
+third setting, **Default visibility for new sessions**, lets an admin make new
+sessions start with public read access instead. It has three options:
+
+| Value     | Settings > Sharing label      | Behavior                                                                                                                                           |
+| --------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `off`     | Private                       | New sessions start private. Owners share them explicitly. This is the default.                                                                     |
+| `sandbox` | Cloud sandbox sessions public | Sessions running in a server-managed [cloud sandbox](/docs/deploy/cloud-sandbox-host) start public; sessions on a user's own machine stay private. |
+| `all`     | All sessions public           | Every new session starts with public read access.                                                                                                  |
+
+```
+OMNIGENT_DEFAULT_PUBLIC_SESSIONS=sandbox omni server start
+```
+
+Unlike the two settings above, this one fails **closed**: an unset or
+unrecognized value resolves to `off`, so a typo never exposes sessions. It is
+also editable at runtime from **Settings > Sharing**, or via
+`default_public_sessions` on `PUT /v1/sharing`.
+
+The default is applied when a session is created, forked, or fired by a
+[scheduled task](/docs/build/scheduled-tasks) (a task whose execution target is
+`managed_sandbox` counts as a sandbox session). It is only the creation default: owners can revoke the
+public grant from the Share dialog at any time, and existing sessions are never
+changed. A few sessions are always left private:
+
+- Sub-agent sessions, which follow their parent's grants instead.
+- Side chats, which are private scratch forks of the caller's own view.
+- Single-user (no-auth) servers, where there is no sharing at all.
+
+The default never grants more than an owner could grant by hand. It is
+inactive while the sharing mode is `off` or public access is disabled, and
+under `restricted_read_only` it skips sessions whose working directory is too
+broad to share (see above). **Settings > Sharing** greys out the control and
+shows the effective value (`Private`) while a higher-level setting overrides it;
+the saved choice returns once the blocker is lifted.
+
 <div className="note">
 
-When a deployment manages the sharing mode or public access itself (for example
-a managed service that injects its own policy), **Settings > Sharing** shows the
-current value as read-only and cannot change it here.
+When a deployment manages the sharing mode, public access, or default visibility
+itself (for example a managed service that injects its own policy),
+**Settings > Sharing** shows the current value as read-only and cannot change it
+here.
 
 </div>
 

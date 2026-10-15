@@ -1,0 +1,99 @@
+{/* Curated from the published GitHub Release for v0.18.0. */}
+
+# v0.18.0
+
+_Released 2026-10-13_ · 3 min read · Omnigent maintainers
+
+Omnigent 0.18.0 is a major release focused on making Omnigent the home base for all of your agent work, from reviewing code wherever your repos live to catching up on everything your agents have said while you were away. The session panel now reviews GitLab merge requests and Azure DevOps pull requests alongside GitHub, a new `omnigent agent add` command installs reusable custom agents that follow you across hosts, Settings → Harnesses shows you exactly what each harness loads at startup, and a redesigned Inbox with All, Unread, and Awaiting response tabs makes it easy to find the replies that need you.
+
+## 1. GitLab and Azure DevOps review in the session panel
+
+<video
+  src="https://github.com/user-attachments/assets/c5ff5710-2048-41ea-b4e8-fd9aa31e0601"
+  poster="https://github.com/user-attachments/assets/bcf8f74d-2911-414c-8c81-5a2a45dfde95"
+  controls
+  muted
+  playsInline
+  preload="metadata"
+  aria-label="Reviewing a GitLab merge request, its checks, comments, and expanded diff in the session panel"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+![GitHub, GitLab, and Azure DevOps review panels with example data on desktop and mobile](https://github.com/user-attachments/assets/3375a8a9-e8ca-4496-96ae-1dba4594fc26)
+
+Not every team keeps its code on GitHub, and until now that meant the session panel's review workflow only covered part of the picture. Omnigent 0.18.0 brings GitLab merge requests and Azure DevOps pull requests into the session panel with the same treatment GitHub pull requests get: checks, comments, and diffs, all right beside the conversation that produced the change.
+
+Tracking is automatic. When an agent creates or updates a merge request or pull request during a session, Omnigent picks it up and shows it in the panel, so you can review what the agent shipped, read the discussion, and watch checks land without leaving the session or switching between three different code hosts.
+
+_Learn more in the [Tracked pull requests](/docs/interact/web-ui#tracked-pull-requests)._
+
+## 2. Reusable custom agents with `omnigent agent add`
+
+<video
+  src="https://github.com/user-attachments/assets/12a7bbe4-79ac-4bf3-bf23-7825bb18f681"
+  poster="/images/releases/0.18.0/custom-agent-cli.png"
+  controls
+  muted
+  playsInline
+  preload="metadata"
+  aria-label="Installing, listing, and updating a reusable custom agent with the Omnigent CLI"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+Custom agents are most useful when you can reach for them again and again, not just on the machine where you first wrote the config. Omnigent 0.18.0 adds a small CLI for exactly that: run `omnigent agent add` to install a reusable custom agent, `omnigent agent list` to see what you have installed, and `omnigent agent remove` to clean up the ones you no longer need. If you built an agent with Create custom agent, you can import its bundle directly.
+
+Once installed, an agent stays in your new-session picker across hosts, so the same agent you tuned on your laptop is one click away when you start a session on a shared server or a cloud sandbox.
+
+<video
+  src="https://github.com/user-attachments/assets/289d47a6-3a2c-4ecc-ab51-56213358590e"
+  poster="/images/releases/0.18.0/custom-agent-import.png"
+  controls
+  muted
+  playsInline
+  preload="metadata"
+  aria-label="Importing a custom-agent bundle and selecting the installed agent in the new-session picker"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+_Learn more in the [Custom Agents](/docs/use/custom-agents)._
+
+## 3. Harness inspection in Settings → Harnesses
+
+![Claude Code harness details with MCP servers, skills, plugins, and startup settings](https://github.com/user-attachments/assets/31f6d7d1-8b54-4962-872a-4c9555239437)
+
+When an agent behaves unexpectedly, the first question is usually "what did this harness actually load?" Settings → Harnesses answers it. For each harness, you can browse the MCP servers it connects to, the skills and plugins it discovers, and the startup settings it launches with, all in one place in the UI.
+
+That makes it much faster to confirm a new MCP server or skill is wired up before you start a session, or to spot the missing plugin behind a tool call that never fires, without digging through config files on the host.
+
+## 4. Inbox tabs and sidebar reordering
+
+![Inbox with All, Unread, and Awaiting response tabs and cards grouped by recency](/images/releases/0.18.0/inbox.png)
+
+Running several agents at once means replies pile up faster than you can read them. The Inbox in Omnigent 0.18.0 is built for catching up: switch between All, Unread, and Awaiting response tabs to focus on the sessions that actually need you, and expand cards grouped by recency to read a reply in place before deciding whether to jump into the session.
+
+The sidebar gets more flexible too. You can now drag pinned sessions to reorder them, so the sessions you care about most sit exactly where you expect them.
+
+<video
+  src="https://github.com/user-attachments/assets/5c692a10-8574-44cd-94d3-bfef71e826c2"
+  poster="/images/releases/0.18.0/sidebar-reorder.png"
+  controls
+  muted
+  playsInline
+  preload="metadata"
+  aria-label="Dragging pinned sessions into a new order and keeping that order after reloading"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+Full Changelog: [https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md](https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md)
+
+## What's Next
+
+Install or upgrade Omnigent:
+
+```bash
+uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
+```
+
+- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
+- Join the conversation on our [Discord](https://discord.gg/omnigent).
+- Browse the [docs](https://omnigent.ai/docs) to go deeper.

@@ -4,6 +4,16 @@
     "description": "Point Omnigent at any agent that speaks the Agent Client Protocol and run it with your session tools, sub-agents, skills, and policies already wired in.",
     "eyebrow": "Blog"
   },
+  "/blog/declarative-agent-configuration": {
+    "title": "Moving agent orchestration from code to configuration",
+    "description": "Define the orchestration setup you want in YAML, and let Omnigent handle the sessions, messaging, isolation, and policy enforcement that make it run.",
+    "eyebrow": "Blog"
+  },
+  "/blog/stop-surprise-llm-bills": {
+    "title": "Stop Surprise LLM Bills With Production-Ready Cost Controls",
+    "description": "How Omnigent's shipped cost control features help teams maintain LLM budget predictability through smart routing, progressive budgets, custom pricing, and comprehensive visibility.",
+    "eyebrow": "Blog"
+  },
   "/blog/first-class-projects-with-defaults": {
     "title": "Organize your sessions into projects, with optional defaults that pre-fill every new chat",
     "description": "Projects keep related sessions together instead of scattered across a flat list. Each one can optionally carry default session settings (host, working directory, agent, and a fresh git worktree) so new chats open pre-filled when the work runs the same way.",
@@ -89,6 +99,11 @@
     "description": "Move the Omnigent runner from your laptop to a remote container so your agent keeps working in an isolated cloud environment.",
     "eyebrow": "Deploy"
   },
+  "/docs/deploy/community-sandbox-providers": {
+    "title": "Community Sandbox Providers",
+    "description": "Implement, package, and test a third-party sandbox provider for Omnigent using the launcher API and Python entry-point registry.",
+    "eyebrow": "Deploy"
+  },
   "/docs/deploy/database": {
     "title": "Database",
     "description": "The Omnigent server persists session history, accounts, and artifacts. Choose between Postgres and SQLite, with the same schema and migrations.",
@@ -144,10 +159,10 @@
     "description": "When built-in policies aren't enough, write your own in Python, register them on the server, and use them like builtins.",
     "eyebrow": "Policies"
   },
-  "/docs/policies/os-sandbox": {
-    "title": "Omnibox (OS Sandbox)",
+  "/docs/reference/configuration/os-sandbox": {
+    "title": "OS Sandbox Configuration",
     "description": "Omnibox is Omnigent's secure OS sandbox: restrict filesystem and network access and hide credentials for unattended, locked-down agents.",
-    "eyebrow": "Policies"
+    "eyebrow": "Reference"
   },
   "/docs/policies/overview": {
     "title": "Contextual Policies",
@@ -162,6 +177,21 @@
   "/docs/reference/configuration": {
     "title": "Configuration Reference",
     "description": "Reference for Omnigent user, project, and server configuration.",
+    "eyebrow": "Reference"
+  },
+  "/docs/reference/configuration/cloud-sandbox": {
+    "title": "Cloud Sandbox Configuration",
+    "description": "Reference for configuring managed cloud sandbox providers, lifecycle settings, credentials, and host configuration.",
+    "eyebrow": "Reference"
+  },
+  "/docs/reference/configuration/routing": {
+    "title": "Smart Routing Configuration",
+    "description": "Reference for enabling built-in or external smart routing and configuring the external routing service.",
+    "eyebrow": "Reference"
+  },
+  "/docs/reference/routing-api": {
+    "title": "External Routing API",
+    "description": "Request and response contract for services that provide Smart Routing decisions to an Omnigent server.",
     "eyebrow": "Reference"
   },
   "/docs/use/builtin-agents/debby": {

@@ -1,0 +1,46 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Watch every sub-agent your agent spawns, each in its own transcript",
+  "When an agent like Devin fans work out to sub-agents, each one now shows up as its own child session in the Subagents panel, with its own transcript and the tool calls it ran.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/acp-sub-agents-as-child-sessions",
+  },
+);
+
+export const meta = {
+  title: "Watch every sub-agent your agent spawns, each in its own transcript",
+  date: "2026-09-01",
+  category: "Multi-agent",
+  author: "omnigent",
+  heroArt: "/images/blog/acp-sub-agents-as-child-sessions.png",
+};
+
+<BlogPostHeader slug="acp-sub-agents-as-child-sessions" />
+
+If you run an agent that fans work out to helpers of its own, like Devin, you
+can now follow each of those helpers as a separate session instead of watching a
+single stream scroll past.
+
+When one agent spawns sub-agents, their work used to collapse into the parent's
+transcript, so it was hard to tell who did what. Now each sub-agent becomes its
+own child session the moment it starts, listed as a row in the Subagents panel
+with the task it was handed. Open one and you see that sub-agent's own
+transcript, including the tool calls it ran, and those cards stay put when you
+reload the page.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an agent spawning two sub-agents, the Subagents panel filling with a row each, then opening one child session to show its own transcript and tool calls. */}
+
+To try it, run an agent that spawns sub-agents (Devin is the built-in example),
+give it a task it will split up, and open the Subagents panel to watch each
+child session appear and drill into its transcript. For which agents run over
+Omnigent's ACP integration, see the
+[supported harnesses guide](/docs/build/harnesses/supported).
+
+This is the same seam other ACP agents can plug into, so the nested view can
+grow to more agents over time.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

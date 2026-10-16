@@ -1,0 +1,51 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Resume an imported, host-less session from the web on whichever machine is online",
+  "Import a local Claude Code or Codex chat, open it in the web, and pick a machine to keep working on. Omnigent defaults to the machine you have online right now.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/resume-imported-sessions-from-web",
+  },
+);
+
+export const meta = {
+  title:
+    "Resume an imported, host-less session from the web on whichever machine is online",
+  date: "2026-08-24",
+  category: "Cross-device",
+  author: "omnigent",
+  heroArt: "/images/blog/resume-imported-sessions-from-web.png",
+};
+
+<BlogPostHeader slug="resume-imported-sessions-from-web" />
+
+If you bring a local Claude Code or Codex chat into Omnigent with `omnigent
+import`, you can now open it in the web and keep working, picking the machine it
+runs on as you go.
+
+An imported chat is just a transcript. It has no machine attached to it, so
+opening it in the web used to look connected while there was nothing behind it
+to actually run your next message. Now Omnigent knows an imported session has no
+live machine yet, so opening it offers a picker that binds it to a host and
+launches a runner before your first message goes out. The picker defaults to the
+machine you have online right now, so from any device you can send an imported
+chat to whatever machine is currently up.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: run `omnigent import`, click the imported session's browser link, then open the resume picker (host prefilled to the online machine) and send the first message. */}
+
+Import a chat, then click the link the CLI prints to open it in the web:
+
+```
+omnigent import --harness claude --session <session-id>
+omnigent import --harness codex --session <session-id>
+```
+
+The imported session opens with a "Resume on a machine" picker. Its workspace is
+prefilled and the host defaults to your one online machine, so you can bind and
+send right away. For the full import workflow, see the
+[coding agents guide](/docs/use/coding-agents#import-existing-chats).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

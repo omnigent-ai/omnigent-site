@@ -1,0 +1,67 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Run Devin under Omnigent's governance, with every delegate as its own session",
+  "omnigent devin now runs the real Devin CLI inside Omnigent: your policies gate its tool calls, approvals land in Chat, you can change model and effort mid-run, and each delegate Devin spawns becomes its own child session.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/devin-native-harness-governance",
+  },
+);
+
+export const meta = {
+  title:
+    "Run Devin under Omnigent's governance, with every delegate as its own session",
+  date: "2026-09-22",
+  category: "Multi-harness",
+  author: "omnigent",
+  heroArt: "/images/blog/devin-native-harness-governance.png",
+};
+
+<BlogPostHeader slug="devin-native-harness-governance" />
+
+If you use Cognition's Devin CLI, you can now run it as a native Omnigent
+harness. Devin keeps its own terminal, its own login, and its own models, and
+Omnigent wraps it with the same policies, approval cards, and session tree you
+already use for Claude Code, Codex, and the rest.
+
+Until now, Devin ran through Omnigent's generic ACP path, which meant no policy
+enforcement, no mid-session model changes, and no view into the delegates Devin
+spins up. `omnigent devin` replaces that. The real Devin TUI runs in an embedded
+terminal and is mirrored into Chat. Every tool call passes through your Omnigent
+policies before it runs, and a deny sticks even when Devin is in bypass mode.
+Devin's own consent prompts show up as approval cards in Chat, so nothing is
+stranded in a pane nobody is watching. You can switch model, effort, and
+permission mode while a run is in progress, Devin gets Omnigent's MCP tools, and
+each `run_subagent` delegate appears as its own child session with its own
+transcript and cost once it finishes. Messages you send while Devin is working
+steer the current turn instead of waiting behind it.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: a Devin session in the web UI where a tool call is blocked by a policy and an approval card is answered from Chat, then the session tree showing a finished delegate as its own child session. */}
+
+Install the Devin CLI, sign in with it (Omnigent stores no Devin credential),
+and start a session:
+
+```bash
+curl -fsSL https://cli.devin.ai/install.sh | bash
+devin auth login
+omnigent devin
+```
+
+Model and effort are separate flags, and Omnigent composes them into the model
+id Devin expects:
+
+```bash
+omnigent devin --model opus --effort xhigh
+```
+
+In the web UI, pick Devin in New Chat and choose a model family from the picker.
+If you pick Fusion, the picker lets you choose the lead model and its sidekick
+separately. The earlier ACP-based Devin integration is retired, and existing
+references to it resolve onto the native harness. See the
+[Devin section of the harness configuration docs](/docs/build/harnesses/configuration#devin)
+for setup details.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

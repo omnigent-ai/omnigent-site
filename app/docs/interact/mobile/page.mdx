@@ -105,11 +105,17 @@ window. See [Install as an app](/docs/interact/web-ui#install-as-an-app) for det
 
 ## Managed configuration (org-preset servers)
 
-On the native **Android app**, an organization can preconfigure the server URLs
-users see, so people don't have to type one. The app publishes an [Android
-managed configuration](https://developer.android.com/work/managed-configurations)
-that any EMM/MDM console (Intune, Jamf, Workspace ONE, Google Workspace, the
-Android Management API) can push to enrolled devices. It has a single key:
+On both native apps, an organization can preconfigure the server URLs users
+see, so people don't have to type one. Neither app auto-connects to a preset or
+locks users to one; presets are offered on the connect screen and in the server
+switcher, and the user still picks one.
+
+### Android app
+
+The Android app publishes an [Android managed
+configuration](https://developer.android.com/work/managed-configurations) that
+any EMM/MDM console (Intune, Jamf, Workspace ONE, Google Workspace, the Android
+Management API) can push to enrolled devices. It has a single key:
 
 | Key          | Type   | Value                                                           |
 | ------------ | ------ | --------------------------------------------------------------- |
@@ -133,8 +139,62 @@ How the app treats presets:
 - **Sanitized.** Unparseable entries are dropped, an entry without a scheme gets
   `https://`, same-origin duplicates collapse, and the list is capped at 8.
 
-The iOS app has no equivalent yet; when it lands it will reuse the same
-`serverUrls` key via Managed App Configuration.
+### iOS app
+
+The iOS app reads Apple Managed App Configuration. It watches both channels an
+MDM can use, which carry the same flat dictionary:
+
+- A **declarative** `com.apple.configuration.app.managed` declaration (its
+  `AppConfig` payload), applied as soon as the device receives it.
+- The **classic** `com.apple.configuration.managed` key in the app's defaults
+  (bundle identifier `ai.omnigent.ios`), picked up the next time the app becomes
+  active.
+
+| Key                                 | Type             | Required | Default | Description                                                                                              |
+| ----------------------------------- | ---------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------- |
+| `serverUrls`                        | Array of strings | No       | `[]`    | Server URLs to offer, most-preferred first. Each must be `https://`. At most 10.                         |
+| `databricksInternalFeaturesEnabled` | Boolean          | No       | `false` | Enables Databricks-specific DNS-failure guidance for managed installs. Only a boolean `true` enables it. |
+
+An unmanaged install, or a managed install with no configuration, behaves as
+before: no preset servers, the person types a URL, and Databricks-internal
+features are disabled.
+
+```xml
+<key>serverUrls</key>
+<array>
+  <string>https://omnigent.corp.example.com</string>
+</array>
+<key>databricksInternalFeaturesEnabled</key>
+<true/>
+```
+
+**Databricks-internal features.** When `databricksInternalFeaturesEnabled` is
+`true`, a connection failure caused by a DNS lookup failure or an unresolvable
+host (`NSURLErrorCannotFindHost` / `NSURLErrorDNSLookupFailed`) shows:
+
+> Couldn’t reach the server. Check your device’s compliance status in Jamf.
+
+This applies to any server the user connects to in that install. It is a
+troubleshooting hint, not a check of the device's Jamf compliance status. Other
+errors (timeouts, offline, connection refused, TLS failures) keep their original
+messages, as do DNS failures when the flag is disabled. The flag works
+independently of `serverUrls` and is not a build flag.
+
+How the two channels combine:
+
+- A missing or malformed flag (including the string `"true"` or the integer
+  `1`) disables the feature without discarding valid preset servers. Use XML
+  `<true/>` so the value is a real boolean.
+- When a declarative configuration is present, its flag wins — a disabled or
+  omitted declarative flag overrides a classic `true`. The classic flag is used
+  only when no declarative configuration is available.
+- The server list keeps its own fallback: when the declarative `serverUrls` is
+  empty, the classic list is used.
+- Withdrawing the configuration disables the feature unless the fallback
+  channel still enables it.
+- An invalid `serverUrls` value rejects that configuration as a whole — no
+  partial list is offered and internal features are disabled for it. A
+  malformed feature flag alone just defaults to `false`.
 
 ## What works on mobile
 

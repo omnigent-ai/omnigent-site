@@ -1,0 +1,64 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Track your agent's merge requests on GitLab and Azure DevOps, not just GitHub",
+  "The session's Pull Requests panel now shows GitLab merge requests and Azure DevOps pull requests, with checks, comments, and diffs, and picks up the ones your agent opens automatically.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/gitlab-azure-devops-pr-panels",
+  },
+);
+
+export const meta = {
+  title:
+    "Track your agent's merge requests on GitLab and Azure DevOps, not just GitHub",
+  date: "2026-10-13",
+  category: "Integrations",
+  author: "omnigent",
+  heroArt: "/images/blog/gitlab-azure-devops-pr-panels.png",
+};
+
+<BlogPostHeader slug="gitlab-azure-devops-pr-panels" />
+
+If your code lives on GitLab or Azure DevOps, you can now follow the merge
+requests your agent opens from inside the session, the same way GitHub users
+already do. The Pull Requests panel reads the workspace's git remote, works out
+which provider it belongs to, and shows that provider's requests.
+
+Until now, an agent working in a GitLab or Azure repo could open a merge request
+and you would only find out by checking the forge yourself. Now the request
+shows up beside the composer as an `!42` style link and in the Pull Requests
+tab of the Workspace panel, with its title, description, comments, pipeline or
+check results, changed files, and diff. When the agent runs `glab mr create`,
+pushes with `git push -o merge_request.create`, or runs `az repos pr create`,
+the resulting request is attached to the session automatically. You can also
+paste any request URL to link one by hand. GitHub, GitLab, and Azure DevOps
+remotes can sit in one checkout and the panel finds requests from all of them.
+This works with any agent you run in Omnigent.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an agent in a GitLab checkout runs `glab mr create`, the `!N` link appears beside the composer, then the Pull Requests tab opens to show the MR's description, pipeline jobs, and diff; cut to the same panel on an Azure DevOps repo. */}
+
+There is nothing to configure in Omnigent. Sign in with the provider's CLI on
+the machine that runs the session and the panel uses that login. For GitLab,
+including private instances:
+
+```sh
+glab auth login --hostname gitlab.com
+glab auth login --hostname git.example.com
+```
+
+For Azure DevOps Services, run `az login` on the host, or set
+`AZURE_DEVOPS_EXT_PAT` to a personal access token with Code (Read) scope.
+Then open a session in that repository and click the `!N` link by the
+composer, or open **Pull Requests** in the Workspace sidepanel. The panel
+behaves the same way it does for GitHub, which the
+[Web UI guide](/docs/interact/web-ui#github) describes.
+
+A couple of limits in this first version: Azure DevOps support covers Azure
+DevOps Services only (not on-premises Azure DevOps Server), and both providers
+need a host where you signed in yourself, since managed sandboxes do not carry
+these credentials yet.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

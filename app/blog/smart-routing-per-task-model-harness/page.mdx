@@ -1,0 +1,54 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Send every task to the model and harness that handles it best — automatically",
+  "Pick Auto in the harness picker and Omnigent routes each session to the harness and model that fit the task, decided from your first message.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/smart-routing-per-task-model-harness",
+  },
+);
+
+export const meta = {
+  title:
+    "Send every task to the model and harness that handles it best — automatically",
+  date: "2026-08-11",
+  category: "Orchestration",
+  author: "omnigent",
+  heroArt: "/images/blog/smart-routing-per-task-model-harness.png",
+};
+
+<BlogPostHeader slug="smart-routing-per-task-model-harness" />
+
+If you run several coding agents in Omnigent and don't always know which one to
+reach for, you can now let the server choose. Pick **Auto** in the harness
+picker and Smart Routing reads your first message, then decides which harness
+and model fit the task and keeps the session there.
+
+Committing to one model before you know what a task needs means a quick edit
+lands on the same heavyweight setup as a multi-file refactor, and switching
+panes afterward is manual. Smart Routing removes that guess: the server asks a
+router "given this task, which harness and model fit?" and applies the answer
+for the rest of the session, so each job runs where it belongs without you
+sorting it out first.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: open the harness picker, choose Auto, send a first message, and show the session landing on the routed harness and model with the rationale on the chip. */}
+
+To turn it on, choose Auto in the harness picker; routing then happens on your
+first message. Enabling it is configuration only. A server `llm:` block gives
+you the built-in judge with no extra infrastructure, or a `routing:` block with
+`provider: external` delegates the decision to your own routing service. Start
+the server with your config file:
+
+```
+omni server -c path/to/config.yaml
+```
+
+If an external router is configured but unavailable, routing falls back to the
+built-in judge instead of dropping the session off Auto. See the
+[Smart Routing guide](/docs/build/routing) for the full setup and the external
+routing API.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

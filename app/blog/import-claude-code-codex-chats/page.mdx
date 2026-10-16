@@ -1,0 +1,45 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Bring your existing Claude Code and Codex chats into Omnigent",
+  "Import a Claude Code or Codex chat you started in your terminal into Omnigent with one command, and pick up the conversation with a web UI, mobile access, collaboration, and policies.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/import-claude-code-codex-chats",
+  },
+);
+
+export const meta = {
+  title: "Bring your existing Claude Code and Codex chats into Omnigent",
+  date: "2026-07-21",
+  category: "Cross-harness",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="import-claude-code-codex-chats" />
+
+If you already have a Claude Code or Codex chat going in your terminal, you can now pull that conversation into Omnigent and keep working on it there.
+
+Until now, a chat that started in your local coding agent stayed stuck in that terminal. Everything Omnigent adds on top of the coding agent you already use (a web UI, persistent sessions, mobile access, team collaboration, and policies) only applied to chats you started inside Omnigent. Import converts an existing local transcript into an ordinary Omnigent session, so the full turn order and tool history come across and the conversation just continues, with the whole platform wrapped around it.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: run `omni import` on a real local Claude Code chat in a terminal, then show the same conversation opening and continuing in the Omnigent web UI. */}
+
+Run the import from your terminal, passing the harness that owns the chat and the session ID you want to bring over:
+
+```
+omni import --harness claude --session <session-id>
+omni import --harness codex --session <session-id>
+```
+
+To move several chats at once, import the most recent ones in a single command (up to 50):
+
+```
+omni import --harness claude --last 10
+```
+
+Each source chat can be imported once. For more on running Claude Code and Codex through Omnigent, see the [Coding Agents](/docs/use/coding-agents) docs.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

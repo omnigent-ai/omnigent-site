@@ -32,7 +32,48 @@ Agent: Created "docs-reviewer" agent. Opening a new session with it now.
 
 The agent writes the YAML behind the scenes and registers it so you can
 reuse it. If you want to tweak the config later, the YAML file is there
-to edit directly.
+to edit directly, or you can [edit it from the web UI](#edit-an-agent-in-the-web-ui).
+
+## Edit an agent in the web UI
+
+Agents you own can be edited in place from **Settings › Custom agents**
+(`/settings/custom-agents/<agent-id>`) without reinstalling a bundle. Open an
+agent's summary and choose **Edit**. The **Edit** button appears only for agents
+you own, and only when the server advertises configuration editing
+(`agent_config_edit: true` in `/v1/info`); on an older server the summary says
+to update the server instead. Server-provided agents are read-only.
+
+The Settings page itself is a gated release feature: an operator enables it
+deployment-wide by including `custom_agents_settings_ui` in the server's
+release features (`OMNIGENT_FEATURES=custom_agents_settings_ui`).
+
+The **Edit** dialog loads the agent's current configuration and lets you change:
+
+- **Description**, **Harness**, and **Model**. The agent's name stays the same.
+  Model and harness compatibility is checked by the server when you save, so an
+  incompatible pair is reported as a save error rather than in the form.
+- **Instructions** — the agent's literal instruction text.
+- **MCP servers** — add an HTTP or stdio server (**Add server**), change a
+  server's description, URL, or command and arguments, or mark a server for
+  removal (**Remove server** / **Undo removal**). An existing server's name and
+  transport can't be changed, and managed servers are shown read-only.
+
+Credentials (HTTP **Headers** or stdio **Environment variables**) are never
+read back into the editor — only their names are shown. Each configured value
+defaults to **Configured · keep**; switch it to **Replace** to enter a new value
+or **Remove** to delete it. Changing a server's URL or command leaves its
+configured credentials untouched.
+
+Saving sends only the fields you changed. **Save changes** stays disabled until
+something differs from the loaded configuration, and changes apply to sessions
+using the agent on their next turn.
+
+If the agent was changed elsewhere (for example in another tab) before you
+save, the dialog keeps your draft and asks you to **Reload latest**. Reloading,
+**Cancel**, Escape, and closing the dialog all ask for confirmation while you
+have unsaved changes (**Keep editing** / **Discard changes**). A browser
+refresh warns about an unsaved draft, but navigating with browser history can
+discard it.
 
 ## The config file
 

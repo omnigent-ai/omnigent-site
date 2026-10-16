@@ -420,3 +420,55 @@ Clicking a link behaves like opening a page for a known site:
   and registering this machine as a runner. Cancel is the default; only open
   links from servers you trust. Once you allow it, the server is remembered so
   future links open without a prompt.
+
+## Troubleshooting
+
+### Export diagnostics
+
+If the app can't connect or sign-in keeps failing, choose
+**Server → Export Diagnostics…** and pick where to save the file. The Server
+menu is native, so it's available even when the app is stuck on the connect
+screen, and the export works in packaged builds without Developer Mode or a
+terminal. The default filename is
+`Omnigent-desktop-diagnostics-<YYYY-MM-DD>.jsonl`. If the destination can't be
+written, the app shows **Could not export diagnostics** — choose another
+location and try again.
+
+The export is a copy of the desktop app's own diagnostics log: a bounded
+[JSON Lines](https://jsonlines.org/) file (the current log plus up to two
+rotated files, at most 3 MiB in total) kept in Electron's per-user logs
+directory. On macOS that is `~/Library/Logs/Omnigent/` (`Omnigent Dev` for
+development builds). It is an application log, **not** the macOS Unified Log or
+a collection of system-wide logs.
+
+Each line is one milestone with a `time`, an `event`, and only these fields when
+they apply: `origin`, `phase`, `outcome`, `code`, `status`, `requestId`, and
+`interactive`. Recorded events cover the connection attempt (`connection_start`,
+`auth_mode`, `connection_result`, `navigation_failed`, `auth_required`),
+Databricks sign-in (`databricks_token`, `databricks_bridge`,
+`databricks_session`), and OIDC sign-in (`oidc_session`, `oidc_browser`,
+`oidc_exchange`, `oidc_refresh`, `oidc_renewal`) — distinguishing an existing
+session, silent refresh, browser sign-in, token exchange, and rejection or
+recovery.
+
+```text
+{"time":"2026-10-16T09:12:03.418Z","event":"connection_start","origin":"https://omnigent.corp.example.com","interactive":true}
+{"time":"2026-10-16T09:12:03.902Z","event":"auth_mode","origin":"https://omnigent.corp.example.com","phase":"oidc"}
+{"time":"2026-10-16T09:12:04.377Z","event":"oidc_refresh","origin":"https://omnigent.corp.example.com","status":400,"outcome":"rejected"}
+{"time":"2026-10-16T09:12:04.380Z","event":"oidc_session","origin":"https://omnigent.corp.example.com","outcome":"browser"}
+```
+
+What the export leaves out:
+
+- **Secrets.** Tokens, cookie values, client secrets, authorization codes, and
+  raw response bodies are never recorded. URLs are reduced to their origin, so
+  paths and query strings are dropped; error codes and phases are limited to a
+  fixed allowlist.
+- **Other logs.** The renderer console, CLI and server output, cookies, and
+  token stores are not included, and there are no server-side diagnostics.
+  When an authentication failure needs server-side context, give your
+  administrator the line's `requestId` so they can correlate it with the
+  server's logs.
+
+Server origins and request IDs are still deployment metadata — review the file
+before sharing it publicly.

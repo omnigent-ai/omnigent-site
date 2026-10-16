@@ -1,0 +1,56 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Join your team's Omnigent server and install the CLI without leaving the desktop app",
+  "The redesigned desktop setup puts your organization's server one click away, installs the Omnigent CLI in-app on macOS, and shows the whole sequence in a live terminal pane so a new teammate goes from download to first session without a shell.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/one-click-team-onboarding-desktop",
+  },
+);
+
+export const meta = {
+  title:
+    "Join your team's Omnigent server and install the CLI without leaving the desktop app",
+  date: "2026-09-29",
+  category: "Desktop",
+  author: "omnigent",
+  heroArt: "/images/blog/one-click-team-onboarding-desktop.png",
+};
+
+<BlogPostHeader slug="one-click-team-onboarding-desktop" />
+
+If you are the person who gets a new teammate onto Omnigent, the desktop app
+now does the whole first run for them. They open the app, click "Join your
+team", and land on your organization's server with the CLI already installed.
+
+Until now, first launch meant pasting a server URL, then leaving the app to
+install the `omnigent` CLI from a terminal, and coming back to try again. The
+redesigned setup collapses that into one flow. When your organization publishes
+its server list to the app, the landing screen shows a "Join your team" button
+that already names your server, with a dropdown for any others on the list.
+Picking one opens a short detail view, and "Install Omnigent" installs the CLI
+right there (on macOS), streaming the installer's output into a small terminal
+pane before connecting you. Since the CLI is what lets a machine act as a host,
+this is also the shortest path to putting a teammate's laptop under the same
+server, policies, and shared sessions as everyone else.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: fresh macOS launch of the desktop app, click the "Join your team (<org server>)" split button, land on the detail view, click "Install Omnigent", watch the installer lines stream in the terminal pane and the app connect. */}
+
+The app also checks whether the CLI is already on the machine. A returning user
+sees "Open Omnigent" instead of "Install Omnigent" and connects straight away,
+while a new user gets the install step first. If the preset server is not the
+one you want, "Show all servers" opens the full list, split into servers preset
+by your organization and your recent ones. Everyone without an organization
+list gets the same two choices on the landing screen: "Get started locally" to
+run Omnigent on this machine, or "Join your team" to enter a server URL.
+
+There is nothing to configure on the user's side. Download the desktop app,
+open it, and follow the buttons. Administrators publish the preset server list
+the same way as before; see
+[Managed servers](/docs/interact/desktop#managed-servers-macos-mdm) in the
+desktop guide.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

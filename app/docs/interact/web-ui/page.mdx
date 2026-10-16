@@ -485,10 +485,18 @@ the referenced file themselves.
 ## GitHub
 
 Coding-agent sessions have a **GitHub** tab in the right workspace rail. It
-tracks the pull requests associated with the session and shows the selected
-one's summary (PR description and comments), CI checks, and a stacked diff with
-a file-tree navigator. Nothing is pushed or mutated — recording an association
-never touches the remote PR.
+tracks the pull requests associated with the session and shows the selected one
+across three tabs:
+
+- **Summary** — the landing tab: CI checks, then the PR description.
+- **Comments** — the PR's conversation comments, in order. The tab label shows
+  the comment count (for example `Comments 3`); when the provider returned only
+  part of the list, the count carries a `+` suffix (`Comments 1+`) and the tab
+  notes that some comments are unavailable rather than showing an empty list.
+- **Changes** — a stacked diff with a file-tree navigator.
+
+Nothing is pushed or mutated — recording an association never touches the
+remote PR.
 
 ### Tracked pull requests
 

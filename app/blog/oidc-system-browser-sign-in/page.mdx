@@ -1,0 +1,65 @@
+import { pageMeta } from "@/lib/og";
+
+export const meta = {
+  title:
+    "Sign in to your team's server with company SSO, Google, or passkeys — straight from the desktop app",
+  date: "2026-10-05",
+  category: "Desktop",
+  author: "omnigent",
+  heroArt: "/images/blog/oidc-system-browser-sign-in.png",
+};
+
+export const metadata = pageMeta(
+  meta.title,
+  "The desktop app now signs in to SSO-protected Omnigent servers through your system browser, so Google sign-in, passkeys, and your existing browser session all work, and it stays signed in across relaunches.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/oidc-system-browser-sign-in",
+  },
+);
+
+<BlogPostHeader slug="oidc-system-browser-sign-in" />
+
+If your team runs Omnigent behind company single sign-on, the desktop app now
+signs you in through your normal browser. Google sign-in, passkeys, your
+password manager, and the identity-provider session you already have all just
+work, and the app stays signed in across relaunches.
+
+Identity providers were a poor fit inside an app window: Google refuses
+embedded browsers, and passkeys and password managers have nothing to attach
+to. Now, when you select Connect, the app opens your system browser at the
+server's sign-in page. Once you finish, the tab says "Return to Omnigent" and
+the app comes to the front, signed in. The identity provider never appears
+inside the app. From then on, relaunching, opening a new window, following a
+deep link, or switching servers reuses your session or renews it quietly in
+the background. The browser only opens again when nothing can renew the
+session, and the connect screen tells you why (expired, ended by the server,
+or sign-in required). Your server's access rules still decide who gets in: a
+sign-in from a domain it does not allow is refused, and signing out from
+Settings ends the session for every window on that server.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: desktop app on the connect screen showing "Authenticating…", the system browser opening a company IdP with a passkey prompt, the "Return to Omnigent" tab, then the app coming to the front signed in; follow with a quit and relaunch that opens straight into the signed-in app with no browser. */}
+
+There is nothing to set up on the desktop side. Open **Server → Change
+Server…**, enter your server URL, and select **Connect**. Servers that use
+built-in accounts, header auth, or Databricks sign in exactly as before. On the
+server, this applies to any deployment with `OMNIGENT_AUTH_PROVIDER=oidc`, and
+this release also lets operators register Omnigent with their identity provider
+as a public client (no client secret) and point it at explicit authorization,
+token, and signing-key endpoints when discovery is unavailable:
+
+```bash
+OMNIGENT_AUTH_PROVIDER=oidc
+OMNIGENT_OIDC_ISSUER=https://identity.example.com
+OMNIGENT_OIDC_CLIENT_ID=omnigent
+# Public client: opt in and leave OMNIGENT_OIDC_CLIENT_SECRET unset
+OMNIGENT_OIDC_TOKEN_ENDPOINT_AUTH_METHOD=none
+```
+
+See [Auth & SSO](/docs/collaborate/auth#single-sign-on-oidc) for the full
+server configuration and the [desktop app guide](/docs/interact/desktop) for
+connecting to a server.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

@@ -138,6 +138,13 @@ and the OpenAI-agents harness, use the OpenAI-compatible `.../api/v1`.
 
 </div>
 
+A gateway drives the Claude (`anthropic`) and Codex / OpenAI (`openai`)
+families, plus Pi. It cannot drive **Gemini / Antigravity**: that surface is
+key-only, so the `antigravity` and `antigravity-native` harnesses need a real
+Gemini API key (or agy's own Google sign-in), not a proxy. A `gateway` or
+`local` provider whose only family is `gemini` is rejected at config load, and
+a `gemini:` block on a multi-family gateway is ignored for the Gemini surface.
+
 #### Cost tracking for self-hosted models
 
 Self-hosted and gateway models (Ollama, vLLM, custom endpoints) often aren't in
@@ -205,3 +212,7 @@ Model names are prefixed with `databricks-` so Omnigent routes them through your
 workspace automatically. See the
 [Databricks Foundation Model API docs](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/supported-models)
 for the full list of available models.
+
+Like a gateway, a Databricks profile serves the Claude, Codex / OpenAI, and Pi
+surfaces only — it cannot be the credential for Gemini / Antigravity, and
+`default: gemini` on a Databricks provider is rejected.

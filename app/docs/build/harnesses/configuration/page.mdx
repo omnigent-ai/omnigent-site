@@ -327,6 +327,13 @@ curl -fsSL https://antigravity.google/cli/install.sh | bash
 `omni setup` shows the harness as configured once the `agy` binary is present
 and either the API key or an OAuth login is detected.
 
+These are the only two credential sources. Unlike the Claude and Codex
+harnesses, Antigravity cannot be routed through a
+[gateway or Databricks provider](/docs/build/models#gateway): the Gemini surface
+is key-only, so `omni setup` offers neither option under **Antigravity**, and a
+`gateway`, `local`, or `databricks` provider never serves (or defaults) the
+`gemini` family.
+
 ### Permission prompts
 
 Antigravity permission prompts appear in Chat and **Inbox**. You can approve

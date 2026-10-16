@@ -305,27 +305,208 @@ rejects; the failure surfaces when OpenCode makes its first model call.
 
 ## Antigravity
 
-The native Antigravity harness (`antigravity-native`) wraps Google's `agy` CLI.
-It requires **agy 1.1.13 or newer** and accepts either of two credentials:
-
-- **Gemini API key** — set a non-empty `GEMINI_API_KEY` in the environment.
-  Omnigent selects agy's direct Gemini provider (`modelProvider: "gemini"` in
-  the session's isolated agy settings) for you. When `GEMINI_API_KEY` is set it
-  takes precedence over any saved OAuth login; clear it to fall back to OAuth.
-- **Google OAuth login** — run `agy` once and complete the browser sign-in. The
-  `agy` CLI has no `agy login` / `agy auth status` subcommand: the token is
-  written on its first interactive run. Omnigent recognizes it at
-  `~/.gemini/oauth_creds.json` (macOS), `~/.gemini/antigravity-cli/antigravity-oauth-token`
-  (Linux), or the macOS Keychain (agy 1.1.7+).
-
-Install the CLI first, then supply one of those credentials:
+The native Antigravity harness (`antigravity-native`, launched by `omni agy`)
+wraps Google's `agy` CLI. It requires **agy 1.1.13 or newer**. Install the CLI
+first:
 
 ```
 curl -fsSL https://antigravity.google/cli/install.sh | bash
 ```
 
-`omni setup` shows the harness as configured once the `agy` binary is present
-and either the API key or an OAuth login is detected.
+agy speaks the **native Gemini API** (`generateContent` /
+`streamGenerateContent`, authenticated with an `x-goog-api-key` header). For
+each session Omnigent resolves the API key and endpoint together, from the
+first source that applies:
+
+1. The **Gemini default provider** you configured through `omni setup` — a
+   Google API key, a native Gemini gateway, or a Databricks profile (see
+   [Configure native agy credentials](#configure-native-agy-credentials)).
+2. The Antigravity API key saved by earlier versions of `omni setup`.
+3. A `GEMINI_API_KEY` in the environment where the harness runs, paired with
+   `GOOGLE_GEMINI_BASE_URL` when that is also set (otherwise Google's API
+   root). Both variables are forwarded from the host to the runner.
+4. Otherwise agy keeps its own **Google OAuth login** — run `agy` once and
+   complete the browser sign-in. The `agy` CLI has no `agy login` /
+   `agy auth status` subcommand: the token is written on its first interactive
+   run. Omnigent recognizes it at `~/.gemini/oauth_creds.json` (macOS),
+   `~/.gemini/antigravity-cli/antigravity-oauth-token` (Linux), or the macOS
+   Keychain (agy 1.1.7+).
+
+Whenever an API key is resolved, Omnigent selects agy's direct Gemini provider
+(`modelProvider: "gemini"` in the session's isolated agy settings) and the key
+takes precedence over any saved OAuth login. A configured provider that cannot
+be resolved — an empty key or an incompatible URL — **fails the session start**
+with a setup error pointing at `omni setup`, rather than silently falling back
+to OAuth or ambient credentials.
+
+`omni setup` shows the harness as ready once the `agy` binary is present and a
+credential resolves (or an OAuth login is detected). The Antigravity row names
+the active credential, or reads **Credential needs setup** when the selected
+provider can't be resolved.
+
+### Configure native agy credentials
+
+Run `omni setup` → **Antigravity** → **Configure native agy API key / gateway**
+→ **Add a credential**, then pick the option matching what you have:
+
+| What you have | Setup option | Requirements |
+| --- | --- | --- |
+| Google Gemini API key | **Gemini — API key** | A key issued by Google AI Studio; setup supplies Google's API root. |
+| External native Gemini gateway | **Gemini API gateway — URL + key** | Native Gemini `generateContent` / `streamGenerateContent`, `x-goog-api-key` authentication, and the models agy requests. |
+| Databricks workspace | **Databricks — profile** | An authenticated Databricks CLI profile, the `databricks` extra, and access to the workspace's native Gemini API and model services. |
+| OpenAI Responses or Chat Completions endpoint — even one serving Gemini models | Not supported | Would need a protocol adapter, which Omnigent does not provide. Applies to Databricks and external gateways alike. |
+| Gateway requiring Bearer auth or a token-refresh command | Not supported | agy sends a static `x-goog-api-key`; a `gemini:` provider family may not set `auth_command`. |
+
+The first credential you add becomes the Gemini default; adding another keeps
+the existing default. To switch, select the credential, choose **Make default
+for Gemini**, and start a **new** `omni agy` session — existing sessions keep
+their original connection, and `/model` changes the model, not the provider,
+endpoint, or authentication method. Claude, Codex, and Pi defaults are separate.
+
+<div className="note">
+
+**Note:** These settings configure native agy only. The in-process
+`antigravity` SDK harness is a separate integration that keeps its own API-key /
+Vertex AI setup.
+
+</div>
+
+#### External Gemini API gateway
+
+Setup first asks for a **gateway label** (a name you choose, e.g.
+`team-gemini`), then the gateway's **native Gemini API root**, the **key** its
+Gemini route accepts (a gateway virtual key, or a Google key for provider-key
+pass-through), and optionally an **agy model** (a `--model` value; leave it
+blank for agy's default).
+
+Enter the API root only, for example `https://gateway.example/gemini`. agy
+appends the operation itself, sending requests to
+`https://gateway.example/gemini/v1beta/models/<model>:streamGenerateContent`.
+Setup rejects recognizable mistakes before asking for a key:
+
+- a path ending in `/v1beta`, `/openai`, `/responses`, `/chat/completions`, or
+  `/completions`, or containing a `/models/` segment;
+- an `openai.com` host;
+- a Databricks workspace host — use **Databricks — profile** instead;
+- a URL with embedded credentials, a query string, or a fragment.
+
+`http://` roots are accepted (useful for a local proxy), and the URL must be
+reachable from the machine running agy — `localhost` refers to that machine,
+including when it is a remote host. The key is stored in Omnigent's secret
+store and referenced from the provider entry.
+
+The gateway must preserve Gemini request and response fields, streaming events,
+tool calls, tool results, and reasoning metadata such as thought signatures,
+and it must serve the auxiliary Gemini models agy requests — setting the main
+model does not redirect every auxiliary request to it. Setup validates the URL
+shape only; it does **not** send an inference request, so a saved credential or
+a green setup row is not proof the full agent flow works. This option does not
+refresh expiring upstream tokens. Use the
+[smoke steps](#verify-the-connection) below.
+
+The following gateways document native Gemini frontends. They are documented
+candidates, not gateways live-verified with agy:
+
+| Gateway | API root to enter | Notes |
+| --- | --- | --- |
+| [LiteLLM Google AI Studio pass-through](https://docs.litellm.ai/docs/pass_through/google_ai_studio) | `http://127.0.0.1:4000/gemini` for a local proxy | Gemini-native requests and streaming without protocol translation. Configure the Google key on the proxy and use a LiteLLM key in Omnigent; allow every main and auxiliary model agy requests. |
+| [Bifrost GenAI integration](https://docs.getbifrost.ai/integrations/genai-sdk/overview) | `http://127.0.0.1:8080/genai` for a local instance | Uses a Bifrost virtual key. This frontend adapts requests and responses, so verify tool and reasoning metadata through the full agent flow. |
+| [Cloudflare AI Gateway Google AI Studio route](https://developers.cloudflare.com/ai-gateway/usage/providers/google-ai-studio/) | `https://gateway.ai.cloudflare.com/v1/<account>/<gateway>/google-ai-studio` | Provider-key pass-through uses a Google key. Configurations that require the extra `cf-aig-authorization` header need more header support than the URL-and-key form provides. |
+
+OpenAI-compatible routes from the same products are not interchangeable with
+these native Gemini routes.
+
+#### Databricks
+
+Choose **Databricks — profile** and enter an existing profile name from
+`~/.databrickscfg` (or the file selected by `DATABRICKS_CONFIG_FILE`), for
+example `work`. Do not paste a workspace URL or token into the gateway option —
+setup rejects Databricks hosts there. This path requires:
+
+- the `databricks` extra in the environment running Omnigent
+  (`pip install 'omnigent[databricks]'`) — setup tells you if it's missing;
+- a **local** profile on the host — managed `connection: databricks` providers
+  are not supported for native Gemini;
+- an **HTTPS** workspace root in the profile — HTTP hosts, including loopback,
+  are rejected before authentication;
+- access to the workspace's **native Gemini API** and the corresponding model
+  services. A workspace model page showing `/ai-gateway/mlflow/v1/responses`
+  is an OpenAI Responses endpoint, even when its model is a Gemini service;
+  availability there alone is insufficient.
+
+For a CLI OAuth login, sign in and then run setup:
+
+```
+databricks auth login --profile work
+omni setup
+```
+
+PAT and service-principal credentials belong in the profile configuration and
+need no interactive login. Setup authenticates the profile before saving it and
+stores the provider as `databricks-gemini-<profile>` with `native_gemini: true`
+in `~/.omnigent/config.yaml`; that flag scopes the entry to the Gemini surface
+only (a regular Databricks profile keeps serving Claude, Codex, and Pi).
+
+At launch Omnigent starts a local adapter alongside each agy process. It
+supplies the profile's Bearer token, refreshes access tokens through the
+profile's authentication provider, maps agy's model names onto the workspace's
+Gemini model services, and forwards native Gemini bodies and streaming
+responses unchanged to:
+
+```
+https://<workspace>/ai-gateway/gemini/v1beta/models/<model-service>:streamGenerateContent
+```
+
+The adapter requires the same main and auxiliary model versions agy requests;
+an unavailable or ambiguous match fails rather than substituting a different
+version. It stops with agy and is recreated on resume — you never manage its
+local URL or session key. The selected profile owns both the workspace and the
+identity: ambient `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, and OAuth client
+settings cannot override it, and an invalid profile fails instead of using
+ambient credentials.
+
+If OAuth refresh fails, run `databricks auth login --profile work` again in the
+same environment. Omnigent does not require `DATABRICKS_AUTH_STORAGE=plaintext`
+(some CLI versions use it for an older file credential cache); use a consistent
+storage setting for login and Omnigent, and restart an existing local host
+daemon after changing its authentication environment.
+
+#### Verify the connection
+
+Create a small file in your working directory and start a session:
+
+```
+printf 'Gateway smoke: file tools work.\n' > gateway-smoke.txt
+omni agy
+```
+
+Ask: *Read gateway-smoke.txt using the file tool and quote its contents.*
+Confirm a tool call occurs and the reply contains the file's actual text, then
+ask a follow-up question about it. Exit and run `omni agy --resume` to verify
+continuity. Repeat in a fresh conversation after switching credentials.
+
+- **404** — check both the API route and the availability of the requested
+  model; changing `/model` cannot repair an incompatible API protocol.
+- **401 / 403** — check the key or profile login and model permissions.
+
+Previously saved incompatible entries fail at launch with guidance instead of
+falling back to ambient credentials.
+
+#### Upgrading from an earlier Omnigent
+
+- A `gemini:` block in an existing `kind: gateway` or `kind: local` provider
+  becomes usable by native agy. If that provider has `default: true`, Gemini is
+  included in its defaults and takes precedence over agy OAuth; an incompatible
+  URL then fails with a setup error rather than falling back. Update it to a
+  native Gemini API root, or replace `default: true` with an explicit list of
+  its other families (for example `default: [anthropic, openai]`) in
+  `config.yaml` to restore OAuth for new sessions. You can also select another
+  Gemini default in setup.
+- Setup does not automatically adopt a detected `GEMINI_API_KEY` whose
+  companion `GOOGLE_GEMINI_BASE_URL` is incompatible. Correct the variable and
+  reopen setup; if an earlier setup already saved the rejected URL, edit or
+  remove that saved provider too — changing the environment alone does not
+  replace it.
 
 ### Permission prompts
 
@@ -333,14 +514,6 @@ Antigravity permission prompts appear in Chat and **Inbox**. You can approve
 or reject commands and use agy's pattern-based always-allow choices when
 available. Rules saved through these prompts apply only to the current
 Omnigent session.
-
-<div className="note">
-
-**Note:** The in-process `antigravity` SDK harness is a separate integration
-that resolves its own Gemini API key at runtime. The `GEMINI_API_KEY` behavior
-above applies to the native `agy`-wrapping `antigravity-native` harness.
-
-</div>
 
 ## Codex
 

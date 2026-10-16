@@ -1,0 +1,67 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Schedule agent runs in fresh managed sandboxes — no online host required",
+  "Point an automation at a managed sandbox and every firing gets a clean, server-provisioned sandbox of its own. No laptop has to be awake, and nothing from the last run leaks into the next.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/automations-fresh-managed-sandboxes",
+  },
+);
+
+export const meta = {
+  title:
+    "Schedule agent runs in fresh managed sandboxes — no online host required",
+  date: "2026-09-22",
+  category: "Automations",
+  author: "omnigent",
+  heroArt: "/images/blog/automations-fresh-managed-sandboxes.png",
+};
+
+<BlogPostHeader slug="automations-fresh-managed-sandboxes" />
+
+If you run agents on a schedule, you can now point an automation at a managed
+sandbox instead of one of your own machines. Every firing gets a fresh,
+server-provisioned sandbox of its own, and the run happens whether or not your
+laptop is open.
+
+Until now a scheduled task needed a connected host that was online at fire
+time. If the machine was asleep, the run was recorded as failed. Runs also
+shared whatever state the last one left behind in the pinned workspace. With
+the managed sandbox target, the server mints a new sandbox for each run, binds
+a clean workspace to it, launches the agent, and sends the prompt. Nothing
+carries over between runs, and no one has to keep a device awake. This works
+with any agent you run in Omnigent.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: create a nightly automation with execution_target set to managed_sandbox, then show the fired session appearing in the session list bound to a freshly provisioned sandbox host, with a second firing landing on a different fresh host. */}
+
+To use it, set `execution_target` to `managed_sandbox` when you create or
+update a task, through the built-in `sys_scheduled_task_create` and
+`sys_scheduled_task_update` tools or the REST API. Leave out `host_id` and
+`workspace`; a managed sandbox task has neither. Existing managed sandbox hosts
+cannot be pinned as targets. The default stays `connected_host`, so tasks you
+already have keep running as before.
+
+```json
+POST /v1/scheduled-tasks
+{
+  "name": "nightly triage",
+  "agent_id": "ag_abc123",
+  "prompt": "Triage new issues and post a summary.",
+  "rrule": "FREQ=DAILY;BYHOUR=9;BYMINUTE=0",
+  "execution_target": "managed_sandbox"
+}
+```
+
+The server must have managed sandboxes configured (a `sandbox:` section in the
+server config); otherwise the task is rejected when you create it rather than
+failing on every fire. Each sandbox follows your server's normal sandbox
+lifecycle settings. Automations do not shorten timeouts or tear a sandbox down
+when a run finishes, so pick lifetime, idle, and cleanup settings that fit how
+often your automations fire. See the
+[Scheduled Tasks guide](/docs/build/scheduled-tasks) for the full set of task
+fields.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

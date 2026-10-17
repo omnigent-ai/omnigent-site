@@ -4,6 +4,7 @@ import {
   groupReleasesByMonth,
 } from "@/lib/group-releases";
 import { pageMeta } from "@/lib/og";
+import { demotedHeadings } from "@/lib/release-headings";
 
 export const metadata = pageMeta(
   "Releases",
@@ -55,7 +56,7 @@ export default async function ReleasesIndex() {
             return (
               <section key={version} className="release-entry">
                 {showDivider ? <hr /> : null}
-                <Body />
+                <Body components={demotedHeadings} />
               </section>
             );
           })}

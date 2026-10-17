@@ -16,7 +16,7 @@ export const metadata = pageMeta(
 
 _Released 2026-06-19_
 
-### Install
+## Install
 
 ```bash
 uv tool install --force "omnigent==0.2.0"
@@ -24,7 +24,7 @@ uv tool install --force "omnigent==0.2.0"
 
 0.2.0 turns omnigent into a multi-vendor agent platform with pluggable agent SDKs, a much wider fleet of sandbox & deploy targets, and hardened security underneath.
 
-### Major new features
+## Major new features
 
 - **🤖 More agent harnesses & SDKs**
   - run agents on Google Antigravity (Gemini 3 Pro, also Claude/GPT-OSS) ([#194](https://github.com/omnigent-ai/omnigent/pull/194))
@@ -37,7 +37,7 @@ uv tool install --force "omnigent==0.2.0"
 - **🔒 Secretless sandbox egress**: `credential_proxy` injects bearer/basic auth for allow-listed hosts so secrets never enter the sandbox ([#236](https://github.com/omnigent-ai/omnigent/pull/236))
 - **📊 MLflow tracing** end-to-end through `omnigent run` ([#638](https://github.com/omnigent-ai/omnigent/pull/638))
 
-### Bug fixes
+## Bug fixes
 
 - **`omni upgrade` is version-aware** — upgrades to the right release instead of looping against a stale version ([#726](https://github.com/omnigent-ai/omnigent/pull/726)).
 - **`omnigent run` exits cleanly on an INPUT-phase policy denial** instead of hanging ([#599](https://github.com/omnigent-ai/omnigent/pull/599)).
@@ -47,6 +47,6 @@ uv tool install --force "omnigent==0.2.0"
 
 ---
 
-### 💜 Thanks to our community
+## 💜 Thanks to our community
 
 This release was shaped by the people who filed issues, opened PRs, and talked through feature requests with us on our discord! Thank you for building Omnigent with us, keep the bug reports, ideas and contributions coming :)

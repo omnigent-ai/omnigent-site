@@ -1,6 +1,10 @@
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 import "./globals.css";
 import { siteUrl } from "@/lib/site";
+import JsonLd from "@/components/JsonLd";
+import { siteGraph } from "@/lib/structured-data";
+import { FEED_PATH } from "@/lib/feed";
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
@@ -37,9 +41,29 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        {/* Blog feed autodiscovery. A <link> here (not metadata.alternates)
+            so pages that set their own alternates.canonical keep it too. */}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Omnigent blog"
+          href={FEED_PATH}
+        />
+      </head>
       <body>
+        <JsonLd data={siteGraph()} />
         {children}
         <Analytics />
+        {/* Privacy-friendly analytics by Plausible */}
+        <Script
+          src="https://plausible.io/js/pa-HNjmtUEFS5Taxgsfdmq79.js"
+          strategy="afterInteractive"
+        />
+        <Script id="plausible-init" strategy="afterInteractive">
+          {`window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+plausible.init()`}
+        </Script>
       </body>
     </html>
   );

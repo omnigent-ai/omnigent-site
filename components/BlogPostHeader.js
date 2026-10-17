@@ -1,5 +1,7 @@
 import { getBlogPost, getReadingMinutes } from "@/lib/blog";
 import { getAuthorProfile } from "@/lib/authors";
+import { blogPosting } from "@/lib/structured-data";
+import JsonLd from "./JsonLd";
 
 // Header rendered at the top of every blog post: title, then a byline row with
 // the author avatar, author name, publish date, and estimated reading time.
@@ -60,7 +62,8 @@ function Avatar({ author, avatar }) {
 }
 
 export default function BlogPostHeader({ slug }) {
-  const { title, date, category, author } = getBlogPost(slug);
+  const { title, date, category, author, description, heroArt } =
+    getBlogPost(slug);
   const displayAuthor = author || "omnigent";
   const authorProfile = getAuthorProfile(author);
   const minutes = getReadingMinutes(slug);
@@ -68,6 +71,17 @@ export default function BlogPostHeader({ slug }) {
 
   return (
     <header className="blog-post-header">
+      <JsonLd
+        data={blogPosting({
+          slug,
+          title,
+          description,
+          date,
+          author,
+          authorProfile,
+          heroArt,
+        })}
+      />
       {category ? <span className="blog-card-cat">{category}</span> : null}
       <h1>{title}</h1>
       <div className="blog-post-byline">

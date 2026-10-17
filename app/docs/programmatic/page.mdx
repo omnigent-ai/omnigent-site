@@ -510,6 +510,11 @@ This copies the full history. Add `"up_to_response_id": "<response_id>"` to
 the body to copy history only through that response. Bind a runner to the fork
 before sending another prompt, or request a managed host in the fork body.
 
+To continue the conversation on a different agent, add `"agent_id"` (a
+built-in agent listed by `GET /v1/agents`) to the fork body. Forking is the
+only way to change agents: a session's bound agent can't be switched in
+place, and `POST /v1/sessions/{id}/switch-agent` returns `410 Gone`.
+
 Add `"side_chat": true` (default `false`) to mark the fork as a
 [side chat](/docs/interact/web-ui#side-chats): the fork is labeled
 `omnigent.side_chat` and omitted from `GET /v1/sessions`, so it stays out of

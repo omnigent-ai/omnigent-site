@@ -56,14 +56,14 @@ docker compose up -d    # Omnigent server + Postgres
 
 Key variables in `.env` (See [Auth & SSO](/docs/collaborate/auth) for details on multi-user auth):
 
-| Variable                      | Purpose                                         |
-| ----------------------------- | ----------------------------------------------- |
-| `DATABASE_URL`                | Postgres connection string                      |
-| `OMNIGENT_AUTH_ENABLED`       | Enable multi-user auth (default: `1` in Docker) |
-| `OMNIGENT_OIDC_COOKIE_SECRET` | Session cookie secret                           |
-| `OMNIGENT_OIDC_ISSUER`        | OIDC issuer URL (enables SSO)                   |
-| `OMNIGENT_OIDC_CLIENT_ID`     | OIDC client ID                                  |
-| `OMNIGENT_OIDC_CLIENT_SECRET` | OIDC client secret                              |
+| Variable                      | Purpose                                                                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                | Postgres connection string                                                                                                         |
+| `OMNIGENT_AUTH_ENABLED`       | Enable multi-user auth (default: `1` in Docker)                                                                                    |
+| `OMNIGENT_OIDC_COOKIE_SECRET` | Session cookie secret                                                                                                              |
+| `OMNIGENT_OIDC_ISSUER`        | OIDC issuer URL (enables SSO)                                                                                                      |
+| `OMNIGENT_OIDC_CLIENT_ID`     | OIDC client ID                                                                                                                     |
+| `OMNIGENT_OIDC_CLIENT_SECRET` | OIDC client secret (omit for [public PKCE clients](/docs/collaborate/auth#public-pkce-clients-and-explicit-endpoints) that opt in) |
 
 <div className="note">
 
@@ -72,6 +72,39 @@ No admin password is auto-generated. On first boot the server reports
 `OMNIGENT_ACCOUNTS_INIT_ADMIN_PASSWORD` in `.env` to preset it for headless deploys.
 
 </div>
+
+### Extra built-in agents
+
+Set `OMNIGENT_BUILTIN_AGENT_DIRS` to load extra built-in agents at server startup.
+In Docker, use colon-separated paths to YAML specs or bundle directories **inside
+the container**.
+
+Place your agents under `deploy/docker/agents/` and create
+`deploy/docker/docker-compose.override.yaml`, which Compose loads alongside
+`docker-compose.yaml`:
+
+```yaml
+services:
+  omnigent:
+    environment:
+      OMNIGENT_BUILTIN_AGENT_DIRS: /agents/my-agent.yaml:/agents/my-bundle
+    volumes:
+      - ./agents:/agents:ro
+```
+
+Replace the example paths with your agents, then apply the configuration from
+`deploy/docker`:
+
+```sh
+docker compose up -d --force-recreate omnigent
+```
+
+After editing a mounted spec, run `docker compose restart omnigent` to reload it.
+Changes to the paths or mounts require the force-recreate command above.
+
+Each agent is available to all users and named after its YAML file stem or bundle
+directory. Use a distinct name unless you intend to replace an existing built-in.
+Invalid or missing entries are logged and skipped.
 
 ### Cloud platforms
 

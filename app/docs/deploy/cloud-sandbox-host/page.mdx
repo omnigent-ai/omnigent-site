@@ -39,6 +39,10 @@ or a remote `boxlite serve` pool. Gensee is a managed-host provider only: its
 control plane starts the host over HTTPS, so it supports the server-managed flow
 but not the CLI bootstrap commands.
 
+For local microVMs, use [Microsandbox](/docs/reference/configuration/cloud-sandbox#microsandbox).
+Its VMs run on the machine running the server or CLI, so they depend on that
+machine staying awake.
+
 |                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) | [Blaxel](https://blaxel.ai)              | [Islo](https://islo.dev)                       |
 | ------------------------ | ---------------------------------- | --------------------------------- | ---------------------------------------- | ---------------------------------------------- |
 | **Runner lifetime**      | 24 hours (platform cap)            | No cap (runs until deleted)       | 24h max age by default (raise via `ttl`) | No cap (idle-paused after 15 min when managed) |
@@ -59,6 +63,7 @@ pip install 'omnigent[blaxel]'      # for Blaxel
 pip install 'omnigent[islo]'        # for Islo
 pip install 'omnigent[openshell]'   # for OpenShell
 pip install 'omnigent[boxlite]'     # for Boxlite
+pip install 'omnigent[microsandbox]' # for local microVMs
 ```
 
 Gensee needs no extra: it talks to the Gensee control plane over HTTPS and
@@ -116,6 +121,10 @@ export GENSEE_CONTROLLER_API_TOKEN=…
 remote `boxlite serve` pool, set `BOXLITE_API_KEY` on the server and configure
 the pool endpoint in the [Boxlite settings](/docs/reference/configuration/cloud-sandbox#boxlite).
 
+**Microsandbox:** no provider credentials or daemon are needed; the install extra
+includes the runtime. Use Apple Silicon macOS or glibc Linux with access to
+`/dev/kvm` (typically through the `kvm` group). Intel Macs are not supported.
+
 Provider control credentials stay on the launching process and never enter the
 sandbox. Web users log in to Omnigent, not the sandbox provider.
 
@@ -149,7 +158,10 @@ Optionally point the sandbox at a git repository to clone. Use the composer's
 [connected GitHub account](/docs/deploy/github-connect) or paste a clone URL, and
 pin a branch; leave it empty for a bare sandbox with a server-created workspace.
 The repo is cloned inside the sandbox and becomes the session's working
-directory.
+directory. Admins can make these clones faster with the optional
+[`sandbox.git_clone`](/docs/reference/configuration/cloud-sandbox#git-clone-options)
+block, which limits history depth, branch selection, and blob fetching for
+fresh checkouts on providers that support it.
 
 Some providers can clone **several repositories** into one sandbox. When the
 selected provider supports it, keep adding entries in the **Repository** control
@@ -198,6 +210,9 @@ omni sandbox connect --provider modal \
 
 Boxlite and Gensee support the server-managed flow but not these CLI bootstrap
 commands.
+
+For Microsandbox, use `--provider microsandbox` and pass a `--server` URL
+reachable from the VM; see [Microsandbox settings](/docs/reference/configuration/cloud-sandbox#microsandbox).
 
 For a Blaxel CLI launch, list any credentials the host or agent needs in
 `OMNIGENT_BLAXEL_SANDBOX_ENV` before `create`. Never include `BL_API_KEY` or

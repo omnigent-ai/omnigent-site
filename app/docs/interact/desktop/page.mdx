@@ -39,6 +39,7 @@ showing how many sessions are waiting, and multiple independent windows.
 - **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing.
 - **Dock badge.** See at a glance how many sessions need your attention, without switching to the app.
 - **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
+- **Recent-session switcher.** Hold `Ctrl` and press `Tab` to flip between your five most recent sessions — see [Keyboard shortcuts](#keyboard-shortcuts).
 - **One-click host reconnect.** When a session's host is this machine and it has gone offline, the app restarts the host for you instead of asking you to run a command in a terminal.
 
 Everything else (sessions, file editor, inline comments, collaboration) works exactly the
@@ -118,6 +119,85 @@ Because the browser runs inside the desktop window, these tools require the Omni
 desktop app to be running with the session open. If no desktop window is subscribed,
 the action fails cleanly with `browser action timed out — is the session open in the
 Omnigent desktop app?` rather than hanging.
+
+### Local network permission
+
+Sites in the embedded pane can ask for **local network access** — for example a
+sign-in page that talks to a loopback helper such as Okta Verify. When they do,
+a compact Chrome-style popover appears beneath the browser toolbar, asking
+**Allow local network access?** for the requesting origin, with three choices:
+
+- **Allow once** — grants access for this site visit in this pane. It survives
+  reloads and same-origin navigation, and expires when you leave the site or
+  close the pane.
+- **Always allow** — remembers the decision for this exact origin across all
+  conversations and app restarts.
+- **Deny** — blocks the permission for this origin across all conversation
+  browsers and app restarts.
+
+Closing the popover, pressing <kbd>Esc</kbd>, or clicking outside it dismisses
+the request without saving a decision; the site isn't asked again until the
+next navigation. Only the visible, active pane can open a new prompt, but an
+existing **Allow once** or **Always allow** grant stays in effect while the
+site is in the background. HTTPS sites and HTTP loopback pages can request
+access; embedded subframes cannot request it on their own.
+
+Some sign-in flows check the permission before requesting it. Because Electron
+can only answer such checks with allowed or denied — never "prompt" — the popover
+then shows **Allowing will reload this page**, and either allow button reloads
+the page so the site retries with the new answer. If a background page has
+already given up on its sign-in flow, bring its pane into view and reload.
+
+Saved choices live in the desktop app's `settings.json` under
+`browser_local_network_permissions`, as a map of origin → `true`/`false`. To
+reset a saved choice, quit the app, remove that origin's entry, and reopen it.
+These choices don't change the pane's per-conversation cookie and storage
+isolation, and camera, microphone, notifications, and all other browser
+permissions remain denied.
+
+This controls Chromium's local-network permission answers — it is **not a
+network firewall**. Not every Electron version gates every local-network fetch
+on this permission, and approving it doesn't bypass CORS, TLS certificate
+validation, or the agent's navigation policy. A local helper that rejects the
+site through its own CORS policy must itself be configured to allow it; the pane
+doesn't rewrite those headers.
+
+## Keyboard shortcuts
+
+The desktop app supports every
+[web UI shortcut](/docs/interact/web-ui#keyboard-shortcuts) and adds two of
+its own. Both appear in the in-app shortcuts overlay (`⌘/` / `Ctrl+/`) only
+when you're running the desktop app.
+
+### Switch recent sessions
+
+Hold **Control** and press **Tab** (`⌃Tab` on macOS, `Ctrl+Tab` on
+Windows/Linux — this chord uses Control, not ⌘, on every platform) to open a
+switcher listing your **five most recent sessions**, ordered by last activity,
+each with its agent name. While holding Control:
+
+- press `Tab` again to move down the list, or `Shift+Tab` to move up (the
+  selection wraps);
+- release Control to switch to the highlighted session;
+- press `Esc` to cancel and stay where you are.
+
+The highlight starts on the session just after the one you're viewing, so a
+quick `Ctrl+Tab`-and-release jumps back to the session you used before this
+one. Archived sessions aren't listed. The gesture also works while an embedded
+[Browser](#embedded-browser) page has keyboard focus — the app forwards it to
+the switcher instead of letting the page handle it.
+
+### Open a new browser tab
+
+Press `⌘⌥B` (`Ctrl+Alt+B` on Windows/Linux) to open a new **Browser** soft tab
+in the Workspace rail — the same action as **+ → Browser** in the rail's menu,
+which shows the keycaps next to the Browser row. If the rail is collapsed or
+hidden behind the Terminal panel, it's revealed with the new tab selected. The
+shortcut yields while you're typing in the code editor or a terminal, and is
+only bound where the embedded browser is available.
+
+`Cmd+N` still opens a new window; starting a new session is `⌘⌥N`
+(`Ctrl+Alt+N`), as in the web UI.
 
 ## Prerequisites
 
@@ -209,18 +289,27 @@ Notifications and badge counts are combined across all connected servers.
   style={{ width: "100%", borderRadius: "8px" }}
 />
 
-## Managed servers (macOS MDM)
+## Preset server URLs via MDM (macOS)
 
-On macOS, administrators can publish a list of server URLs through MDM
-[Managed Preferences](https://support.apple.com/guide/deployment/welcome/web),
-so people can pick their organization's server instead of typing it. The
-preference domain is the desktop app's bundle identifier:
+On macOS, an administrator can preset the servers Omnigent Desktop offers, so
+users pick their organization's server from a list instead of typing it. This
+uses the standard macOS
+[Managed Preferences](https://support.apple.com/guide/deployment/welcome/web)
+mechanism, delivered through whatever MDM you run (for example Jamf, Kandji,
+Intune, or Mosyle). Each MDM has
+its own UI and configuration format, so follow your MDM's managed-preferences or
+custom-settings documentation for the exact steps. This page documents what
+Omnigent reads: the preference domain and the keys it recognizes.
+
+### Preference domain
+
+Omnigent Desktop reads its managed preferences from the app's bundle identifier:
 
 ```text
 ai.omnigent.desktop
 ```
 
-Set the `serverUrls` key to an array of server URLs, most-preferred first:
+### Keys
 
 <table>
   <thead>
@@ -244,39 +333,49 @@ Set the `serverUrls` key to an array of server URLs, most-preferred first:
       </td>
       <td>
         Server URLs to offer, most-preferred first. Each must use{" "}
-        <code>https://</code>. At most 10.
+        <code>https://</code>. At most 10. Give any entry a display name with an{" "}
+        <code>omnigentServerName</code> query parameter (see Display names
+        below).
       </td>
     </tr>
   </tbody>
 </table>
 
-A schemeless host is accepted and interpreted as `https://`. Paths are
-preserved, so an administrator can point directly at a workspace mount such as
-`https://my-workspace.cloud.databricks.com/ml/omnigents`. Entries that share an
-origin are collapsed, keeping the first. If any entry is an invalid type,
-insecure, or malformed — or the list has more than 10 entries — the whole list
-is rejected.
+Notes:
 
-Managed servers are read only on macOS; other platforms ignore the preference.
+- A schemeless host is read as `https://`, and `http://` is rejected, so a plain
+  `localhost` server can't be preset.
+- Paths are preserved, so you can point directly at a workspace mount such as
+  `https://my-workspace.cloud.databricks.com/ml/omnigents`.
+- Entries that share an origin are collapsed, keeping the first. If any entry is
+  an invalid type, insecure, or malformed, or if the list has more than 10
+  entries, the whole list is rejected.
 
-### How they appear
+These preferences are read only on macOS; other platforms ignore them.
 
-Managed servers show up under **Provided by your organization** on the connect
-screen and in the in-app server switcher. They are offered, not enforced:
+### Display names
 
-- Omnigent never connects to them automatically.
-- People can still type another server URL.
-- A managed workspace path is loaded exactly as configured, rather than being
-  reduced to its origin.
-- Values are read from macOS on demand, not copied into the app's settings, so
-  applying or removing a profile takes effect the next time the connect screen
-  loads or the server switcher opens.
+To give a server a display name, add an `omnigentServerName` query parameter
+to its `serverUrls` entry. Omnigent removes the parameter before connecting, so
+it never reaches the server:
 
-### Example MDM profile
+```text
+https://my-workspace.cloud.databricks.com/?o=123&omnigentServerName=Engineering
+```
 
-Use the standard `com.apple.ManagedClient.preferences` payload with the
-`ai.omnigent.desktop` application preference domain (most MDM products expose
-this as a custom settings or managed preferences payload):
+Encode spaces as `%20`, and write `&` as `&amp;` inside a plist. Unnamed
+servers show their host. The first preset server's name labels the connect
+screen's **Join your team** button; names also label the organization's servers
+in its dropdown and in the in-app server switcher.
+
+### Example (macOS managed preferences)
+
+This is the macOS managed-preferences payload Omnigent reads. Depending on your
+MDM, you either upload it inside a Configuration Profile or paste these keys into
+a custom-settings form; either way, your MDM generates the surrounding profile
+wrapper (the `PayloadUUID`, `PayloadIdentifier`, and similar boilerplate). Keep
+the `ai.omnigent.desktop` domain and the key names as shown, and change the
+server URLs and names to your own.
 
 ```xml
 <key>ai.omnigent.desktop</key>
@@ -288,7 +387,7 @@ this as a custom settings or managed preferences payload):
       <dict>
         <key>serverUrls</key>
         <array>
-          <string>https://omnigent.corp.example.com</string>
+          <string>https://omnigent.corp.example.com/?omnigentServerName=Engineering</string>
           <string>https://my-workspace.cloud.databricks.com/ml/omnigents</string>
         </array>
       </dict>
@@ -297,13 +396,18 @@ this as a custom settings or managed preferences payload):
 </dict>
 ```
 
-{/* eslint-disable-next-line @next/next/no-img-element */}
+### What users see
 
-<img
-  src="/images/docs/desktop-connect.png"
-  alt="Omnigent desktop app setup screen prompting for the server URL to connect to"
-  style={{ width: "100%", borderRadius: "8px" }}
-/>
+Preset servers show up under **Provided by your organization** on the connect
+screen and in the in-app server switcher. They are offered, not enforced:
+
+- Omnigent never connects to them automatically.
+- Users can still type and join another server URL.
+- A workspace path is loaded exactly as configured, rather than being reduced
+  to its origin.
+- Values are read from macOS on demand, not copied into the app's settings, so
+  applying or removing a profile takes effect the next time the connect screen
+  loads or the server switcher opens.
 
 ## Open a session from a link
 

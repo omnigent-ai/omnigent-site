@@ -81,6 +81,11 @@ const ALL_PAGES = [
     section: "Use Omnigent",
   },
   {
+    href: "/docs/use/company-knowledge",
+    label: "Company Knowledge",
+    section: "Use Omnigent",
+  },
+  {
     href: "/docs/build/harnesses",
     label: "Overview",
     section: "Harnesses",

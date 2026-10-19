@@ -50,8 +50,11 @@ Each policy returns one of three decisions:
 | **ASK**   | The action pauses until the user approves or rejects it. |
 | **DENY**  | The action is blocked with an error message.             |
 
-Policies are checked in order. The first policy to return a decision wins. No opinion
-(`None`) passes to the next policy.
+Policies are evaluated in order. **DENY** blocks immediately, even after an earlier
+**ALLOW**. **ASK** decisions are combined into one approval request unless a later
+policy returns **DENY**. Otherwise, the result is **ALLOW**. No opinion (`None`)
+passes to the next policy. Post-tool policies cannot undo an action that has
+already happened.
 
 ### Available policies
 

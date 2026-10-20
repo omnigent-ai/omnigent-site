@@ -186,6 +186,35 @@ stored model is still a valid choice for that harness; a retired or unknown id
 falls back to your remembered pick. An explicit model you pick in the composer
 always wins for that session.
 
+### Change reasoning effort mid-session
+
+Custom agents running on the `claude-sdk` or `codex` harness get an in-session
+**Effort** dial in the composer. Open the config gear, choose **Edit**, and pick
+a rung from the **Effort** section. The ladder is the harness's declared effort
+family, read from the server's harness catalog (`/v1/harnesses` →
+`capabilities.effort`):
+
+- `claude-sdk` (`anthropic` family): `low`, `medium`, `high`, `xhigh`, `max`.
+- `codex` (`openai` family): `none`, `minimal`, `low`, `medium`, `high`, `xhigh`.
+
+The pick is saved on the session's `reasoning_effort` right away — no turn has
+to be sent — and is restored when you reload the page. Changing effort after a
+completed turn applies on the next conversational turn and keeps the
+conversation history. On `claude-sdk`, effort is a launch option, so Omnigent
+rebuilds the SDK client with the history replayed; `/compact` still operates on
+the existing client's context. `/effort default` drops the override and
+restores the harness's default. On `codex`, restoring the default re-applies
+the thread's original effort; if the Codex app-server reports no default for
+the model, the turn fails with an error asking you to select an explicit effort
+or start a new session.
+
+This is the in-session dial, distinct from the effort choice in the new-chat
+composer. It appears only on top-level sessions (a sub-agent child takes no
+input of its own, so it gets no dial) and only for harnesses that declare an
+effort ladder — `antigravity` declares none, so its sessions show no dial.
+Native TUI sessions (`claude-native`, `codex-native`, …) keep their own effort
+controls.
+
 ### Set what the agent can do without asking
 
 Native coding-agent sessions choose their permission or approval mode from the

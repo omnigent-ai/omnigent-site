@@ -178,6 +178,12 @@ State written this way is shared session state, so a later policy (or a later
 evaluation of the same CEL expression) can read it back and branch on it, just
 like the stateful builtin policies do.
 
+Keys that begin with `_policy_` are reserved for the runtime, and a CEL
+expression can't change them. If a `state_updates` entry targets a reserved key,
+the event is denied and none of that result's state updates are applied. See
+[StateUpdateEntry](/docs/policies/custom#reference-stateupdateentry) for the
+full list of reserved keys.
+
 #### Make spend visible before you restrict it
 
 Start with soft thresholds only. Engineers see when they're running an

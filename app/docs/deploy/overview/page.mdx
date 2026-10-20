@@ -179,6 +179,54 @@ and — for the `agent_sandbox` provider — opt-in
 [native warm pools](/docs/reference/configuration/kubernetes#native-warm-pools-for-agentsandbox-warmpool)
 that keep spare Pods ready before a session arrives.
 
+### Release features
+
+Release features are gated behind the comma-separated `OMNIGENT_FEATURES`
+variable (on a self-managed Databricks deploy, the `--features` deploy
+argument). Each feature has a default, and the value overrides those defaults:
+
+- `name` enables a feature.
+- `-name` disables it. An explicit disable wins regardless of order, so
+  appending `-name` works as a kill switch even if `name` is also listed.
+- Unset or empty uses the defaults.
+
+Unknown names, including unknown `-name` overrides, fail startup, so a typo
+can't silently change what's rolled out.
+
+```
+OMNIGENT_FEATURES=usage_page,harness_install,-claude_osc_status
+```
+
+The server resolves the set once at startup and publishes its frontend-visible
+features in `GET /v1/info` under `features`. Redeploy or restart every replica
+after you change the value, then reload the web app. To roll a feature back,
+add `-feature_name` and redeploy the same image.
+
+Most release features (such as `usage_page`, `harness_install`, and
+[`canvas`](/docs/interact/web-ui#canvas)) are off by default. Runner features
+are resolved by each runner instead of the server:
+
+| Feature             | Default | Applies to    | Effect                                                                                                                                                                                                    |
+| ------------------- | ------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `claude_osc_status` | On      | Host / runner | `claude-native` sessions take their working, blocked, and idle status from Claude Code's OSC 7501 terminal reports, falling back to Claude's session status file and then pane activity. Not listed in `/v1/info`. |
+
+The OSC path needs Claude Code 2.1.295 or later. Older CLIs use the fallback.
+Setting `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` also suppresses these status
+reports.
+
+<div className="note">
+
+Runner features are read from the **host's** environment, not the server's.
+`omni host` forwards `OMNIGENT_FEATURES` to the runners it starts, including
+when it runs as the CLI's background daemon, so changing a remote server's
+environment does not change a separately running host. To turn a runner
+feature off (for example `OMNIGENT_FEATURES=-claude_osc_status`), set it where
+the host runs and restart the host and its runners. Then launch fresh
+terminals, because existing terminals keep the configuration they launched
+with.
+
+</div>
+
 ### Serving under a subpath
 
 By default the server and web UI are served from the origin root (`/`). To

@@ -1,0 +1,65 @@
+.publication-tabs {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+.publication-tabs a {
+  color: var(--fg-soft);
+  padding: 0.65rem 0;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+.publication-tabs a[aria-current="page"] {
+  color: var(--fg);
+  border-bottom-color: var(--accent);
+}
+.publication-tabs a:hover {
+  color: var(--accent-text);
+}
+.publication-preview {
+  margin-top: 4rem;
+  padding: 2.5rem 0 3rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg-soft);
+  /* Paint beyond the content column without adding layout/scroll width. */
+  box-shadow: 0 0 0 100vmax var(--bg-soft);
+  clip-path: inset(0 -100vmax);
+}
+.publication-preview h2 {
+  font-size: 1.6rem;
+  margin: 0 0 0.35rem;
+}
+.publication-preview > p {
+  margin: 0 0 1.5rem;
+  color: var(--fg-soft);
+}
+.blog-featured .blog-featured-body h3 {
+  margin: 0.5rem 0;
+  font-size: 1.6rem;
+}
+.publication-see-all {
+  display: inline-block;
+  margin-top: 1.5rem;
+}
+
+/* The title is the only link; its overlay keeps the full card clickable. */
+.blog-index :is(.blog-featured, .blog-card) {
+  position: relative;
+}
+.blog-index .blog-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+.blog-index .blog-title-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.blog-index :is(.blog-featured, .blog-card):hover .blog-title-link {
+  text-decoration: underline;
+}
+.blog-index .blog-title-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}

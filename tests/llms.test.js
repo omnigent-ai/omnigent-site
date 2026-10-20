@@ -148,3 +148,9 @@ test("every link is absolute and uses the production site URL", () => {
     expect(url.startsWith(productionSiteUrl)).toBe(true);
   }
 });
+
+test("generated llms.txt links the Feature notes archive with production identity", () => {
+  expect(llmsTxt).toContain(
+    `- [Feature notes](${productionSiteUrl}/feature-notes): Short posts spotlighting individual Omnigent features.`,
+  );
+});

@@ -242,6 +242,7 @@ function buildLlmsTxt({ docs, blog, releases }) {
   lines.push(
     `- [Homepage](${absolute("/")}): Product overview and architecture.`,
     `- [FAQ](${absolute("/faq")}): Answers to common questions about Omnigent, models, custom agents, safety, Databricks, and production readiness.`,
+    `- [Feature notes](${absolute("/feature-notes")}): Short posts spotlighting individual Omnigent features.`,
   );
   lines.push("", "### Blog", "");
   for (const post of blog)

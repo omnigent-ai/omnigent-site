@@ -1,0 +1,51 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Triage dozens of running agents from one Inbox",
+  "The Inbox now lists every session with an agent reply you have not seen yet, with a preview of what it said, next to the approvals and comments waiting on you. Filter with All, Unread, and Awaiting response tabs, grouped by recency.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/inbox-unread-agent-replies",
+  },
+);
+
+export const meta = {
+  title: "Triage dozens of running agents from one Inbox",
+  date: "2026-10-13",
+  category: "Web UI",
+  author: "omnigent",
+  heroArt: "/images/blog/inbox-unread-agent-replies.png",
+};
+
+<BlogPostHeader slug="inbox-unread-agent-replies" />
+
+If you keep many agents running at once, you can now check on all of them from
+one place. The Inbox lists every session where an agent has replied since you
+last looked, with a preview of what it said, alongside the approvals and file
+comments that are waiting on you.
+
+Until now, a finished reply only showed up as an unread dot in the sidebar, so
+finding out which of your twenty sessions had actually come back meant clicking
+through them one by one. The Inbox turns that into a single list. Each item is a
+compact card showing the session, whether it finished or hit an error, and the
+first line of the latest reply. Items are sorted newest first and grouped by
+recency (Just now, Earlier today, Yesterday, This week, Older), so the sessions
+that just came back are at the top. This works with any agent you run in
+Omnigent.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an Inbox with a dozen sessions under "Just now" and "Earlier today", switch to the Unread tab, expand one card to read the reply preview, click Mark as read and watch it drop out, then Open session on another. */}
+
+Three tabs narrow the list. All shows everything. Unread shows agent replies
+and file comments you have not seen. Awaiting response shows only the agents
+that have stopped to ask you something. The tab you pick is remembered on that
+device, so if you only want to see approvals, the Inbox opens that way next
+time.
+
+Open the Inbox from the sidebar and click a card to expand it. From there, Open
+session takes you into the chat, and Mark as read clears the item without
+opening it. Both clear the sidebar's unread dot for that session as well. For
+more on the web interface, see the [Web UI guide](/docs/interact/web-ui).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

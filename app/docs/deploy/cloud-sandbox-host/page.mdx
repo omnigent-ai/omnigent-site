@@ -266,6 +266,40 @@ run.
 
 </div>
 
+### Drain in-flight launches on shutdown (optional)
+
+When a server shuts down (for example during a rolling deploy), it cancels any
+managed sandbox launches still in progress. A launch cancelled before it binds
+its session to the new host leaves that session with no host: no replica can
+finish the launch, so the session's saved first message is marked failed with
+"the server shut down before the sandbox finished launching". Once a launch has
+bound its host, whichever replica the host connects to starts the runner and
+delivers the saved messages, so cancelling it at that point is safe.
+
+To give in-flight launches time to bind before they are cancelled, set the
+deployment-wide `shutdown_drain_s` next to `provider` (or `providers:`):
+
+```
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+  shutdown_drain_s: 240   # optional; default: 0 (no wait)
+```
+
+- The value must be a non-negative number of seconds. Booleans, strings,
+  negative, infinite, or NaN values are rejected at startup, as is setting
+  `shutdown_drain_s` inside a `providers:` list entry.
+- The server waits only until every in-flight launch has bound its host (or
+  the drain runs out), not for the runner to start. Launches still unbound after
+  the drain are cancelled and record the failure above.
+- The shutting-down server has already stopped accepting connections, so a
+  launch can bind only by its host connecting to **another replica**. Leave the
+  default `0` on a single-replica deployment. On a multi-replica deployment,
+  size the drain — plus uvicorn's graceful shutdown — to fit inside your
+  platform's termination grace period.
+- An already-provisioned sandbox whose launch is cancelled is not terminated by
+  the shutdown; the provider's lifetime cap reaps it.
+
 ## Community sandbox providers
 
 The providers above ship with Omnigent. Beyond them, the server discovers

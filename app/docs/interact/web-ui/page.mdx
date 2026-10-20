@@ -219,6 +219,35 @@ stored model is still a valid choice for that harness; a retired or unknown id
 falls back to your remembered pick. An explicit model you pick in the composer
 always wins for that session.
 
+### Change reasoning effort mid-session
+
+Custom agents running on the `claude-sdk` or `codex` harness get an in-session
+**Effort** dial in the composer. Open the config gear, choose **Edit**, and pick
+a rung from the **Effort** section. The ladder is the harness's declared effort
+family, read from the server's harness catalog (`/v1/harnesses` →
+`capabilities.effort`):
+
+- `claude-sdk` (`anthropic` family): `low`, `medium`, `high`, `xhigh`, `max`.
+- `codex` (`openai` family): `none`, `minimal`, `low`, `medium`, `high`, `xhigh`.
+
+The pick is saved on the session's `reasoning_effort` right away — no turn has
+to be sent — and is restored when you reload the page. Changing effort after a
+completed turn applies on the next conversational turn and keeps the
+conversation history. On `claude-sdk`, effort is a launch option, so Omnigent
+rebuilds the SDK client with the history replayed; `/compact` still operates on
+the existing client's context. `/effort default` drops the override and
+restores the harness's default. On `codex`, restoring the default re-applies
+the thread's original effort; if the Codex app-server reports no default for
+the model, the turn fails with an error asking you to select an explicit effort
+or start a new session.
+
+This is the in-session dial, distinct from the effort choice in the new-chat
+composer. It appears only on top-level sessions (a sub-agent child takes no
+input of its own, so it gets no dial) and only for harnesses that declare an
+effort ladder — `antigravity` declares none, so its sessions show no dial.
+Native TUI sessions (`claude-native`, `codex-native`, …) keep their own effort
+controls.
+
 ### Set what the agent can do without asking
 
 Native coding-agent sessions choose their permission or approval mode from the
@@ -242,10 +271,18 @@ options in the dropdown depend on the selected harness:
 - **Antigravity** (`antigravity-native`) offers **Ask every time** or
   **Skip permissions**. Skip permissions is a dangerous bypass that runs the
   session with all tool prompts disabled; while it's selected the composer shows
-  a red warning banner.
+  a red warning banner. Under **Ask every time**, each Antigravity permission
+  prompt appears as an approval card in Chat and in the Inbox, including agy's
+  pattern-scoped always-allow choices — see
+  [Antigravity permission prompts](/docs/build/harnesses/configuration#permission-prompts).
 
 Your choice is remembered and seeds the next new session, the same way the model
 picker is remembered.
+
+In a shared session, only the session owner can change the permission mode.
+For collaborators with Edit access the dropdown is disabled and shows "Only the
+session owner can change the permission mode" on hover. See
+[What each permission level can do](/docs/collaborate#what-each-permission-level-can-do).
 
 ### Shared sessions
 
@@ -351,12 +388,12 @@ than fit, a **Search older sessions** control pulls in older pages.
   the rail — so two presses in a row open and then close it.
 
 Once the tab strip has focus, press a plain digit to jump to one of the
-permanent tabs: `1`–`4` select **Files**, **Changes**, **GitHub**, and
-**Agents** in the order they appear in the strip. Your
+[pinned](#pin-workspace-tabs) tabs: `1`–`4` select **Files**, **Changes**,
+**GitHub**, and **Agents** in the order they appear in the strip. Your
 [Default Workspace tab](#default-workspace-tab) comes first when it's
 available, and tabs that aren't available in the session (GitHub outside
-coding-agent sessions, Files/Changes without an on-disk workspace) are skipped
-so the numbers stay contiguous. Hover a tab to see its number in the tooltip.
+coding-agent sessions, Files/Changes without an on-disk workspace) or that
+you've unpinned are skipped so the numbers stay contiguous. Hover a tab to see its number in the tooltip.
 The digits only act while the tab strip is focused, so typing numbers in the
 composer, the editor, or a terminal is unaffected.
 
@@ -366,7 +403,7 @@ composer, the editor, or a terminal is unaffected.
 | -------------------------------------------- | ---------------------------------------------- |
 | Open the command palette                     | `⌘K` (`Ctrl+K`)                                |
 | Find a session by name                       | `⌘⌥S` (`Ctrl+Alt+S`)                           |
-| New session                                  | `⌘⌥N` (`Ctrl+Alt+N`)                           |
+| New session                                  | `⌘⇧O` (`Ctrl+Shift+O`)                         |
 | Open Settings                                | `⌘⌥,` (`Ctrl+Alt+,`)                           |
 | Open the model picker                        | `⌃⇧M` (`Ctrl+Shift+M` on every platform)       |
 | Focus the chat input                         | `⌃⇧L` (`Ctrl+Shift+L` on every platform)       |
@@ -383,7 +420,15 @@ composer, the editor, or a terminal is unaffected.
 destination as the command palette's new-session action. Inside a conversation,
 typing [`/new`](#new-session-with-new) in the composer does the same while
 keeping the new session in the current project. `⌘⌥,` jumps straight
-to **Settings** from anywhere in the app. `⌘⌥B` is available only in the
+`⌘⇧O` (`Ctrl+Shift+O` on Windows/Linux) opens a clean, focused new-session
+composer from any page — the same destination as the command palette's
+new-session action. It fires even while the composer is focused, and any unsent
+draft in the session you left is kept. The chord matches the `O` character your
+keyboard layout types, so it follows the key labeled O on non-QWERTY layouts.
+The [desktop app](/docs/interact/desktop#keyboard-shortcuts) keeps `⌘⌥N`
+(`Ctrl+Alt+N`) for this action instead. When the web UI is embedded in another
+page, the shortcut only fires while focus is inside the Omnigent app, so the
+host page keeps its own keys. `⌘⌥,` jumps straight to **Settings** from anywhere in the app. `⌘⌥B` is available only in the
 [desktop app](/docs/interact/desktop#keyboard-shortcuts), where the embedded
 browser lives; the shortcuts overlay lists it only there.
 
@@ -413,7 +458,8 @@ per project, so each project keeps its own layout.
 Canvas is **off by default**. It's a gated release feature: an operator enables
 it deployment-wide by including `canvas` in the server's release features
 (`OMNIGENT_FEATURES=canvas`, or `--features canvas` on a Databricks deploy —
-combine comma-separated with other features like `usage_page,harness_install`).
+combine comma-separated with other features like `usage_page,harness_install`;
+see [Release features](/docs/deploy/overview#release-features)).
 Once enabled, a **Canvas** entry appears in the sidebar navigation and the page
 is served at `/canvas`.
 
@@ -457,21 +503,46 @@ at any time from the header's **Expand right panel** control, or press
 [Workspace sidebar and tabs](#workspace-sidebar-and-tabs)).
 
 To make new chats open the rail automatically instead, set the **Workspace
-panel** default under **Settings → Appearance** to **Open**. The two choices
-are **Open** and **Collapsed**. This is a per-device browser preference that
+panel** default in the **Workspace** group under **Settings → Appearance** to
+**Open**. The two choices are **Open** and **Collapsed**. This is a per-device browser preference that
 only seeds sessions with no saved open-state — once you expand or collapse the
 rail in a given session, that session keeps its own remembered state regardless
 of the default.
 
+### Pin Workspace tabs
+
+The right **Workspace** rail's built-in pages — **Files**, **Changes**,
+**Pull Requests** (the [GitHub](#github) tab), and **Agents** — are all pinned
+to the tab strip by default. To declutter the strip, open the **Workspace**
+group under **Settings → Appearance** and use **Sidebar tabs** to toggle each
+page between **Pinned** and **Pin**. A **Sidebar preview** shows which icons
+the strip will display.
+
+Unpinned pages stay one click away in the rail's **`+`** (`Open new`) menu,
+listed above the browser, side-chat, and shell entries. Choosing one opens it
+as a closable tab next to your file, shell, and side-chat tabs; close it with
+its **×** button or a middle-click. Each session remembers which unpinned pages
+you opened. Sessions that had a page selected when you unpin it forget that
+selection and reopen on your default tab instead. If you unpin everything and
+haven't opened a page, the rail shows **Open a Workspace tab from the + menu.**
+
+Pinned tabs are a per-device browser preference, included in settings export
+and import.
+
 ### Default Workspace tab
 
-Choose which tab the right **Workspace** rail opens on first. Under
-**Settings → Appearance → Default Workspace tab**, pick one of:
+Choose which tab the right **Workspace** rail opens on first. In the
+**Workspace** group under **Settings → Appearance → Default Workspace tab**,
+pick one of your [pinned](#pin-workspace-tabs) pages:
 
 - **Files** — the default.
 - **Changes**
 - **GitHub**
 - **Agents**
+
+Only pinned pages are offered, and the control is hidden when no page is
+pinned. If your saved default is unpinned, the first pinned page is used
+instead.
 
 The tab you pick is shown first in the rail; the remaining tabs keep their
 relative order. Changing this default also updates existing chats when they're
@@ -518,9 +589,9 @@ the referenced file themselves.
 
 Coding-agent sessions have a **GitHub** tab in the right workspace rail. It
 tracks the pull requests associated with the session and shows the selected
-one's summary (PR description and comments), CI checks, and a stacked diff with
-a file-tree navigator. Nothing is pushed or mutated — recording an association
-never touches the remote PR.
+one's summary (reviewers, CI checks, and the PR description), its conversation
+comments, and a stacked diff with a file-tree navigator. Nothing is pushed or
+mutated — recording an association never touches the remote PR.
 
 ### Tracked pull requests
 
@@ -553,6 +624,23 @@ policy) a missing merge base or unfetched base branch produces an error naming
 the `git fetch` command to run, rather than a misleading branch-tip comparison.
 File content that cannot be read is also reported as an error, never shown as
 an added or deleted file.
+
+### Summary tab
+
+The **Summary** tab opens with a **Reviewers** section, followed by CI checks
+and the PR description. Each assigned reviewer is listed with its current review
+state — **Pending**, **Approved**, **Commented**, **Changes requested**, or
+**Dismissed**. Team reviewers are marked `(team)`. A reviewer whose review has
+been re-requested shows as **Pending** even if they approved earlier. A PR with
+no reviewers reads `No reviewers assigned.`
+
+Reviewer data comes from the same `gh pr view` call as the rest of the PR. If
+GitHub refuses the reviewer fields for the active token (or the host's `gh` is
+too old to know them), Omnigent re-fetches the PR without them: the Reviewers
+section is simply omitted and the summary, checks, and comments still load.
+
+In the **Comments** tab, each author's avatar initial gets a distinct color
+within the thread so you can follow who said what at a glance.
 
 ### Link or unlink a PR
 
@@ -601,13 +689,25 @@ sees exactly what you're referring to and revises it.
 **Addressing** closes the loop: resolve a comment and the Omnigent acts on the
 feedback. The workflow is: Omnigent proposes, you annotate, Omnigent revises.
 
+The comments panel (`Show comments` in the file viewer toolbar) sorts comments
+into two tabs, each with a count badge:
+
+- **Open** — comments you've left that haven't been sent to the Omnigent yet.
+- **Sent** — comments that have been dispatched to the Omnigent. Each card in
+  this tab carries a `Sent` status label. (This tab was previously labelled
+  **Addressed**; the underlying comment status is still `addressed`.)
+
+`Address All` sends every open comment to the Omnigent in a single message and
+moves them from **Open** to **Sent**. When a comment's status changes from
+elsewhere, its card moves tabs live — no reload needed.
+
 Where this matters most:
 
 - **Reviewing plans before execution.** Annotate the steps you want changed before the Omnigent starts building.
 - **Editing drafted docs.** Leave line-level feedback instead of rewriting in chat.
 - **Iterating on configs.** Flag the fields that need adjustment.
 
-![Addressing an inline comment](/images/docs/address-comment.png)
+![An inline comment in the Open tab, with Open and Sent counts and the Address All button](/images/docs/address-comment.png)
 
 ## Multi-modal input
 
@@ -684,6 +784,36 @@ Follow-ups go to the side chat, not the main conversation, and any approval
 request the agent raises there is answered there too. The side chat starts
 visually empty — the history it inherited from the parent is hidden — but the
 agent has the parent conversation's full context.
+
+### Slash commands in a side chat
+
+The side-chat composer opens the same `/` menu as the main composer, with a
+narrower set of entries: **`/help`** plus the **session's skills**. Skills are
+discovered against the parent session's host and workspace, so the list matches
+what the main composer offers. Built-ins that act on the main session (`/model`,
+`/compact`, …) are not listed.
+
+- **`/help`** is handled locally in the side chat: it prints the available
+  commands and their descriptions above the composer and is never sent to the
+  agent as a turn. Choosing its menu row (or pressing Enter) runs it
+  immediately; **Tab** only completes the text into the draft so you can edit
+  it before sending.
+- **`/<skill> [arguments]`** invokes that skill in the side chat through the
+  same `slash_command` path as the main composer, rather than forwarding the
+  text as plain prose. A slash-command receipt card records the invocation and
+  stays visible after the skill's reply lands, even when the rest of the turn's
+  tool work folds behind the **Worked** row. If skill discovery is still in
+  flight when you submit a lone `/<skill>`, the submission is held until the
+  catalog resolves instead of leaking to the agent as plaintext.
+- A multi-word skill whose first word collides with a built-in (for example
+  `/help desk …`) still runs as the skill; a skill named exactly `help` can't be
+  invoked because the built-in wins, so it is left out of the menu.
+
+The menu and local routing apply only to in-process harnesses. In a **native
+terminal** side chat (`claude-native`, `codex-native`) no menu opens and slash
+text is sent as-is to the vendor TUI, which reads it itself. A message carrying
+a quote or an attachment is always sent as an ordinary message, and the menu
+stays closed on an empty side-chat tab that hasn't created its session yet.
 
 ### How a side chat is created
 

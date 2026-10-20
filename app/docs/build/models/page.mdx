@@ -61,6 +61,11 @@ dispatch that doesn't pass its own effort. Precedence, highest first:
 2. `executor.reasoning_effort` from the spec.
 3. The harness CLI default.
 
+In the Web UI, `claude-sdk` and `codex` sessions also expose an in-session
+**Effort** dial that overrides the spec default for that session and applies on
+the next turn without losing history — see
+[Change reasoning effort mid-session](/docs/interact/web-ui#change-reasoning-effort-mid-session).
+
 <div className="note">
 
 **Back-compat:** the older `llm.reasoning_effort` key is still accepted and is
@@ -89,7 +94,7 @@ logged-in CLIs, and local servers) so you can confirm them with one tap.
 | **API key** | A first-party provider key (Anthropic, OpenAI, OpenRouter, and more) |
 | **Subscription** | A Claude Pro/Max or ChatGPT Plus/Pro plan, via the official `claude` / `codex` CLIs |
 | **Gateway** | Bring your own proxy or local model. Just paste a base URL and key. |
-| **Databricks** | A Databricks workspace profile, routing through the [Foundation Model API](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/) |
+| **Databricks** | A Databricks workspace profile, routing through the [Foundation Model API](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/) — or, for native Antigravity, the workspace's native Gemini API |
 
 ### API key
 
@@ -121,6 +126,13 @@ Omnigent provider — see
 Omnigent works with any **OpenAI-compatible** or **Anthropic-compatible** gateway:
 
 <GatewayLogos />
+
+For the native Antigravity harness (`omni agy`), a gateway must instead serve
+the **native Gemini API** — OpenAI-compatible routes are not accepted, even
+when they serve Gemini models. Add one under `omni setup` → **Antigravity** →
+**Configure native agy API key / gateway**; see
+[Antigravity](/docs/build/harnesses/configuration#antigravity) for the URL
+rules and compatibility requirements.
 
 `omni setup` asks for a **base URL** and a **key**. The base URL differs depending on the agent:
 
@@ -205,3 +217,10 @@ Model names are prefixed with `databricks-` so Omnigent routes them through your
 workspace automatically. See the
 [Databricks Foundation Model API docs](https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis/supported-models)
 for the full list of available models.
+
+To route the native Antigravity harness (`omni agy`) through a workspace's
+native Gemini API, add the profile with **Databricks — profile** under
+`omni setup` → **Antigravity** → **Configure native agy API key / gateway**
+instead; the resulting provider carries `native_gemini: true` and serves only
+the Gemini surface. See
+[Antigravity → Databricks](/docs/build/harnesses/configuration#databricks).

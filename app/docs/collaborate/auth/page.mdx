@@ -384,17 +384,22 @@ is also editable at runtime from **Settings > Sharing**. When disabled, the
 Share dialog hides its **Public access** toggle and the server rejects new
 public grants; sessions already shared publicly stay public until revoked.
 
-#### Default visibility for new sessions
+#### Default sharing for new sessions
 
 By default every session starts private and its owner shares it explicitly. A
-third setting, **Default visibility for new sessions**, lets an admin make new
-sessions start with public read access instead. It has three options:
+third setting lets an admin make new sessions start with public read access
+instead — readable by anyone with the link who can sign in.
 
-| Value     | Settings > Sharing label      | Behavior                                                                                                                                           |
-| --------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `off`     | Private                       | New sessions start private. Owners share them explicitly. This is the default.                                                                     |
-| `sandbox` | Cloud sandbox sessions public | Sessions running in a server-managed [cloud sandbox](/docs/deploy/cloud-sandbox-host) start public; sessions on a user's own machine stay private. |
-| `all`     | All sessions public           | Every new session starts with public read access.                                                                                                  |
+In **Settings > Sharing**, this is the **Share new sessions by default**
+switch. Turning it on reveals an **Automatically share** choice that sets which
+new sessions are shared; switching it on selects **Managed hosts only** first.
+Turning the switch off makes new sessions start private again.
+
+| Value     | Settings > Sharing                                     | Behavior                                                                                                                                     |
+| --------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `off`     | Switch off                                             | New sessions start private. Owners share them explicitly. This is the default.                                                               |
+| `sandbox` | Switch on, Automatically share: **Managed hosts only** | Sessions on a server-managed sandbox ([cloud sandbox](/docs/deploy/cloud-sandbox-host)) start public; sessions on local hosts start private. |
+| `all`     | Switch on, Automatically share: **All sessions**       | Sessions on both managed and local hosts start with public read access.                                                                      |
 
 ```
 OMNIGENT_DEFAULT_PUBLIC_SESSIONS=sandbox omni server start
@@ -418,9 +423,10 @@ changed. A few sessions are always left private:
 The default never grants more than an owner could grant by hand. It is
 inactive while the sharing mode is `off` or public access is disabled, and
 under `restricted_read_only` it skips sessions whose working directory is too
-broad to share (see above). **Settings > Sharing** greys out the control and
-shows the effective value (`Private`) while a higher-level setting overrides it;
-the saved choice returns once the blocker is lifted.
+broad to share (see above). While a higher-level setting overrides it,
+**Settings > Sharing** shows the **Share new sessions by default** switch as
+off and disabled and hides the **Automatically share** choice; the saved
+choice returns once the blocker is lifted.
 
 <div className="note">
 

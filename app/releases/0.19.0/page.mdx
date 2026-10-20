@@ -1,4 +1,4 @@
-{/* Auto-generated from the GitHub Release for v0.19.0. Edit the GitHub Release, not this file. */}
+{/* Curated from the published GitHub Release for v0.19.0. */}
 
 # v0.19.0
 
@@ -8,7 +8,7 @@ Omnigent 0.19.0 is a major release focused on giving your agents safe access to 
 
 ## 1. MCP Registry and Gateway
 
-![TODO: add a demo screenshot or GIF for "MCP Registry and Gateway"](TODO)
+![Choosing MCP services before launching a session](https://github.com/user-attachments/assets/0480201e-045a-4060-a7dc-64ebee029da9)
 
 Wiring MCP tools into every agent by hand gets old fast, especially when the same accounts need to work on your laptop and in a sandbox. If your server has an MCP registry configured, you connect managed MCP accounts once, in Settings, and then choose which of their tools your agents can use.
 
@@ -16,27 +16,17 @@ Those tools go through a server gateway whether your agent runs on a local host 
 
 _Learn more in the [MCP servers](/docs/build/tools#mcp-servers)._
 
-## 2. Reasoning Effort for Claude SDK and Codex SDK Agents
+## 2. Custom Agent Editing in Settings
 
-![TODO: add a demo screenshot or GIF for "Reasoning Effort for Claude SDK and Codex SDK Agents"](TODO)
-
-Some tasks need careful thought and others just need a quick answer. Until now you could only set reasoning effort in native terminal sessions. Now you can also set it for Claude SDK and Codex SDK agents.
-
-Pick the effort level in the web composer, next to where you type your message. You don't need to restart anything or switch to the terminal.
-
-_Learn more in the [Reasoning effort](/docs/build/models#reasoning-effort)._
-
-## 3. SSH Git Access for Sandboxed Agents
-
-![TODO: add a demo screenshot or GIF for "SSH Git Access for Sandboxed Agents"](TODO)
-
-Sandboxed agents often need your private repositories, but copying your SSH key into a sandbox gives up the isolation the sandbox is there to provide. With this release, sandboxed agents can use approved Git repositories over SSH and never receive the key.
-
-You decide which repositories are approved. Push access is optional and set per repository, so an agent can read one repo and push to another, with each permission granted on purpose.
-
-## 4. Custom Agent Editing in Settings
-
-![TODO: add a demo screenshot or GIF for "Custom Agent Editing in Settings"](TODO)
+<video
+  src="https://github.com/user-attachments/assets/dfdc39e7-e13d-4324-ad80-05c87eeac956"
+  controls
+  muted
+  playsInline
+  preload="metadata"
+  aria-label="Editing a custom agent in Settings, saving, and recovering from a conflict"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
 
 Changing a custom agent shouldn't mean rebuilding it from scratch. You can now edit your custom agents directly from Settings and adjust their configuration in place.
 
@@ -44,15 +34,37 @@ If you manage agents from code, a conditional PATCH API lets you update individu
 
 _Learn more in the [Custom Agents](/docs/use/custom-agents)._
 
-## 5. Reviewers and Comments in the Pull Requests Panel
+## 3. Reviewers and Comments in the Pull Requests Panel
 
-![TODO: add a demo screenshot or GIF for "Reviewers and Comments in the Pull Requests Panel"](TODO)
+<video
+  src="https://github.com/user-attachments/assets/8e928f55-b2d7-4208-83cb-0a34c7694ba5"
+  controls
+  muted
+  playsInline
+  preload="metadata"
+  aria-label="Pull Requests panel showing reviewer states and the separate Comments tab"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
 
 Following a pull request used to mean switching back to GitHub to see who still had to review it and what people had said. The Pull Requests panel now shows pending reviewers and review states, so you can tell at a glance where a PR is stuck.
 
 Comments now have their own Comments tab with a count, so new feedback is easy to spot. In conversation comments, each author gets a different color, which makes long threads easier to follow.
 
 _Learn more in the [Tracked pull requests](/docs/interact/web-ui#tracked-pull-requests)._
+
+## 4. Reasoning Effort for Claude SDK and Codex SDK Agents
+
+Some tasks need careful thought and others just need a quick answer. Until now you could only set reasoning effort in native terminal sessions. Now you can also set it for Claude SDK and Codex SDK agents.
+
+Pick the effort level in the web composer, next to where you type your message. You don't need to restart anything or switch to the terminal.
+
+_Learn more in the [Reasoning effort](/docs/build/models#reasoning-effort)._
+
+## 5. SSH Git Access for Sandboxed Agents
+
+Sandboxed agents often need your private repositories, but copying your SSH key into a sandbox gives up the isolation the sandbox is there to provide. With this release, sandboxed agents can use approved Git repositories over SSH and never receive the key.
+
+You decide which repositories are approved. Push access is optional and set per repository, so an agent can read one repo and push to another, with each permission granted on purpose.
 
 Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
 

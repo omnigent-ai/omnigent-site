@@ -336,7 +336,7 @@ composer, the editor, or a terminal is unaffected.
 | -------------------------------------------- | ---------------------------------------------- |
 | Open the command palette                     | `⌘K` (`Ctrl+K`)                                |
 | Find a session by name                       | `⌘⌥S` (`Ctrl+Alt+S`)                           |
-| New session                                  | `⌘⌥N` (`Ctrl+Alt+N`)                           |
+| New session                                  | `⌘⇧O` (`Ctrl+Shift+O`)                         |
 | Open Settings                                | `⌘⌥,` (`Ctrl+Alt+,`)                           |
 | Open the model picker                        | `⌃⇧M` (`Ctrl+Shift+M` on every platform)       |
 | Focus the chat input                         | `⌃⇧L` (`Ctrl+Shift+L` on every platform)       |
@@ -349,8 +349,15 @@ composer, the editor, or a terminal is unaffected.
 | Approve a pending request                    | `⌘↵` (`Ctrl+Enter`)                            |
 | Show the shortcuts overlay                   | `⌘/` (`Ctrl+/`)                                |
 
-`⌘⌥N` opens a clean, focused new-session composer from any page — the same
-destination as the command palette's new-session action. `⌘⌥,` jumps straight
+`⌘⇧O` (`Ctrl+Shift+O` on Windows/Linux) opens a clean, focused new-session
+composer from any page — the same destination as the command palette's
+new-session action. It fires even while the composer is focused, and any unsent
+draft in the session you left is kept. The chord matches the `O` character your
+keyboard layout types, so it follows the key labeled O on non-QWERTY layouts.
+The [desktop app](/docs/interact/desktop#keyboard-shortcuts) keeps `⌘⌥N`
+(`Ctrl+Alt+N`) for this action instead. When the web UI is embedded in another
+page, the shortcut only fires while focus is inside the Omnigent app, so the
+host page keeps its own keys. `⌘⌥,` jumps straight
 to **Settings** from anywhere in the app. `⌘⌥B` is available only in the
 [desktop app](/docs/interact/desktop#keyboard-shortcuts), where the embedded
 browser lives; the shortcuts overlay lists it only there.

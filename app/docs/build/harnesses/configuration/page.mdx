@@ -651,9 +651,10 @@ See [Models & Credentials](/docs/build/models) for how to set up API keys and ch
 
 By default each harness launches its vendor CLI from your `PATH` (e.g. `claude`,
 `codex`). You can point a harness at a specific executable, or prepend base
-launch args, from your Omnigent config — `~/.omnigent/config.yaml` (user) or
-`.omnigent/config.yaml` (project, takes precedence). View it with
-`omni config list`; set a value with `omni config set <key>=<value>`.
+launch args, from your user-level Omnigent config, `~/.omnigent/config.yaml`.
+A project's `.omnigent/config.yaml` can select the default harness but cannot
+set per-harness commands or args. View the config with `omni config list`; set
+a value with `omni config set --global <key>=<value>`.
 
 The top-level `harness:` config key is polymorphic. The legacy scalar form still
 works (and auto-migrates to the mapping form the next time the config is
@@ -684,9 +685,14 @@ agent's own YAML, which pins the harness for that one agent.
 
 <div className="note">
 
-**Note:** A project's per-harness overrides are deep-merged onto your global
-ones — a `.omnigent/config.yaml` entry augments (rather than replaces) the
-matching `~/.omnigent/config.yaml` entry, with the project's fields winning.
+**Note:** Harness executables and launch args are user-owned. In a project's
+`.omnigent/config.yaml`, only the harness selection is honored, either as the
+scalar form (`harness: codex-native`) or as `harness.default`. Your user-level
+per-harness `command`/`args` entries still apply. Any per-harness entries in the
+project file (for example `harness.codex-native`) are ignored with a warning,
+and `omni config list` lists them as
+`# ignored project harness launch overrides: ...` and tells you to move them to
+`~/.omnigent/config.yaml`.
 
 </div>
 

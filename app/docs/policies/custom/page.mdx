@@ -128,6 +128,17 @@ def block_domains(blocked_domains: list[str]) -> callable:
     return evaluate
 ```
 
+<div className="note">
+
+**Note:** Omnigent imports policy functions by their dotted path, and it
+doesn't add the workspace or current directory to the import path. Install the
+package that contains your policy in **both** the Omnigent CLI environment and
+the server/runtime environment. When you launch an agent from the CLI, Omnigent
+checks its function-policy paths first and fails with an error if one can't be
+imported. That check doesn't import modules from the workspace directory either.
+
+</div>
+
 ### 2. Register on the server
 
 To make your policy discoverable by your Omnigent and visible in the UI, do two things:
@@ -276,6 +287,20 @@ Each entry in `state_updates` is a dict:
 | `value`  | any   | Yes (except `"delete"`) | The operand. Required for `set`, `increment`, and `append`; ignored for `delete`. |
 
 The engine applies updates to `event["session_state"]` so subsequent policy evaluations see the new values.
+
+State keys must be strings. Some keys are **reserved** for the runtime: every
+key that begins with `_policy_`, plus `subagent_cost_ask_approved_usd` and
+`subagent_cost_over_budget_approved_usd`. These hold approval checkpoints and
+the counters behind builtin policies, and ordinary policies can't freely write
+them:
+
+- A policy may include a reserved key in `state_updates` only on an `ASK`
+  result. The update is applied only after a human approves the ask.
+- The builtin counters `_policy_tool_call_count`, `_policy_loop_recent_hashes`,
+  and `_policy_spawn_bounds_dispatches` can be written only by their builtin
+  policies (`max_tool_calls_per_session`, `detect_loop`, and `spawn_bounds`).
+- If a policy breaks either rule, or uses a non-string key, Omnigent treats the
+  result as a policy error and the event is **denied**.
 
 ```python
 # overwrite

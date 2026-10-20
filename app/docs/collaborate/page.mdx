@@ -99,17 +99,30 @@ workspace-relative file edits, and answering the session's pending prompts — s
 it passes the same policy and approval gates as the owner's own turns. A few
 actions bypass the agent entirely and stay with the session owner:
 
-| Action                                                | Read | Edit | Owner |
-| ----------------------------------------------------- | :--: | :--: | :---: |
-| Watch the session stream                              |  ✓   |  ✓   |   ✓   |
-| Send messages and drive the agent                     |      |  ✓   |   ✓   |
-| Browse and edit files inside the workspace            |  \*  |  ✓   |   ✓   |
-| See and answer pending prompts (approvals, questions) |      |  ✓   |   ✓   |
-| Browse absolute paths on the host filesystem          |      |      |   ✓   |
-| Run a raw shell command in the session's environment  |      |      |   ✓   |
+| Action                                                     | Read | Edit | Owner |
+| ---------------------------------------------------------- | :--: | :--: | :---: |
+| Watch the session stream                                   |  ✓   |  ✓   |   ✓   |
+| Send messages and drive the agent                          |      |  ✓   |   ✓   |
+| Browse and edit files inside the workspace                 |  \*  |  ✓   |   ✓   |
+| See and answer pending prompts (approvals, questions)      |      |  ✓   |   ✓   |
+| Change a native session's permission mode or launch args   |      |      |   ✓   |
+| Transfer a live terminal to another session                |      |      |  ✓†   |
+| Browse absolute paths on the host filesystem               |      |      |   ✓   |
+| Run a raw shell command in the session's environment       |      |      |   ✓   |
 
 \* Off by default; the owner can enable it with the **Workspace files** toggle
 described above.
+
+† The caller must own both sessions and the host the terminal runs on.
+
+The permission or approval mode of a native coding-agent session (for example
+Claude Code's permission mode or Codex's approval preset), and its terminal
+pass-through launch args, control what runs on the host without asking. Only
+the session owner can change them. The server enforces this on
+`PATCH /v1/sessions/{session_id}` (`permission_mode`, `approval_mode`, and
+`terminal_launch_args`). In the web UI, Edit collaborators see the composer's
+permissions dropdown disabled, with the hint "Only the session owner can change
+the permission mode".
 
 "Pending prompts" covers everything the agent pauses on: policy approval
 gates, harness permission prompts, questions the agent asks you, plan review,

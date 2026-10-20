@@ -326,12 +326,12 @@ than fit, a **Search older sessions** control pulls in older pages.
   the rail — so two presses in a row open and then close it.
 
 Once the tab strip has focus, press a plain digit to jump to one of the
-permanent tabs: `1`–`4` select **Files**, **Changes**, **GitHub**, and
-**Agents** in the order they appear in the strip. Your
+[pinned](#pin-workspace-tabs) tabs: `1`–`4` select **Files**, **Changes**,
+**GitHub**, and **Agents** in the order they appear in the strip. Your
 [Default Workspace tab](#default-workspace-tab) comes first when it's
 available, and tabs that aren't available in the session (GitHub outside
-coding-agent sessions, Files/Changes without an on-disk workspace) are skipped
-so the numbers stay contiguous. Hover a tab to see its number in the tooltip.
+coding-agent sessions, Files/Changes without an on-disk workspace) or that
+you've unpinned are skipped so the numbers stay contiguous. Hover a tab to see its number in the tooltip.
 The digits only act while the tab strip is focused, so typing numbers in the
 composer, the editor, or a terminal is unaffected.
 
@@ -438,21 +438,46 @@ at any time from the header's **Expand right panel** control, or press
 [Workspace sidebar and tabs](#workspace-sidebar-and-tabs)).
 
 To make new chats open the rail automatically instead, set the **Workspace
-panel** default under **Settings → Appearance** to **Open**. The two choices
-are **Open** and **Collapsed**. This is a per-device browser preference that
+panel** default in the **Workspace** group under **Settings → Appearance** to
+**Open**. The two choices are **Open** and **Collapsed**. This is a per-device browser preference that
 only seeds sessions with no saved open-state — once you expand or collapse the
 rail in a given session, that session keeps its own remembered state regardless
 of the default.
 
+### Pin Workspace tabs
+
+The right **Workspace** rail's built-in pages — **Files**, **Changes**,
+**Pull Requests** (the [GitHub](#github) tab), and **Agents** — are all pinned
+to the tab strip by default. To declutter the strip, open the **Workspace**
+group under **Settings → Appearance** and use **Sidebar tabs** to toggle each
+page between **Pinned** and **Pin**. A **Sidebar preview** shows which icons
+the strip will display.
+
+Unpinned pages stay one click away in the rail's **`+`** (`Open new`) menu,
+listed above the browser, side-chat, and shell entries. Choosing one opens it
+as a closable tab next to your file, shell, and side-chat tabs; close it with
+its **×** button or a middle-click. Each session remembers which unpinned pages
+you opened. Sessions that had a page selected when you unpin it forget that
+selection and reopen on your default tab instead. If you unpin everything and
+haven't opened a page, the rail shows **Open a Workspace tab from the + menu.**
+
+Pinned tabs are a per-device browser preference, included in settings export
+and import.
+
 ### Default Workspace tab
 
-Choose which tab the right **Workspace** rail opens on first. Under
-**Settings → Appearance → Default Workspace tab**, pick one of:
+Choose which tab the right **Workspace** rail opens on first. In the
+**Workspace** group under **Settings → Appearance → Default Workspace tab**,
+pick one of your [pinned](#pin-workspace-tabs) pages:
 
 - **Files** — the default.
 - **Changes**
 - **GitHub**
 - **Agents**
+
+Only pinned pages are offered, and the control is hidden when no page is
+pinned. If your saved default is unpinned, the first pinned page is used
+instead.
 
 The tab you pick is shown first in the rail; the remaining tabs keep their
 relative order. Changing this default also updates existing chats when they're

@@ -294,6 +294,62 @@ tools:
 The JSON Schema under `parameters` is optional. If you omit it, Omnigent
 auto-generates the schema from the function's type annotations and signature.
 
+
+Python function tools run in the server process, so they only work for agents
+the server operator registers. Agent bundles uploaded over HTTP cannot use them —
+see [Uploaded agents](#uploaded-agents).
+
+### Uploaded agents
+
+Agent bundles uploaded over HTTP — to create a session, replace a session's
+agent (`PUT /v1/sessions/{id}/agent`), or install an agent — are validated
+before any of their code is imported. An uploaded bundle cannot declare:
+
+- Server-side Python or TypeScript source-file tools (for example, files under
+  `tools/python/`).
+- Server-side callable tools (`type: function` with a `callable`).
+- `type: function` policies whose `handler` is not a
+  [registered policy handler](/docs/policies/custom#2-register-on-the-server).
+- Absolute working directories, or working directories that escape the workspace.
+
+These checks also apply to terminals and nested agents in the bundle. They run
+on multi-user servers and, starting in 0.19.0, on local single-user servers
+too, including bundles that `omnigent run` uploads. Loopback requests can come
+from agents as well as the operator, so a local server doesn't treat them as
+trusted.
+
+An invalid upload is rejected with HTTP 400. Existing uploaded agents that use
+these features also fail validation when you add, update, or delete their MCP
+server settings. A rejected edit leaves the stored bundle unchanged. The agent
+configuration read and patch endpoints apply the same validation to older
+bundles.
+
+To migrate an existing uploaded agent:
+
+1. Expose its custom tools through an [MCP server](#mcp-servers) and replace the
+   source-file or callable tool entries with `type: mcp` entries. Update nested
+   agents too.
+2. [Register custom policy handlers on the server](/docs/policies/custom#2-register-on-the-server),
+   and change working directories to relative paths inside the workspace.
+3. Replace the session's bundle through `PUT /v1/sessions/{id}/agent`, or upload
+   the corrected bundle and start a new session. Installing a new agent version
+   on its own does not change existing sessions.
+4. Make later MCP configuration changes on the migrated agent. Removing an MCP
+   server from an old agent does not get it past validation.
+
+For trusted in-process tools, register the agent as the operator instead of
+uploading it:
+
+```
+omnigent server --agent ./my-agent           # operator-registered agent
+omnigent run ./my-agent --no-session         # dedicated local server, trusted startup registration
+```
+
+`omnigent run ./my-agent --no-session` starts a dedicated local server that
+registers the agent at startup and creates its session from that registration,
+so nothing is uploaded over HTTP. Changing a tool's declared runtime alone is
+not a migration: client tools need a client-provided implementation.
+
 ## Sub-agent tools
 
 Declare agents as tools so a supervisor agent can delegate work to them. You can define a

@@ -218,7 +218,9 @@ In built-in accounts mode, **Members** also carries the management actions
 read-only roster, since identities are owned by your IdP and provisioned on
 first sign-in. Separately, every signed-in account (built-in or OIDC) gets a
 **Settings > Account** section showing who they're signed in as, with a sign-out
-control and, in built-in accounts mode only, `Change password`.
+control and, in built-in accounts mode only, `Change password`. Both `Reset`
+and `Change password` sign the account out everywhere else — see
+[Changing or resetting a password](#changing-or-resetting-a-password).
 
 ### Removing a member
 
@@ -262,7 +264,8 @@ Sharing a session with a username that has never registered creates a
 passwordless entry for that person. To let them sign in, use `Reset` on that
 row in **Settings > Members**: the first reset provisions their credentials
 while preserving the sessions already shared with them, and they can log in
-with the returned password.
+with the returned password. A later reset rotates the password and
+[signs them out everywhere](#changing-or-resetting-a-password).
 
 #### Upgrading an existing accounts deployment
 
@@ -282,6 +285,57 @@ unsafe.
 Existing refresh grants (CLI, mobile, desktop sign-ins) keep working and renew
 into upgraded tokens; ordinary cookies and JWTs require a fresh login. Do not
 roll back to the old version against the upgraded schema.
+
+### Changing or resetting a password
+
+In built-in accounts mode, a signed-in session lasts
+`OMNIGENT_ACCOUNTS_SESSION_TTL_HOURS` (default 8). To end one user's sessions
+sooner, change the password (**Settings > Account > Change password**,
+`POST /auth/users/me/password`) or have an admin reset it
+(**Settings > Members > Reset**, `POST /auth/users/{id}/reset`). Either one
+invalidates everything issued to that user so far: browser sessions, CLI
+logins (`omni login`), refresh tokens, and unused magic sign-in links. A
+device sign-in approved before the change (a mobile, desktop, or Slack
+connection, for example) can no longer be completed afterwards. As with
+[removal](#removing-a-member), every authenticated request re-checks the
+stored account state on every server replica, so there is no cache to wait
+out. Two exceptions keep the caller from locking themselves out:
+
+- A self-serve password change keeps the browser that made it signed in. A
+  caller that changed the password with a bearer token must log in again.
+- An admin resetting their _own_ password keeps the session that performed the
+  reset, so they can save the returned password before signing in again.
+
+Unlike removal, the user's [scheduled tasks](/docs/build/scheduled-tasks) and
+host registrations are kept — but that does not mean they keep running. A host
+that is already connected keeps its connection and still looks online, yet
+launches on it fail, including scheduled runs, until it reconnects:
+
+- A host signed in with the user's credentials (`omni host` after `omni login`)
+  cannot reconnect with them. Run `omni login` again, then restart the host.
+- A managed [cloud sandbox host](/docs/deploy/cloud-sandbox-host), which the
+  server starts in a sandbox, connects with its own launch token rather than
+  the user's credentials. It needs no login: once it reconnects with that
+  token, before the token expires, launches work again.
+
+CLIs need `omni login` again too.
+
+<div className="note">
+
+Servers running a release without this behaviour keep the user's sessions when
+they change or reset a password. During a rolling upgrade, repeat a change made
+while such instances were still serving.
+
+</div>
+
+#### Signing everyone out
+
+Rotating `OMNIGENT_ACCOUNTS_COOKIE_SECRET` signs out every user at once: it
+invalidates all session tokens, CLI logins, and refresh tokens. Unused sign-in
+and invite links are looked up by value, not signed with the secret, so they
+keep working until they expire — sign-in links after
+`OMNIGENT_ACCOUNTS_MAGIC_TTL_MINUTES` (default 10), invites after
+`OMNIGENT_ACCOUNTS_INVITE_TTL_HOURS` (default 72).
 
 ### Session sharing
 

@@ -507,21 +507,21 @@ Omnigent errors instead of quietly running unsandboxed. The only opt-out is
 | `egress_rules`                      | string[]             | none             | HTTP(S) allow-list. Default-deny when set.                                                                                                                                                         |
 | `egress_allow_private_destinations` | bool                 | `false`          | Allow connections to private/metadata IPs                                                                                                                                                          |
 | `credential_proxy`                  | block[]              | none             | Secretless auth entries; requires `egress_rules`                                                                                                                                                   |
-| `git_ssh`                           | block[]              | none             | Repository-scoped [Git-over-SSH](#git-over-ssh) bindings brokered by the parent; requires `linux_bwrap` or `darwin_seatbelt`                                                                        |
+| `git_ssh`                           | block[]              | none             | Repository-scoped [Git-over-SSH](#git-over-ssh) bindings brokered by the parent; requires `linux_bwrap` or `darwin_seatbelt`                                                                       |
 
 ### `os_env.sandbox.git_ssh[]`
 
 Each entry binds one SSH identity to one repository on one destination. Entries
 with the same `host`, `port`, `username`, and `repository` are rejected as duplicates.
 
-| Field              | Type     | Default     | Description                                                                                                             |
-| ------------------ | -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `host`             | string   | required    | Exact ASCII DNS name or IPv4 address of the SSH server                                                                  |
-| `port`             | int      | `22`        | SSH port (1–65535)                                                                                                      |
-| `username`         | string   | `git`       | SSH user                                                                                                                |
-| `repository`       | string   | required    | Repository path as Git sends it, e.g. `my-org/my-repo.git`                                                              |
-| `operations`       | string[] | `[fetch]`   | `fetch` and/or `push`                                                                                                   |
-| `identity_file`    | string   | required    | Absolute path to the private key; `~` is not expanded                                                                   |
-| `known_hosts_file` | string   | required    | Absolute path to a file with one exact host key entry for `host`; `~` is not expanded                                   |
-| `allowed_cidrs`    | string[] | `[]`        | Address ranges the resolved host must fall in. Empty allows only public addresses.                                      |
-| `allow_loopback`   | bool     | `false`     | Permit a loopback destination. Requires a loopback IP literal `host` and exactly its `/32` in `allowed_cidrs`.           |
+| Field              | Type     | Default   | Description                                                                                                    |
+| ------------------ | -------- | --------- | -------------------------------------------------------------------------------------------------------------- |
+| `host`             | string   | required  | Exact ASCII DNS name or IPv4 address of the SSH server                                                         |
+| `port`             | int      | `22`      | SSH port (1–65535)                                                                                             |
+| `username`         | string   | `git`     | SSH user                                                                                                       |
+| `repository`       | string   | required  | Repository path as Git sends it, e.g. `my-org/my-repo.git`                                                     |
+| `operations`       | string[] | `[fetch]` | `fetch` and/or `push`                                                                                          |
+| `identity_file`    | string   | required  | Absolute path to the private key; `~` is not expanded                                                          |
+| `known_hosts_file` | string   | required  | Absolute path to a file with one exact host key entry for `host`; `~` is not expanded                          |
+| `allowed_cidrs`    | string[] | `[]`      | Address ranges the resolved host must fall in. Empty allows only public addresses.                             |
+| `allow_loopback`   | bool     | `false`   | Permit a loopback destination. Requires a loopback IP literal `host` and exactly its `/32` in `allowed_cidrs`. |

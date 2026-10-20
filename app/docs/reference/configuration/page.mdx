@@ -17,11 +17,11 @@ from the [REST API](/reference).
 
 ## Configuration scopes
 
-| Scope           | File or command                                                   | Use                                                                     |
-| --------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Project         | `.omnigent/config.yaml` or `omni config set KEY=VALUE`            | Defaults for the current project. Project values override user values.  |
-| User            | `~/.omnigent/config.yaml` or `omni config set --global KEY=VALUE` | Defaults shared across projects and settings owned by the local server. |
-| Deployed server | `omni server --config /path/to/config.yaml`                       | Server-wide settings for every user and session on that deployment.     |
+| Scope           | File or command                                                   | Use                                                                                                                                  |
+| --------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Project         | `.omnigent/config.yaml` or `omni config set KEY=VALUE`            | Defaults for the current project. Project values override user values, except [user-level-only settings](#user-level-only-settings). |
+| User            | `~/.omnigent/config.yaml` or `omni config set --global KEY=VALUE` | Defaults shared across projects and settings owned by the local server.                                                              |
+| Deployed server | `omni server --config /path/to/config.yaml`                       | Server-wide settings for every user and session on that deployment.                                                                  |
 
 Run `omni config list` to inspect the effective user and project configuration.
 Use `omni config unset KEY` or `omni config unset --global KEY` to remove a
@@ -29,6 +29,25 @@ value from the corresponding scope.
 
 Not every key is valid in every scope. Each setting below identifies its scope,
 type, default, and validation behavior.
+
+### User-level-only settings
+
+Some settings are read only from `~/.omnigent/config.yaml`. A project's
+`.omnigent/config.yaml` can't change them:
+
+- **`server`**: which server the CLI connects to. Setting it without `--global`
+  is rejected, and a `server` value in a project file is ignored. To use a
+  different server for one command, pass `--server`.
+- **`session_title_instructions`**: see
+  [Automatic session titles](#automatic-session-titles).
+- **Per-harness `command` and `args`** under the `harness:` key. A project can
+  still select the default harness (`harness: <id>` or `harness.default`). See
+  [Override the harness binary and launch args](/docs/build/harnesses/configuration#override-the-harness-binary-and-launch-args).
+
+`omni config list` flags project-file values it ignores: user-level-only keys
+appear as `# ignored user-level-only setting(s): ... (set with --global)`, and
+per-harness launch entries appear as
+`# ignored project harness launch overrides: ...`.
 
 ## Automatic session titles
 

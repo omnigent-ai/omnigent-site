@@ -46,8 +46,11 @@ as the review/explore specialist. Seven distinct vendors means any implementer's
 diff can be reviewed by a different one — the cross-vendor check is the point.
 
 `agy` is Gemini-native: it authenticates through its own Google account (via
-`~/.gemini`) and does not run Claude- or GPT-family models, which makes it a
-natural third vendor for cross-review. Each worker needs its CLI on `PATH` —
+`~/.gemini`) or a Gemini credential configured in `omni setup` (a Google API
+key, native Gemini gateway, or Databricks profile — see
+[Antigravity configuration](/docs/build/harnesses/configuration#antigravity)),
+and does not run Claude- or GPT-family models, which makes it a natural third
+vendor for cross-review. Each worker needs its CLI on `PATH` —
 `agy` requires the `agy` binary, joining `claude`, `codex`, `opencode`,
 `cursor-agent`, `hermes`, and `pi` in Polly's roster preflight.
 

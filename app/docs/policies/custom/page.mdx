@@ -178,6 +178,12 @@ Once registered, your custom policies appear alongside the builtins. Your Omnige
 select them when you ask it to add a policy in chat, and they show up in the UI settings
 panel.
 
+Agent bundles uploaded over HTTP can only reference registered handlers. Starting
+in 0.19.0 this applies on local single-user servers too. A bundle whose
+`type: function` policy names an unregistered handler is rejected with HTTP 400
+before the handler is imported. See
+[Uploaded agents](/docs/build/tools#uploaded-agents).
+
 ### 3. Use it
 
 Once registered, your custom policy works the same as any builtin. See

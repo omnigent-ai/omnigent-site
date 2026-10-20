@@ -279,10 +279,58 @@ options in the dropdown depend on the selected harness:
 Your choice is remembered and seeds the next new session, the same way the model
 picker is remembered.
 
-In a shared session, only the session owner can change the permission mode.
-For collaborators with Edit access the dropdown is disabled and shows "Only the
-session owner can change the permission mode" on hover. See
-[What each permission level can do](/docs/collaborate#what-each-permission-level-can-do).
+### Choose MCP services before launch
+
+On a server whose administrator publishes an MCP registry, the new-chat composer
+lets you pick server-configured MCP services for the session before you launch
+it. Open **MCPs** (the plug icon) in the workspace bar above the composer — the
+same bar as the working-directory and worktree chips — and the **Tools for this
+session** panel lists the catalog. Turn a service on or off with its switch; the
+chip reads `MCPs · N` while services are selected. When the bar runs out of
+room the label collapses and only the plug icon remains.
+
+Each row shows the service's connection state:
+
+- **Ready** — the service needs no account and can be used as-is.
+- **Connected** — your account is already linked.
+- **Needs sign-in** — turning the service on opens a sign-in popup; the service
+  is selected only once authorization succeeds, and the **Send** button stays
+  disabled (**Finish signing in to the MCP service…**) until then. Cancelling
+  leaves it off.
+- **Connect your account in settings** — bearer-token services can't be turned
+  on until you connect them under **Settings → MCP**, reachable from the
+  **Manage MCP accounts** link at the bottom of the panel.
+- **A custom server already uses this name** — the agent's own MCP
+  configuration already declares a server with this id, so the registry entry
+  can't be added.
+
+Turning a service off removes it from this session only; the saved account stays
+connected. The selected ids ride along on session creation as
+`mcp_registry_services`, so the first turn can use the tools without a second
+attach or restart step. Selection is per session, not a host- or sandbox-wide
+default.
+
+**Remembered selections.** The composer remembers your explicit choices in this
+browser and applies them to the next new session — including choosing none. An
+unsent draft takes precedence over the remembered set. The preference applies
+across projects on the same browser origin, stores service ids only (never
+credentials), and a fresh browser starts with nothing selected. Existing
+sessions keep their own selection; changing the remembered set never touches
+them. Working-directory `.mcp.json` files are not read for automatic selection.
+
+When remembered selections are restored, launch waits for the catalog to load
+(**Loading MCP services…**). If the catalog can't be loaded, sending is blocked
+with **Could not load MCP services. Open MCPs to retry.**; open the panel and
+choose **Retry**. Ids that are no longer in the catalog are filtered out of the
+launch request without clearing your stored preference, and the panel lists them
+as **No longer available · turn off to remove**. A restored service whose
+connection has expired is called out in amber: the chip appends
+**· N needs sign-in**, and the row offers **Reconnect** — reconnect it or turn
+it off before launching.
+
+The **MCPs** control appears, and the catalog is requested, only when the server
+advertises the `mcp` connection capability; on other servers the composer shows
+no picker.
 
 ### Shared sessions
 

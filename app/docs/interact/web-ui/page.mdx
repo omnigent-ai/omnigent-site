@@ -703,6 +703,36 @@ request the agent raises there is answered there too. The side chat starts
 visually empty — the history it inherited from the parent is hidden — but the
 agent has the parent conversation's full context.
 
+### Slash commands in a side chat
+
+The side-chat composer opens the same `/` menu as the main composer, with a
+narrower set of entries: **`/help`** plus the **session's skills**. Skills are
+discovered against the parent session's host and workspace, so the list matches
+what the main composer offers. Built-ins that act on the main session (`/model`,
+`/compact`, …) are not listed.
+
+- **`/help`** is handled locally in the side chat: it prints the available
+  commands and their descriptions above the composer and is never sent to the
+  agent as a turn. Choosing its menu row (or pressing Enter) runs it
+  immediately; **Tab** only completes the text into the draft so you can edit
+  it before sending.
+- **`/<skill> [arguments]`** invokes that skill in the side chat through the
+  same `slash_command` path as the main composer, rather than forwarding the
+  text as plain prose. A slash-command receipt card records the invocation and
+  stays visible after the skill's reply lands, even when the rest of the turn's
+  tool work folds behind the **Worked** row. If skill discovery is still in
+  flight when you submit a lone `/<skill>`, the submission is held until the
+  catalog resolves instead of leaking to the agent as plaintext.
+- A multi-word skill whose first word collides with a built-in (for example
+  `/help desk …`) still runs as the skill; a skill named exactly `help` can't be
+  invoked because the built-in wins, so it is left out of the menu.
+
+The menu and local routing apply only to in-process harnesses. In a **native
+terminal** side chat (`claude-native`, `codex-native`) no menu opens and slash
+text is sent as-is to the vendor TUI, which reads it itself. A message carrying
+a quote or an attachment is always sent as an ordinary message, and the menu
+stays closed on an empty side-chat tab that hasn't created its session yet.
+
 ### How a side chat is created
 
 - **Codex** (`codex-native`) forks in-process using its native ephemeral `/side`

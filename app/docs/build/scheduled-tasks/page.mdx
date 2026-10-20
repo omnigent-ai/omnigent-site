@@ -31,6 +31,31 @@ Tasks are scoped to the calling user (or the single `local` user when auth is
 disabled). You only see and manage your own tasks; a task owned by someone else
 is not enumerable.
 
+## Approval for create and update
+
+Because a scheduled task persists work that will later run unattended, an agent
+cannot save or change one silently. Every call to `sys_scheduled_task_create`
+or `sys_scheduled_task_update` pauses for your interactive approval before the
+task is written:
+
+> Approve these scheduled task settings for future unattended runs?
+
+Review the agent, prompt, host, and permission settings in that request before
+accepting. The gate fires even when the call omits optional fields — inherited
+defaults (for example, the host resolved at fire time or the agent's own model
+and permission mode) are persisted too, so they also need your consent.
+Declining denies the call and nothing is saved.
+
+This check is an always-on guard, not something you configure: it is appended
+to every session's policy set — including sub-agent sessions — even when no
+[policies](/docs/policies/overview) are declared anywhere, and it cannot be
+removed. See [Always-on approval guards](/docs/policies/builtin#always-on-approval-guards).
+
+`sys_scheduled_task_list` and `sys_scheduled_task_delete` do not trigger this
+prompt. Tasks you create or edit directly in the [web UI](/docs/interact/web-ui#scheduled-tasks)
+or through the `/v1/scheduled-tasks` REST API keep their existing authorization
+rules.
+
 ## Creating a task
 
 `sys_scheduled_task_create` takes these fields:

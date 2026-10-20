@@ -44,6 +44,21 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `worktree_guard`                  | Blocks file writes outside the worker's git worktree to prevent cross-branch contamination.                                                                                                                                                                                                                                                                                                                                                                                            | `allowed_root` (string, default `.worktrees`), `deny_reason`                                                                                                                                                                            |
 | `read_only_os`                    | Denies every file-mutating tool so a report-only agent can read and run shell but never change code.                                                                                                                                                                                                                                                                                                                                                                                   | `deny_reason`                                                                                                                                                                                                                           |
 
+### Always-on approval guards
+
+Two safety guards are appended to **every** session's policy set
+automatically. You don't declare them, they take no parameters, and they can't
+be removed — they are present even when no policies are configured at any
+level, and sub-agent sessions get them too. They run after any session, agent,
+and server-wide policies you have declared.
+
+| Guard                          | What it does                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ask_on_add_policy`            | ASKs before `sys_add_policy`, so an agent cannot silently install a session policy. This is the approval step described in [Adding a policy](/docs/policies/overview#adding-a-policy).                                                                                                                                                |
+| `ask_on_scheduled_task_change` | ASKs before `sys_scheduled_task_create` and `sys_scheduled_task_update`, so an agent cannot persist or change unattended work without consent — including when the call omits fields and inherits defaults. `sys_scheduled_task_list` and `sys_scheduled_task_delete` are not gated. See [Scheduled Tasks](/docs/build/scheduled-tasks#approval-for-create-and-update). |
+
+Declining either prompt denies that tool call; accepting allows it to proceed.
+
 ## Cost Control
 
 | Policy                            | What it does                                                                                                                                                                                                                                                                    | Parameters                                                                                                                   |

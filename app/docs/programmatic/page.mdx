@@ -679,7 +679,142 @@ The tool accepts `user_id`, `level` (`"read"`, `"edit"`, or `"manage"`), and an
 optional `session_id` that defaults to the calling session. The caller's
 permissions and server sharing settings still apply.
 
+## Edit an installed agent's configuration
+
+Agents you install on a server keep their `config.yaml` bundle server-side.
+Instead of re-uploading the whole bundle to change a description, prompt,
+model, harness, or MCP server, you can read the editable fields and send a
+partial update over the REST API. Only the agent's owner can read or edit its
+configuration, even when a session that uses the agent is shared.
+
+Check the server advertises support first: `GET /v1/info` returns
+`agent_config_edit: true` when configuration editing is available. Older
+servers omit the field; treat that as unsupported. On servers that lack
+support, the endpoints below return `501`.
+
+```bash
+SERVER_URL="http://127.0.0.1:6767"
+AGENT_ID="<agent-id>"   # from GET /v1/agents
+```
+
+<div style={{ overflowX: "auto" }}>
+<table style={{ tableLayout: "fixed", minWidth: "36rem" }}>
+  <thead>
+    <tr>
+      <th style={{ width: "25%" }}>Use case</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Read the editable configuration</td>
+      <td>
+
+Returns `id`, `name`, `version`, `description`, `harness`, `model`, the
+literal `instructions`, and `mcp_servers` keyed by server name. Each MCP entry
+lists its `transport`, `description`, `url`, `command`, `args`, and
+`editable` flag, plus the names of configured credentials in
+`configured_header_names` and `configured_env_names`. Credential values are
+never returned, and responses are sent with `Cache-Control: no-store`.
+
+```bash
+curl -fsS -i "$SERVER_URL/v1/agents/$AGENT_ID/config"
+```
+
+Save the `ETag` response header; the update request requires it:
+
+```bash
+ETAG=$(curl -fsS -D - -o /dev/null "$SERVER_URL/v1/agents/$AGENT_ID/config" \
+  | tr -d '\r' | awk 'tolower($1) == "etag:" { print $2 }')
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Update only the fields you send</td>
+      <td>
+
+Send a JSON body with `If-Match` set to the saved ETag. Omitted fields keep
+their current contents, including credentials, skills, and other bundled
+files. The response returns the updated configuration and a new `ETag`.
+
+```bash
+curl --fail-with-body -X PATCH "$SERVER_URL/v1/agents/$AGENT_ID" \
+  -H 'Content-Type: application/json' \
+  -H "If-Match: $ETAG" \
+  -d '{
+    "description": "Reviews migrations",
+    "instructions": "Check compatibility and rollback steps.",
+    "mcp_servers": {
+      "docs": {"url": "https://docs.example.com/mcp"},
+      "old-tool": null
+    }
+  }' | jq
+```
+
+A request without `If-Match` returns `428`; a stale tag returns `412`
+(`precondition_failed`). Reload the configuration and reapply your change
+before retrying.
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+The body accepts these top-level fields. Unknown fields are rejected, and the
+agent's `name` and `executor.type` cannot change.
+
+<div style={{ overflowX: "auto" }}>
+
+| Field          | Behavior                                                                                                                                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `description`  | Replaces the description; `null` clears it.                                                                                                                                                                        |
+| `instructions` | Replaces the literal instructions; `null` or `""` clears them. Clearing does not restore a bundled `AGENTS.md`.                                                                                                    |
+| `model`        | Nonempty string that replaces `executor.model`. Requires `executor.type: omnigent`; other executors return `409`.                                                                                                  |
+| `harness`      | Nonempty harness id that replaces `executor.config.harness`. Requires `executor.type: omnigent`. See [Harnesses](/docs/build/harnesses).                                                                           |
+| `mcp_servers`  | Map of server name to a partial declaration or `null`. `null` deletes the server, an object patches it, and `{}` changes nothing. New servers need a complete `http` or `stdio` declaration including `transport`. |
+
+</div>
+
+Within an MCP server patch:
+
+- `transport` cannot change on an existing server. Managed registry servers
+  (`editable: false` in the read response) are read-only and return `409`.
+- `headers` and `env` merge by key: a `null` value deletes that key, a `null`
+  map clears every key, and `{}` preserves the map. Omit credentials you are
+  not changing; `"[REDACTED]"` placeholders are rejected.
+- `args` replaces the whole array; `[]` clears it.
+- New servers are written as sidecar files under
+  [`tools/mcp/<name>.yaml`](/docs/build/tools#sidecar-mcp-files); existing
+  declarations are edited in place. The same safety checks as the session MCP
+  routes apply.
+
+A few things to know:
+
+- Only standard `config.yaml` bundles are editable. Other formats return `409`
+  with the code `agent_config_not_editable`.
+- Edited YAML loses its comments and formatting; untouched files keep their
+  contents. The agent keeps its ID and gets a new `version`; a patch that
+  changes nothing leaves the version unchanged.
+- Sessions pick up the new configuration on their next turn. Active turns are
+  not interrupted, and per-session overrides still take precedence.
+- Re-uploading the bundle through the install API still replaces the whole
+  bundle; use it when you need to change files the PATCH fields don't cover.
+
 ## API endpoints reference
+
+The server exposes these agent configuration endpoints. Replace `{id}` with an
+agent ID from `GET /v1/agents`.
+
+<div style={{ overflowX: "auto" }}>
+
+| Method  | Path                     | What you can do                                                    |
+| ------- | ------------------------ | ------------------------------------------------------------------ |
+| `GET`   | `/v1/agents/{id}/config` | Read an owned agent's editable configuration and its `ETag`        |
+| `PATCH` | `/v1/agents/{id}`        | Update only the supplied configuration fields; requires `If-Match` |
+
+</div>
 
 The server exposes these session endpoints. Replace `{id}` with a session ID.
 

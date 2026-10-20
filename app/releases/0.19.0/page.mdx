@@ -1,0 +1,69 @@
+{/* Auto-generated from the GitHub Release for v0.19.0. Edit the GitHub Release, not this file. */}
+
+# v0.19.0
+
+_Released 2026-10-20_ · 3 min read · Omnigent maintainers
+
+Omnigent 0.19.0 is a major release focused on giving your agents safe access to the tools and code they need and making their work easier to steer, from connecting managed MCP tools and private Git repositories to tuning, editing, and reviewing what your agents produce. On servers with an MCP registry, you can now connect managed MCP accounts and route their tools through a server gateway with shared policy checks. Sandboxed agents can work with approved Git repositories over SSH without ever holding the key. You can also set reasoning effort for SDK agents from the web composer, edit custom agents right in Settings, and see much more review context in the Pull Requests panel.
+
+## 1. MCP Registry and Gateway
+
+![TODO: add a demo screenshot or GIF for "MCP Registry and Gateway"](TODO)
+
+Wiring MCP tools into every agent by hand gets old fast, especially when the same accounts need to work on your laptop and in a sandbox. If your server has an MCP registry configured, you connect managed MCP accounts once, in Settings, and then choose which of their tools your agents can use.
+
+Those tools go through a server gateway whether your agent runs on a local host or in a sandbox. Because every call passes through the gateway, the same policy checks apply wherever the agent runs.
+
+_Learn more in the [MCP servers](/docs/build/tools#mcp-servers)._
+
+## 2. Reasoning Effort for Claude SDK and Codex SDK Agents
+
+![TODO: add a demo screenshot or GIF for "Reasoning Effort for Claude SDK and Codex SDK Agents"](TODO)
+
+Some tasks need careful thought and others just need a quick answer. Until now you could only set reasoning effort in native terminal sessions. Now you can also set it for Claude SDK and Codex SDK agents.
+
+Pick the effort level in the web composer, next to where you type your message. You don't need to restart anything or switch to the terminal.
+
+_Learn more in the [Reasoning effort](/docs/build/models#reasoning-effort)._
+
+## 3. SSH Git Access for Sandboxed Agents
+
+![TODO: add a demo screenshot or GIF for "SSH Git Access for Sandboxed Agents"](TODO)
+
+Sandboxed agents often need your private repositories, but copying your SSH key into a sandbox gives up the isolation the sandbox is there to provide. With this release, sandboxed agents can use approved Git repositories over SSH and never receive the key.
+
+You decide which repositories are approved. Push access is optional and set per repository, so an agent can read one repo and push to another, with each permission granted on purpose.
+
+## 4. Custom Agent Editing in Settings
+
+![TODO: add a demo screenshot or GIF for "Custom Agent Editing in Settings"](TODO)
+
+Changing a custom agent shouldn't mean rebuilding it from scratch. You can now edit your custom agents directly from Settings and adjust their configuration in place.
+
+If you manage agents from code, a conditional PATCH API lets you update individual settings without resending the whole configuration.
+
+_Learn more in the [Custom Agents](/docs/use/custom-agents)._
+
+## 5. Reviewers and Comments in the Pull Requests Panel
+
+![TODO: add a demo screenshot or GIF for "Reviewers and Comments in the Pull Requests Panel"](TODO)
+
+Following a pull request used to mean switching back to GitHub to see who still had to review it and what people had said. The Pull Requests panel now shows pending reviewers and review states, so you can tell at a glance where a PR is stuck.
+
+Comments now have their own Comments tab with a count, so new feedback is easy to spot. In conversation comments, each author gets a different color, which makes long threads easier to follow.
+
+_Learn more in the [Tracked pull requests](/docs/interact/web-ui#tracked-pull-requests)._
+
+Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
+
+## What's Next
+
+Install or upgrade Omnigent:
+
+```bash
+uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
+```
+
+- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
+- Join the conversation on our [Discord](https://discord.gg/omnigent).
+- Browse the [docs](https://omnigent.ai/docs) to go deeper.

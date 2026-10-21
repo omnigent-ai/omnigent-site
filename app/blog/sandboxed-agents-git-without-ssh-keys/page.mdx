@@ -1,0 +1,66 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Let sandboxed agents clone and push to approved repos without ever holding your SSH key",
+  "Grant a sandboxed agent Git access to one repository at a time. Omnigent keeps the SSH key outside the sandbox and only allows push where you turn it on.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/sandboxed-agents-git-without-ssh-keys",
+  },
+);
+
+export const meta = {
+  title:
+    "Let sandboxed agents clone and push to approved repos without ever holding your SSH key",
+  date: "2026-10-20",
+  category: "Sandbox",
+  author: "omnigent",
+  heroArt: "/images/blog/sandboxed-agents-git-without-ssh-keys.png",
+};
+
+<BlogPostHeader slug="sandboxed-agents-git-without-ssh-keys" />
+
+If you run coding agents inside an Omnigent sandbox, they can now clone, fetch,
+and push to the Git repositories you approve, and your SSH key stays outside the
+sandbox the whole time.
+
+Until now, getting a sandboxed agent to use Git over SSH meant putting a key
+somewhere the agent could read, and then that key worked for every repository
+it could reach. Now you list the repositories an agent may use, one at a time,
+and say whether each one allows fetch only or push as well. Omnigent runs the
+SSH connection outside the sandbox with your key and checks the server's host
+key against the one you pinned. The agent runs normal `git clone` and
+`git push` commands but cannot read the key, open a shell on the server, or
+reach a repository you didn't list.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an agent cloning an approved repo and pushing a branch from its sandbox, then a push to an unlisted repo being refused. */}
+
+Add a `git_ssh` entry to your agent's sandbox config for each repository:
+
+```yaml
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    type: auto
+    git_ssh:
+      - host: github.com
+        port: 22
+        username: git
+        repository: my-org/my-repo.git
+        operations: [fetch]
+        identity_file: /home/runner/.ssh/my-repo-deploy-key
+        known_hosts_file: /home/runner/.ssh/github-pinned-host-key
+```
+
+Point `known_hosts_file` at a file holding the one host key you expect for that
+server, and keep both files outside the paths the sandbox can read or write.
+Start with a read-only deploy key and `fetch`. Add `push` to `operations` only
+when the key can write. Submodules and other repositories each get their own
+entry. This works in local sandboxes on Linux and macOS. See the
+[OS sandbox configuration docs](/docs/reference/configuration/os-sandbox) for
+the rest of the sandbox options.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

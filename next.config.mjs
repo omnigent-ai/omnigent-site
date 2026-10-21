@@ -45,7 +45,13 @@ const nextConfig = {
       {
         source: "/download/mac",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.18.0-arm64.dmg",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.18.1-arm64.dmg",
+        permanent: false,
+      },
+      {
+        source: "/download/mac/v0.18.1",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.18.1-arm64.dmg",
         permanent: false,
       },
       {
@@ -99,7 +105,13 @@ const nextConfig = {
       {
         source: "/download/mac-x64",
         destination:
-          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.18.0-x64.dmg",
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.18.1-x64.dmg",
+        permanent: false,
+      },
+      {
+        source: "/download/mac-x64/v0.18.1",
+        destination:
+          "https://diksk5m140cfbma7.public.blob.vercel-storage.com/mac/Omnigent-0.18.1-x64.dmg",
         permanent: false,
       },
       {

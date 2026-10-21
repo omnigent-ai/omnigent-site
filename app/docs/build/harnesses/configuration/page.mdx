@@ -515,6 +515,32 @@ or reject commands and use agy's pattern-based always-allow choices when
 available. Rules saved through these prompts apply only to the current
 Omnigent session.
 
+## Claude Code (SDK)
+
+### System prompt preset
+
+By default, the `claude-sdk` harness sends your agent's
+[system prompt](/docs/build/prompts#system-prompt) to Claude as a custom
+prompt. That prompt replaces Claude Code's built-in one. To keep Claude Code's
+built-in prompt and add your agent's instructions after it, set
+`system_prompt_preset: claude_code` under `executor.config`:
+
+```
+executor:
+  type: omnigent
+  config:
+    harness: claude-sdk
+    system_prompt_preset: claude_code
+```
+
+- `claude_code` is the only accepted value. Any other value fails when the
+  harness starts (`system_prompt_preset must be 'claude_code' or unset`).
+- The agent's full prompt is appended unchanged, including the instructions
+  Omnigent adds at runtime. The preset doesn't change which tools the agent can
+  use.
+- The setting applies only to the agent that declares it. An agent without it,
+  including a sub-agent, keeps the custom prompt even when its parent opts in.
+
 ## Codex
 
 The native Codex harness (`codex-native`, launched by `omni codex`) decides how

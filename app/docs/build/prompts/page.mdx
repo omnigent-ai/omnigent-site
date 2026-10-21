@@ -29,6 +29,11 @@ instructions: prompts/system.md
 `instructions` also accepts file paths (resolved relative to the agent YAML's
 directory). If you set both fields, `instructions` wins.
 
+On the `claude-sdk` harness, this prompt replaces Claude Code's built-in system
+prompt by default. Set `executor.config.system_prompt_preset: claude_code` to
+keep Claude Code's prompt and add yours after it. See
+[Claude Code (SDK) system prompt preset](/docs/build/harnesses/configuration#system-prompt-preset).
+
 ### Auto-discovery
 
 When neither `prompt` nor `instructions` is set, Omnigent scans the agent

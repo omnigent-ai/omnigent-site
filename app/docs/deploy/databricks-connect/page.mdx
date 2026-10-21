@@ -126,3 +126,20 @@ and the Docker image read the same env vars.
    **Disconnect** removes the stored token.
 3. Start a sandbox session and confirm the agent's Databricks calls (model
    serving / MCP) route through the workspace's AI Gateway as you.
+
+## Databricks Sandboxes as the connected user
+
+The [`databricks` sandbox provider](/docs/reference/configuration/cloud-sandbox#databricks)
+depends on this connection. It creates, drives, keeps alive, and deletes each
+Databricks Sandbox as the user who started the session, using their connected
+token. The server's own identity is never used. Users who have not connected
+are refused with a "Connect Databricks first" message, and users connected to a
+workspace other than `sandbox.databricks.workspace_host` are asked to reconnect
+to that workspace.
+
+The Databricks Apps entry point, `omnigent server`, and the Docker entry point
+all read `OMNIGENT_DATABRICKS_CLIENT_ID` / `OMNIGENT_DATABRICKS_CLIENT_SECRET`
+plus a credential-store key (`OMNIGENT_CREDENTIAL_KMS_KEY_ID` or
+`OMNIGENT_CREDENTIAL_VAULT_KEY`). If the client id and secret are set but no
+credential-store key is, the Apps entry point logs an error and the connection
+stays disabled.

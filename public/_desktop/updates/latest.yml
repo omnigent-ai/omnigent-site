@@ -1,8 +1,8 @@
-version: 0.18.0
+version: 0.18.1
 files:
-  - url: Omnigent Setup 0.18.0.exe
-    sha512: jUbQ0CouEQGO5NiqAk2PMyQUo8p4MfDz2uzMTQK2h1XtR+kMOB9zi6sAF8jMIatUOs9AAvUKkIYbv1gD0UGVQw==
-    size: 106998435
-path: Omnigent Setup 0.18.0.exe
-sha512: jUbQ0CouEQGO5NiqAk2PMyQUo8p4MfDz2uzMTQK2h1XtR+kMOB9zi6sAF8jMIatUOs9AAvUKkIYbv1gD0UGVQw==
-releaseDate: '2026-10-20T00:59:36.039Z'
+  - url: Omnigent Setup 0.18.1.exe
+    sha512: XMy/Gsp5fUwNvVoIUTHkZlTqA4e8jENKAMXkp7MVCtlAqdHfUjVT6TLD9DsclU1IbIb0Wy3O2AGlWybbR37AQQ==
+    size: 107010559
+path: Omnigent Setup 0.18.1.exe
+sha512: XMy/Gsp5fUwNvVoIUTHkZlTqA4e8jENKAMXkp7MVCtlAqdHfUjVT6TLD9DsclU1IbIb0Wy3O2AGlWybbR37AQQ==
+releaseDate: '2026-10-21T19:27:57.280Z'

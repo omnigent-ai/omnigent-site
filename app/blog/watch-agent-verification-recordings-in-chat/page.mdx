@@ -1,0 +1,69 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Watch your agent prove its work: verification recordings play inline in chat",
+  "When an agent records itself checking a change, the video now plays right in its chat reply, and an optional chapter file lets you jump straight to each step it verified.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/watch-agent-verification-recordings-in-chat",
+  },
+);
+
+export const meta = {
+  title:
+    "Watch your agent prove its work: verification recordings play inline in chat",
+  date: "2026-10-20",
+  category: "Web UI",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="watch-agent-verification-recordings-in-chat" />
+
+If you ask your agents to show that a fix really works, you can now watch the
+proof without leaving the conversation. When an agent saves a screen recording
+in its workspace and links it in a reply, that reply shows a compact video
+player you can start with one click.
+
+Until now, checking an agent's recording meant finding the file, downloading
+it, and opening it somewhere else. Now you press Play in the chat, then pause,
+seek, or go fullscreen with the usual browser controls. Click the recording's
+title to open a larger preview in the file viewer. If the agent also saves a
+chapter file next to the video, that preview lists each step the agent took.
+Click a step to jump to that moment, and the list highlights the current step
+as the video plays. Nothing loads until you press Play, so a long session full
+of recordings stays fast. The same player works on desktop and mobile.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: an agent reply with an inline "Screen recording" player, pressing Play, then clicking the title to open the file preview and selecting the "Submit the form" step to seek there. */}
+
+To use it, have the agent save a video file (such as `.webm` or `.mp4`) in the
+workspace and reply with a Markdown link to it, like
+`[Screen recording](recordings/verification.webm)`. For clickable steps, it
+saves a standard WebVTT chapter file named after the full video filename with
+`.chapters.vtt` appended:
+
+```vtt
+WEBVTT
+
+open
+00:00.000 --> 00:04.500
+Open the application
+
+submit
+00:04.500 --> 00:09.000
+Submit the form
+
+verify
+00:09.000 --> 00:15.000
+Confirmation appears
+```
+
+Save that as `recordings/verification.webm.chapters.vtt` and the steps appear
+when you open the recording's preview. Without a chapter file, the recording
+still plays normally. The
+[recordings guide](https://github.com/omnigent-ai/omnigent/blob/main/docs/video-recordings.md)
+covers the chapter format, its limits, and how remote video links behave.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

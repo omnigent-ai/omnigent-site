@@ -73,6 +73,60 @@ omni run agent.yaml --harness codex --model gpt-4.1-mini
 The `--harness` and `--model` flags map directly to the `executor` block. This lets
 you reuse the same config across different LLM backends.
 
+### Run an agent registered on a server
+
+To chat with an agent that's already registered on a
+[shared server](/docs/deploy/overview), pass the server URL with no agent path:
+
+```
+omni run --server https://your-server.example.com                       # pick from a menu
+omni run --server https://your-server.example.com --agent scribe        # choose by name
+omni run --server https://your-server.example.com --agent scribe -p "hi"  # one-shot
+```
+
+You can choose from the agents registered on the server (for example with
+`omni server --agent <path>`) and the agents you registered yourself with
+`omni agent add <path> --server <url>`. Agents that were only uploaded for a
+single session aren't listed. When a server agent and one of your own agents
+share a name, the server agent wins.
+
+- **One agent:** it's selected automatically.
+- **Several agents:** you get a numbered menu showing each agent's source
+  (`server` or `user`) and harness. Enter a number or a name.
+- **`--agent <name>`** skips the menu. Omnigent checks the name before it
+  creates a session. If no agent has that name, the error lists the registered
+  agents.
+- **With `-p` and several agents**, you must pass `--agent`. Otherwise the run
+  fails, lists the choices, and creates no session.
+
+`--agent` only works with `--server <url>` when you don't pass an agent path or
+`--harness`. It always starts a new session, so you can't combine it with
+`--resume`, `--continue`, or `--fork`. To resume
+(`--resume <conversation_id>`) or fork (`--fork <conversation_id>`), Omnigent
+uses the session's own agent and shows no menu. `--fork` only works in
+interactive mode.
+
+**Where the agent runs.** If an online runner on the server supports the
+agent's harness, the new session uses it. If there isn't one and this machine
+is connected as a host (`omni host --server <url>`), the server launches a
+runner on this machine, with your current directory as the workspace. Only
+this machine can be used, because the workspace is a local directory. The
+command fails with a hint to fix the problem when:
+
+- only other machines are connected as hosts (run the command on one of them,
+  or connect this machine), or
+- this machine's host can't run the agent's harness (install or configure the
+  harness, then restart `omni host`).
+
+A one-shot `-p` run stops the runner it launched once the reply is printed. In
+an interactive session, a runner the host launched stays running, and the host
+manages it from then on. If a launch times out before the CLI gets a session
+ID, the runner may still start. Check the host's runners before you retry.
+
+If the server rejects the request with HTTP 401, run `omni login <server-url>`
+and retry. An HTTP 403 means your account doesn't have access, so ask the
+server administrator.
+
 From here, the agent streams its output as it thinks and acts. Tool calls run in real time,
 so you watch file writes, shell commands, and API calls land as they happen. The session also
 stays in sync with the [Web UI](/docs/interact/web-ui) both ways: run the

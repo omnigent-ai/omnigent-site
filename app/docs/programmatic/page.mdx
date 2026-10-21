@@ -134,6 +134,17 @@ Common options:
 
 </div>
 
+To run an agent that's already registered on a server instead, leave out the
+agent path and name the agent with `--agent`. You must pass `--agent` when the
+server has more than one agent you could run:
+
+```bash
+omni run --server "<server-url>" --agent scribe -p "Review the changes in the latest commit"
+```
+
+See [Run an agent registered on a server](/docs/interact/terminal#run-an-agent-registered-on-a-server)
+for how Omnigent picks the agent and where its runner runs.
+
 These examples use an agent YAML or directory through `omni run`; native
 terminal harnesses have their own CLI behavior. To run tools on another
 machine or in a cloud sandbox, use the REST API's host options.
@@ -170,6 +181,20 @@ asyncio.run(main())
 
 Use the printed session ID to send a message in the next step, or open the
 URL to view the session.
+
+`resolve_agent` looks for the name among the server's registered agents first,
+then among your own (from `omni agent add`).
+`client.sessions.list_registered_agents()` returns both lists. Each entry has
+an `id`, `name`, `harness`, and `source` (`"server"` or `"user"`). If no runner
+is online, you can have the server launch one on a connected host:
+
+- `client.sessions.list_launch_hosts(harness=agent.harness)` lists your online
+  hosts and whether each one can run that harness.
+- Pass a host's ID to `create_from_agent_id(agent.id, host_id=...)` instead of
+  calling `bind_runner`.
+
+For host-launch requests, the client waits at least 3660 seconds for a
+response.
 
   </div>
   <div>

@@ -321,7 +321,9 @@ first source that applies:
 1. The **Gemini default provider** you configured through `omni setup` — a
    Google API key, a native Gemini gateway, or a Databricks profile (see
    [Configure native agy credentials](#configure-native-agy-credentials)).
-2. The Antigravity API key saved by earlier versions of `omni setup`.
+2. The Antigravity API key saved by earlier versions of `omni setup`
+   (`antigravity.api_key_ref`), always sent to Google's API root. Remove it in
+   setup before switching to an ambient gateway.
 3. A `GEMINI_API_KEY` in the environment where the harness runs, paired with
    `GOOGLE_GEMINI_BASE_URL` when that is also set (otherwise Google's API
    root). Both variables are forwarded from the host to the runner.
@@ -362,6 +364,11 @@ the existing default. To switch, select the credential, choose **Make default
 for Gemini**, and start a **new** `omni agy` session — existing sessions keep
 their original connection, and `/model` changes the model, not the provider,
 endpoint, or authentication method. Claude, Codex, and Pi defaults are separate.
+
+If two providers both claim a family's default, `omni setup` first asks which
+one to keep (**Multiple defaults for … — choose one to keep**) before opening
+the harness menu. Canceling leaves the conflict unresolved and the
+configuration unchanged; run `omni setup` again to choose.
 
 <div className="note">
 
@@ -460,7 +467,14 @@ https://<workspace>/ai-gateway/gemini/v1beta/models/<model-service>:streamGenera
 The adapter requires the same main and auxiliary model versions agy requests;
 an unavailable or ambiguous match fails rather than substituting a different
 version. It stops with agy and is recreated on resume — you never manage its
-local URL or session key. The selected profile owns both the workspace and the
+local URL or session key.
+
+Setup checks only that the profile authenticates; Gemini model availability is
+checked when agy starts, and a profile with no accessible Gemini model services
+cannot launch a session. The model catalog is discovered once at startup, so
+start a new session to pick up models added later.
+
+The selected profile owns both the workspace and the
 identity: ambient `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, and OAuth client
 settings cannot override it, and an invalid profile fails instead of using
 ambient credentials.
@@ -483,7 +497,16 @@ omni agy
 Ask: *Read gateway-smoke.txt using the file tool and quote its contents.*
 Confirm a tool call occurs and the reply contains the file's actual text, then
 ask a follow-up question about it. Exit and run `omni agy --resume` to verify
-continuity. Repeat in a fresh conversation after switching credentials.
+continuity. In the web UI, stop the session's terminal, click **Resume
+session**, and ask another question about the file without using tools —
+earlier messages and the original tool result should appear once, followed by
+the new turn. Repeat in a fresh conversation after switching credentials.
+
+On resume, Omnigent deduplicates transcript items by a stable source ID, so
+replaying agy's trajectory does not duplicate messages or tool calls. Items
+recorded by older Omnigent versions lack those IDs and may be replayed once
+the first time they are resumed after upgrading; existing duplicate history is
+not removed.
 
 - **404** — check both the API route and the availability of the requested
   model; changing `/model` cannot repair an incompatible API protocol.
@@ -494,14 +517,19 @@ falling back to ambient credentials.
 
 #### Upgrading from an earlier Omnigent
 
-- A `gemini:` block in an existing `kind: gateway` or `kind: local` provider
-  becomes usable by native agy. If that provider has `default: true`, Gemini is
-  included in its defaults and takes precedence over agy OAuth; an incompatible
-  URL then fails with a setup error rather than falling back. Update it to a
-  native Gemini API root, or replace `default: true` with an explicit list of
-  its other families (for example `default: [anthropic, openai]`) in
-  `config.yaml` to restore OAuth for new sessions. You can also select another
-  Gemini default in setup.
+- Existing `kind: gateway` and `kind: local` providers keep their pre-upgrade
+  routing: `default: true` does **not** activate a `gemini:` block for native
+  agy. To route agy through such a provider, select it and choose **Make
+  default for Gemini** in setup, or list `gemini` explicitly in its default
+  scope (for example `default: [anthropic, openai, gemini]`). Setup preserves
+  the provider's other families and writes the explicit scope. Until then,
+  existing Gemini-key, legacy-key, ambient-key, and OAuth routing stays in
+  effect.
+- An explicitly selected Gemini provider with an incompatible URL fails with a
+  repair hint rather than falling back to another identity.
+- New Gemini-only gateway entries and Databricks `native_gemini` entries are
+  not understood by older Omnigent versions. Before downgrading, remove those
+  entries or restore your previous `config.yaml`.
 - Setup does not automatically adopt a detected `GEMINI_API_KEY` whose
   companion `GOOGLE_GEMINI_BASE_URL` is incompatible. Correct the variable and
   reopen setup; if an earlier setup already saved the rejected URL, edit or

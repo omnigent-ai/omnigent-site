@@ -239,8 +239,8 @@ Most release features (such as `usage_page`, `harness_install`, and
 [`canvas`](/docs/interact/web-ui#canvas)) are off by default. Runner features
 are resolved by each runner instead of the server:
 
-| Feature             | Default | Applies to    | Effect                                                                                                                                                                                                    |
-| ------------------- | ------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Feature             | Default | Applies to    | Effect                                                                                                                                                                                                             |
+| ------------------- | ------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `claude_osc_status` | On      | Host / runner | `claude-native` sessions take their working, blocked, and idle status from Claude Code's OSC 7501 terminal reports, falling back to Claude's session status file and then pane activity. Not listed in `/v1/info`. |
 
 The OSC path needs Claude Code 2.1.295 or later. Older CLIs use the fallback.

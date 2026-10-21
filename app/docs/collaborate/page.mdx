@@ -99,16 +99,16 @@ workspace-relative file edits, and answering the session's pending prompts — s
 it passes the same policy and approval gates as the owner's own turns. A few
 actions bypass the agent entirely and stay with the session owner:
 
-| Action                                                     | Read | Edit | Owner |
-| ---------------------------------------------------------- | :--: | :--: | :---: |
-| Watch the session stream                                   |  ✓   |  ✓   |   ✓   |
-| Send messages and drive the agent                          |      |  ✓   |   ✓   |
-| Browse and edit files inside the workspace                 |  \*  |  ✓   |   ✓   |
-| See and answer pending prompts (approvals, questions)      |      |  ✓   |   ✓   |
-| Change a native session's permission mode or launch args   |      |      |   ✓   |
-| Transfer a live terminal to another session                |      |      |  ✓†   |
-| Browse absolute paths on the host filesystem               |      |      |   ✓   |
-| Run a raw shell command in the session's environment       |      |      |   ✓   |
+| Action                                                   | Read | Edit | Owner |
+| -------------------------------------------------------- | :--: | :--: | :---: |
+| Watch the session stream                                 |  ✓   |  ✓   |   ✓   |
+| Send messages and drive the agent                        |      |  ✓   |   ✓   |
+| Browse and edit files inside the workspace               |  \*  |  ✓   |   ✓   |
+| See and answer pending prompts (approvals, questions)    |      |  ✓   |   ✓   |
+| Change a native session's permission mode or launch args |      |      |   ✓   |
+| Transfer a live terminal to another session              |      |      |  ✓†   |
+| Browse absolute paths on the host filesystem             |      |      |   ✓   |
+| Run a raw shell command in the session's environment     |      |      |   ✓   |
 
 \* Off by default; the owner can enable it with the **Workspace files** toggle
 described above.

@@ -465,6 +465,53 @@ tools:
       bank_id: my-agent
 ```
 
+## Framework tool groups
+
+Several framework-owned tool groups register on every agent without any
+declaration. Each one has a key under the top-level `tool_groups:` block, so an
+agent can drop a group it cannot use. For example, a headless sub-agent has no
+embedded browser to drive, and a provider with a byte limit on tool definitions
+counts every advertised tool against it.
+
+```
+tool_groups:
+  browser: false          # browser_navigate / _snapshot / _click / _type / _screenshot
+  scheduled_tasks: false  # sys_scheduled_task_create / _list / _update / _delete
+  comments: false         # list_comments / update_comment
+  policies: false         # sys_add_policy / sys_policy_registry
+  agent_discovery: false  # sys_agent_get / sys_agent_download / sys_agent_list
+```
+
+| Group | Tools it controls |
+| --- | --- |
+| `browser` | `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type`, `browser_screenshot` — see [Embedded browser](/docs/interact/desktop#embedded-browser) |
+| `scheduled_tasks` | `sys_scheduled_task_create`, `sys_scheduled_task_list`, `sys_scheduled_task_update`, `sys_scheduled_task_delete` — see [Scheduled Tasks](/docs/build/scheduled-tasks) |
+| `comments` | `list_comments`, `update_comment` |
+| `policies` | `sys_add_policy`, `sys_policy_registry` |
+| `agent_discovery` | `sys_agent_get`, `sys_agent_download`, `sys_agent_list` |
+
+Every group defaults to `true`, so leaving out the block changes nothing.
+Values must be booleans and group names must match exactly. A typo (for
+example `scheduled-tasks`), a non-boolean value, or a block that isn't a mapping
+fails the agent load instead of leaving the group registered. The block is read
+the same way from a `config.yaml` bundle and from a single-file agent YAML.
+
+A disabled group's tools are left out of the tool list the model sees, including
+the tool relay used by native harnesses. If the model calls one of them anyway,
+the call is refused. Setting `browser: false` also removes the embedded-browser
+guidance from the composed system prompt.
+
+`agent_discovery: false` is rejected while `spawn: true` is set or the
+`scheduled_tasks` group is on. `sys_session_create` and
+`sys_scheduled_task_create` take an `agent_id` that the model looks up with
+`sys_agent_list` / `sys_agent_get`. To turn off discovery, also set
+`scheduled_tasks: false` and drop `spawn`.
+
+The session read tools (`sys_session_list`, `sys_session_get_history`,
+`sys_session_get_info`), `sys_session_rename`, and `sys_cancel_task` have no key
+and always register: every agent in a multi-agent session needs the reads, and
+async work handles point at the cancel tool.
+
 ## Combine tool types
 
 A single agent can mix all tool types. The `tools` block is a flat map of names

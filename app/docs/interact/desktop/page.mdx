@@ -48,8 +48,10 @@ same as the web UI.
 ## Embedded browser
 
 The desktop app includes an embedded browser pane your agent can drive directly.
-Five framework-owned tools are always available to every agent — you don't declare
-them in your agent YAML:
+Five framework-owned tools are available to every agent by default — you don't declare
+them in your agent YAML. An agent that can't use them can set `tool_groups.browser: false`
+to drop them, which also removes the embedded-browser guidance from its system prompt
+(see [Framework tool groups](/docs/build/tools#framework-tool-groups)):
 
 <table>
   <thead>

@@ -16,7 +16,9 @@ Scheduled tasks are managed through four built-in tools that **every agent has
 automatically**. They are framework-owned and auto-registered, so an agent can
 create, list, update, and delete its own recurring runs at runtime without the
 agent YAML opting in. Under the hood the runner dispatches each tool to the
-Omnigent server's `/v1/scheduled-tasks` REST endpoints.
+Omnigent server's `/v1/scheduled-tasks` REST endpoints. An agent that shouldn't
+manage scheduled tasks can drop all four with `tool_groups.scheduled_tasks: false`
+(see [Framework tool groups](/docs/build/tools#framework-tool-groups)).
 
 ## The built-in tools
 

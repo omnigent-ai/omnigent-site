@@ -368,6 +368,46 @@ Sign-in still happens in the foreground, before the spawn: pointing
 the browser login in your terminal first, since the detached daemon has no
 terminal to prompt on.
 
+#### Harness credentials in a background host
+
+The background daemon doesn't inherit your whole shell environment. It keeps
+an allowlist of process essentials, TLS trust and proxy settings, and
+Databricks auth; in local mode it also keeps the provider variables the local
+server needs (such as `OPENAI_API_KEY` and `OPENAI_BASE_URL`). On top of that,
+it forwards credentials you have configured explicitly, so a harness that is
+ready on a foreground host stays ready in the background:
+
+- **Saved provider references.** Any variable a provider in
+  `~/.omnigent/config.yaml` references with `api_key_ref: env:VAR`:
+
+  ```yaml
+  providers:
+    gateway:
+      kind: key
+      openai:
+        base_url: https://gateway.example.com/v1
+        api_key_ref: env:MY_GATEWAY_TOKEN
+  ```
+
+- **Named passthrough.** Variables listed in `OMNIGENT_RUNNER_ENV_PASSTHROUGH`,
+  a comma-separated list of names (for example
+  `OMNIGENT_RUNNER_ENV_PASSTHROUGH=MY_GATEWAY_TOKEN`).
+
+Both are read from the host's own config and environment when the daemon
+starts. A provider profile applied only to one session does not change what a
+reusable host forwards. Other secrets in your shell are still filtered out, and
+listing a name that isn't set has no effect.
+
+<div className="note">
+
+The daemon captures its environment when it starts. After you change a
+forwarded credential, restart the host (`omni host stop`, then start it again).
+`omni host enable` writes explicitly forwarded values in plaintext into the
+per-user launchd/systemd service definition, so the service keeps them across
+logins. That file is readable only by its owner (mode `0600`).
+
+</div>
+
 ## Keyboard shortcuts
 
 The web UI ships a set of global keyboard shortcuts. Press `⌘/` (`Ctrl+/` on

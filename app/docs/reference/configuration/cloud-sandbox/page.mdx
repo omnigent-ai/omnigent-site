@@ -246,6 +246,10 @@ sandbox:
     env: [OPENAI_API_KEY, ANTHROPIC_API_KEY]
     cluster: my-gateway
     workspace: team-alpha
+    providers: [github]
+    node_selector:
+      kata-install: "true"
+    runtime_class: kata-containers
 ```
 
 - `image` defaults to the official Omnigent host image.
@@ -253,6 +257,15 @@ sandbox:
 - `cluster` defaults to the active OpenShell gateway from
   `$OPENSHELL_GATEWAY` or `~/.config/openshell/active_gateway`.
 - `workspace` defaults to `$OMNIGENT_OPENSHELL_WORKSPACE`, then `default`.
+- `providers` lists OpenShell credential provider names to attach to every
+  sandbox Omnigent creates. Each entry must be a non-empty string.
+- `node_selector` maps Kubernetes node labels that the sandbox pod requires.
+- `runtime_class` sets the Kubernetes runtime class for the sandbox pod, such
+  as `kata-containers`.
+
+`node_selector` and `runtime_class` are passed to OpenShell's Kubernetes driver
+as pod settings. Leave them out to use the gateway's default placement. Any
+key under `sandbox.openshell` not listed above stops server startup.
 
 When a server-managed OpenShell sandbox goes dormant, its persistent volume is
 retained and the session reports a wakeable "asleep" state. The next message

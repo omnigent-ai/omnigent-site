@@ -332,6 +332,50 @@ The **MCPs** control appears, and the catalog is requested, only when the server
 advertises the `mcp` connection capability; on other servers the composer shows
 no picker.
 
+### See a session's MCP servers with `/mcp`
+
+To check which MCP servers a running session can use, type **`/mcp`** in the
+composer (or pick **/mcp** from the slash menu's **Commands** list, described as
+**Show MCP servers enabled for this session**). The suggestions are replaced by a
+read-only **MCP servers** panel headed **Enabled for this session**, listing
+each server by name with its description when one is available.
+
+The list combines:
+
+- **The session's agent** — MCP servers declared by the agent bound to the
+  session.
+- **The session's host**, for native coding-agent sessions (for example
+  `claude-native`, `codex-native`, or `cursor-native`) — the user-level MCP
+  servers that host exposes to the native harness. Only entries for the session's
+  own harness are shown, so a Claude Code server doesn't appear in a Codex
+  session. Host entries are described by their plugin (`<name> plugin`) and/or
+  URL host. When the agent and host both declare a server with the same name,
+  the agent's entry is shown.
+
+The panel also reports the host's state instead of guessing at an empty list:
+
+- **No MCP servers enabled for this session.** — nothing is configured.
+- **Loading MCP servers…** — the host's list is still loading.
+- **Couldn’t load MCP servers from this session’s host.** — the host lookup
+  failed.
+- **Host MCP servers unavailable: this session has no known host.** — the
+  session isn't bound to a host Omnigent can query.
+
+In the loading, error, and no-host cases, the agent's servers stay listed above
+the status line.
+
+The **Go to Settings** link at the bottom of the panel opens the harness
+settings (`/settings/harnesses`). For a native coding-agent session it opens that
+harness's settings with the session's host preselected; if that host is offline
+or no longer listed, Settings falls back to an online host.
+
+`/mcp` is handled by the web UI — nothing is sent to the agent, and pressing
+`Enter` leaves the panel open. It takes no arguments: `/mcp list` shows
+**Usage: /mcp**. The command appears only once a session has started; it isn't
+offered in the new-session composer or in a [side chat](#slash-commands-in-a-side-chat).
+To choose server-configured MCP services before launching, use the
+[**MCPs** picker](#choose-mcp-services-before-launch) instead.
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:

@@ -2,7 +2,7 @@ import { pageMeta } from "@/lib/og";
 
 export const metadata = pageMeta(
   "Install a custom agent once from GitHub and use it on every host",
-  "omnigent agent add installs a custom agent from a local directory, a bundle, or a GitHub repo. It is stored under your account and shows up in the new-session picker on every host you use.",
+  "Install a custom agent with omnigent agent add from a local directory, a bundle, or a GitHub repo. It is stored under your account and shows up in the new-session picker on every host you use.",
   {
     eyebrow: "Blog",
     path: "/blog/install-custom-agents-from-github",
@@ -28,10 +28,9 @@ spec file, and it belonged to that session. Installed agents are different:
 they are stored on the server under your account, so they sit beside the
 built-in agents on every host, with no server restart. Re-adding an agent with
 the same name replaces your copy in place, and sessions already using it pick
-up the new version on their next turn. Workers, skills, guardrails, and
-supporting files in the agent directory all come along.
-
-{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: run `omnigent agent add acme/agents --list`, then `omnigent agent add acme/agents@orion`, confirm the prompt, then open the web UI on a second host and show the agent in the new-session picker. */}
+up the new version on their next turn (terminal sessions when they relaunch).
+Workers, skills, guardrails, and supporting files in the agent directory all
+come along.
 
 Point the command at a local agent directory, a YAML file, a `.tar.gz` bundle,
 or a GitHub repo as `owner/repo`. For a repo, `--list` previews the agents it
@@ -40,19 +39,47 @@ or tag. GitHub installs ask you to confirm first, since the repo's config runs
 in your sessions; `--yes` skips the prompt.
 
 ```bash
+# List the agents in your GitHub repo (acme/agents is an example)
 omnigent agent add acme/agents --list
+# Install one agent from that repo by its name
 omnigent agent add acme/agents@orion
+# Install from a branch or tag of your repo
 omnigent agent add https://github.com/acme/agents/tree/main/orion
+# Install from a local agent directory you created
 omnigent agent add ./orion
+# List the agents you have installed
 omnigent agent list
+# Remove an installed agent
 omnigent agent remove orion
 ```
+
+<video
+  src="/images/releases/0.18.0/custom-agent-cli.mp4"
+  poster="/images/releases/0.18.0/custom-agent-cli.png"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Installing, listing, and updating a reusable custom agent with the Omnigent CLI"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
 
 In the web UI, open the agent picker's custom agents, choose Create custom
 agent, then Import bundle and pick a `.tar.gz` of an agent directory. The agent
 installs and is selected for the new session. See the
 [Custom Agents guide](/docs/use/custom-agents) for how to write the agent
 itself.
+
+<video
+  src="/images/releases/0.18.0/custom-agent-import.mp4"
+  poster="/images/releases/0.18.0/custom-agent-import.png"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="Importing a custom-agent bundle and selecting the installed agent in the new-session picker"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
 
 ---
 

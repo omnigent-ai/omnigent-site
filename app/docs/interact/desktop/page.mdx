@@ -162,6 +162,55 @@ validation, or the agent's navigation policy. A local helper that rejects the
 site through its own CORS policy must itself be configured to allow it; the pane
 doesn't rewrite those headers.
 
+### Import cookies from Chrome (macOS)
+
+Some sites refuse to sign in inside an embedded browser (Google sign-in is the
+usual one). On macOS, the browser toolbar has a cookie button, **Import cookies
+from Chrome**, that copies the **current site's** cookies from your local Google
+Chrome profile into this conversation's browser and then reloads the page, so
+the site picks up the sign-in you already have in Chrome. The button only
+appears on macOS and only works on `http(s)` pages.
+
+1. Open the site in the pane and click the cookie button. The dialog that opens
+   shows how many cookies Chrome holds for the site. Opening it doesn't touch
+   the Keychain.
+2. Pick a **Chrome profile** if you have more than one that holds cookies for
+   the site.
+3. Pick a **Site** scope if one is offered. The default is the page's own host
+   and its subdomains. If Chrome has domain cookies for a parent domain, you can
+   widen the scope to it. For example, on `accounts.google.com` the picker can
+   offer `accounts.google.com` and `google.com`, each with its own count.
+   Cookies for other subdomains stay bound to their own host, so they only apply
+   once the tab visits that host.
+4. Click **Import cookies**, then confirm the native **Import … into Omnigent?**
+   prompt. It names the scope, the Chrome profile, and the cookie count.
+   **Cancel** is the default.
+5. When macOS asks for permission to read Chrome's key from your login
+   Keychain, choose **Allow**, not **Always Allow**. Always Allow lets any local
+   process read Chrome's key without asking.
+
+What gets copied, and where it goes:
+
+- **Only that site's cookies.** The import reads cookies for the chosen scope's
+  domain tree and nothing else in Chrome's cookie jar. If the tab navigates to
+  a different site while the dialog or Keychain prompt is open, the import is
+  refused.
+- **In memory, per conversation.** Cookies go into the conversation's existing
+  browser session, which every tab in that conversation shares, including tabs
+  the agent controls. **While the cookies are loaded, the agent can act as you
+  on that site.** They're gone when you quit Omnigent. Nothing is written back
+  to Chrome, nothing syncs in the background, and other conversations stay
+  signed out.
+- **Read-only access to Chrome.** Chrome's `Cookies` database is copied to a
+  private temp directory and read from there, so Chrome's live file is never
+  locked or modified. Cookie values are never shown, logged, or saved to disk.
+- **Some cookies are skipped.** Partitioned (CHIPS) cookies are left out, and so
+  are values Omnigent can't decrypt (for example, app-bound `v20` values). The
+  success toast reports how many cookies couldn't be used.
+
+Cookies alone don't always reproduce a sign-in. Sites that also depend on
+localStorage, device checks, or other site state may still ask you to sign in.
+
 ## Keyboard shortcuts
 
 The desktop app supports every

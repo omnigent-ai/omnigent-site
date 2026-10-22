@@ -170,6 +170,38 @@ Where it lands depends on the session you ran it from:
 This is the same destination as `⌘⌥N` and the command palette's new-session
 action, with the current project carried over.
 
+### Prefill the composer from a link
+
+Integrations can open the new-session composer with text already filled in by
+adding a `prompt` query parameter to the server's root URL:
+
+```
+http://localhost:6767/?prompt=Explain%20this%20code
+```
+
+For a deployment mounted under a path prefix, keep the prefix — for example
+`/tools/omnigent/?prompt=Explain%20this%20code`. Build the query string with
+`URLSearchParams` so newlines, Unicode, and characters such as `&` and `+`
+survive the round trip:
+
+```js
+// serverUrl includes any mount prefix, e.g. "https://example.com/tools/omnigent"
+const query = new URLSearchParams({ prompt: "src/example.py\nExplain a + b" });
+const link = `${serverUrl}/?${query}`;
+```
+
+The linked text is only an editable draft. Opening the link doesn't start a
+session: the user reviews the text, chooses a host and agent, and presses
+**Send**.
+
+- **The link is consumed once.** After the page loads, `prompt` is removed from
+  the address bar; any other query parameters and the `#fragment` stay in place.
+  Edits the user makes afterwards survive navigating away and back.
+- **A new link replaces a parked draft.** Opening a prompt link overwrites
+  whatever unsent draft the composer was holding.
+- **Empty prompts are ignored.** A `prompt` that is empty or only whitespace is
+  stripped from the URL but leaves any existing draft untouched.
+
 ### Worktree branches
 
 In the new-chat composer, name a branch to run the agent in its own git worktree.

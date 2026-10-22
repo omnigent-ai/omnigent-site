@@ -638,8 +638,10 @@ the referenced file themselves.
 Coding-agent sessions have a **Pull Requests** tab in the right workspace rail. It
 tracks the pull requests associated with the session and shows the selected
 one's summary (reviewers, CI checks, and the PR description), its conversation
-comments, and a stacked diff with a file-tree navigator. Nothing is pushed or
-mutated — recording an association never touches the remote PR.
+comments, and a stacked diff with a file-tree navigator. Viewing, linking, and
+unlinking PRs never changes anything on GitHub — recording an association never
+touches the remote PR. The remote PR changes only when you act on it
+explicitly, for example with the [Merge button](#merging-a-pull-request).
 
 ### Tracked pull requests
 
@@ -675,10 +677,11 @@ an added or deleted file.
 
 ### Summary tab
 
-The **Summary** tab opens with a **Reviewers** section, followed by CI checks
-and the PR description. Each assigned reviewer is listed with its current review
-state — **Pending**, **Approved**, **Commented**, **Changes requested**, or
-**Dismissed**. Team reviewers are marked `(team)`. A reviewer whose review has
+The **Summary** tab opens with the **Reviewers** section beside the PR's
+labels, followed by CI checks with the [Merge button](#merging-a-pull-request),
+then the PR description, with dividers between them. Each assigned reviewer is
+listed with its current review state — **Pending**, **Approved**,
+**Commented**, **Changes requested**, or **Dismissed**. Team reviewers are marked `(team)`. A reviewer whose review has
 been re-requested shows as **Pending** even if they approved earlier. A PR with
 no reviewers reads `No reviewers assigned.`
 
@@ -689,6 +692,52 @@ section is simply omitted and the summary, checks, and comments still load.
 
 In the **Comments** tab, each author's avatar initial gets a distinct color
 within the thread so you can follow who said what at a glance.
+
+### Merging a pull request
+
+For an open GitHub PR, the Summary tab shows a **Merge** button below the CI
+checks. It shows only if you can edit the session. Merging GitLab merge requests
+or Azure DevOps pull requests from Omnigent is not supported yet. The button is
+also hidden when the host's `gh` is too old to report the PR's merge state.
+
+The button follows GitHub's merge state for the PR. While GitHub is still
+computing it (typically right after a push), the button waits and picks it up on
+a later refresh:
+
+| State                            | Button                   | Hint shown                                                                 |
+| -------------------------------- | ------------------------ | -------------------------------------------------------------------------- |
+| Ready to merge                   | Enabled (green)          | —                                                                          |
+| Optional checks failing          | Enabled (green)          | `Checks that aren’t required are failing or still running.`                |
+| Repository has pre-receive hooks | Enabled (green)          | `The repository’s pre-receive hooks run on merge and can still reject it.` |
+| Required checks/reviews unmet    | Disabled                 | `Required checks or reviews haven’t passed.`                               |
+| Branch behind base               | Disabled                 | `Update the branch first.`                                                 |
+| Merge conflicts                  | Disabled                 | `Resolve conflicts first.`                                                 |
+| Draft PR                         | Disabled                 | `Mark the pull request ready for review first.`                            |
+| Not yet computed                 | Disabled, with a spinner | `Checking whether it can merge…`                                           |
+
+The button is labelled with the method it will use — **Merge pull request**,
+**Squash and merge**, or **Rebase and merge**. Omnigent reads the repository's
+allowed merge methods with `gh repo view` and preselects your last-used method
+(or the repository default) when it's allowed, otherwise the first allowed one.
+
+Clicking the button opens a confirmation dialog — `Merge pull request #N?` —
+naming the base branch the PR will merge into, with a picker to change the merge
+method (**Create a merge commit**, **Squash and merge**, or **Rebase and
+merge**, limited to the methods the repository allows). Confirming runs
+`gh pr merge --<method> --match-head-commit <sha>` on the host as the PR's
+selected GitHub account. The head commit is fixed when the dialog opens, so if
+the branch gets new commits in the meantime GitHub refuses the merge and the
+dialog asks you to review the new commits and merge again. If a GitHub account
+is selected for the repository but isn't signed in on the host, the merge is
+refused rather than run as a different account.
+
+After GitHub accepts the merge, the button reads `Merge requested. Refreshing…`
+until the panel picks up the merged state. If GitHub takes too long to respond,
+the dialog says the outcome is unknown and asks you to refresh.
+
+When **auto-merge** is enabled on the PR, the Merge button is replaced by a
+note that the PR will merge automatically when all requirements are met, and a
+**Disable auto-merge** button (runs `gh pr merge --disable-auto`).
 
 ### Link or unlink a PR
 

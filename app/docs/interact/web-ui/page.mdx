@@ -638,8 +638,9 @@ the referenced file themselves.
 Coding-agent sessions have a **Pull Requests** tab in the right workspace rail. It
 tracks the pull requests associated with the session and shows the selected
 one's summary (reviewers, CI checks, and the PR description), its conversation
-comments, and a stacked diff with a file-tree navigator. Nothing is pushed or
-mutated — recording an association never touches the remote PR.
+comments, and a stacked diff with a file-tree navigator. Recording an
+association never touches the remote PR; the PR changes only when you act on it
+explicitly, such as [editing its title or description](#edit-the-title-and-description).
 
 ### Tracked pull requests
 
@@ -689,6 +690,47 @@ section is simply omitted and the summary, checks, and comments still load.
 
 In the **Comments** tab, each author's avatar initial gets a distinct color
 within the thread so you can follow who said what at a glance.
+
+The description and comments render images hosted as GitHub attachments
+(`https://github.com/user-attachments/assets/…`), such as pasted screenshots.
+Other remote images stay blocked.
+
+### Edit the title and description
+
+If you can edit the session, you can change the selected PR's title and
+description without leaving Omnigent. Edits are made with the GitHub account on
+the host and still work while the session's runner is offline. Editing is
+currently supported for GitHub pull requests only.
+
+- **Title** — click the pencil (`Edit title`) next to the PR title at the top
+  of the panel, change the text, and press **Save** (or Enter). **Cancel** or
+  Escape discards the edit. A title can't be blank and is limited to 256
+  characters.
+- **Description** — click the pencil (`Edit description`) next to the
+  **Description** heading in the **Summary** tab. The editor is a markdown
+  textarea with **Write** and **Preview** tabs; **Save** replaces the PR's
+  description, and **Cancel** asks before discarding unsaved changes. A
+  description is limited to 65,536 characters. A draft survives switching to
+  another tab of the panel.
+
+#### Attach images and videos
+
+While editing the description, paste or drop files into the textarea, or click
+the paperclip (`Attach images or videos`) to pick them. Each file uploads to
+GitHub right away and is inserted at the cursor — an image as markdown
+(`![name](url)`), a video as its bare URL on its own line, which GitHub renders
+as a player. **Save** stays disabled until every upload finishes.
+
+| Type   | Formats              | Max size |
+| ------ | -------------------- | -------- |
+| Images | PNG, JPEG, GIF, WebP | 10 MB    |
+| Videos | MP4, MOV, WebM       | 70 MB    |
+
+The format is detected from the file's contents, not its name or extension.
+Uploading needs push access to the PR's repository for the host's GitHub
+account. Omnigent doesn't keep the file, and the PR is unchanged until you save
+a description that links it — but GitHub keeps an uploaded file even if you
+never save.
 
 ### Link or unlink a PR
 

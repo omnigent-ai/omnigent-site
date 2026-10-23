@@ -170,6 +170,31 @@ Where it lands depends on the session you ran it from:
 This is the same destination as `⌘⌥N` and the command palette's new-session
 action, with the current project carried over.
 
+#### Clear context with `/clear`
+
+In a Claude Code (`claude-native`) or Codex (`codex-native`) session, type
+`/clear` in the composer to start over with a fresh context. The slash menu lists
+it as **Clear the context and continue in a new chat on the same machine**, and
+offers it only on those two harnesses; on any other session, typing it shows
+**/clear is not supported for this agent type**. It takes no arguments:
+`/clear something` shows **/clear does not accept arguments**.
+
+Unlike `/new`, `/clear` runs the harness's own `/clear` inside the session's
+terminal. The harness then moves that terminal onto a fresh Omnigent session on
+the same machine, and the web UI follows it there:
+
+- If you're viewing the old conversation, it redirects to the new chat
+  automatically.
+- The old conversation stops showing **Working…** and gets a note: **This
+  conversation was ended by `/clear`. Continue in the new chat.** with a link to
+  the new session. The note is saved, so it's still there when you reopen the
+  old conversation later. You can also send a message in the old conversation to
+  resume it.
+
+If the session's runner is offline, Omnigent tries to wake it first. If it can't,
+the command fails with **Can't clear this session while its runner is offline.**
+Send a message to reconnect the session, then run `/clear` again.
+
 ### Worktree branches
 
 In the new-chat composer, name a branch to run the agent in its own git worktree.

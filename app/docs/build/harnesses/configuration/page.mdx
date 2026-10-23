@@ -659,6 +659,34 @@ spawned runner without forwarding the named secrets themselves, and the Pi
 terminal removes those variables before launching `pi`. Other harnesses in the
 same deployment are unaffected.
 
+### Extension dialogs
+
+When a Pi extension asks the user something through `ctx.ui`, Omnigent shows
+the dialog as an approval card in the web UI's Chat and sends your answer
+back to the extension. This works in both the SDK and native Pi harnesses:
+
+| `ctx.ui` method | Card | What the extension receives |
+| --- | --- | --- |
+| `confirm(title, message)` | A yes/no card showing the title and message | `true` if you approve, `false` if you decline |
+| `select(title, options)` | A **Pi needs your input** form listing the options | The label you pick. You can't type a custom answer |
+| `input(title, placeholder)` | A free-text field. The placeholder is the field header (default **Input**) | The text you enter |
+| `editor(title, prefill)` | A **Keep as-is** option previewing the prefilled text, plus a field for replacement text | The prefill if you keep it, otherwise your text |
+
+Declining a dialog counts as an answer. It doesn't deny a tool call or end the
+turn: `confirm` resolves to `false` and the other methods resolve as cancelled
+(`undefined`), so the extension decides what to do next. A dialog that times
+out without an answer resolves the same way. Omnigent uses the timeout the
+extension passes to `ctx.ui` and caps it at 24 hours.
+
+Methods that only update Pi's interface and need no answer (`notify`,
+`setStatus`, `setWidget`, `setTitle`, `set_editor_text`) don't create cards.
+
+Answering a dialog requires **Edit** access to the session, the same as other
+[pending prompts](/docs/collaborate). In a native Pi terminal session the
+dialog appears only in the web UI, not in Pi's TUI. If you close the dialog
+from Pi, the web card is withdrawn. When the Omnigent server is older and
+doesn't support extension dialogs, native Pi falls back to its own TUI dialog.
+
 ## Custom ACP agents
 
 Beyond the built-in harnesses, the generic `acp` harness drives *any* agent that

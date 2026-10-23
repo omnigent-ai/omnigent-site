@@ -615,6 +615,54 @@ full syntax highlighting.
 
 Use cases: updating documentation sites, reviewing Omnigent-generated plans, editing configs.
 
+### Let the agent open a file
+
+Agents can open a workspace file in the file viewer for you, so you don't have to
+click a file link. Ask the agent to "use `ui_open_file` to open `README.md`" and
+the viewer opens that file. You don't need to configure anything: `ui_open_file`
+is available to every agent, including native coding-agent harnesses.
+
+The tool takes a single `path`:
+
+```json
+{"path": "docs/guide.md"}
+```
+
+- **Paths are relative to the session's workspace**, not the agent's shell
+  current directory. Use forward slashes. The tool rejects absolute paths, `~`,
+  `..` traversal, URLs, backslashes, colons, control characters and empty
+  paths. A path can be up to 4096 characters long.
+- **Only the current session is affected.** The request goes to UIs that are
+  showing this session and are allowed to browse its workspace. Other
+  sessions and windows stay where they are. In a grid, only the selected pane
+  handles the request.
+- **Requests aren't saved.** A request is a one-off event: it isn't stored and
+  doesn't replay when you reconnect or come back to the session later.
+- **The viewer works the same as when you open a file yourself.** Web, desktop
+  and mobile layouts use their existing file viewer, with the usual file tab,
+  panel opening and unsaved-edit guard. If you have unsaved edits, you can
+  cancel the switch so you don't lose them. A file that is missing, unreadable
+  or unsupported shows the viewer's usual error or fallback.
+- **The tool never reads or modifies the file**, and it can't target another
+  session.
+
+Scripts can send the same request over HTTP. The caller needs **edit access**
+to the session. On a local single-user server, leave out the authorization
+header.
+
+```bash
+curl -X POST "$OMNIGENT_SERVER/v1/sessions/$SESSION_ID/ui/open-file" \
+  -H "Authorization: Bearer $OMNIGENT_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"path": "docs/guide.md"}'
+```
+
+The endpoint returns `202 Accepted` with `{"subscribers": N}`. `N` is the number
+of live session streams the request was sent to. It doesn't confirm that a
+viewer opened the file: it is `0` when no UI is connected, and background or
+non-UI clients also count. The server doesn't check whether the file exists.
+An invalid path returns `422`.
+
 ## Code viewer and diffs
 
 Review what your Omnigent changed before accepting. Syntax-highlighted diffs show exactly

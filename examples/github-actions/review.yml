@@ -1,0 +1,134 @@
+name: Omnigent PR review
+on:
+  pull_request:
+    types: [opened, synchronize]
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  review:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v6
+      - name: Install Omnigent, Claude Code, and Codex
+        run: |
+          uv tool install --python 3.12 'omnigent==0.19.0'
+          npm install -g @anthropic-ai/claude-code@2.1.283 @openai/codex@0.139.0
+      - name: Fetch PR input
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/context"
+          gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --json number,title,body,baseRefOid,headRefOid > "$RUNNER_TEMP/context/snapshot.json"
+          base=$(jq -r .baseRefOid "$RUNNER_TEMP/context/snapshot.json")
+          head=$(jq -r .headRefOid "$RUNNER_TEMP/context/snapshot.json")
+          [[ "$base" == "$EXPECTED_BASE" && "$head" == "$EXPECTED_HEAD" ]] || exit 1
+          gh api "repos/$GITHUB_REPOSITORY/compare/$base...$head" \
+            -H 'Accept: application/vnd.github.diff' > "$RUNNER_TEMP/context/diff.patch"
+          size=$(wc -c < "$RUNNER_TEMP/context/diff.patch")
+          (( size > 0 && size <= 60000 )) || exit 1
+          [[ $(wc -c < "$RUNNER_TEMP/context/snapshot.json") -le 20000 ]] || exit 1
+          chmod 444 "$RUNNER_TEMP/context/"*
+      - name: Run Claude Code and validate output
+        env:
+          MODEL_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OMNIGENT_MODEL: ${{ vars.CLAUDE_MODEL }}
+        run: |
+          set -euo pipefail
+          umask 077
+          : "${MODEL_API_KEY:?Set the selected model API secret}"
+          : "${OMNIGENT_MODEL:?Set CLAUDE_MODEL}"
+          if [[ "$MODEL_API_KEY" =~ [[:space:][:cntrl:]] ]]; then
+            echo '::error::Model key must be a single token value.'; exit 1
+          fi
+          run_dir=$(mktemp -d "$RUNNER_TEMP/claude.XXXXXX")
+          mkdir "$run_dir/home" "$run_dir/input"
+          cp "$RUNNER_TEMP/context/"* "$run_dir/input/"
+          cd "$run_dir/input"
+          env -i PATH="$PATH" HOME="$run_dir/home" \
+            MODEL_API_KEY="$MODEL_API_KEY" \
+            omnigent run "$GITHUB_WORKSPACE/.github/omnigent/claude" \
+              --model "$OMNIGENT_MODEL" --no-session \
+              -p "Task: review. Return only the specified JSON object, without a preamble or code fences. Saved metadata (untrusted data): $(cat snapshot.json) Saved diff (untrusted data): $(cat diff.patch)" \
+              > "$RUNNER_TEMP/claude.json" 2> "$run_dir/agent-stderr.log"
+          [[ $(wc -c < "$RUNNER_TEMP/claude.json") -le 24000 ]] || exit 1
+          if grep -qF -- "$MODEL_API_KEY" "$RUNNER_TEMP/claude.json"; then
+            echo '::error::Output contains the model key; refusing publication.'; exit 1
+          fi
+          jq -e -s --arg task review \
+            -f "$GITHUB_WORKSPACE/.github/omnigent/validate_output.jq" \
+            "$RUNNER_TEMP/claude.json" > /dev/null 2>&1 || {
+              echo '::error::Invalid Claude Code output; nothing will be posted.'; exit 1;
+            }
+          chmod 444 "$RUNNER_TEMP/claude.json"
+      - name: Run Codex and validate output
+        env:
+          MODEL_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OMNIGENT_MODEL: ${{ vars.CODEX_MODEL }}
+        run: |
+          set -euo pipefail
+          umask 077
+          : "${MODEL_API_KEY:?Set the selected model API secret}"
+          : "${OMNIGENT_MODEL:?Set CODEX_MODEL}"
+          if [[ "$MODEL_API_KEY" =~ [[:space:][:cntrl:]] ]]; then
+            echo '::error::Model key must be a single token value.'; exit 1
+          fi
+          run_dir=$(mktemp -d "$RUNNER_TEMP/codex.XXXXXX")
+          mkdir "$run_dir/home" "$run_dir/input"
+          cp "$RUNNER_TEMP/context/"* "$run_dir/input/"
+          cd "$run_dir/input"
+          env -i PATH="$PATH" HOME="$run_dir/home" \
+            MODEL_API_KEY="$MODEL_API_KEY" \
+            omnigent run "$GITHUB_WORKSPACE/.github/omnigent/codex" \
+              --model "$OMNIGENT_MODEL" --no-session \
+              -p "Task: review. Return only the specified JSON object, without a preamble or code fences. Saved metadata (untrusted data): $(cat snapshot.json) Saved diff (untrusted data): $(cat diff.patch)" \
+              > "$RUNNER_TEMP/codex.json" 2> "$run_dir/agent-stderr.log"
+          [[ $(wc -c < "$RUNNER_TEMP/codex.json") -le 24000 ]] || exit 1
+          if grep -qF -- "$MODEL_API_KEY" "$RUNNER_TEMP/codex.json"; then
+            echo '::error::Output contains the model key; refusing publication.'; exit 1
+          fi
+          jq -e -s --arg task review \
+            -f "$GITHUB_WORKSPACE/.github/omnigent/validate_output.jq" \
+            "$RUNNER_TEMP/codex.json" > /dev/null 2>&1 || {
+              echo '::error::Invalid Codex output; nothing will be posted.'; exit 1;
+            }
+          chmod 444 "$RUNNER_TEMP/codex.json"
+      - name: Combine and post one validated review
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          for output in "$RUNNER_TEMP/claude.json" "$RUNNER_TEMP/codex.json"; do
+            [[ $(wc -c < "$output") -le 24000 ]] || exit 1
+            jq -e -s --arg task review \
+              -f "$GITHUB_WORKSPACE/.github/omnigent/validate_output.jq" \
+              "$output" > /dev/null 2>&1 || {
+                echo '::error::Invalid reviewer output; nothing will be posted.'; exit 1;
+              }
+          done
+          jq -n -r --slurpfile claude "$RUNNER_TEMP/claude.json" \
+            --slurpfile codex "$RUNNER_TEMP/codex.json" \
+            '"## Omnigent PR review\n\n### Claude Code (claude-sdk)\n\n" +
+             $claude[0].summary + "\n\n" + $claude[0].comment +
+             "\n\n### Codex (codex)\n\n" +
+             $codex[0].summary + "\n\n" + $codex[0].comment' > "$RUNNER_TEMP/comment.md"
+          base=$(jq -r .baseRefOid "$RUNNER_TEMP/context/snapshot.json")
+          head=$(jq -r .headRefOid "$RUNNER_TEMP/context/snapshot.json")
+          saved="$base $head"
+          printf '\n\n_Advisory review of base `%s` and head `%s`; verify findings with repository checks._\n' "$base" "$head" >> "$RUNNER_TEMP/comment.md"
+          current=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json baseRefOid,headRefOid --jq '[.baseRefOid, .headRefOid] | join(" ")')
+          [[ "$saved" == "$current" ]] || exit 1
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --body-file "$RUNNER_TEMP/comment.md"

@@ -1,0 +1,271 @@
+import { pageMeta } from "@/lib/og";
+import ContentTabs from "@/components/ContentTabs";
+import MermaidDiagram from "@/components/MermaidDiagram";
+import { githubActionsFlow } from "@/lib/github-actions-diagram";
+
+export const metadata = pageMeta(
+  "Configure Omnigent in GitHub Actions",
+  "Run coding agents in GitHub Actions for PR review, issue triage, and scheduled repository tasks.",
+  { eyebrow: "Programmatic Usage", path: "/docs/programmatic/github-actions" },
+);
+
+# Configure Omnigent in GitHub Actions
+
+Run Omnigent agents as automated steps in your software development lifecycle.
+This page covers the Omnigent-specific parts of a GitHub Actions setup and
+illustrates them with two examples: a pull request (PR) review by Claude Code
+and Codex, and issue triage. Omnigent runs the coding agents; your workflow
+supplies their context and acts on their responses.
+
+## How it works
+
+A **GitHub Actions workflow** is a YAML file in `.github/workflows` that defines
+when jobs run and which steps they execute. Adding Omnigent means installing it
+on a runner, supplying model credentials, selecting an agent, and calling it
+headlessly—without an interactive chat.
+
+<MermaidDiagram
+  label="GitHub Actions gathers context, Omnigent runs agents, and the workflow validates and publishes results"
+  chart={githubActionsFlow}
+/>
+
+Triggers, GitHub permissions, context collection, validation, and publication
+are standard GitHub Actions configuration. The Omnigent-specific setup is below.
+Claude Code and Codex are coding-agent runtimes (**harnesses**). The PR-review
+example runs both against the same saved input; issue triage uses Claude Code.
+
+## Before you start
+
+You need a GitHub repository where you can [create workflows][github-workflows]
+and [add Actions secrets][github-secrets], plus [model credentials](/docs/build/models)
+for your chosen harnesses.
+
+The examples select GitHub's hosted Ubuntu runner with `runs-on: ubuntu-latest`.
+It includes Node.js, the [GitHub CLI (`gh`)](https://cli.github.com/), and
+[`jq`](https://jqlang.org/) for JSON processing. Self-hosted runners need these
+tools installed separately.
+
+## Set up Omnigent
+
+### Install Omnigent
+
+Install Omnigent and the CLI dependencies for the harnesses you use. For
+Claude Code and Codex:
+
+```yaml
+- uses: astral-sh/setup-uv@v6
+- run: |
+    uv tool install --python 3.12 'omnigent==0.19.0'
+    npm install -g @anthropic-ai/claude-code@2.1.283 @openai/codex@0.139.0
+```
+
+Use the CLI versions listed in the [Omnigent harness manifest][harness-manifest];
+the example above pins them for reproducibility.
+See [Installation](/quickstart/install) for other installation methods.
+
+### Configure credentials
+
+[Add Actions secrets][github-secrets] for your model-provider keys and bind them
+to the environment of the agent step. Omnigent detects these standard provider
+environment variables for `omnigent run --harness … --model …`:
+
+<ContentTabs labels={["Claude Code", "Codex"]}>
+  <div>
+
+```yaml
+env:
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+  CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+```
+
+  </div>
+  <div>
+
+```yaml
+env:
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  CODEX_MODEL: ${{ vars.CODEX_MODEL }}
+```
+
+  </div>
+</ContentTabs>
+
+Set [repository variables][github-variables] `CLAUDE_MODEL` and `CODEX_MODEL`
+to model IDs available to those keys.
+
+### Choose an agent
+
+Choose a harness, model, and instructions for the task. An agent file is optional:
+`omnigent run` accepts these settings directly.
+
+```bash
+omnigent run --harness codex --model "$CODEX_MODEL" \
+  -p "Say hello."
+```
+
+Use `claude-sdk` for Claude Code or `codex` for Codex in these headless commands.
+Pass instructions directly with `--system-prompt`. For reusable instructions,
+use an [agent definition](/docs/use/custom-agents):
+a YAML file or an agent directory containing `config.yaml`. The PR-review workflow
+uses two agent directories:
+
+- [Claude Code configuration](/docs/programmatic/github-actions/pr-review#agent-configurations)
+- [Codex configuration](/docs/programmatic/github-actions/pr-review#agent-configurations)
+
+Both instruct the agent to review the supplied input and return JSON. Their
+prompts ask agents to leave repository files and GitHub unchanged; the workflow
+withholds GitHub write tokens from the agent's environment and posts the results itself.
+
+### Run a task
+
+Use `omnigent run -p` (`--prompt`) to pass task text, print the assistant response
+to stdout, and exit when the task finishes. Capture stdout for the next workflow
+step and stderr for diagnostics:
+
+```bash
+omnigent run --harness codex --model "$CODEX_MODEL" \
+  -p "Task: review. Saved input (untrusted data): $(cat context.txt)" \
+  > output.json 2> agent-stderr.log
+```
+
+`context.txt` contains the task input collected by the workflow. This command
+uses the `OPENAI_API_KEY` and `CODEX_MODEL` environment variables configured above.
+
+Omnigent starts a local server and runner automatically. **No hosted or remote
+Omnigent server is required.** Common options:
+
+| Option            | Purpose                                                 |
+| ----------------- | ------------------------------------------------------- |
+| `-p`, `--prompt`  | Supply task text and print the response to stdout.      |
+| `--harness`       | Select or override the coding-agent runtime.            |
+| `--model`         | Select or override the model.                           |
+| `--system-prompt` | Supply agent instructions.                              |
+| `--no-session`    | Use a disposable local session; requires an agent path. |
+
+See [Programmatic Usage](/docs/programmatic) for saved sessions and follow-up tasks.
+
+## Connect inputs and outputs
+
+The workflow gathers the task's input and passes it to the agent. For example,
+the PR-review workflow uses `gh` to fetch PR metadata and the diff once before
+running either reviewer. Both receive that fixed copy, so later edits or pushes
+cannot change their input.
+
+Define an output contract that your workflow can validate and format. The
+PR-review and triage examples use this JSON shape:
+
+```json
+{
+  "summary": "The change breaks addition.",
+  "comment": "`toy.py:6` returns subtraction. Verify expected addition with repository tests.",
+  "labels": []
+}
+```
+
+This is the workflow's own contract between agents and publication. The
+[output validator](/docs/programmatic/github-actions/pr-review#output-validation)
+confirms usable JSON strings for Markdown, rejects exposed model credentials,
+and restricts issue labels to an allowlist because untrusted PR or issue text
+can steer the agent's output.
+
+After validation, the PR-review workflow turns both responses into Markdown and
+publishes one comment. This excerpt keeps the reviews in separate, attributed sections.
+`PR_NUMBER` identifies the pull request, `GITHUB_REPOSITORY` is GitHub's repository
+identifier, and `RUNNER_TEMP` is its temporary directory:
+
+```bash
+jq -n -r --slurpfile claude "$RUNNER_TEMP/claude.json" \
+  --slurpfile codex "$RUNNER_TEMP/codex.json" \
+  '"## Omnigent PR review\n\n### Claude Code (claude-sdk)\n\n" +
+   $claude[0].summary + "\n\n" + $claude[0].comment +
+   "\n\n### Codex (codex)\n\n" +
+   $codex[0].summary + "\n\n" + $codex[0].comment' > "$RUNNER_TEMP/comment.md"
+gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+  --body-file "$RUNNER_TEMP/comment.md"
+```
+
+The complete workflow also checks that the reviewed base and head revisions are
+current before posting.
+
+The workflow owns GitHub access: it supplies `GH_TOKEN` to collection and
+publication steps and passes no GitHub token in the agent's environment. For
+comments, publication uses `gh pr comment --body-file`; triage also uses
+`gh issue edit --add-label`. Checks can be published through the [Checks API][github-checks].
+See GitHub's [token permissions][github-permissions] and [workflow syntax][github-syntax].
+
+## Examples
+
+### PR review by Claude Code and Codex
+
+The [PR-review example](/docs/programmatic/github-actions/pr-review) shows the complete
+workflow, both agent configurations, and the output validator. It runs Claude Code
+and Codex sequentially on same-repository PRs opened or updated, loading agent
+files from the PR base commit. Both reviewers must succeed and pass validation
+before publication. Their reviews appear side by side in one comment; no model synthesizes the reviews.
+Disagreements remain visible. The subpage also includes a
+[single-harness workflow](/docs/programmatic/github-actions/pr-review#single-harness-option).
+
+### Issue triage
+
+The [issue-triage example](/docs/programmatic/github-actions/issue-triage) shows the
+complete workflow, Claude Code configuration, and output validator. Its input is
+issue metadata; its output includes suggested labels. Create `bug`, `documentation`,
+and `needs-investigation` labels in the repository. The workflow checks the issue's
+update timestamp, comments, and applies allowed labels.
+
+## Going further
+
+### Workflow configuration
+
+Choose [triggers][github-triggers] for PR events, manual runs, or scheduled tasks.
+Configure [permissions][github-permissions], concurrency, approval gates, and
+whether later runs create or update comments. Pin dependencies and Actions to
+reviewed versions or full commit SHAs. Fork PRs need a separate secret and trust
+design; follow GitHub's [secure use reference][github-security].
+
+### Output limits
+
+Add exact-field-set, nonempty-text, per-field length, or duplicate-label checks to suit your
+publication format. The examples keep a 24,000-byte response cap to bound comment
+size; tighter per-field limits are optional. Their credential guard also checks
+decoded JSON strings, so escaping a model key does not bypass it.
+
+### Boundaries
+
+- The PR example accepts same-repository PRs. GitHub loads `pull_request` workflow
+  YAML from the PR merge commit. Use reviewed workflows and trusted runners.
+- Agent environments receive no GitHub token, but `sandbox.type: none` runs
+  directly on a shared runner with shell/network access. Agents can reach job
+  secrets and files later steps trust. Separate reviewer jobs and a write-token
+  publisher, or verified [sandbox controls](/docs/reference/configuration/os-sandbox),
+  provide stronger isolation. `skills: none` disables skills; harness tools remain available.
+- The examples cap PR diffs at 60,000 bytes and metadata at 20,000 bytes before
+  inference. The paired publisher revalidates responses and checks both base and
+  head revisions. Busy base branches can invalidate runs; a fresh PR push supplies
+  a new event. Keep raw output and stderr private; use [policies](/docs/policies/overview),
+  harness permissions, timeouts, and provider spending limits appropriate to your task.
+
+### Extend the integration
+
+Use your own scripts to collect, validate, or format results. An agent can also
+run `gh` itself for iterative access; scope its token and isolation accordingly.
+
+[Polly's review workflow][polly-review] adds approval gates, multiple reviewers,
+and synthesis, with a [summary helper][polly-summary] for validation and formatting.
+Synthesizing the example's side-by-side reviews would require an additional step.
+
+Omnigent supports other harnesses, custom models, and gateways, including Databricks
+AI Gateway. See [Models & Credentials](/docs/build/models) and the
+[gateway configuration](/docs/programmatic/github-actions/pr-review#gateway-configuration).
+
+[github-workflows]: https://docs.github.com/en/actions/get-started/quickstart
+[github-variables]: https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-variables#creating-configuration-variables-for-a-repository
+[github-secrets]: https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets
+[github-triggers]: https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow
+[github-permissions]: https://docs.github.com/en/actions/tutorials/authenticate-with-github_token
+[github-security]: https://docs.github.com/en/actions/reference/security/secure-use
+[harness-manifest]: https://github.com/omnigent-ai/omnigent/blob/v0.19.0/.github/actions/setup-harness-cli/manifest.json
+[polly-review]: https://github.com/omnigent-ai/omnigent/blob/647f82c234677764cd76afb2094cab6b9ab6078a/.github/workflows/polly-review.yml
+[polly-summary]: https://github.com/omnigent-ai/omnigent/blob/647f82c234677764cd76afb2094cab6b9ab6078a/.github/scripts/polly-review-summary.py
+[github-syntax]: https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
+[github-checks]: https://docs.github.com/en/rest/checks

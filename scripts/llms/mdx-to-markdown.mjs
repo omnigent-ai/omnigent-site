@@ -12,6 +12,7 @@
 //   3. Everything else is a presentational wrapper: tags dropped, text kept.
 
 import path from "node:path";
+import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
@@ -408,6 +409,15 @@ export async function convertMdx({ source, file, siteUrl }) {
         return `Supported gateways:\n\n${gateways.map((g) => `- ${g.name}`).join("\n")}`;
       case "MacDownloadButton":
         return `[Download for Apple silicon](${abs(MACOS_DOWNLOAD_URL)}) · [Download for Intel](${abs(MACOS_X64_DOWNLOAD_URL)})`;
+      case "GithubActionsExample": {
+        const exampleFile = attrString(node, "file");
+        const source = readFileSync(
+          path.join(ROOT, "examples/github-actions", exampleFile),
+          "utf8",
+        );
+        const language = exampleFile.endsWith(".jq") ? "jq" : "yaml";
+        return "```" + language + "\n" + source + "```";
+      }
       case "MermaidDiagram": {
         const chart = attr(node, "chart");
         const text =
@@ -438,10 +448,9 @@ export async function convertMdx({ source, file, siteUrl }) {
         }
         return node.children
           .map((child, i) => {
-            const body = dedent(
-              renderNode(child),
-              child.position.start.column - 1,
-            ).trim();
+            // JSX children already normalize their own indentation. Dedenting
+            // again here would strip meaningful spaces inside fenced YAML.
+            const body = renderNode(child).trim();
             return body ? `**${labels[i]}**\n\n${body}` : "";
           })
           .filter(Boolean)

@@ -1,0 +1,73 @@
+import { pageMeta } from "@/lib/og";
+import GithubActionsExample from "@/components/GithubActionsExample";
+
+export const metadata = pageMeta(
+  "Pull request review by Claude Code and Codex",
+  "A complete GitHub Actions workflow for side-by-side pull request reviews with Omnigent.",
+  {
+    eyebrow: "GitHub Actions",
+    path: "/docs/programmatic/github-actions/pr-review",
+  },
+);
+
+# Pull request review by Claude Code and Codex
+
+Run independent reviews of the same pull request (PR) with Claude Code and Codex.
+The workflow validates both JSON responses and publishes them in separate sections
+of one GitHub comment. No model synthesizes the reviews.
+
+Follow [Configure Omnigent in GitHub Actions](/docs/programmatic/github-actions)
+for installation, credentials, and runner boundaries. Set the `ANTHROPIC_API_KEY`
+and `OPENAI_API_KEY` Actions secrets, plus `CLAUDE_MODEL` and `CODEX_MODEL` repository
+variables. Use same-repository PRs and trusted runners.
+
+## Workflow
+
+Save as `.github/workflows/review.yml`. It collects a fixed PR snapshot, runs
+both reviewers, checks their output and the PR revisions, then posts one comment.
+
+<GithubActionsExample file="review.yml" />
+
+## Agent configurations
+
+An agent directory contains `config.yaml`. Save these files under
+`.github/omnigent/claude/config.yaml` and `.github/omnigent/codex/config.yaml`.
+The authentication block (`executor.auth`) reads `MODEL_API_KEY`, which each
+workflow step supplies from its own Actions secret: `ANTHROPIC_API_KEY` for
+Claude Code and `OPENAI_API_KEY` for Codex.
+
+### Claude Code
+
+<GithubActionsExample file="claude/config.yaml" />
+
+### Codex
+
+<GithubActionsExample file="codex/config.yaml" />
+
+## Output validation
+
+Save as `.github/omnigent/validate_output.jq`. The workflow uses `jq` to parse
+one JSON object, check the strings needed for Markdown, reject exposed model
+credentials, and allow only configured issue labels for triage. PR reviews do
+not apply labels.
+
+<GithubActionsExample file="validate_output.jq" />
+
+## Single-harness option
+
+Use the same Claude Code configuration and validator with this workflow,
+saved as `.github/workflows/review.yml`, to run just one reviewer.
+
+<GithubActionsExample file="review-single.yml" />
+
+## Gateway configuration
+
+For a gateway-backed model, adapt the agent configuration below. Set `LLM_BASE_URL`
+to the gateway's API base URL, supply its key as `MODEL_API_KEY`, and pass its model
+ID through `--model`. Change the workflow's agent path and credential environment
+accordingly; the direct-provider workflows above do not set these gateway values.
+See [Models & Credentials](/docs/build/models).
+
+<GithubActionsExample file="gateway/config.yaml" />
+
+See also the [issue-triage example](/docs/programmatic/github-actions/issue-triage).

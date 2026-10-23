@@ -10,6 +10,7 @@
 // Run via the predev/prebuild npm hooks, or manually: node scripts/gen-og-manifest.mjs
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { execSync } from "node:child_process";
+import { getReleaseDescription } from "../lib/releases.js";
 
 const releaseVersions = readdirSync("app/releases", { withFileTypes: true })
   .filter((entry) => entry.isDirectory() && /^\d+\.\d+\.\d+$/.test(entry.name))
@@ -27,7 +28,7 @@ for (const version of releaseVersions) {
   if (src.includes("pageMeta(")) continue;
 
   const title = `Omnigent v${version}`;
-  const description = `What's new in ${title} — release highlights, improvements, and fixes.`;
+  const description = getReleaseDescription(src, version);
   const metadata = `import { pageMeta } from "@/lib/og";\n\nexport const metadata = pageMeta(\n  ${JSON.stringify(
     title,
   )},\n  ${JSON.stringify(description)},\n  {\n    eyebrow: "Release",\n    path: ${JSON.stringify(

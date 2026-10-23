@@ -332,6 +332,75 @@ The **MCPs** control appears, and the catalog is requested, only when the server
 advertises the `mcp` connection capability; on other servers the composer shows
 no picker.
 
+### Check MCP servers with `/mcp`
+
+In a started session, select **`/mcp`** from the composer's slash menu to replace
+the suggestions with the MCP servers enabled for that session. Host-native
+servers are limited to the session's active harness. An empty list points to
+Settings. `/mcp` isn't offered on the new-session composer or in a side chat.
+
+With the server's MCP registry on, each registry service row shows its account
+state, such as **Connected** or **Sign-in required**. A service that needs
+sign-in offers **Sign in**, which opens the sign-in popup, or **Sign in from
+Settings** when you have to type a token or workspace URL. Custom servers
+declared in the agent's own config carry no account state.
+
+#### Host-reported sign-in state
+
+Omnigent can't tell on its own whether a server from the host's harness config is
+signed in. That covers Claude Code, Codex, and Cursor configs, plus servers an
+organization pins through Claude Code's `managed-mcp.json`. Whatever manages
+those sign-ins on the host can report the state in a JSON file:
+`~/.omnigent/mcp-auth-status.json`. If `$HOME` is read-only or sandboxed, set
+`OMNIGENT_MCP_AUTH_STATUS_FILE` to an absolute path. The path is used as given,
+so a relative value resolves against the host process's working directory.
+
+```json
+{
+  "servers": [
+    { "harness": "claude", "name": "linear", "status": "sign_in_required",
+      "sign_in_url": "https://auth.example.com/start?state=abc" },
+    { "harness": "codex", "name": "glean", "status": "connected" }
+  ]
+}
+```
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `harness` | yes | `claude`, `codex`, or `cursor`: the harness that loads the server. |
+| `name` | yes | The server's name, spelled as it is in the harness config. |
+| `status` | yes | `connected` or `sign_in_required`. |
+| `sign_in_url` | no | The page that completes the sign-in. Only read when `status` is `sign_in_required`. |
+
+A `sign_in_required` row is shown in amber with a **Sign in** link that opens
+`sign_in_url` in a new tab. While the panel is open and one of the session's
+host servers needs sign-in, the panel re-reads the host inventory every 5
+seconds. Once the file marks the server `connected`, the row updates on the next
+read.
+
+The reader ignores anything it can't trust:
+
+- Entries are matched on `(harness, name)`. An entry for a server the host
+  didn't discover is ignored. If two servers share a name under one harness
+  (for example, a user server and a plugin server), both take that entry's
+  state. If the file lists the same pair more than once, the last valid entry
+  wins.
+- A `status` other than the two values above is ignored, and the row shows no
+  state.
+- `sign_in_url` must be an absolute `http` or `https` URL with a hostname. It
+  can't contain embedded credentials, whitespace, or control characters. An
+  invalid URL is dropped, and the row shows its state with nothing to click.
+- The file must be a regular file of at most 64 KiB. If it's a FIFO, a device,
+  oversized, or not valid JSON, the whole file is ignored and the servers show
+  no state.
+
+Replace the file atomically: write a temporary file in the same directory, then
+rename it over the target path. A partial write can't be parsed, and the panel
+shows no state until the next good read. A process that can write this file can
+mark a known server as needing sign-in and give it an `http(s)` sign-in page.
+It can't add servers, change where a server points, or reach any other part of a
+session.
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:

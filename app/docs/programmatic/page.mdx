@@ -893,6 +893,37 @@ For agents with named sub-agents, reusing the same `agent` and `title` continues
 that child conversation; a different title starts a separate one. Child sessions
 appear in the Web UI, where you can follow their progress.
 
+### Send work to peer sessions and independent workers
+
+An agent in a private session can also coordinate sessions that aren't its
+children:
+
+- **Message a peer session.** `sys_session_message` sends work to another
+  session you own. The receiving session can be shared; its readers see the
+  message. The message goes through the usual queue and steering, and replies
+  aren't sent back. The sending agent checks results with
+  `sys_session_get_info` and `sys_session_get_history`.
+- **Create an independent worker.** `sys_session_create` still creates a child
+  session by default. Set `placement` to `same_host` to create a top-level
+  worker on the sender's host, or to `managed` to create one in a new managed
+  sandbox from the server's default sandbox provider. Independent workers start
+  out private. Use `sys_session_message` to send them more work.
+
+For example, a manager agent might call `sys_session_create` with:
+
+```json
+{
+  "agent_id": "<agent_id from sys_agent_list>",
+  "placement": "same_host"
+}
+```
+
+These tools are refused when the sending session is shared, when it was
+started by a scheduled task, or when the request doesn't come from the
+sender's bound runner. Orchestration is on by default. Administrators can turn
+it off with the `session_orchestration`
+[release feature](/docs/deploy/overview#release-features).
+
 ### Use bundled skills for multi-agent workflows
 
 Skills are reusable instructions that guide how an agent uses its tools.

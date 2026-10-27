@@ -1,0 +1,53 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Review, label, and merge your agents' pull requests without leaving the session",
+  "The Pull Requests tab now acts on GitHub pull requests: edit the title and description, add labels, request reviewers, post comments, open CI runs, and merge, all beside the agent's conversation.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/review-merge-agent-prs-in-session",
+  },
+);
+
+export const meta = {
+  title:
+    "Review, label, and merge your agents' pull requests without leaving the session",
+  date: "2026-10-27",
+  category: "Web UI",
+  author: "omnigent",
+  heroArt: "/images/blog/review-merge-agent-prs-in-session.png",
+};
+
+<BlogPostHeader slug="review-merge-agent-prs-in-session" />
+
+If your agents open GitHub pull requests for you, you can now take each one
+from first look to merged in the session that produced it. The **Pull
+Requests** tab used to be read-only, so every follow-up meant a trip to GitHub.
+
+Now the same tab lets you finish the job. Tidy the PR's title and description,
+and paste a screenshot or video straight into it. Add or remove labels, request
+reviews from people or teams (or withdraw a pending request), and post a
+comment with a Markdown preview. Your draft stays put while you switch tabs or
+PRs. A failing check links to its CI run, so you can see what broke and tell the
+agent to fix it in the next message.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: in a session where the agent just opened a GitHub PR, open the Pull Requests tab, edit the description and paste a screenshot, add a label, request a reviewer, post a comment, click a CI check through to its run, then merge with squash from the Summary tab. */}
+
+When the PR is ready, merge it from the **Summary** tab using any method your
+repository allows (merge, squash, or rebase), or turn off auto-merge if you set
+it too early. Omnigent merges only the commit you were looking at. If the agent
+pushes again in the meantime, the merge is refused instead of shipping changes
+you haven't seen.
+
+To try it, open **Pull Requests** in the workspace rail of a coding-agent
+session with a GitHub PR. Edits, reviewers, and merging live on the Summary
+tab, and new comments go in the Comments tab. Every action runs as the GitHub
+account signed in on the session's host. For how the tab finds and tracks a session's PRs, see
+the [Web UI guide](/docs/interact/web-ui#github).
+
+GitLab merge requests and Azure DevOps pull requests stay readable in the same
+tab, but these actions work only on GitHub for now.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

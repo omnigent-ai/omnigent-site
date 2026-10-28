@@ -983,12 +983,20 @@ To create one manually, open the **New scheduled task** dialog and fill in:
   hour; Daily and Weekdays ask for a **time**; Weekly adds a weekday
   multi-select (**On days**). Times are chosen in 15-minute steps. The schedule
   is evaluated in your browser's local timezone.
+- **Session** — **New session each run** (default), or **Continue one
+  session**: the first run starts a session, and later runs send their prompt
+  to it so the agent keeps its context, even while an earlier run is still
+  working. When editing a task that continues a session, check **Start a new
+  session on the next run** to begin a fresh session that later runs continue.
+  The field appears only when the server supports it. See
+  [Continuing one session](/docs/build/scheduled-tasks#continuing-one-session).
 - **Host (optional)** — pin the task to a specific connected host, or leave it
   set to **Resolve at fire time** to run on your connected host whenever the
   task fires. When the server has [managed sandboxes](/docs/deploy/cloud-sandbox-host)
   configured, the picker also offers **New Sandbox** (labelled with the
   provider's name, e.g. **Modal Sandbox**): each run then provisions a fresh
-  sandbox instead of using a connected host, and the sandbox's shutdown follows
+  sandbox instead of using a connected host (a task set to **Continue one
+  session** keeps one sandbox for every run), and the sandbox's shutdown follows
   the server's sandbox configuration. Existing sandbox hosts can't be pinned.
 - **Workspace (optional)** — shown only once a connected host is pinned. Pick a
   directory to pin it; leave it unset to default to the host's home directory. A

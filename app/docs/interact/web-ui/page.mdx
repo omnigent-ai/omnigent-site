@@ -83,7 +83,7 @@ agent, and settings you like.
 Create a project from the sidebar at any time, including an empty one with no
 sessions yet, then move sessions into it as the work takes shape.
 
-You can file a session into a project from three places:
+You can file a session into a project from these places:
 
 - Start a new session already filed there: each project folder in the sidebar
   has a shortcut that opens the new-chat composer with the session assigned to
@@ -96,6 +96,8 @@ You can file a session into a project from three places:
 - Move an existing session: open the session's `⋯` menu and choose
   `Move session`, then search your projects, create a new one, or remove the
   session from its project.
+- File every run of a [scheduled task](#scheduled-tasks) into a project with
+  the task dialog's **Project** field.
 
 Removing a session from a project moves the session back to `Sessions` section, and deleting a project archives all its sessions.
 
@@ -983,6 +985,13 @@ To create one manually, open the **New scheduled task** dialog and fill in:
   hour; Daily and Weekdays ask for a **time**; Weekly adds a weekday
   multi-select (**On days**). Times are chosen in 15-minute steps. The schedule
   is evaluated in your browser's local timezone.
+- **Project (optional)** — file each run's session into a
+  [project](#projects). Pick one of your projects, or type a new name to create
+  it. Leave it on **No project** to keep runs unfiled. Editing a task to a
+  different project only affects future runs. If the saved project has since
+  been deleted, the field shows **Deleted project**; choose **No project** or
+  another project to replace it. The field appears only when the server
+  supports filing automations into projects.
 - **Host (optional)** — pin the task to a specific connected host, or leave it
   set to **Resolve at fire time** to run on your connected host whenever the
   task fires. When the server has [managed sandboxes](/docs/deploy/cloud-sandbox-host)

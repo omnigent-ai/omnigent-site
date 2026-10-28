@@ -768,7 +768,8 @@ issue in words is slower than screenshotting it.
 Besides images, PDFs, and text/code files, the composer accepts ZIP archives
 (`.zip`), Office documents (`.docx`, `.xlsx`, `.pptx`), and SQLite databases
 (`.db`, `.sqlite`, `.sqlite3`). Drop them on the composer or pick them with the
-attach button — the file picker filter includes these extensions. They appear as
+attach button — the file picker filter includes the extensions the server
+delivers as files. They appear as
 ordinary file cards showing an icon, filename, type, and size; images keep their
 thumbnail and preview.
 
@@ -777,15 +778,24 @@ browser reports, so a `.docx` that the browser labels as a ZIP still attaches
 correctly. Anything outside the supported set (audio, video, unrecognised
 binaries) is rejected with an inline error.
 
+Server operators can change which files are delivered this way with
+`filesystem_attachment_allowed_extensions` — for example, add `.gz` or `.har`,
+accept every file that can't be inlined with `"*"`, or turn these attachments
+off with `[]` (see [Choosing which files are delivered as
+files](/docs/reference/configuration#choosing-which-files-are-delivered-as-files)).
+The composer reads the server's setting from `/v1/info`, so its file picker
+filter and rejection messages follow it. When `"*"` is set, the picker offers
+every file.
+
 **Harness requirement.** These files need a harness that can open local files:
 Claude Code (`claude-native`) or Codex (`codex-native`), running on an
 up-to-date host/runner. On other harnesses the upload is rejected; the server
 suggests attaching images, PDF, or text/code files instead, or switching to
 Claude Code or Codex.
 
-**Size limits.** The web composer caps each of these files at 50 MiB. Server
-operators can lower the per-file limit, cap the number and combined size of such
-files per session, or deny specific extensions — see [Attachment
+**Size limits.** The web composer caps each file delivered as a file at 50 MiB.
+Server operators can lower the per-file limit, cap the number and combined size
+of such files per session, or deny specific extensions — see [Attachment
 limits](/docs/reference/configuration#attachment-limits). Images, PDFs, and
 text/code files keep their existing separate limits.
 

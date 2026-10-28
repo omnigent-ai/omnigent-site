@@ -40,9 +40,11 @@ Some settings are read only from `~/.omnigent/config.yaml`. A project's
   different server for one command, pass `--server`.
 - **`session_title_instructions`**: see
   [Automatic session titles](#automatic-session-titles).
-- **Per-harness `command` and `args`** under the `harness:` key. A project can
+- **Per-harness `command` and `args`** under the `harness:` key, including the
+  Codex app-server wrapper `harness.codex-native.app_server`. A project can
   still select the default harness (`harness: <id>` or `harness.default`). See
-  [Override the harness binary and launch args](/docs/build/harnesses/configuration#override-the-harness-binary-and-launch-args).
+  [Override the harness binary and launch args](/docs/build/harnesses/configuration#override-the-harness-binary-and-launch-args)
+  and [Wrap the Codex app-server](/docs/build/harnesses/configuration#wrap-the-codex-app-server).
 
 `omni config list` flags project-file values it ignores: user-level-only keys
 appear as `# ignored user-level-only setting(s): ... (set with --global)`, and

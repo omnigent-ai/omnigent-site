@@ -659,6 +659,52 @@ spawned runner without forwarding the named secrets themselves, and the Pi
 terminal removes those variables before launching `pi`. Other harnesses in the
 same deployment are unaffected.
 
+### Ship Pi resources in an agent bundle
+
+A `harness: pi` directory bundle can ship Pi's own project-local resources.
+Pi runs in the session workspace rather than in the bundle, so it would not
+discover them on its own; Omnigent passes them to Pi explicitly:
+
+```
+my-pi-agent/
+  config.yaml
+  AGENTS.md              # bundle-root context file
+  skills/
+    code-review/
+      SKILL.md
+  .pi/
+    skills/
+      triage/
+        SKILL.md
+    extensions/
+      my-hook/
+        index.ts
+```
+
+- **Extensions.** `.pi/extensions/<name>/` directories, or top-level
+  `.pi/extensions/*.ts` / `*.js` files, are passed to Pi with `--extension`. A
+  directory's entry point is `index.ts` / `index.js`, or the files listed in
+  its `package.json` `pi.extensions` field — those entries must be files inside
+  the extension directory. Extensions run as code inside the Pi process, so
+  bundle only extensions you trust. Hook-style extensions (for example
+  `before_agent_start`) take full effect; tools an extension registers are
+  loaded but not offered to the model, because sessions expose only Omnigent's
+  bridged tools to Pi.
+- **Skills.** `skills/<name>/SKILL.md` and `.pi/skills/<name>/SKILL.md` are
+  passed with `--skill` and follow the agent's `skills` filter. When both roots
+  define the same name, `skills/` wins.
+- **Context file.** A bundle-root `AGENTS.override.md`, `AGENTS.md` or
+  `CLAUDE.md` (first found, in Pi's order) is appended to the agent's
+  instructions as an automatic context file. It is not appended twice when the
+  spec already adopted that same file as its `instructions:`. Setting
+  `executor.context_files: false` disables it, but an `AGENTS.md` the spec
+  already adopted as the agent's instructions is unaffected by that option.
+
+Under an `os_env` sandbox, Pi is granted read-only access to the `skills/`,
+`.pi/skills/` and `.pi/extensions/` directories it is passed, so bundled
+resources load from inside the sandbox too. The bundle root itself is not
+exposed.
+
 ## Custom ACP agents
 
 Beyond the built-in harnesses, the generic `acp` harness drives *any* agent that

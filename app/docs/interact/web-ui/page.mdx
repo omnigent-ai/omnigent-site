@@ -656,7 +656,10 @@ how it was found:
   recorded PR yet; shown as `(from branch)` in the selector.
 
 Associations are stored on the host, independent of the current checkout, so
-they stay with the session even as its branch or worktree changes.
+they stay with the session even as its branch or worktree changes. Servers that
+store session pull requests also keep a copy of each session's linked PRs, so
+the tab still works while the host is offline (see
+[When the host is offline](#when-the-host-is-offline)).
 
 When a session tracks more than one PR, a selector at the top of the tab
 switches between them; each entry reads `owner/repo #number` (prefixed with the
@@ -702,6 +705,37 @@ it. When a session tracks no PRs yet, the tab's empty state offers the same
 
 The composer status line mirrors this: it shows `#123` for a single tracked PR
 or `N PRs` when several are tracked, and clicking it opens the **Pull Requests** tab.
+
+An open draft PR shows a **Draft** status badge next to its title.
+
+### When the host is offline
+
+If the server stores session pull requests, the **Pull Requests** tab keeps
+working when the session's runner and host are offline, or its sandbox is
+asleep. The selector lists the session's linked PRs as the server stored them,
+and the selected PR shows its title, link, and status (**Open**, **Draft**,
+**Merged**, or **Closed**). Below that, the tab shows a **Last sync time** and
+asks you to reconnect the session's host. For a sleeping sandbox, it asks you
+to send a message to start the sandbox instead. Reviewers, checks, comments,
+and the diff stay on the host, so they load once it's back.
+
+While the host is offline:
+
+- **Link a PR** is disabled (`Link a PR (needs the host online)`), because
+  linking verifies the PR with the host's provider account.
+- **Unlink PR** still works. The server records the unlink.
+- If the server hasn't imported the session's PRs from its host yet, the tab
+  says the PRs haven't synced to the server yet instead of showing an empty
+  list.
+
+The session's sidebar tooltip and its [Canvas](#canvas) card read the same
+stored PR, so the PR number, status, and link stay visible while the host is
+offline. When the stored status is more than five minutes old, their tooltips
+add its age, for example `#123 · Open (as of 2h ago)` in the sidebar. Sessions the server hasn't
+imported yet appear once it imports them.
+
+Against older servers that don't store session pull requests, the tab works as
+it did before: it needs the host online, and unlinking goes through the host.
 
 ## Mentioning workspace files
 

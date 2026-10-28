@@ -26,12 +26,12 @@ sandbox:
   server_url: https://your-server.example.com
 ```
 
-| Field         | Required | Description                                                                                             |
-| ------------- | -------- | ------------------------------------------------------------------------------------------------------- |
-| `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `openshell`, `boxlite`, or `microsandbox`. |
-| `server_url`  | Yes      | Omnigent server URL reachable from the sandbox.                                                         |
-| `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).    |
-| `git_clone`   | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).               |
+| Field         | Required | Description                                                                                                           |
+| ------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
+| `provider`    | Yes      | Provider id: `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `databricks`, `openshell`, `boxlite`, or `microsandbox`. |
+| `server_url`  | Yes      | Omnigent server URL reachable from the sandbox.                                                                       |
+| `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).                  |
+| `git_clone`   | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).                             |
 
 Provider-specific blocks are optional. Omit one to use that provider's defaults.
 
@@ -402,6 +402,78 @@ days) through Gensee's short-lived secret store; it is not included in the
 durable operation request. By default no model or Git credentials are injected —
 list only variables every sandbox on the server may receive in `env`, or leave
 it empty and let each user sign in from their own sandbox terminal.
+
+## Databricks
+
+The `databricks` provider runs each managed session in a
+[Databricks Sandbox](https://docs.databricks.com/aws/en/compute/serverless/sandbox)
+through the workspace REST API. The Sandbox preview must be enabled in the
+workspace. Like Gensee, it is a **managed-host provider only**: use the web UI's
+**New Sandbox** option or `host_type: "managed"`, not `omni sandbox create`.
+
+```yaml
+sandbox:
+  provider: databricks
+  server_url: https://your-server.example.com # public URL the Sandbox host dials back to
+  databricks:
+    workspace_host: https://<workspace>.cloud.databricks.com # required
+    proxy_bearer: true # only behind the Databricks Apps OAuth proxy
+    inactivity_timeout_s: 3600 # optional idle stop; resumed on the next turn
+    sandbox_id_prefix: omnigent # optional
+```
+
+| Setting                | Default            | Purpose                                                                                                                                                                                                    |
+| ---------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `workspace_host`       | — (required)       | Workspace URL Sandboxes run in. A user whose Databricks connection targets a different workspace is refused, so Sandboxes they already own are never lost track of.                                        |
+| `inactivity_timeout_s` | workspace default  | Idle seconds before Databricks stops the Sandbox. Must be at least twice the keepalive interval (`1200` with the default 600-second interval).                                                              |
+| `sandbox_id_prefix`    | `omnigent`         | Prefix for generated Sandbox ids (`<prefix>-<random hex>`).                                                                                                                                                |
+| `bootstrap_command`    | none               | Shell command run before every host start, first launch and resume, e.g. `uv tool install omnigent==<server version>`. User-level installs take precedence over the image's built-in `omnigent`.          |
+| `proxy_bearer`         | `false`            | Set `true` only when the server sits behind the Databricks Apps OAuth proxy. The Sandbox host then authenticates through the proxy with its owner's bearer, which the keepalive refreshes.                 |
+
+Any other key under `sandbox.databricks`, a missing `workspace_host`, or an
+`inactivity_timeout_s` below the minimum fails server startup. The provider
+needs `databricks-sdk[sandbox]>=0.153`, installed by `omnigent[databricks]`.
+With `proxy_bearer: true`, the `omnigent` inside the Sandbox must include
+proxy-bearer support. If the image's built-in copy is older than the server,
+pin a version with `bootstrap_command`.
+
+### Owner identity
+
+Unlike the other providers, the server has no shared Databricks identity. Each
+Sandbox is created, driven, kept alive, and deleted **as the user who started
+the session**, using the token they connected under **Settings → Connections →
+Databricks**. Set up that connection with
+[Connect Databricks](/docs/deploy/databricks-connect): the server needs
+`OMNIGENT_DATABRICKS_CLIENT_ID`, `OMNIGENT_DATABRICKS_CLIENT_SECRET`, and a
+credential-store key (`OMNIGENT_CREDENTIAL_KMS_KEY_ID` or
+`OMNIGENT_CREDENTIAL_VAULT_KEY`).
+
+- A user who has not connected is refused with a "Connect Databricks first"
+  message, and no Sandbox is created.
+- If the server has no Databricks account connection configured, every launch
+  is refused with an error naming the missing `OMNIGENT_DATABRICKS_CLIENT_ID` /
+  `_CLIENT_SECRET` settings. There is no fallback to a server identity.
+- Code running in the Sandbox, including the agent, can read the owner's token
+  and act in the workspace as that user.
+
+### Stop, resume, and cleanup
+
+When the idle timeout stops a Sandbox, the session's next turn starts it again
+in place and re-bootstraps its host. While a runner is connected, the keepalive
+runs a command in the Sandbox so it does not stop for inactivity. The launch
+token lasts seven days, so a Sandbox can sit stopped over a weekend and still
+resume.
+
+Deleting a Sandbox also requires its owner's credential. If the owner has
+disconnected, deleting the session leaves their Sandbox in place. With the
+[reaper](/docs/deploy/cloud-sandbox-host#reap-stale-sandboxes-optional) enabled,
+each sweep retries the delete and completes it once the owner reconnects. To
+remove it sooner, a workspace admin can delete it by id; the server logs the id
+as `Creating Databricks Sandbox '<id>'`:
+
+```bash
+databricks api delete /api/2.0/sandboxes/<id>
+```
 
 ## Native harness bridge servers
 

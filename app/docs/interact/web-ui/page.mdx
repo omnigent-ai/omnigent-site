@@ -833,6 +833,28 @@ request the agent raises there is answered there too. The side chat starts
 visually empty — the history it inherited from the parent is hidden — but the
 agent has the parent conversation's full context.
 
+### Side-chat model and effort
+
+The side-chat composer has its own model pill beside the microphone. Model and
+effort choices made there apply only to that side chat and never change the
+parent session's settings. The choices you can make depend on the harness's
+capabilities, and viewers and closed side chats can't change them.
+
+- **Most harnesses:** you can pick a model or effort before the first message
+  (the empty tab keeps your choice as a draft) or afterwards.
+- **Codex** (`codex-native`): the pill appears only after the side chat exists,
+  so send the first message before using it. The side chat starts with the
+  parent's current model and reasoning effort. Later model and effort changes
+  apply from the side chat's **next turn** on the same Codex thread. You must
+  choose a specific model, because resetting a Codex side chat's model to its
+  default is rejected without saving anything. You can still reset effort to
+  the selected model's default.
+
+Codex side-chat settings need both the server and the parent session's runner
+to support them. On an older runner the pill stays hidden. If the runner can't
+apply a change, the update is refused with **This runner cannot apply side-chat
+settings. Update the host and restart the session.**
+
 ### Slash commands in a side chat
 
 The side-chat composer opens the same `/` menu as the main composer, with a

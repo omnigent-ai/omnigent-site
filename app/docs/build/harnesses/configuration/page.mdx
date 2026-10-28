@@ -659,6 +659,56 @@ spawned runner without forwarding the named secrets themselves, and the Pi
 terminal removes those variables before launching `pi`. Other harnesses in the
 same deployment are unaffected.
 
+### Agent instructions and context files
+
+Both the direct `pi` harness and the native `pi-native` TUI deliver an agent's
+authored `prompt:` / `instructions:` to Pi:
+
+- **`pi`** sends the composed agent, per-request, and Omnigent runtime
+  instructions.
+- **`pi-native`** loads the agent's authored instructions once each time its
+  terminal launches or resumes. Any `--append-system-prompt` you pass as a
+  launch arg is added alongside them.
+
+Two executor settings control how Pi combines those instructions with its own
+prompt sources. Both are supported with `harness: pi` and `harness: pi-native`
+only. Other harnesses reject them when the spec loads.
+
+```yaml
+name: focused-agent
+instructions: AGENTS.md
+executor:
+  harness: pi-native
+  context_files: false
+  system_prompt_mode: replace
+```
+
+- **`context_files`** (boolean, default `true`). Pi automatically appends
+  context files such as `AGENTS.md` and `CLAUDE.md` from the workspace, its
+  ancestors, and Pi's global agent directory. The direct `pi` harness also
+  loads them from the agent bundle's root. Set `false` to pass Pi's
+  `--no-context-files` flag. Explicit instructions are still sent, and skills,
+  extensions, and Pi's separate `SYSTEM.md` discovery are unaffected.
+- **`system_prompt_mode`** (`append` or `replace`, default `append`).
+  - `append` keeps Pi's base prompt (its built-in coding prompt or a
+    discovered `SYSTEM.md`) and appends the agent's instructions with
+    `--append-system-prompt`.
+  - `replace` sends the agent's instructions as the base with
+    `--system-prompt`, which drops Pi's built-in coding prompt and any
+    discovered `SYSTEM.md`. It also passes an empty `--append-system-prompt`,
+    so `APPEND_SYSTEM.md` is not discovered. Replacement removes Pi's default
+    tool summaries and coding guidelines, but tool schemas and execution still
+    work.
+
+With `pi-native`, `replace` requires non-empty authored instructions, and a spec
+without them fails to load. The direct `pi` harness also accepts `replace` when
+only runtime instructions are present.
+
+These settings don't restrict file access or extensions. Skills, the
+working-directory footer, and extension hooks stay active, and extensions can
+still modify the final prompt. For `pi-native`, changed settings take effect on
+the next terminal launch. Any explicit Pi CLI args you pass at launch still apply.
+
 ## Custom ACP agents
 
 Beyond the built-in harnesses, the generic `acp` harness drives *any* agent that

@@ -1,0 +1,69 @@
+{/* Auto-generated from the GitHub Release for v0.20.0. Edit the GitHub Release, not this file. */}
+
+# v0.20.0
+
+_Released 2026-10-28_ · 3 min read · Omnigent maintainers
+
+Omnigent 0.20.0 is a major release focused on keeping your whole workflow inside Omnigent, from where your agents run to how you review and ship what they produce. You can now merge, edit, label, and review pull requests without leaving the Pull Requests tab. Databricks Sandboxes can run as managed hosts under your own Databricks account. A new `/mcp` command shows which of a session's MCP servers are connected. Alongside these come composer shortcuts such as `/clear`, Shift+Tab, and prefilled `?prompt=` links, plus a chat view where shell calls look like a terminal and file links open exact line ranges.
+
+## 1. Pull request actions in the Pull Requests tab
+
+![TODO: add a demo screenshot or GIF for "Pull request actions in the Pull Requests tab"](TODO)
+
+When your agent opens a pull request, the last steps shouldn't send you off to another tab. You can now do that work in the Pull Requests tab itself: merge the PR or turn off auto-merge, edit its title and description, add or remove labels, request or withdraw reviewers, and post comments.
+
+Open the Pull Requests tab, pick the PR you're working on, and use the controls there to finish the job. Everything from a quick label change to the final merge happens next to the session that wrote the code.
+
+_Learn more in the [Tracked pull requests](/docs/interact/web-ui#tracked-pull-requests)._
+
+## 2. Databricks Sandboxes as managed hosts
+
+![TODO: add a demo screenshot or GIF for "Databricks Sandboxes as managed hosts"](TODO)
+
+Running agents in a cloud sandbox usually means setting up SSH or putting a shared credential inside the box. Databricks Sandboxes can now be managed hosts, and you don't need either of those.
+
+Each Sandbox is created and run as you, through your Databricks account connection. Neither SSH nor a shared credential goes into the Sandbox, so your agents run with your own identity and permissions.
+
+_Learn more in the [Databricks](/docs/reference/configuration/cloud-sandbox#databricks) section of the cloud sandbox configuration reference._
+
+## 3. The `/mcp` command
+
+![TODO: add a demo screenshot or GIF for "The `/mcp` command"](TODO)
+
+When a tool call fails, you shouldn't have to guess whether the MCP server behind it is up. Type `/mcp` in the composer to see the session's MCP servers and whether each one is connected.
+
+If a service or host server needs you to sign in, a Sign in button appears inline. You can fix the connection right there and get back to the conversation.
+
+_Learn more in the [Authentication](/docs/build/tools#authentication) section of MCP & Tools._
+
+## 4. Composer shortcuts: `/clear`, Shift+Tab, and `?prompt=` links
+
+![TODO: add a demo screenshot or GIF for "Composer shortcuts: `/clear`, Shift+Tab, and `?prompt=` links"](TODO)
+
+Several common actions are now quicker from the composer. In Claude Code and Codex sessions, you can run `/clear` from web chat to start fresh without switching to the terminal. In native sessions, press Shift+Tab to cycle through permission modes, so changing how much the agent can do without asking takes one keystroke.
+
+To start a new chat with text already filled in, use a link with a `?prompt=` parameter. This is handy for bookmarks, docs, or sharing a ready-to-run request with your team.
+
+_Learn more in the [Keyboard shortcuts](/docs/interact/web-ui#keyboard-shortcuts) section of the Web UI docs._
+
+## 5. Terminal-style shell calls and line-range file links
+
+![TODO: add a demo screenshot or GIF for "Terminal-style shell calls and line-range file links"](TODO)
+
+Long agent sessions are easier to follow now. Shell calls look like a terminal: you see `$ command`, then its output and exit status, so you can scan what ran and whether it worked.
+
+File links can point to a line range such as `file.ts:10-20` and open straight to it. Agents can also use `ui_open_file` to open a workspace file in your session, so they can show you the code they're discussing instead of only describing it.
+
+Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
+
+## What's Next
+
+Install or upgrade Omnigent:
+
+```bash
+uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
+```
+
+- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
+- Join the conversation on our [Discord](https://discord.gg/omnigent).
+- Browse the [docs](https://omnigent.ai/docs) to go deeper.

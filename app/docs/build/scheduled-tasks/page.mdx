@@ -40,8 +40,8 @@ task is written:
 
 > Approve these scheduled task settings for future unattended runs?
 
-Review the agent, prompt, host, and permission settings in that request before
-accepting. The gate fires even when the call omits optional fields — inherited
+Review the agent, prompt, host, session, and permission settings in that
+request before accepting. The gate fires even when the call omits optional fields — inherited
 defaults (for example, the host resolved at fire time or the agent's own model
 and permission mode) are persisted too, so they also need your consent.
 Declining denies the call and nothing is saved.
@@ -82,6 +82,14 @@ rules.
   `high`. Omit for the agent default (the spec's
   [`executor.reasoning_effort`](/docs/build/models#reasoning-effort), or the
   harness default when the spec sets none).
+- **`session_mode`** (optional) — `new` (default) starts a new session for
+  every run; `continue` sends every run's prompt into one session so the agent
+  keeps its context. See [Continuing one session](#continuing-one-session).
+- **`session_id`** (optional, `continue` only) — an existing top-level session
+  you own, e.g. the current session, to send every run's prompt into.
+  `agent_id` must be that session's agent. Omit it and the first run creates
+  the session. Setting `session_id` without `session_mode=continue` is
+  rejected.
 
 Once created, the task fires automatically on its schedule until you delete it.
 
@@ -105,8 +113,8 @@ minutes.
 
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
 untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
-`model_override`, `reasoning_effort`, `workspace`, `host_id`,
-`execution_target`, and `state`.
+`model_override`, `reasoning_effort`, `session_mode`, `session_id`,
+`workspace`, `host_id`, `execution_target`, and `state`.
 
 Passing `execution_target=managed_sandbox` switches the task to a fresh sandbox
 per run and clears any pinned `host_id` and `workspace`; don't set either field
@@ -120,6 +128,59 @@ The `state` field accepts `active` or `paused`:
 
 To remove a task permanently, use `sys_scheduled_task_delete` — deletion is not
 done through `update`.
+
+## Continuing one session
+
+By default every firing starts a new session (`session_mode=new`). With
+`session_mode=continue`, every firing sends its prompt into one session,
+recorded as the task's `session_id`, so the agent keeps the context of earlier
+runs. Together with `session_id`, this lets an agent schedule follow-ups into
+its own session.
+
+- **Picking the session.** Leave `session_id` unset and the first firing creates
+  the session as usual, then records it on the task. Or set it to an existing
+  top-level session you own; it must run the task's `agent_id` and match any
+  pinned `host_id` and `workspace`.
+- **The session can't move.** A `connected_host` task without a pinned host is
+  pinned to the session's host, whether you pick the session or the first firing
+  creates it. A `managed_sandbox` task keeps one sandbox of its own for every
+  session it runs instead of a fresh sandbox per firing, so it cannot pick a
+  session in another sandbox.
+- **Settings come from the session.** A continued session keeps the model and
+  permission mode it was created with.
+- **Busy sessions still get the prompt.** A firing sends its prompt even while
+  the session is busy with an earlier turn, the way a message you send mid-turn
+  goes in, and its run is recorded as `succeeded` once the prompt is delivered —
+  without waiting for the turn to finish. If firings can overlap, write the
+  prompt so each firing's work happens in a sub-agent.
+- **Cost caps stay per firing.** With `max_cost_usd`, each firing caps the
+  session at its spend so far plus the budget. Clearing `max_cost_usd` removes
+  only the cap this automation set; another automation's cap on the same session
+  stays in force.
+
+A firing never silently starts a replacement session. When the session can't be
+continued, the run is recorded with one of these error codes:
+
+| Situation | Run | `error_code` |
+| --- | --- | --- |
+| Another first run of the task recorded its session first; this run's unused session is deleted | `skipped` | `continued_session_busy` |
+| The session was deleted | `failed` | `continued_session_missing` |
+| The session is archived | `failed` | `continued_session_archived` |
+| The owner no longer owns the session | `failed` | `continued_session_forbidden` |
+| The task has a budget, and the session already has a cost cap it did not set | `failed` | `continued_session_budget_conflict` |
+| The task's cost cap could not be set on the session | `failed` | `continued_session_budget_failed` |
+| A first run could not record its new session on the task | `failed` | `session_record_failed` |
+| The session runs a different agent, host, or workspace than the task pins, or is in a sandbox the task doesn't target (or the reverse) | `failed` | `continued_session_incompatible` |
+
+To start over, update the task with `session_id=null`: the next firing creates a
+new session that later firings continue. An update that changes `agent_id`,
+`host_id`, `workspace`, or `execution_target` without passing `session_id` does
+the same, since the old session can't follow the change. Switching to
+`session_mode=new` clears `session_id`.
+
+The tools refuse `session_mode` and `session_id` on a server that doesn't
+advertise `scheduled_task_session_modes` in `/v1/info`; omit them there to start
+a new session on every run.
 
 ## Where a task runs
 
@@ -140,7 +201,9 @@ is recorded as a failed run.
 
 Each firing provisions a **fresh** server-managed sandbox — the same launch path
 as choosing **New Sandbox** for a chat (see
-[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)). The session starts in
+[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)). A `continue` task
+instead keeps one sandbox for every run; see
+[Continuing one session](#continuing-one-session). The session starts in
 the sandbox's clean server-created workspace, so `host_id` and `workspace` must
 not be set; a create or update that combines them with `managed_sandbox` is
 rejected. The server must have managed sandboxes configured — an unconfigured
@@ -175,6 +238,11 @@ When a task is due, Omnigent:
 5. Records the run — stamping the task's last-run time and the run's
    conversation id.
 
+For a `continue` task that already has a `session_id`, steps 2–4 are replaced:
+Omnigent checks the session, wakes its runner the way a user message would, and
+dispatches the prompt into it. The run is recorded as `succeeded` once the
+prompt is delivered.
+
 A few scheduling guarantees:
 
 - **The database is the source of truth.** On server start, every active task is
@@ -182,7 +250,9 @@ A few scheduling guarantees:
 - **Missed fires are not replayed.** If the server was down when a task was due,
   only the next future occurrence is armed — Omnigent does not backfill.
 - **Overlapping fires are skipped.** If a task's previous run is still in flight
-  when the next occurrence arrives, that occurrence is dropped.
+  when the next occurrence arrives, that occurrence is dropped. A `continue`
+  task's run finishes once its prompt is delivered, so a later firing still
+  sends its prompt while the session is busy.
 - **Removed accounts stop firing.** When an admin
   [removes a member](/docs/collaborate/auth#removing-a-member), all of that
   user's tasks are marked deleted. A username that is later re-registered does

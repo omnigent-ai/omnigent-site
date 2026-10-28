@@ -615,6 +615,33 @@ full syntax highlighting.
 
 Use cases: updating documentation sites, reviewing Omnigent-generated plans, editing configs.
 
+### Live refresh and edit conflicts
+
+An open file stays current while the agent, another session, or another
+process writes to it. You don't need to reload.
+
+- **Polling.** While a UTF-8 text file up to 256 KiB is on screen, the viewer
+  re-reads it every two seconds. Polling pauses while the browser tab is
+  hidden. Larger files, binary files, and the diff view refresh when they're
+  shown again or when the session finishes a turn.
+- **In-place updates.** If the file changes and you have no unsaved edits, the
+  new content replaces the old without remounting the editor, so your scroll
+  position stays put. In the Markdown editor the caret moves with the text
+  around it. If the caret was inside the changed text, it moves to the end of
+  that text. The code editor keeps the caret on the same line and column.
+  An external update clears undo history.
+- **Conflicts.** If the file changes while you have unsaved edits, the editor
+  raises a conflict instead of replacing your text. Auto-save pauses until you
+  choose **Keep mine** (save your version over theirs) or **Load latest**
+  (discard your edits and load the new file).
+- **Pre-save check.** Every auto-save re-reads the file first and raises the
+  conflict if another writer changed it. Saves are still last-writer-wins: a
+  write that lands between that check and your save can be overwritten.
+- **Failed refreshes.** If a refresh fails, the viewer keeps the last loaded
+  content and any unsaved edits, shows a **Couldn't refresh this file**
+  notice, and retries every 30 seconds. Saving a file that was deleted in the
+  meantime creates it again.
+
 ## Code viewer and diffs
 
 Review what your Omnigent changed before accepting. Syntax-highlighted diffs show exactly

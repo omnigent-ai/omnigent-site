@@ -187,3 +187,22 @@ A few scheduling guarantees:
   [removes a member](/docs/collaborate/auth#removing-a-member), all of that
   user's tasks are marked deleted. A username that is later re-registered does
   not see or inherit the old account's tasks.
+
+## Messaging and starting other sessions
+
+A fired run is a private session owned by the task's owner, so it can
+coordinate the owner's other sessions the same way an interactive turn can. An
+automation can:
+
+- send work to another session the owner owns with `sys_session_message`, then
+  read the results with `sys_session_get_info` and `sys_session_get_history`;
+- start independent workers with `sys_session_create` using
+  `placement="same_host"` or `placement="managed"`, in addition to ordinary
+  [child sessions](/docs/programmatic#let-an-agent-manage-other-sessions).
+
+The same rules apply to forks of a scheduled run and to its child sessions. The
+same owner, privacy, and sharing checks as an interactive session apply: a run
+cannot message another user's sessions, and sharing the sending session blocks
+new sends and independent creates. If the server operator has turned session
+orchestration off, these operations are refused for every session, scheduled
+or not.

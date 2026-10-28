@@ -82,6 +82,18 @@ rules.
   `high`. Omit for the agent default (the spec's
   [`executor.reasoning_effort`](/docs/build/models#reasoning-effort), or the
   harness default when the spec sets none).
+- **`project_name`** (optional) — file every fired session into a
+  [project](/docs/interact/web-ui#projects), by name. The tool uses your
+  existing project with exactly that name, or creates one if you have none.
+- **`project_id`** (optional) — file every fired session into an existing
+  project by id. It must be one of your own projects; another user's project is
+  rejected as not found. Set `project_name` or `project_id`, not both. Omit
+  both to leave fired sessions unfiled.
+
+Project filing needs a server that advertises `scheduled_task_projects` in
+`/v1/info`. On an older server, a create or update call that sets
+`project_name` or `project_id` is refused before anything (including a new
+project) is created; retry without those fields.
 
 Once created, the task fires automatically on its schedule until you delete it.
 
@@ -106,7 +118,12 @@ minutes.
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
 untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
 `model_override`, `reasoning_effort`, `workspace`, `host_id`,
-`execution_target`, and `state`.
+`execution_target`, `state`, and the project (`project_name` or `project_id`).
+
+Setting a project moves **future** runs into it; `project_id=null` stops filing
+them into a project. Sessions from earlier runs stay where they are.
+`project_name` must be a string — use `project_id=null`, not an empty name, to
+clear the project.
 
 Passing `execution_target=managed_sandbox` switches the task to a fresh sandbox
 per run and clears any pinned `host_id` and `workspace`; don't set either field
@@ -169,7 +186,10 @@ When a task is due, Omnigent:
    never written back to the task.
 3. Creates a session bound to the task's agent, carrying the stored
    `model_override` and `reasoning_effort`, and grants the task's owner
-   ownership of the new session so the run is visible.
+   ownership of the new session so the run is visible. If the task has a
+   project, the session is filed into it. If that project has been deleted
+   since the task was saved, the session is left unfiled (the run does not
+   fail) and the project is cleared from the task.
 4. Launches the runner — on the resolved host, or in a freshly provisioned
    sandbox — and dispatches the prompt so the agent actually runs.
 5. Records the run — stamping the task's last-run time and the run's

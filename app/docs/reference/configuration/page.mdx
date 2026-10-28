@@ -49,6 +49,120 @@ appear as `# ignored user-level-only setting(s): ... (set with --global)`, and
 per-harness launch entries appear as
 `# ignored project harness launch overrides: ...`.
 
+## Copy configuration between machines
+
+`omni config cloud` saves a portable snapshot of your user-level defaults to a
+server, then imports it on another machine. It copies once: later edits on
+either machine stay local until you explicitly save and import again.
+
+```sh
+omni config cloud --server "$SERVER_URL" save
+omni config cloud --server "$SERVER_URL" show
+# On the other machine:
+omni config cloud --server "$SERVER_URL" import
+```
+
+| Subcommand | Behavior                                                                                         |
+| ---------- | ------------------------------------------------------------------------------------------------ |
+| `show`     | Prints the saved snapshot without changing this machine.                                         |
+| `save`     | Previews the saved and local values, asks for confirmation, then replaces the cloud snapshot.    |
+| `import`   | Previews local and saved values, asks for confirmation, then writes the snapshot to this machine. |
+| `onboard`  | Offers save or import once per server and login on interactive startup.                          |
+
+`save` and `import` take `--yes` to confirm without prompting. If the cloud
+snapshot or your login changes between the preview and the write, the command
+stops and asks you to preview again. A failed request leaves the local
+configuration unchanged.
+
+`--server` defaults to `OMNIGENT_SERVER`, then the configured `server`. The URL
+must be `http` or `https` without embedded credentials or a fragment. The only
+supported query is the numeric `?o=` workspace selector on workspace-hosted
+servers. The CLI authenticates with your normal server login, which can fall
+back to ambient Databricks credentials, so use a trusted HTTPS server outside
+local testing.
+
+### What is copied
+
+| Copied                                                                | Kept on each machine                           |
+| --------------------------------------------------------------------- | ---------------------------------------------- |
+| `model` and `opencode_model`                                          | Provider credentials and login tokens          |
+| `harness.default` and each harness's ordered `args`                   | Per-harness `command` and host metadata        |
+| Launcher plugin opt-outs, when supplied with `--plugin-opt-outs`      | Installed plugins, binaries, and project config |
+
+- Only `~/.omnigent/config.yaml` is read and written; project
+  `.omnigent/config.yaml` files are not copied.
+- Harness `args` copy verbatim. Check them for secrets or machine-specific
+  paths before saving.
+- Import replaces the portable settings. If the snapshot has no `model`,
+  `opencode_model`, or default harness, import removes that value locally.
+- Copying a default harness doesn't install that harness on the other machine.
+- The portable snapshot is limited to 12,000 bytes.
+
+### Plugin opt-outs
+
+A launcher that keeps its own plugin preferences can include them by passing
+the file before the subcommand. Use the same option for `import`:
+
+```sh
+omni config cloud --server "$SERVER_URL" \
+  --plugin-opt-outs "$PLUGIN_PREFERENCES_FILE" save
+```
+
+The file is JSON with `opted_out` (a list of bare plugin names, without `@`)
+and `disable_all` (a boolean that freezes automatic plugin management without
+removing installed plugins). Omnigent doesn't install or manage those plugins.
+Without `--plugin-opt-outs`, `save` keeps any opt-outs already in the cloud
+snapshot and `import` leaves local opt-outs alone. A snapshot with no opt-out
+block also leaves local opt-outs unchanged.
+
+### Import backups
+
+Before overwriting a file, `import` writes a private backup next to it named
+`<file>.before-import-<hash>` and prints its path. Backups keep the original
+bytes, including any credentials, use mode `0600`, and stay until you remove
+them. Imported files also use mode `0600`. If a write fails, import tries to
+restore files it already wrote.
+
+Import rewrites the YAML, so comments and formatting are not preserved, and a
+symlinked config is replaced with a regular file. It also records a
+`configuration_import` entry (the snapshot identity and revision) in
+`~/.omnigent/config.yaml`. Each file is replaced atomically, but the config and
+plugin files are not written as one transaction, so avoid editing configuration
+from other tools during an import. After an interrupted import, inspect both
+files and restore the printed backups if needed.
+
+### Onboarding prompt
+
+`omni config cloud onboard` is a hook for launchers. When a snapshot exists it
+offers to import it; otherwise it offers to save this machine's configuration.
+It asks once per server and login context and remembers a decline. It does
+nothing unless both stdin and stdout are terminals, but it still needs a server.
+Omnigent startup doesn't call it automatically. Explicit `save` and `import`
+are always available.
+
+### Server setup
+
+| Setting | Value                                                                    |
+| ------- | ------------------------------------------------------------------------ |
+| Key     | `shared_preferences_authority_id`                                        |
+| Scope   | Deployed server (`omni server --config`)                                 |
+| Type    | Nonempty string, up to 128 characters, no surrounding whitespace         |
+| Default | Unset: preference storage is disabled and the endpoint returns 404       |
+
+Set a stable value in the server YAML to enable preference storage:
+
+```yaml
+shared_preferences_authority_id: my-omnigent-deployment
+```
+
+The CLI uses `GET` and `PUT /v1/preferences/configuration`. Snapshots are
+scoped to the authenticated user and workspace and stored as one row in the
+existing `preferences` table, so no migration is needed. Each save must include
+the current revision. Stale saves are rejected, and no history is kept. `PUT`
+bodies are limited to 16,000 bytes. Uploads that take longer than five seconds
+return 408. A busy server returns 429 with `Retry-After`, and invalid bodies
+return 422.
+
 ## Automatic session titles
 
 | Setting | Value                                                |

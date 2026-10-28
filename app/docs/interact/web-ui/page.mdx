@@ -638,8 +638,9 @@ the referenced file themselves.
 Coding-agent sessions have a **Pull Requests** tab in the right workspace rail. It
 tracks the pull requests associated with the session and shows the selected
 one's summary (reviewers, CI checks, and the PR description), its conversation
-comments, and a stacked diff with a file-tree navigator. Nothing is pushed or
-mutated — recording an association never touches the remote PR.
+comments, and a stacked diff with a file-tree navigator. Recording an
+association never touches the remote PR; the tab only writes to GitHub when you
+act explicitly, for example by [posting a comment](#post-a-comment).
 
 ### Tracked pull requests
 
@@ -688,7 +689,33 @@ too old to know them), Omnigent re-fetches the PR without them: the Reviewers
 section is simply omitted and the summary, checks, and comments still load.
 
 In the **Comments** tab, each author's avatar initial gets a distinct color
-within the thread so you can follow who said what at a glance.
+within the thread so you can follow who said what at a glance. The tab shows up
+to the 100 most recent conversation comments and review bodies, so new comments
+still appear on very long threads.
+
+### Post a comment
+
+On a GitHub PR, the bottom of the **Comments** tab has a composer for adding a
+top-level conversation comment. It is available only when a PR is selected and
+you have **Edit** access to the session (see [Collaborate](/docs/collaborate)).
+
+- **Write** / **Preview** — write Markdown in **Write**, then switch to
+  **Preview** to see it rendered the way the Comments tab will show it.
+- **Post comment** — sends the comment once, then adds it to the thread. The
+  button is disabled while the comment is empty or posting, and when it is over
+  65,536 characters.
+- The line next to the button reads `Comment as <account>`, the GitHub account
+  selected on the host. If no account is selected, it reads `Comment using the
+  host’s GitHub account`.
+
+Each PR keeps its own draft, so switching tabs, PRs, or sessions doesn't lose an
+unsent comment. Posting still works when the session's runner is offline, as
+long as its host is connected. If Omnigent can't confirm whether GitHub received
+the comment (for example, the request timed out), the error says so. Check the
+PR on GitHub before you retry so you don't post the comment twice.
+
+Posting comments is GitHub-only for now. GitLab merge requests and Azure DevOps
+pull requests don't show the composer.
 
 ### Link or unlink a PR
 

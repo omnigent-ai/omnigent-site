@@ -1,0 +1,59 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "See which MCP tools your session can reach, and sign in right from the composer",
+  "Type /mcp in a running session to list every MCP server it can use, see which ones are connected, and sign in to the rest without leaving the chat.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/mcp-status-inline-sign-in",
+  },
+);
+
+export const meta = {
+  title:
+    "See which MCP tools your session can reach, and sign in right from the composer",
+  date: "2026-10-27",
+  category: "MCP",
+  author: "omnigent",
+  heroArt: "/images/blog/mcp-status-inline-sign-in.png",
+};
+
+<BlogPostHeader slug="mcp-status-inline-sign-in" />
+
+If your agents lean on MCP tools like an issue tracker or a company search
+service, you can now check what a running session can actually reach, and fix a
+missing sign-in, without leaving the chat.
+
+An agent that quietly lacks a tool is hard to spot. You find out halfway through
+a task, when it says it can't open the ticket you pointed it at. Now you can
+type `/mcp` in the composer of any started session and see the MCP servers
+enabled for that session in one list: the agent's own servers, services you
+picked from your organization's MCP registry, and servers your coding agent
+loads from its config on the host machine. Each service shows whether it is
+connected. When one needs you to sign in, a **Sign in** button sits right on
+the row. Finish the popup and the row flips to **Connected**, ready for the
+agent's next step.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: in a running session, type /mcp, show a mix of Connected and Sign-in required rows, click Sign in on one, complete the popup, and watch the row turn Connected. */}
+
+Services that need a typed token or a workspace URL show a **Sign in from
+Settings** link instead. If a sign-in is cancelled or fails, the row says so and
+offers **Sign in** again. Servers configured on the host can report their state
+as well, including ones your organization pins through a managed config. Their
+**Sign in** opens the sign-in page in a new tab, and the row updates within a
+few seconds of you finishing. If a session has no MCP servers yet, the list
+points you to Settings to add some.
+
+To try it, open a session that has already started and type:
+
+```
+/mcp
+```
+
+The command lives in the main chat composer of a running session. It doesn't
+appear on the new-chat composer or in side chats. To add MCP servers to an
+agent, see [MCP servers](/docs/build/tools#mcp-servers) in the tools guide.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

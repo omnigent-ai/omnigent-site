@@ -83,9 +83,11 @@ posture. To launch Blaxel sandboxes from the CLI you also need the
 
 **Databricks:** Sandboxes run as each user's own Databricks account, so there is
 no shared provider key on the server. Each user connects under
-**Settings → Connections → Databricks**, which needs an account-level custom OAuth
-app integration configured on the server; see
-[Databricks settings](/docs/reference/configuration/cloud-sandbox#databricks).
+**Settings → Sandbox Integrations → Connect Databricks**, which needs an
+account-level custom OAuth app integration and the credential store wired on the
+server; see [Connect Databricks](/docs/deploy/databricks-connect) for that setup
+and [Databricks settings](/docs/reference/configuration/cloud-sandbox#databricks)
+for the provider block.
 
 **Modal:** run `modal setup` to authenticate, or set
 `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET` on the server.

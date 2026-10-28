@@ -131,8 +131,9 @@ unchanged.
 [Databricks Sandbox](https://docs.databricks.com/aws/en/compute/serverless/sandbox)
 is a **managed-host provider only**. The server drives sandboxes through
 the [Databricks SDK](https://databricks-sdk-py.readthedocs.io/en/latest/workspace/sandbox/sandbox.html).
-To use Databricks Sandboxes, the Sandbox preview setting must be enabled
-for the workspace.
+To use Databricks Sandboxes the workspace must have the Sandbox preview setting
+enabled, and the server must have a Databricks account connection wired (see
+**Identity** below).
 
 ```yaml
 sandbox:
@@ -155,10 +156,21 @@ sandbox:
 
 **Identity.** Every Sandbox is created and driven as the user who started the
 session, using the Databricks account they connected under
-**Settings → Connections → Databricks**. The credential inside the Sandbox — and
-with `proxy_bearer: true` its bearer file — is that user's own. This needs a per-user
-Databricks account connection configured on the server: an account-level custom
-OAuth app integration with the `all-apis offline_access` scopes.
+**Settings → Sandbox Integrations → Connect Databricks**. The credential inside
+the Sandbox, and with `proxy_bearer: true` its bearer file, is that user's own.
+
+This provider works only when the server has a Databricks account connection
+wired: an account-level custom OAuth app integration with the
+`all-apis offline_access` scopes, plus a
+[Credential Store](/docs/deploy/credential-store) to encrypt and persist the
+per-user tokens. See [Connect Databricks](/docs/deploy/databricks-connect) for the
+server setup (`OMNIGENT_DATABRICKS_CLIENT_ID` /
+`OMNIGENT_DATABRICKS_CLIENT_SECRET` and the redirect URI). Both are required: if
+the OAuth app is configured but no Credential Store key is set, the connection
+stays disabled (logged at startup). The `sandbox` block above is accepted at
+startup regardless, but every launch then fails with `this server has no
+Databricks account connection configured` until the connection is fully
+configured and the session owner has connected.
 
 ## Modal
 

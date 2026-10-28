@@ -96,6 +96,29 @@ and agent renames. An empty value removes the additional guidance. A non-string
 value or a string longer than 4,000 characters is ignored and the default title
 prompt is used.
 
+### Title model for Claude sessions
+
+| Setting | Value                                                                   |
+| ------- | ----------------------------------------------------------------------- |
+| Key     | `OMNIGENT_BACKGROUND_TITLE_CLAUDE_MODEL` environment variable           |
+| Scope   | Process environment of `omni` or `omni host`; not a `config.yaml` key   |
+| Type    | Claude model alias, e.g. `sonnet`                                       |
+| Default | Unset — titles are generated with `haiku`                               |
+| Applies | Sessions on the `claude-sdk` and `claude-native` harnesses              |
+
+Claude Code sessions generate titles with the `haiku` model alias. If that
+model answers the first message instead of returning a title, set this variable
+to another Claude model alias in the environment of the `omni` or `omni host`
+process that runs the session:
+
+```
+export OMNIGENT_BACKGROUND_TITLE_CLAUDE_MODEL=sonnet
+```
+
+The host forwards the variable to the runners it launches, so you don't need
+to add it to `OMNIGENT_RUNNER_ENV_PASSTHROUGH`. A blank value keeps the `haiku`
+default. Sessions on other harnesses ignore the variable.
+
 ## Web UI base path
 
 | Setting | Value                                                                                |

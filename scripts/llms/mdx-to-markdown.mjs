@@ -409,15 +409,6 @@ export async function convertMdx({ source, file, siteUrl }) {
         return `Supported gateways:\n\n${gateways.map((g) => `- ${g.name}`).join("\n")}`;
       case "MacDownloadButton":
         return `[Download for Apple silicon](${abs(MACOS_DOWNLOAD_URL)}) · [Download for Intel](${abs(MACOS_X64_DOWNLOAD_URL)})`;
-      case "GithubActionsExample": {
-        const exampleFile = attrString(node, "file");
-        const source = readFileSync(
-          path.join(ROOT, "examples/github-actions", exampleFile),
-          "utf8",
-        );
-        const language = exampleFile.endsWith(".jq") ? "jq" : "yaml";
-        return "```" + language + "\n" + source + "```";
-      }
       case "MermaidDiagram": {
         const chart = attr(node, "chart");
         const text =

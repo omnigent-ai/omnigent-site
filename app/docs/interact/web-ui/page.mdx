@@ -243,8 +243,9 @@ or start a new session.
 
 This is the in-session dial, distinct from the effort choice in the new-chat
 composer. It appears only on top-level sessions (a sub-agent child takes no
-input of its own, so it gets no dial) and only for harnesses that declare an
-effort ladder — `antigravity` declares none, so its sessions show no dial.
+input of its own, so it gets no dial; side chats have their own picker — see
+[Model and effort in a side chat](#model-and-effort-in-a-side-chat)) and only
+for harnesses that declare an effort ladder — `antigravity` declares none, so its sessions show no dial.
 Native TUI sessions (`claude-native`, `codex-native`, …) keep their own effort
 controls.
 
@@ -832,6 +833,33 @@ Follow-ups go to the side chat, not the main conversation, and any approval
 request the agent raises there is answered there too. The side chat starts
 visually empty — the history it inherited from the parent is hidden — but the
 agent has the parent conversation's full context.
+
+### Model and effort in a side chat
+
+The side-chat composer has its own model/effort pill beside the microphone, in
+both the desktop Workspace panel and the mobile side-chat drawer. Open it, open
+the harness configuration row, and pick from the **Models** and **Effort**
+sections. The choices follow the same catalog and harness capability rules as
+the main composer; if the session hasn't reported its own model list yet, the
+picker uses the host's catalog. A harness that advertises no model or effort
+choices shows no pill.
+
+- **Before the first message** (an unsent tab from the `+` tray, the Workspace
+  menu, or **Ask in side chat**), your pick is kept with the tab's draft —
+  switching tabs and coming back keeps it — and is applied when the side chat is
+  created. If creating the side chat fails, the draft and the pick are kept so
+  you can retry.
+- **After the first message**, a pick is saved on the side chat's session and
+  applies to its next turn. Sending waits until the save finishes. If the save
+  fails, an error appears in the menu and your typed message is kept, so you can
+  retry the change or send with the previous selection.
+
+Changes apply only to that side chat; the parent session's model and effort
+stay as they were. Changing only the model keeps the current effort when the
+new model supports it and clears an explicit effort it doesn't. On Claude Code,
+the pill shows the model the runner reports, so a refused change leaves it on
+the model actually in use. Viewers and closed side chats can't change these
+settings, and native Codex (`codex-native`) side chats don't offer the picker.
 
 ### Slash commands in a side chat
 

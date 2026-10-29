@@ -494,8 +494,6 @@ test("budgets distinguish turn gates, root DENY, child ASK, pricing exceptions a
   expect(prose).not.toContain("expensive_model_tiers");
 });
 
-
-
 test("neutral worktree example is parseable Bash without mandatory CLI launches", () => {
   const answer = getAnswer("orchestrate-codex-and-claude-code");
   const blocks = answer.sections

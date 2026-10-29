@@ -653,16 +653,45 @@ how it was found:
   it.
 - **attached** — you linked it manually (see below).
 - **inferred** — matched from the current branch when the session has no
-  recorded PR yet; shown as `(from branch)` in the selector.
+  recorded PR yet; shown as `(from branch)` in the list.
 
 Associations are stored on the host, independent of the current checkout, so
 they stay with the session even as its branch or worktree changes.
 
-When a session tracks more than one PR, a selector at the top of the tab
-switches between them; each entry reads `owner/repo #number` (prefixed with the
-host for GitHub Enterprise). The details, changed files, and diff below are
-always the selected PR's, fetched from GitHub — including fork PRs and renamed
-files — so they match the PR's "Files changed" exactly.
+When a session tracks PRs, the tab opens on a list of them. Each row reads
+`owner/repo #number` (prefixed with the host for GitHub Enterprise) followed by
+the PR title, with an icon colored by state (open, merged, or closed) and a
+compact status on the right:
+
+- An open PR shows its passed, pending, and failed check counts (hover a count
+  for the checks behind it), `Draft`, `No checks`, or `Incomplete checks` when
+  some checks couldn't be loaded.
+- A closed or merged PR shows its status instead of checks.
+- When an open, non-draft PR is ready to merge and you can edit the session, the
+  row shows a **Merge** button. It asks you to confirm and pick a merge method
+  before merging.
+
+Open rows refresh about every 30 seconds while the tab is visible. Closed and
+merged rows stop refreshing, but **Refresh** still reloads them.
+
+Each row's **⋯** menu can **Unlink PR**, **Open in GitHub** (the provider's
+name), or **Copy PR link**. Click a row to open its details. **All pull
+requests (N)** at the top of the details takes you back to the list. The
+details, changed files, and diff are always the selected PR's, fetched from
+GitHub (fork PRs and renamed files included), so they match the PR's "Files
+changed" exactly.
+
+On a phone the tab opens in a drawer. **Refresh** and **Link a PR** sit next to
+**Close** in the drawer header, and in a PR's details the header title turns
+into the **All pull requests** back button.
+
+While the session's host is offline (or its sandbox is asleep), the list still
+shows each PR's stored title and status. Each row shows **Host offline** or
+**Sandbox asleep** instead of checks and **Merge**. Hover or focus that notice
+to see the last sync time and how to reconnect. Clicking a row opens the stored
+summary, and the row menu still opens, copies, or unlinks the PR. Linking a new
+PR needs the host online. Live checks and merge controls come back once the host
+reconnects.
 
 When a file diff is computed from the local checkout instead, Omnigent diffs
 `HEAD` against the merge base with the base branch. In a shallow or
@@ -694,10 +723,11 @@ within the thread so you can follow who said what at a glance.
 
 Use the **+** (`Link a PR`) button to attach a pull request by URL — paste a
 `https://github.com/owner/repo/pull/123` link (GitHub Enterprise hosts work
-too). The linked PR becomes an `attached` association and is selected. The
-**trash** (`Unlink PR`) button removes the selected association; an unlinked PR
-stays out of the list until you link it again, even if the agent keeps touching
-it. When a session tracks no PRs yet, the tab's empty state offers the same
+too). The linked PR becomes an `attached` association and is selected. To
+remove an association, choose `Unlink PR` from the row's **⋯** menu, or use the
+**trash** (`Unlink PR`) button in the header while viewing that PR's details.
+An unlinked PR stays out of the list until you link it again, even if the agent
+keeps touching it. When a session tracks no PRs yet, the tab's empty state offers the same
 `Link a PR` action.
 
 The composer status line mirrors this: it shows `#123` for a single tracked PR

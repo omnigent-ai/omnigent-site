@@ -279,6 +279,39 @@ options in the dropdown depend on the selected harness:
 Your choice is remembered and seeds the next new session, the same way the model
 picker is remembered.
 
+### Start Codex in Plan mode
+
+You can start a Codex (`codex-native`) session in Codex's own Plan mode before
+you send the first prompt. On the new-session composer, select a Codex agent,
+open the **+** menu, and choose **Plan** (**Enter Plan mode**). A **Plan mode**
+badge appears in the composer tray. Choose the row again (**Exit Plan mode**)
+to turn it off. Switching to a different agent also clears it.
+
+The session is created with its `omnigent.codex_native.collaboration_mode`
+label set to `plan`. The runner switches the Codex thread into Plan mode before
+any web turn reaches it, and does so again when the thread resumes. Codex keeps
+its built-in Plan prompt, and your agent's instructions still apply. To switch
+modes after the session starts, use the composer's Plan toggle.
+
+The **Plan** row is disabled in these cases:
+
+- **Smart Routing** is selected.
+- The agent is an unsaved custom agent. Its tooltip reads _Turn Plan mode on
+  after this custom agent's session starts_.
+- The server has turned off the `codex_plan_at_launch` release feature. This
+  feature is on by default, and `OMNIGENT_FEATURES=-codex_plan_at_launch`
+  turns it off (see
+  [Release features](/docs/deploy/overview#release-features)). The tooltip
+  reads _This server does not support starting Codex in Plan mode_.
+
+The selected host must also support starting Codex in Plan mode. If a connected
+host runs an older omnigent that doesn't, creating the session fails with a
+conflict: _This host is too old to start a Codex session in Plan mode._ Update
+omnigent on the host and reconnect it, or turn Plan mode off, then try again.
+If the runner can't switch the thread into Plan mode, it doesn't run the queued
+message. It shows **Plan mode could not start** and asks you to restart the
+session and send the message again.
+
 ### Choose MCP services before launch
 
 On a server whose administrator publishes an MCP registry, the new-chat composer

@@ -893,6 +893,34 @@ another device. Switching to another conversation shows that conversation's own
 side-chat tabs. Close a tab with its `✕` (or a middle-click) to stop the side
 chat's runner and drop the tab.
 
+### Open sub-agents in the Workspace panel
+
+By default, clicking a sub-agent opens its own page and replaces the parent
+chat. To keep the parent on screen instead, open **Settings → General →
+Sessions** and switch on **Open sub-agents in the Workspace panel**. It's off by
+default and stored in your browser, so it applies only on this device.
+
+With the setting on, a plain click on a sub-agent — its link in the transcript,
+the composer's sub-agent indicator, a row in the [**Agents**](#pin-workspace-tabs)
+tab, or a node in the agents graph — opens it as a tab in the right
+**Workspace** rail, in the same strip as side-chat tabs, and reveals the rail if
+it's hidden. Sub-agent tabs are marked with a bot icon and show the sub-agent's
+full conversation, with a composer so you can chat with it there. Things that
+still open full screen:
+
+- A modified click (`⌘`/`Ctrl`, `Shift`, or `Alt`) or a non-left click, which
+  follows the link as usual.
+- Ancestors of the current session — only children open in the rail.
+- Any click on a phone-sized screen.
+- The tab's **Open full screen** link, which opens the sub-agent's own page on
+  its **Agents** tab.
+
+A sub-agent tab is read-only wherever its full-screen chat would be — for
+example a Claude Code sub-agent or a closed sub-agent, or when you don't have
+edit access — and it shows no composer until the sub-agent's session has
+loaded. Unlike a side-chat tab, closing a sub-agent tab only hides it; the
+sub-agent keeps running.
+
 Side chats are distinct from Claude Code's `/btw` overlay (below), which answers
 a one-off question inline without creating a session.
 

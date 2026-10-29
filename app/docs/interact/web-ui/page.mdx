@@ -805,6 +805,36 @@ Each queued row has inline actions:
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
 
+## Inbox
+
+Open **Inbox** in the sidebar to catch up on your agents without opening each
+session. The **All**, **Unread**, and **Awaiting response** tabs filter what's
+listed: pending approval requests you can answer in place, and sessions with
+agent output you haven't seen yet. Each card expands in place.
+
+An expanded unread card previews the session's latest reply. If the preview is
+cut short, hover over it or focus it to see the whole reply in a card, rendered
+with the same markdown formatting as Chat. **Mark as read** clears the row, and
+**Open session** clears it and takes you to the conversation.
+
+### Reply from the Inbox
+
+If you have edit access to a session, its expanded unread card includes a
+**Reply…** box. Type a follow-up and click **Send** to post it to the session
+as a user message, just as if you'd typed it in Chat. The box uses the same
+send shortcut as the chat composer (Enter or Mod+Enter, depending on your
+setting), and Shift+Enter or Alt/Option+Enter adds a newline.
+
+Once the reply is sent, the card shows **Reply sent. The agent's answer will
+show up here.** When the agent answers, the row lights up as unread again and
+shows the new reply. Replying also counts as reading the session.
+
+**Send** stays disabled until the card's latest reply has loaded. If it can't
+load, open the session to reply instead. When a send fails, your draft stays in
+the box so you can try again. That includes a reply a policy blocked, or one
+sent while the session's host was offline. Wait for the host to reconnect, then
+send again.
+
 ## Side chats
 
 A side chat lets you ask the agent something off to the side of a conversation

@@ -142,6 +142,26 @@ applies (an offline host, an uninstalled agent) is skipped rather than blocking
 the session. Leave the settings empty and the project stays a pure organizing
 tool.
 
+The composer also remembers how you started the **last session in each
+project**: the agent and harness pick (including Smart Routing), the launch
+options it ran with (such as model and effort), the host or sandbox, and the
+working directory. The next new session in that project pre-fills from that
+last start, layered over the project's stored defaults, so you can keep working
+the way you just did without saving anything. This memory is kept per project
+in your browser, so it doesn't follow you to another browser or device.
+
+- An option you change in the composer during the visit still wins.
+- If the last start's agent no longer exists, the composer falls back to the
+  project's stored default agent.
+- Once the project's stored settings change after that start, the last start is
+  ignored and the stored defaults apply again.
+
+When a last start is remembered, `Project settings` opens with its fields
+filled in from it and a note reading `Filled in from the last session you
+started in <project name>.` Saving the dialog makes those values the project's stored
+defaults and clears the remembered last start, even if you didn't change
+anything.
+
 #### New session with `/new`
 
 When you're already in a conversation and want a fresh one alongside it, type
@@ -216,8 +236,10 @@ A project's stored **Default model** (see
 remembered per-harness pick while the composer sits on the project's default
 agent, so a project can pin its own launch model. It only applies when the
 stored model is still a valid choice for that harness; a retired or unknown id
-falls back to your remembered pick. An explicit model you pick in the composer
-always wins for that session.
+falls back to your remembered pick. When the project's last session started on
+the same harness, the options it launched with (model, effort, and so on)
+pre-fill instead. An explicit model you pick in the composer always wins for
+that session.
 
 ### Change reasoning effort mid-session
 

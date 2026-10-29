@@ -689,6 +689,9 @@ figcaption {
   height: auto;
   margin: 0 auto;
 }
+.github-actions-flow .mermaid-diagram {
+  min-height: 0;
+}
 .mermaid-error {
   padding: 1rem;
   color: var(--fg-soft);

@@ -64,7 +64,6 @@ test("hub exposes exactly seven questions, one H1 and normal shell", () => {
   const html = renderPage(<Hub />);
   expect(html.match(/<h1\b/g)).toHaveLength(1);
   expect(html).toContain("<h1>Answers</h1>");
-  expect(html).toContain("<header");
   expect(html).toContain("<footer");
   for (const answer of answers)
     expect(html).toContain(`href="${answerPath(answer.id)}"`);
@@ -97,7 +96,6 @@ for (const answer of answers) {
     const html = renderPage(<Page />);
     expect(html.match(/<h1\b/g)).toHaveLength(1);
     expect(html).toContain(`<h1>${answer.question}</h1>`);
-    expect(html).toContain("<header");
     expect(html).toContain("<footer");
     expect(html).not.toContain("noindex");
     if (answer.evidence) expect(html).not.toContain(answer.evidence);

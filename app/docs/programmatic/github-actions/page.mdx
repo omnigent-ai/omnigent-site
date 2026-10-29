@@ -133,8 +133,6 @@ publication steps, not the agent step. See GitHub's
 
 With the credentials above configured, add both files to the PR's base branch.
 Tested with Omnigent 0.20.0 and Databricks AI Gateway.
-PR review posts findings, triage suggests labels for a workflow step to apply,
-and repair edits the checkout and runs tests without publishing.
 
 Save as `.github/workflows/review.yml`:
 
@@ -207,16 +205,14 @@ os_env:
 
 ## Boundaries
 
-- The agent can access runner files and the network; it is not sandboxed. The review
-  prompt asks it not to run code or edit files, but that is not an isolation boundary.
-- The workflow loads the agent configuration from the trusted PR base. Only its
-  collection and publication steps receive `GH_TOKEN`; the agent receives model
-  credentials. The output check catches literal keys, not every possible encoding.
-- Use the review workflow only for trusted, same-repository PRs. Fork PRs need a
-  separate [secret and trust design][github-security]; repair needs a trusted
-  checkout because it executes code and tests.
+The agent isn't sandboxed: it can read runner files and use the network, so run this only on trusted, same-repository PRs, not [fork PRs][github-security].
+
+The workflow loads agent config from the PR's base branch, and only the collection/posting steps get `GH_TOKEN`.
 
 ## Adapt it
+
+PR review posts findings, triage suggests labels for a workflow step to apply,
+and repair edits the checkout and runs tests without publishing.
 
 These short snippets replace the trigger, permissions, and task prompt; they are
 not complete workflows. Keep the Databricks setup and agent definition above.

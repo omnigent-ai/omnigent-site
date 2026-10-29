@@ -857,7 +857,7 @@ need to write an API client to use them.
 | `sys_agent_list`          | Find available agents and their IDs.                                                                       |
 | `sys_session_create`      | Create a child session from an existing agent ID or a local agent config, optionally with a first message. |
 | `sys_session_send`        | Send a follow-up to a child session, or start a named sub-agent declared by the parent agent.              |
-| `sys_session_list`        | Find child sessions and other sessions you can access.                                                     |
+| `sys_session_list`        | Find child sessions and other sessions you can access. Pass `include_archived` to also list archived ones. |
 | `sys_session_get_info`    | Check a session's status, agent, and workspace.                                                            |
 | `sys_session_get_history` | Read a session's recent messages and tool results.                                                         |
 | `sys_session_close`       | Close a finished child session while retaining its history.                                                |
@@ -888,6 +888,10 @@ The returned `conversation_id` identifies the child. To continue its work, ask:
 ```text
 Ask the "Review tests" child session to prioritize its findings by risk.
 ```
+
+By default, `sys_session_list` leaves out archived sessions. With
+`include_archived: true`, the global `sessions` view lists them too, and each
+row carries an `archived` field.
 
 `sys_session_send` can write only to the calling session's direct children.
 For agents with named sub-agents, reusing the same `agent` and `title` continues

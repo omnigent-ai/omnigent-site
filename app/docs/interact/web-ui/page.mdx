@@ -997,6 +997,96 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+### Trigger templates
+
+The **Jira tickets**, **Slack messages**, and **GitHub issues** chips under
+**Suggestions** create an automation that watches a service and starts one
+session for each newly created ticket, top-level message, or issue that
+matches. It works like a creation trigger, but there is no webhook: the
+automation runs **Hourly** and checks for new items on each run.
+
+Picking a chip replaces the **Prompt** field with a sentence-style trigger
+builder, for example *Ticket created in project equals `ES`, and Label equals
+`bug`, then Comment the session link on the ticket*:
+
+- **Event** — fixed for Jira (**Ticket created**) and Slack (**Message
+  posted**). GitHub offers **Issue opened**, **Pull request opened**, or
+  **Issue or pull request opened**.
+- **Scope** — a Jira project key, a Slack channel, or a GitHub `owner/repo`. A
+  comma-separated list watches several.
+- **Add condition** — each row is ANDed on:
+  - **Jira**: Label, Issue type, Component, or Priority (equals / doesn't
+    equal); Assignee (equals, doesn't equal, is unassigned, or is assigned); or
+    a raw **JQL (advanced)** fragment.
+  - **GitHub**: Label or Author (equals / doesn't equal); Assignee (equals,
+    doesn't equal, or is unassigned); or **Search qualifiers (advanced)**.
+  - **Slack**: Text contains / doesn't contain, Message is about a topic, or
+    Author equals / doesn't equal.
+
+  An Assignee of `me` means the automation's owner, and *doesn't equal* also
+  keeps unassigned items.
+- **then** — post the session link back (comment on the ticket or issue, or
+  reply in the Slack thread), or **Only start the session**.
+- **Instructions for each session** — what every started session should do.
+  Capped at 2,000 characters so each session's first message (which must stay
+  under 8,000) has room for the item.
+
+The rows compile to JQL or a GitHub search inside a generated prompt. Open
+**Preview prompt** to read it, or **Edit as prompt** to switch back to the
+plain Prompt field with that text. Saving creates an ordinary scheduled task:
+Hourly, set to continue one session (the session-mode picker is locked), with
+the rendered prompt.
+
+**Which items count.** Each run looks for items created since the previous
+run that meet every condition by the time it checks, so a label added half an
+hour after creation still counts. To allow for slow search indexing, the
+search window starts 5 minutes before the previous run's window ended. Items
+created earlier never count, even if they are edited or start matching later.
+
+**How a run works.** The kept session acts as a manager, and its own replies
+hold its state. Each run it:
+
+1. Reads where it left off from the `Checked through:` line of its most recent
+   reply, plus any `Delivery pending:` and `Link-back pending:` lines, and
+   retries pending link-backs.
+2. Searches the service with its own Jira, Slack, or GitHub tools for items
+   created since then, oldest first, through every page of results.
+3. Skips items it already handled: ones named in its earlier replies, or with
+   a worker titled after them among the sessions it created (archived workers
+   included).
+4. Starts one worker per remaining item with `sys_session_create`, **at most
+   10 per run**. On a connected host the workers run beside the manager and
+   share its workspace, so each is told to make its own git worktree before
+   changing files; a `managed_sandbox` automation starts each worker in a new
+   sandbox. A refused or unclear create stops starting sessions for that run,
+   and an unclear one is never retried automatically.
+5. Posts each session link back, if enabled. A failed post is retried on the
+   next run.
+6. Ends its reply with a new `Checked through:` time.
+
+Workers use the automation's agent, model, and effort, but the agent's
+default permission mode. Each worker's first message starts with your
+instructions and then gives the item's text fenced as untrusted data. That
+lowers prompt-injection risk but is not a security boundary: anyone who can
+write in the watched source can try to steer the sessions, which run with your
+tools, and link-back posts with your account.
+
+Keep in mind:
+
+- The trigger chips appear only when the server supports continuing one
+  session across runs and has session orchestration on
+  (`features.session_orchestration` in `/v1/info`).
+- Link-back uses the manager's own tools unattended. Claude Code's auto mode
+  can block an external write such as `gh issue comment` unless its permission
+  settings allow that command.
+- Editing a saved trigger automation edits the rendered prompt as plain text.
+  Changing its host, model, or effort afterwards doesn't update the worker
+  settings written into the prompt.
+- Starting a new manager session, or switching the session mode, loses the
+  manager's state, so its first run may start sessions again for items created
+  in the last hour.
+- Deleting a worker doesn't make its item start a new session later.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

@@ -85,6 +85,10 @@ rules.
 
 Once created, the task fires automatically on its schedule until you delete it.
 
+To start one session per new Jira ticket, Slack message, or GitHub issue, use a
+[trigger template](/docs/interact/web-ui#trigger-templates) in the web UI. It
+saves an ordinary hourly task whose prompt is generated for you.
+
 ## Recurrence rules
 
 The schedule is an [RFC 5545](https://icalendar.org/) `RRULE` string, evaluated

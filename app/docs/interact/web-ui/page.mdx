@@ -805,6 +805,40 @@ Each queued row has inline actions:
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
 
+## Shell commands with `!` in Codex sessions
+
+In a Codex (`codex-native`) session, a message that is just `!<command>`, such
+as `!ls -la` or `!echo hi`, runs that command in the Codex thread's shell. It is
+not sent to the model. The pending message settles when Codex starts the
+command, and the command's output appears below it in the transcript. You can
+send one while a turn is running; Codex runs it inside the active turn.
+
+Only a lone text message starting with `!` counts as a shell command. These
+messages still go to the model as ordinary prompts:
+
+- text starting with `!!`
+- a `!` with nothing after it
+- a message with an attachment or more than one content block, including an
+  uploaded file whose content starts with `!`
+
+While a standalone shell command is running, Omnigent holds the next message
+until Codex reports that the command has finished, then delivers it. If Codex
+hasn't confirmed this within about a minute, the message is not delivered and
+you see **Waiting for the shell command**. Check the native terminal and send
+the message again once the command finishes.
+
+Codex runs these commands as the host process user, **outside** its thread
+sandbox and approval prompts, and they skip the session's tool policies. For
+that reason only the session owner can send them. This applies to every way a
+message reaches a Codex session, including the API and automated messages.
+Collaborators with **Edit** can still send ordinary prompts (see
+[Pair Programming](/docs/collaborate) for what each permission level can do).
+
+The server must authorize each shell command. If the runner is newer than the
+server, the runner doesn't deliver the command and reports **Shell command
+authorization required**, and the session keeps running. Update the Omnigent
+server and runner, then send the command again as the session owner.
+
 ## Side chats
 
 A side chat lets you ask the agent something off to the side of a conversation

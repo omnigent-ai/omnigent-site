@@ -109,6 +109,7 @@ actions bypass the agent entirely and stay with the session owner:
 | Transfer a live terminal to another session              |      |      |  ✓†   |
 | Browse absolute paths on the host filesystem             |      |      |   ✓   |
 | Run a raw shell command in the session's environment     |      |      |   ✓   |
+| Send a `!command` shell message to a Codex session       |      |      |   ✓   |
 
 \* Off by default; the owner can enable it with the **Workspace files** toggle
 described above.
@@ -137,6 +138,13 @@ no policy or approval gate on the way. It carries the same bar as browsing an
 absolute path. Collaborators with **Edit** get a `403` from this endpoint; they
 can still ask the agent to run commands, which are subject to the session's
 policies.
+
+A standalone `!command` message in a Codex (`codex-native`) session is held to
+the same bar. Codex runs it directly in the thread's shell as the host process
+user, outside its sandbox, approval prompts, and the session's tool policies,
+so only the session owner can send one, whether from the web UI, the API, or an
+automated message. Edit collaborators can still send ordinary prompts. See
+[shell commands with `!` in Codex sessions](/docs/interact/web-ui).
 
 Pending prompts are answerable by anyone who can drive the agent (**Edit**),
 whether from the web UI's approval bar or the REST elicitation endpoints. A

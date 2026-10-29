@@ -1,0 +1,141 @@
+{
+  "meta-harness": [
+    {
+      "id": "what-it-coordinates",
+      "question": "What does a meta-harness coordinate?",
+      "opening": "A meta-harness coordinates tasks, progress, and results across agent sessions."
+    },
+    {
+      "id": "alternatives",
+      "question": "When should I use a meta-harness instead of a single harness?",
+      "opening": "Use a meta-harness when you need cross-harness coordination or shared session controls that a single harness does not provide."
+    },
+    {
+      "id": "omnigent-fit",
+      "question": "How does Omnigent work as a meta-harness?",
+      "opening": "Omnigent coordinates supported agent harnesses through shared sessions; you still manage task briefs, checkout separation, and integration-specific limits."
+    }
+  ],
+  "contextual-policy": [
+    {
+      "id": "context-changes-decision",
+      "question": "How does a contextual policy differ from a fixed rule?",
+      "opening": "An agent policy is contextual when its decision depends on session state as well as the proposed action."
+    },
+    {
+      "id": "permissions-comparison",
+      "question": "How do contextual policies compare with native agent permissions?",
+      "opening": "Contextual policies use session state as well as the action, while static native permissions match tools, commands, or paths."
+    },
+    {
+      "id": "omnigent-fit",
+      "question": "How do Omnigent contextual policies work?",
+      "opening": "Omnigent supplies a common policy event interface and persisted session state across supported integrations."
+    },
+    {
+      "id": "policy-enforcement",
+      "question": "What actions can agent policies block?",
+      "opening": "An agent policy can block actions at supported request or tool-call gates."
+    }
+  ],
+  "orchestrate-codex-and-claude-code": [
+    {
+      "id": "general-workflow",
+      "question": "What does coordinating Codex and Claude Code require?",
+      "opening": "Orchestrating Codex and Claude Code requires bounded tasks, explicit context handoffs, and separate checkouts for parallel writers."
+    },
+    {
+      "id": "comparison",
+      "question": "What are the options for coordinating Codex and Claude Code?",
+      "opening": "Use separate terminals when manual coordination is sufficient."
+    },
+    {
+      "id": "handoff-review",
+      "question": "How can Codex and Claude Code review each other’s work?",
+      "opening": "To have Codex review Claude Code’s work, or vice versa, give the reviewing agent the goal, exact checkout, base revision, changed files, and checks already run."
+    },
+    {
+      "id": "omnigent-setup",
+      "question": "How do I launch Codex and Claude Code in Omnigent?",
+      "opening": "Configure supported credentials for Claude Code and Codex during Omnigent setup, then launch their sessions through the app or web UI."
+    }
+  ],
+  "hand-off-a-session-to-a-teammate": [
+    {
+      "id": "prepare-handoff",
+      "question": "What should a coding-agent handoff include?",
+      "opening": "Before taking over a coding-agent task, a teammate needs a brief naming the goal, checkout path, branch or base commit, failing or passing checks, unresolved questions, and next action."
+    },
+    {
+      "id": "handoff-options",
+      "question": "Should I share a coding-agent session or send a Git branch?",
+      "opening": "Send a Git branch or pull request when your teammate mainly needs the code; share the live coding-agent session when they need to direct the existing agent in its environment."
+    },
+    {
+      "id": "omnigent-fit",
+      "question": "How do I share a coding-agent session in Omnigent?",
+      "opening": "To hand off a coding-agent session in Omnigent, open Share and grant your trusted teammate Edit access to continue, or Read access to observe."
+    }
+  ],
+  "schedule-recurring-agent-tasks": [
+    {
+      "id": "prepare-recurring-task",
+      "question": "What does a recurring coding-agent task need?",
+      "opening": "A recurring coding-agent task needs explicit inputs, a checkout revision or update strategy, an output location, and a stopping condition."
+    },
+    {
+      "id": "scheduler-options",
+      "question": "How should I choose a scheduler for coding-agent tasks?",
+      "opening": "Choose a coding-agent scheduler by execution environment and the record you need: cron for a maintained machine, CI for repository jobs with retained logs, a hosted scheduler for cloud execution, or a session scheduler for inspectable conversations."
+    },
+    {
+      "id": "omnigent-setup",
+      "question": "How do I schedule recurring coding-agent tasks in Omnigent?",
+      "opening": "Ask Omnigent to create the recurring coding-agent task, or open Automations in the sidebar at /tasks and choose New automation."
+    },
+    {
+      "id": "unattended-checks",
+      "question": "What should I check before leaving coding-agent tasks unattended?",
+      "opening": "Recurring coding-agent tasks need execution permissions, a verified budget policy, and checks of the actual output as well as run status."
+    }
+  ],
+  "continue-a-session-on-your-phone": [
+    {
+      "id": "remote-session",
+      "question": "What must stay online to use a coding agent from my phone?",
+      "opening": "To continue a laptop coding-agent session on a phone, you need a reachable interface, access to the right account or terminal, and an execution machine that stays online."
+    },
+    {
+      "id": "mobile-options",
+      "question": "How can I access a coding-agent session from my phone?",
+      "opening": "SSH with a persistent terminal such as tmux is sufficient when you want the original CLI and can manage remote access."
+    },
+    {
+      "id": "omnigent-fit",
+      "question": "How do I continue an Omnigent session on my phone?",
+      "opening": "To continue a laptop coding-agent session on your phone through Omnigent, open the same reachable server in your phone browser and return to the existing session."
+    }
+  ],
+  "set-spending-limits-for-coding-agents": [
+    {
+      "id": "budget-options",
+      "question": "Which spending limits should I use for coding agents?",
+      "opening": "Choose coding-agent spending controls by scope: a run limit for one task, an agent policy for managed sessions, or provider controls for account-wide spending."
+    },
+    {
+      "id": "omnigent-cap",
+      "question": "How do I cap coding-agent spending in Omnigent?",
+      "opening": "To cap a coding-agent session’s recorded spending in Omnigent, attach a cost_budget policy to the session, declare it in an agent specification, or use applicable administrator policies."
+    },
+    {
+      "id": "warning-versus-stop",
+      "question": "How do Omnigent spending checkpoints and hard caps work?",
+      "opening": "An Omnigent session’s soft spending checkpoint returns ASK at the next supported gate; an all-model hard cap on the root session (the original conversation) returns DENY."
+    },
+    {
+      "id": "budget-scope",
+      "question": "What spending does each Omnigent budget cover?",
+      "opening": "Omnigent child-agent budgets cover a delegated subtree, user budgets span sessions, and scheduled-task caps are requested per firing, with best-effort attachment in v0.19.0."
+    }
+  ]
+}

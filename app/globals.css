@@ -1057,6 +1057,18 @@ figcaption {
   flex: 1;
   min-width: 1rem;
 }
+.footer-links,
+.footer-secondary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.footer-links {
+  flex-wrap: wrap;
+}
+.footer-secondary {
+  font-size: 0.85rem;
+}
 .footer a,
 .footer .muted {
   color: var(--fg-soft);
@@ -1083,6 +1095,17 @@ figcaption {
   }
   .footer-inner .spacer {
     display: none;
+  }
+  .footer-links,
+  .footer-secondary {
+    flex-basis: 100%;
+    gap: 0.75rem;
+  }
+  .footer-links {
+    font-size: 0.875rem;
+  }
+  .footer-secondary {
+    font-size: 0.8rem;
   }
   .footer {
     margin-top: 0;

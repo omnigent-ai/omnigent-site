@@ -1,0 +1,73 @@
+.page {
+  max-width: 52rem;
+  min-width: 0;
+  padding: 1.75rem 1.5rem;
+  overflow-wrap: anywhere;
+}
+.article {
+  line-height: 1.75;
+}
+.article h1 {
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  line-height: 1.2;
+}
+.article h2 {
+  margin: 2rem 0 0.75rem;
+  line-height: 1.3;
+  text-align: left;
+  scroll-margin-top: calc(var(--nav-h) + 2rem);
+}
+.article p {
+  margin: 1rem 0;
+}
+.article li {
+  margin: 0.75rem 0;
+}
+.article ul,
+.article ol {
+  padding-left: 1.5rem;
+}
+.opener {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.freshness {
+  color: var(--fg-soft);
+  font-size: 0.9rem;
+}
+
+.article pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  line-height: 1.5;
+  font-size: 0.85rem;
+}
+.tableWrap {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+.tableWrap table {
+  width: 100%;
+  min-width: 44rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.tableWrap th,
+.tableWrap td {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+.sources {
+  font-size: 0.9rem;
+}
+
+.breadcrumb {
+  margin: 0 0 1rem;
+}

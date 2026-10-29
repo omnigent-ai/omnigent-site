@@ -1,6 +1,7 @@
 import { getBlogPosts } from "../lib/blog";
 import { getReleases } from "../lib/releases";
 import { discoverPages } from "../lib/routes";
+import { answers, answerPath, answerCheckedDate } from "../lib/answers";
 import { productionSiteUrl } from "../lib/site";
 
 // Served by Next at /sitemap.xml and generated at build time from the
@@ -14,7 +15,8 @@ import { productionSiteUrl } from "../lib/site";
 //
 // lastModified is only emitted where the repo records a true content date:
 // blog posts (meta.date), releases (_Released YYYY-MM-DD_), and their index
-// pages (newest child). Everything else omits it rather than guessing from
+// pages (newest child), and answers (editorial check date). Everything else
+// omits it rather than guessing from
 // build time or git history. changefreq/priority are omitted because Google
 // ignores them.
 
@@ -24,6 +26,12 @@ function newest(dates) {
 
 export default function sitemap() {
   const lastModified = new Map();
+  lastModified.set("/answers", answerCheckedDate);
+  for (const answer of answers)
+    lastModified.set(
+      answerPath(answer.id),
+      answer.checkedDate ?? answerCheckedDate,
+    );
   const posts = getBlogPosts();
   const releases = getReleases();
   for (const post of posts) lastModified.set(post.href, post.date);
@@ -32,6 +40,9 @@ export default function sitemap() {
   lastModified.set("/releases", newest(releases.map((r) => r.date)));
 
   return [...new Set(discoverPages().map((page) => page.route))]
+    .filter(
+      (route) => route !== "/answers/orchestrate-codex-and-claude-code-v1",
+    )
     .sort()
     .map((route) => {
       // Same URL form as the canonical in lib/og.js (homepage keeps its slash).

@@ -638,8 +638,10 @@ the referenced file themselves.
 Coding-agent sessions have a **Pull Requests** tab in the right workspace rail. It
 tracks the pull requests associated with the session and shows the selected
 one's summary (reviewers, CI checks, and the PR description), its conversation
-comments, and a stacked diff with a file-tree navigator. Nothing is pushed or
-mutated — recording an association never touches the remote PR.
+comments, and a stacked diff with a file-tree navigator. Recording an
+association never touches the remote PR; only an explicit action, such as
+posting a [review reply or new conversation](#review-conversations), writes to
+GitHub.
 
 ### Tracked pull requests
 
@@ -689,6 +691,46 @@ section is simply omitted and the summary, checks, and comments still load.
 
 In the **Comments** tab, each author's avatar initial gets a distinct color
 within the thread so you can follow who said what at a glance.
+
+### Review conversations
+
+For GitHub pull requests, the **Changes** tab shows published inline review
+conversations beside the code they discuss, on old- and new-side lines in both
+diff layouts. Top-level PR comments stay in the **Comments** tab.
+
+- **Reading.** Multiline conversations are labeled with their line range, and a
+  line can hold several separate conversations. **Resolved** conversations start
+  collapsed; **Outdated** ones are marked. Use **Previous/Next unresolved
+  conversation** in the diff toolbar to jump between open threads. Conversations
+  that can't be placed on the current diff (outdated, hidden context,
+  file-level, or no diff available) are listed under **Earlier conversations and
+  unavailable diffs**, shown with their original code context — never attached
+  to an unrelated current line.
+- **Suggestions.** A fenced `suggestion` block renders as a **Suggested change**:
+  the referenced lines as removals and the replacement as additions, with line
+  numbers and syntax highlighting. Outdated threads use the saved snippet,
+  labeled **Original context**. Suggestions are display-only — applying them
+  isn't supported.
+- **Replying.** Focus an expanded conversation's **Write a reply…** input to open
+  the Markdown composer (with **Write**/**Preview** tabs); **Cancel** collapses
+  it but keeps the draft. **Reply** publishes immediately as the host's GitHub
+  account shown under the composer — there is no pending draft review.
+- **Starting a conversation.** Select a line number and click the gutter **+**
+  or **Comment on selected lines**. Drag across line numbers or Shift-click to
+  select a range; the range must be on one side and within one diff hunk. A
+  new conversation is posted immediately as a single-comment review on the
+  displayed commit and never appends to an existing thread, even on a line
+  that already has one. If the PR's head or base commit changes before you
+  post, the draft is kept but you must reselect its lines.
+
+Threads load separately from the rest of the PR (the first 25 conversations,
+with up to 20 comments each) and refresh every 10 seconds while **Changes** is
+visible; other tabs and the closed panel stop polling. **Load more
+conversations** and **Load more replies** fetch older history on demand. Reply
+and new-conversation drafts survive tab and layout switches within the app, but
+not a browser reload. Reading threads requires the same file-sharing permission
+as the diff; posting requires edit permission on the session. Resolving or
+reopening conversations isn't supported yet.
 
 ### Link or unlink a PR
 

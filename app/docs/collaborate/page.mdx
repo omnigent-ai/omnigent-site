@@ -222,5 +222,10 @@ inherits the git repository the source session recorded, so cloning a sandbox se
 the fork in the same checkout. You can point the fork at a different repository
 (`https://github.com/org/repo#branch`), or choose an empty sandbox instead.
 
+If the provider offers [sandbox profiles](/docs/deploy/sandbox-profiles), the dialog
+also shows a **Sandbox profile** picker. Cloning to the same provider defaults to the
+source session's profile, and you must have an authorized profile selected before
+the clone can start.
+
 See the [fork endpoint](/reference) in the REST API reference for the `host_type`,
 `sandbox_provider`, and `workspace` request fields.

@@ -1,0 +1,278 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Sandbox Profiles",
+  "Let a sandbox provider offer per-user, provider-authorized sandbox configurations that users pick when starting or cloning a managed session.",
+  {
+    eyebrow: "Deploy",
+    path: "/docs/deploy/sandbox-profiles",
+  },
+);
+
+# Sandbox Profiles
+
+A sandbox profile is a named sandbox configuration, such as "Large build" or
+"Small development sandbox", that a
+[sandbox provider](/docs/deploy/community-sandbox-providers) offers to specific
+users. The **provider owns** the catalog, its revisions, and the access policy.
+Omnigent shows the choices each user is currently authorized for and saves the
+selected profile ID and exact revision with the session. Before every launch,
+reuse, wake, or replacement, Omnigent passes that ID and revision back to the
+provider to check again.
+
+Omnigent does not sync groups or manage identities, and it has no admin
+editor for profiles. Your provider can authorize users with Okta, Google
+Groups, or an existing policy service. No database migration is required:
+session references are stored as protected session labels.
+
+## Enable the feature
+
+Profiles need two things:
+
+1. **The server feature flag.** Add `sandbox_profiles` to
+   [`OMNIGENT_FEATURES`](/docs/deploy/overview#release-features), keeping any
+   other overrides you already set. It is off by default.
+2. **A provider that manages profiles.** Install a provider whose launcher sets
+   `manages_profiles = True` and whose `SandboxProviderMetadata` also sets
+   `manages_profiles=True` (see [Provider contract](#provider-contract)).
+
+```bash
+OMNIGENT_FEATURES=sandbox_profiles
+```
+
+Other providers keep their usual deployment defaults and show no profile
+picker. With the flag off, and on older servers, clients neither display nor
+query profiles. Enable the flag **before** you configure a provider that
+requires profiles. If a provider requires profiles while the flag is off, the
+server treats it as a configuration error and rejects sessions and schedules
+before saving them.
+
+<div className="note">
+
+On an existing deployment, complete the
+[reserved-label audit](#rollout-and-rollback) before enabling the flag for the
+first time.
+
+</div>
+
+## Choosing a profile
+
+In the web UI, choose a participating sandbox provider on the home page or in
+the **New session** dialog, then pick from the **Sandbox profile** menu next to
+the repository picker. On mobile, the menu sits above the composer. **Start**
+stays disabled until you select a current profile that you are authorized
+to use. There is no default profile: if the provider offers you none, you
+can't launch on it.
+
+The picker is searchable. Search matches the IDs, names, and descriptions of
+your authorized profiles. Each menu shows at most **20 results**, so narrow the
+search to find later matches. While the catalog loads, refreshes, or fails to
+load, sandbox launch is disabled. Retry, or pick an ordinary connected host.
+
+Settings has no sandbox profile page. The provider owns the catalog.
+
+### Lifecycle
+
+| Operation                                               | Behavior                                                                                                                                                                                                                   |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| New session, including with attachments                 | You must choose an authorized ID and revision. Omnigent rejects an unavailable choice before allocating a sandbox.                                                                                                         |
+| **Clone session** (including branch clones) to the same provider | Defaults to the source session's profile. Omnigent resolves the revision the provider currently offers and shows a notice if it changed. You can pick a different profile. If the source profile was revoked or removed, you must choose another. |
+| Clone to an ordinary provider or a local host           | The profile is not copied.                                                                                                                                                                                                 |
+| Native `/clear` and `/fork`                             | The replacement session starts without a profile. Binding it to a managed runner reauthorizes the profile and adopts the host's profile. Local forks stay without a profile.                                               |
+| Side chat                                               | Keeps the source session's profile and runner.                                                                                                                                                                             |
+| Restart or wake                                         | Reauthorizes the exact saved revision. A session is never moved to a newer catalog revision.                                                                                                                                |
+| Missing sandbox replacement                             | Reauthorizes the saved revision before allocating a replacement.                                                                                                                                                           |
+| Scheduled task on a fresh sandbox                       | Creating or updating the task fails if the default provider requires profiles. Use a connected host or a default provider without profiles.                                                                               |
+
+If your access is revoked, future launches and reuse are blocked, but sandboxes
+that are already running keep running. A fork checks the new owner's access. A
+saved session checks the identity it was recorded with.
+
+### Programmatic use
+
+`GET /v1/sandbox-profiles` returns the caller's authorized profiles. It takes
+the optional `provider`, `search`, `profile_id`, `cursor`, and `limit` (1–100,
+default 100) query parameters. The response has `profiles` (each with `id`,
+`name`, `description`, `revision`, and `provider`), `managed_providers`, and
+`next_cursor`. Rows contain only public metadata. The endpoint requires
+authentication. When the feature is off, it returns empty lists.
+
+`POST /v1/sessions` and `POST /v1/sessions/{source_id}/fork` accept
+`sandbox_profile_id` and `sandbox_profile_revision`. A profile ID requires
+`host_type: "managed"`, and a revision requires a profile ID. Child sessions
+inherit their parent's profile and can't select one. Session responses include
+a `sandbox_profile` summary when one is set.
+
+The `sys_session_create` tool accepts `sandbox_provider`, `sandbox_profile_id`,
+and `sandbox_profile_revision` with `placement="managed"`. These requests go
+through the same authorization as the composer. If you pass a profile ID and the
+server's `GET /v1/info` doesn't advertise `features.sandbox_profiles: true`,
+the tool doesn't create a session.
+
+`GET /v1/hosts/{id}?include=sandbox_profile` adds the host's public
+`sandbox_profile` assignment. If the assignment can't be resolved, the response
+has `sandbox_profile: null` and a sanitized `sandbox_profile_error`.
+
+## Provider contract
+
+A provider opts in on its launcher by overriding `list_profiles` and
+`select_profile`, which are defined on `SandboxHostLauncher`:
+
+```python
+from typing import ClassVar
+
+from omnigent.onboarding.sandboxes.base import SandboxHostLauncher
+from omnigent.onboarding.sandboxes.profiles import (
+    ProviderSandboxProfile,
+    SandboxProfileContext,
+)
+
+
+class CustomerLauncher(SandboxHostLauncher):
+    manages_profiles: ClassVar[bool] = True
+    supports_sandbox_profile_lookup: ClassVar[bool] = True  # optional
+
+    def list_profiles(
+        self, context: SandboxProfileContext
+    ) -> list[ProviderSandboxProfile]:
+        if context.sandbox_id is not None:
+            # Return this sandbox's actual assignment, after authorizing the caller.
+            return [self.controller.get_sandbox(context.sandbox_id, context).profile]
+        return self.controller.authorized_profiles(context)
+
+    def select_profile(
+        self, context: SandboxProfileContext, profile: ProviderSandboxProfile
+    ) -> None:
+        # Reauthorize the exact ID and revision, then configure this launcher.
+        self.selected = self.controller.authorize_exact(profile, context)
+```
+
+Declare the same capability in the plugin metadata so Omnigent can check it
+without constructing the launcher. If the two disagree, profile launches are
+rejected. Restart server replicas after you change the declaration:
+
+```python
+SandboxProviderMetadata(
+    name="customer",
+    launcher_class="omnigent.community.sandbox.customer:CustomerLauncher",
+    manages_profiles=True,
+)
+```
+
+Embedding deployments that construct `ManagedSandboxConfig` directly also set
+`manages_profiles=True`.
+
+### Types
+
+`SandboxProfileContext` is a frozen dataclass that holds the trusted server
+identity, never client input:
+
+| Field          | Meaning                                                                    |
+| -------------- | -------------------------------------------------------------------------- |
+| `user_id`      | Execution identity from server authentication.                             |
+| `workspace_id` | Tenant scope. OSS servers use workspace `0`.                               |
+| `sandbox_id`   | An existing sandbox. Set only for sandbox-scoped lookup. Defaults to `None`. |
+
+`ProviderSandboxProfile` is a strict, frozen model that contains public
+metadata only:
+
+| Field         | Constraint                                                                     |
+| ------------- | ------------------------------------------------------------------------------ |
+| `id`          | Matches `[a-z0-9][a-z0-9_-]{0,63}`. Stable and unique within the provider.     |
+| `name`        | 1–100 characters.                                                              |
+| `description` | Optional, up to 500 characters.                                                |
+| `revision`    | Opaque, 1–64 characters.                                                       |
+
+Keep launch configuration, credentials, and access lists out of this model.
+Change the revision whenever the effective configuration changes, and never
+reuse a revision for different settings. To keep existing sandboxes usable
+after a catalog update, keep their historical revisions available.
+
+### Method rules
+
+- **`list_profiles`** returns only the profiles currently authorized for the
+  context, at most 1,000 unique profiles. Omnigent sorts, searches, and pages
+  through the full list itself.
+- **`select_profile`** must independently recheck the caller's current access
+  and the exact revision, then configure **this launcher instance** before
+  `prepare`, `provision`, or `resume`. An earlier listing doesn't prove
+  current access. Never quietly switch to a newer revision.
+- Both methods run synchronously in worker threads. Bound every external call
+  with timeouts and response-size limits, and don't allocate infrastructure
+  while discovering or selecting profiles.
+- Cleanup and status checks must work from the stable provider configuration
+  and sandbox ID alone, even after a profile is revoked or deleted.
+
+| Provider result                                 | Omnigent response                                                   |
+| ----------------------------------------------- | ------------------------------------------------------------------- |
+| Empty catalog                                   | No profiles to choose; launch stays blocked.                        |
+| `SandboxProfileAccessDenied`                    | Sanitized 403. Omnigent never falls back to defaults.               |
+| `SandboxProfileChanged`                         | Sanitized 409. The user must choose again for a new session.        |
+| `OwnerCredentialMissingError`                   | 409 that tells the user to connect their account.                   |
+| Any other exception                             | Generic 503. Private error details aren't returned to clients.      |
+
+Providers that use connected user accounts declare `owner_credential_provider`
+and implement `bind_owner_credential`. Omnigent binds the owner's credential
+resolver before discovery and selection, and never falls back to a service
+credential.
+
+### Controller-owned assignment (optional)
+
+`supports_sandbox_profile_lookup` defaults to `False`. When it is `True`,
+Omnigent can call `list_profiles` and `select_profile` with
+`context.sandbox_id` set. For that call, return exactly one profile: the ID and
+revision actually assigned to that sandbox, even if the catalog now offers a
+newer one. Store this assignment with the sandbox when you create it, for
+example in your controller's resource metadata or tags. The assignment then
+outlives every Omnigent session that used the sandbox.
+
+Without lookup, Omnigent recovers a host's profile from its surviving sessions
+and rejects conflicting references. After the last session is deleted, it can't
+recover the assignment and won't launch with defaults instead.
+
+## Rollout and rollback
+
+- Deploy with the flag off, and keep providers in ordinary mode while you
+  validate identity mapping, historical revisions, and cleanup in staging.
+- **Audit reserved labels before the first opt-in.** Older servers let editors
+  write `sandbox_profile:*` session labels, which a profile-enabled server would
+  treat as accepted references. Upgrade every replica and label writer first,
+  then find and remove any existing `sandbox_profile:*` labels while profiles
+  are still disabled. Don't run this cleanup on a deployment where the feature
+  is already enabled, because those labels are legitimate there.
+- Upgrade every server replica and launch client before you opt a provider in.
+  Older clients can't send a selection, so they receive a 422 instead of falling
+  back to a default profile.
+- To roll back, stop new profiled launches and drain their running sandboxes
+  before you disable the flag. A server with the flag off doesn't enforce profile
+  authorization, so turning the flag off doesn't revoke access.
+
+{/* TODO(doc-drafter): the source repo's docs/extending/provider_profiles.md has the full label-audit procedure (batched primary-key scan of conversation_labels) and split-database semantics; link or expand once it is published. */}
+
+## Example provider
+
+The Omnigent repository includes
+[`examples/sandbox-profile-provider`](https://github.com/omnigent-ai/omnigent/tree/main/examples/sandbox-profile-provider),
+which registers two providers:
+
+- **`profile_demo`** is a Kubernetes launcher that reads profiles and
+  per-user/workspace permissions from a local JSON catalog. Each profile's
+  revision is a SHA-256 hash of its config.
+- **`controller_demo`** is an HTTP controller adapter that stores each
+  sandbox's profile assignment with the sandbox resource. It includes a local
+  simulator.
+
+```yaml
+sandbox:
+  provider: profile_demo
+  server_url: https://omnigent.example.com
+  profile_demo:
+    catalog_file: /absolute/path/to/catalog.json
+    namespace: omnigent-demo
+```
+
+Its README walks through comparing users' catalogs, revoking access between
+listing and launch, and recovering an assignment after a controller restart.
+The demo doesn't provision real infrastructure or use an identity provider.
+Test resource limits, identity mapping, and revocation against your own
+staging controller.

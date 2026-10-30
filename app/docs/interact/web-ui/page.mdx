@@ -633,6 +633,50 @@ reads the on-disk file directly (no upload). This button shows only for native
 coding-agent sessions, since those harnesses run in the workspace and resolve
 the referenced file themselves.
 
+### Open in VS Code or Cursor
+
+The Files panel header and the file viewer toolbar have an outlined **Open**
+split button. Click **Open** to open the current folder (from the Files panel)
+or file (from the viewer) in your preferred editor. Use the chevron
+(`Choose app to open in`) to pick **VS Code** or **Cursor**. Omnigent remembers
+the editor you picked last on this device and uses it for both buttons. When the
+file viewer toolbar is too narrow, its other actions collapse into the `⋯` menu
+but **Open** stays visible.
+
+The button works in the browser and the [desktop app](/docs/interact/desktop).
+The mobile apps hide it. Your browser or the desktop app may ask for permission
+the first time it opens the editor's link.
+
+- **Local files**: the desktop app opens the path directly when the session's
+  host is the machine it runs on. The menu also includes your file manager's
+  reveal action (for example `Open in Finder` for a folder or `Show in Finder`
+  for a file).
+- **Remote hosts**: the editor opens the path over Remote SSH. Install the
+  editor and its Remote SSH support on the machine where you click the button,
+  and make sure the SSH alias exists in your local SSH config. The host must be
+  online. Remote links support POSIX paths only. Omnigent infers the alias for
+  these hosts:
+
+  | Host | SSH alias |
+  | --- | --- |
+  | Sandbox provider `databricks-arca` | `arca.ssh` |
+  | Sandbox provider `arclet` | `arclet_<host name>.ssh` |
+  | User-connected host labeled `arca_type arca` | `arca.ssh` |
+  | User-connected host labeled `arca_type arclet` | `arclet_<name>.ssh`, with the name read from `/opt/arclet/arclet-name` |
+
+  On user-connected hosts with no sandbox provider, Omnigent reads the
+  `arca_type` label from `/etc/metric_proxy/labels/default`, using the
+  session's normal file permissions. The host's display name doesn't affect
+  detection. Arclet names must be 1–64 ASCII letters, digits, underscores, or
+  hyphens, must start with a letter or digit, and must not start with
+  `arclet_` or `arclet-`. Arca Companion creates the Arclet aliases for you.
+  Omnigent caches detection for five minutes per session and host.
+
+Omnigent hides the remote options for other sandbox providers, custom SSH
+aliases, offline hosts, invalid Arclet names, and missing or malformed label
+files. The browser can't check whether the editor or the SSH alias is
+installed on your machine.
+
 ## GitHub
 
 Coding-agent sessions have a **Pull Requests** tab in the right workspace rail. It

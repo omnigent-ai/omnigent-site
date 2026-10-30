@@ -96,6 +96,55 @@ and agent renames. An empty value removes the additional guidance. A non-string
 value or a string longer than 4,000 characters is ignored and the default title
 prompt is used.
 
+## New Chat picker curation
+
+| Setting | Value                                                                    |
+| ------- | ------------------------------------------------------------------------ |
+| Keys    | `restrict_to_agent_names`, `default_agent_name`                          |
+| Scope   | Deployed server config (`omni server --config`)                          |
+| Type    | List of agent names, or one name; `default_agent_name` is one string     |
+| Default | Unset — New Chat offers the full roster with no server-chosen default    |
+
+Use these keys to limit and order what the web UI's New Chat picker offers,
+and to choose the agent a fresh chat starts on:
+
+```yaml
+restrict_to_agent_names: [polly, claude-native-ui] # New Chat offers only these, in this order
+default_agent_name: polly # where a user with no history starts
+```
+
+The keys are read only from the YAML passed to `omni server --config` (or
+`/data/config.yaml` in the Docker stack); a plain `omni server` without
+`--config` ignores them. Changes take effect on the next server start.
+
+- **`restrict_to_agent_names`**: New Chat shows only these agents, as one flat
+  list in the configured order. It has no Harnesses heading, no **Other...**
+  submenus, no **Create custom agent** entry, no bundle import, and no Smart
+  Routing entry. **Hide unconfigured harnesses** and the per-entry hides in
+  **Settings › Appearance** still apply to the curated list. An empty list or
+  blank names mean no restriction.
+- **`default_agent_name`**: the agent New Chat pre-selects for a user with no
+  remembered pick. A user's own earlier pick wins while it is still offered; a
+  remembered pick the restriction no longer offers falls back to this default.
+  A default that `restrict_to_agent_names` doesn't include is ignored with a
+  warning.
+
+Both keys fail open: a value of the wrong type, such as a non-string list
+element or a non-string default, is logged and ignored rather than emptying the
+picker. At startup the server logs a warning for each restricted name that
+matches no server agent, or that `OMNIGENT_SEEDED_AGENTS` leaves out. If no
+restricted name matches, New Chat shows an empty state unless a user has their
+own agent with one of those names. An agent that `OMNIGENT_SEEDED_AGENTS`
+removes stays hidden even when `restrict_to_agent_names` lists it.
+
+This is display only, not access control. The API, the CLI, the scheduled-task
+and project-default pickers, and existing sessions still reach every agent. If
+a project's configured agent isn't offered, New Chat reports it as unavailable
+until the user picks an offered agent. To remove packaged agents everywhere,
+use `OMNIGENT_SEEDED_AGENTS` instead. Both keys are published in the `picker`
+block of the unauthenticated `GET /v1/info` response, so don't put anything
+sensitive in agent names.
+
 ## Web UI base path
 
 | Setting | Value                                                                                |

@@ -983,9 +983,12 @@ To create one manually, open the **New scheduled task** dialog and fill in:
   hour; Daily and Weekdays ask for a **time**; Weekly adds a weekday
   multi-select (**On days**). Times are chosen in 15-minute steps. The schedule
   is evaluated in your browser's local timezone.
-- **Host (optional)** — pin the task to a specific connected host, or leave it
-  set to **Resolve at fire time** to run on your connected host whenever the
-  task fires. When the server has [managed sandboxes](/docs/deploy/cloud-sandbox-host)
+- **Host** — the connected host the task runs on. A new task starts with your
+  first online host selected; pick another to change it. A run on a pinned host
+  fails while that host is offline. A task saved without a host (over the API or
+  by an agent) runs on your most recently active live host, and the dialog and
+  task detail page show it as **Most recently active host** until you pick one.
+  When the server has [managed sandboxes](/docs/deploy/cloud-sandbox-host)
   configured, the picker also offers **New Sandbox** (labelled with the
   provider's name, e.g. **Modal Sandbox**): each run then provisions a fresh
   sandbox instead of using a connected host, and the sandbox's shutdown follows

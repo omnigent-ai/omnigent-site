@@ -218,9 +218,34 @@ before the sandbox has finished coming up. The sandbox is registered to you, the
 so it resolves your credentials rather than the source session owner's.
 
 The sandbox's working directory follows the source by default: leaving the workspace unset
-inherits the git repository the source session recorded, so cloning a sandbox session lands
-the fork in the same checkout. You can point the fork at a different repository
-(`https://github.com/org/repo#branch`), or choose an empty sandbox instead.
+inherits every git repository the source session recorded, so cloning a sandbox session
+preserves all of its checkouts.
+
+When you pick a sandbox target, the dialog shows the repository list with the source's
+repositories already selected. Before cloning you can:
+
+- **Add repositories** by searching your connected GitHub repositories or pasting a repository
+  URL (`https://github.com/org/repo`).
+- **Choose a branch for each repository** independently. Leave it blank for the default branch.
+- **Remove repositories** the fork doesn't need. Removing all of them starts an empty sandbox.
+
+Each inherited repository is prefilled with the source workspace's current branch if that
+branch exists on the remote. If the branch hasn't been pushed, the fork falls back to the
+repository's original launch branch, and a note under the repository explains why. If the
+source workspace is unavailable, the original selections are kept.
+
+Providers that support [multiple repositories](/docs/deploy/cloud-sandbox-host) accept up to
+10. Several repositories are cloned side by side, and the agent starts in the directory that
+contains them. If you switch to a provider that clones only one repository, the dialog keeps
+your selection and asks you to remove the extras before cloning. The same choices are
+available from the phone header's Fork action.
 
 See the [fork endpoint](/reference) in the REST API reference for the `host_type`,
-`sandbox_provider`, and `workspace` request fields.
+`sandbox_provider`, `workspace`, and `workspaces` request fields. `workspace` takes a single
+repository URL (optionally `#<branch>`). `workspaces` takes a list of them, replaces the
+source's selection, and requires a server that reports `session_fork_workspaces: true` in
+`GET /v1/info`. The two fields are mutually exclusive, and both require
+`host_type: "managed"`. To get branch suggestions for a fork's repositories, call
+`GET /v1/sessions/{session_id}/resources/repository-branches`. It returns each managed
+repository's `url`, current `branch`, and `pushed` status. Here, `pushed` means the branch
+exists on the remote, not that every local commit has been pushed.

@@ -703,6 +703,30 @@ it. When a session tracks no PRs yet, the tab's empty state offers the same
 The composer status line mirrors this: it shows `#123` for a single tracked PR
 or `N PRs` when several are tracked, and clicking it opens the **Pull Requests** tab.
 
+The chip's icon and color show the status of the PR that most needs attention.
+Tracked PRs are ordered by status, from most to least urgent:
+
+| Status                 | Meaning                                                                          |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| **Merge conflicts**    | The open PR conflicts with its base branch.                                      |
+| **Checks failing**     | At least one CI check is failing.                                                |
+| **Ready to merge**     | The PR's merge state is clean and every check result is available.               |
+| **Checks running**     | CI checks are still pending.                                                     |
+| **Open**               | Open, but not shown as ready to merge (for example, reviews are still required). |
+| **Draft**              | A draft PR whose checks are not failing and that has no merge conflicts.         |
+| **Status unavailable** | Omnigent can't determine the PR's state.                                         |
+| **Merged**             | The PR has been merged.                                                          |
+| **Closed**             | The PR was closed without merging.                                               |
+
+On a device with a mouse or trackpad, hovering the chip opens a **Pull
+requests** preview. It lists every tracked PR in that order, showing each one's
+`owner/repo #number`, status, and title. On touch devices the chip shows a plain
+tooltip instead. While any tracked PR is still open, or its state is unknown,
+the chip refreshes these statuses every 30 seconds in the foreground tab. They
+also refresh when a turn ends. If a refresh fails or the host is offline, the
+chip falls back to the PR's last known open, draft, merged, or closed state and
+omits check and merge readiness.
+
 ## Mentioning workspace files
 
 In a coding-agent session, type `@` in the composer to browse and attach

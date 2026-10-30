@@ -136,6 +136,12 @@ interactive session would leak its state into the run and break once it is gone.
 If no live host can be resolved (or the pinned host is offline), the occurrence
 is recorded as a failed run.
 
+The [web UI](/docs/interact/web-ui#scheduled-tasks) has no option to leave the
+host unset: a task created there runs on a host you pick (starting with your
+first online host) or in a new sandbox. A task saved without a host through
+these tools or the REST API shows there as **Most recently active host** until
+you pick one.
+
 ### `managed_sandbox`
 
 Each firing provisions a **fresh** server-managed sandbox — the same launch path

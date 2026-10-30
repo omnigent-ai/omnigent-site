@@ -975,14 +975,34 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 
 - **Name** — a label for the task (for example, `Nightly triage`).
 - **Prompt** — the instruction the agent receives on every run.
-- **Runs with** — the agent or harness to run. Scheduled tasks use that agent's
-  default model, effort, and permission settings; there are no per-task model or
-  effort overrides in this dialog.
-- **Frequency** — one of four presets: **Hourly**, **Daily**, **Weekdays**, or
-  **Weekly**. Hourly fires once an hour and asks only for the **minute** of the
-  hour; Daily and Weekdays ask for a **time**; Weekly adds a weekday
-  multi-select (**On days**). Times are chosen in 15-minute steps. The schedule
-  is evaluated in your browser's local timezone.
+- **Schedule** — pick a frequency: **Every hour**, **Every day**, **Every
+  weekday**, **Every week**, or **Custom schedule**. **Every hour** asks only for
+  the **minute** of the hour. **Every day** and **Every weekday** ask for a
+  **time**. **Every week** also asks which days of the week to run on. You can
+  type a time or pick one from the time picker, which offers every minute of
+  the hour.
+  - **Custom schedule** opens a builder. Set **Repeat every** to a whole number
+    from 1 to 366 and pick a unit: **Hours**, **Days**, **Weeks**, **Months**, or
+    **Years**. Weeks asks which days of the week to run on. Months asks for
+    **Days of the month** (up to 24 days). Years asks for a **Month** and days of
+    the month. Months that don't have a selected day are skipped. Hours asks for
+    the minute; every other unit asks for a time. Click **Apply** to save the
+    custom schedule. The schedule must fire at least twice.
+  - **Timezone** — the timezone the schedule runs in. New tasks default to your
+    browser's timezone, and edited tasks keep the timezone they were saved
+    with. To change it, search the list (for example, `Asia/Singapore`).
+  - **Ends** — **Never** (default); **On date**, which stops after the last
+    second of the chosen day in the task's timezone (the date must be in the
+    future); or **After** _N_ **occurrences** (at least 2). The occurrence count
+    includes every run scheduled since the task was created.
+
+  **Custom schedule** and **After** _N_ **occurrences** need a server with the
+  `automations_v2` release feature enabled (`OMNIGENT_FEATURES=automations_v2`;
+  see [Release features](/docs/deploy/overview#release-features)). Without it,
+  both options are hidden. If you edit a task that already uses one of them,
+  the option shows but is disabled, and the dialog asks you to choose a
+  supported frequency and ending instead. If a saved schedule can't be shown in
+  the form, the dialog asks you to choose a new frequency to replace it.
 - **Host (optional)** — pin the task to a specific connected host, or leave it
   set to **Resolve at fire time** to run on your connected host whenever the
   task fires. When the server has [managed sandboxes](/docs/deploy/cloud-sandbox-host)
@@ -993,6 +1013,13 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 - **Workspace (optional)** — shown only once a connected host is pinned. Pick a
   directory to pin it; leave it unset to default to the host's home directory. A
   workspace can't be set without a host, and doesn't apply to sandbox runs.
+- **Harness** — the agent or harness to run. Most agents use their default
+  model, effort, and permission settings. For native coding agents that support
+  per-run model and effort settings (Claude Code), an **Advanced** section
+  appears, open by default. It lets you set the model, reasoning effort, and
+  permission mode for each run. Leave them on **Default** to use the agent's
+  configured settings. Automations run unattended, so a prompting permission
+  mode (Manual or Plan) waits for an approval that never comes.
 
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.

@@ -425,8 +425,8 @@ omnigent://my-workspace.cloud.databricks.com/c/conv_xyz
 The link carries no `http`/`https` — the app infers it the same way the setup
 screen does: `http` for a loopback host (`localhost`, `127.0.0.1`), `https` for
 a remote host. A Databricks workspace mount is discovered automatically, so you
-don't include it in the link. Only `/c/<session_id>` links are recognized;
-other paths are ignored.
+don't include it in the link. Only `/c/<session_id>` links and the server-home
+root (`omnigent://<host>/`) are recognized; other paths are ignored.
 
 Clicking a link behaves like opening a page for a known site:
 
@@ -439,3 +439,27 @@ Clicking a link behaves like opening a page for a known site:
   and registering this machine as a runner. Cancel is the default; only open
   links from servers you trust. Once you allow it, the server is remembered so
   future links open without a prompt.
+
+### Open the host UI from the CLI
+
+By default, `omni host` and `omni start` open the host web UI in your browser.
+To open it in the desktop app instead, pass `--open-in-desktop` or set
+`OMNIGENT_HOST_OPEN_IN_DESKTOP=1`:
+
+```
+omni host --open-in-desktop
+omni start --open-in-desktop
+```
+
+The CLI hands the app an `omnigent://` link and waits up to five seconds for
+the app to accept it. It falls back to opening the URL in your browser when:
+
+- the desktop app isn't installed,
+- the installed app is too old to accept the request, or
+- the app doesn't respond within five seconds.
+
+URLs that a deep link can't represent — ones with a base path (such as a
+Databricks workspace mount or a proxy prefix) or with query parameters or a
+fragment — always open in the browser so they keep their destination. Once the
+app accepts the request, cancelling its connect prompt doesn't open a browser.
+`--no-open` suppresses both the desktop app and the browser.

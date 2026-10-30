@@ -362,6 +362,10 @@ Open the printed URL (by default **http://localhost:6767**) and drive the agent
 entirely from the browser; no further terminal interaction needed. Stop the
 daemon later with the `omni host stop` command it prints.
 
+To open the UI in the [desktop app](/docs/interact/desktop#open-the-host-ui-from-the-cli)
+instead of a browser, add `--open-in-desktop` (or set
+`OMNIGENT_HOST_OPEN_IN_DESKTOP=1`).
+
 Sign-in still happens in the foreground, before the spawn: pointing
 `--background` at an authenticated remote server (for example
 `omni host --background --server https://your-server.databricksapps.com`) runs

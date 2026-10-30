@@ -94,6 +94,39 @@ for an IdP you trust to vouch for the claim. When set, the claim value is
 trimmed and normalized like an email address. This applies to the generic-OIDC
 path only; GitHub always requires a verified primary email.
 
+Login fails with a different error when the problem is the token, not the
+claim: `IdP returned no id_token` when the token response has no `id_token`
+(check that the `openid` scope is requested), and `IdP id_token failed
+validation` when the token's signature or claims don't check out. The server
+log explains why validation failed.
+
+### Forced re-authentication window
+
+A CLI, host, or device login makes the IdP re-authenticate the user instead
+of reusing its existing session. Omnigent sends `prompt=login` with a
+`max_age` of 300 seconds. The server enforces freshness itself: the
+`id_token`'s `auth_time` must be at or after the moment it asked for
+re-authentication, and a missing or stale `auth_time` fails closed. Your IdP
+must honor `prompt=login` and `max_age` and return `auth_time`.
+
+Set `OMNIGENT_OIDC_REAUTH_MAX_AGE` to use a different window for a provider
+that needs one:
+
+```
+OMNIGENT_OIDC_REAUTH_MAX_AGE=300
+```
+
+The value must be a positive number of seconds. Zero, negative, or
+non-numeric values are ignored with a logged warning, and the default of 300
+applies. Zero is rejected on purpose: Microsoft Entra ID caps the `id_token`'s
+`exp` at `auth_time + max_age`, so a zero window produces a token that expires
+the moment it's issued. Some providers, such as Authelia, also can't complete
+consent when asked for `max_age=0`.
+
+If your IdP can't return a fresh `auth_time` (for example, Cloudflare Access),
+you can opt out of the check with `OMNIGENT_OIDC_REQUIRE_REAUTH=0`. GitHub
+login never forces re-authentication, so neither setting affects it.
+
 ### Public PKCE clients and explicit endpoints
 
 The generic-OIDC path (Okta, Auth0, Keycloak, Entra ID, and any other IdP that

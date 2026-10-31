@@ -791,11 +791,23 @@ text/code files keep their existing separate limits.
 
 ## Message queue and steering
 
-Type a follow-up while the agent is still working and it's held in a client-side
-queue instead of interrupting the turn. Queued messages appear in a docked strip
-above the composer, and drain automatically — one at a time, in order — as soon as
-the session goes idle.
+By default, a follow-up you send while the agent is still working is steered:
+it's sent right away instead of waiting for the turn to finish. Where the
+harness supports live injection, the message lands in the running turn;
+otherwise it's folded in at the next turn boundary. Sending the follow-up
+doesn't stop the agent.
 
+To queue follow-ups instead, open **Settings → General** and switch off
+**Always steer**. With it off, a follow-up typed mid-turn is held in a
+client-side queue. Queued messages appear in a docked strip above the composer,
+and drain automatically — one at a time, in order — as soon as the session goes
+idle. The setting also applies to side chats. It's stored in your browser, so
+set it on each browser or device you use.
+
+Messages that are already queued keep their order: if you turn **Always steer**
+back on while messages are queued, new follow-ups still wait behind them.
+
+{/* TODO(doc-drafter): screenshot may be stale — GIF shows follow-ups queuing, which now requires switching off Always steer (on by default) */}
 ![Steering and queuing a message](/images/docs/steer-and-queue-msg.gif)
 
 Each queued row has inline actions:

@@ -279,6 +279,27 @@ options in the dropdown depend on the selected harness:
 Your choice is remembered and seeds the next new session, the same way the model
 picker is remembered.
 
+#### `/permissions` in Codex sessions
+
+In a running Codex (`codex-native`) session, typing **`/permissions`** in the
+composer and pressing `Enter` (or picking it from the slash menu, where it's
+listed as "Change the approval mode for this session") opens the composer's
+permissions dropdown instead of sending the command to Codex. Nothing is sent
+to the terminal, so Codex's own permissions popup doesn't open; the composer
+clears and your pick is applied through the same live switch as clicking the
+dropdown.
+
+- `/permissions` takes no arguments; `/permissions full-access` shows
+  "/permissions does not accept arguments" and sends nothing.
+- If you aren't the session owner, the composer shows "Only the session owner
+  can change the permission mode". While a previous change is still being
+  applied, it shows "The permission mode can't be changed right now". In both
+  cases nothing is sent.
+- The slash menu offers `/permissions` only on Codex sessions. On other
+  harnesses, including Claude Code (where `/permissions` edits tool rules
+  rather than the mode) and Devin, typing it sends it as ordinary text to the
+  agent.
+
 ### Choose MCP services before launch
 
 On a server whose administrator publishes an MCP registry, the new-chat composer

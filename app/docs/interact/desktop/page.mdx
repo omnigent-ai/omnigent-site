@@ -120,6 +120,34 @@ desktop app to be running with the session open. If no desktop window is subscri
 the action fails cleanly with `browser action timed out — is the session open in the
 Omnigent desktop app?` rather than hanging.
 
+### Preview apps running on this machine
+
+When a session's host is the same machine as the desktop app, the embedded
+browser can open a local dev server. Start the app, open **+ → Browser** in the
+Workspace rail, and enter its URL — for example `http://localhost:5173/`. The
+same access applies to the agent's `browser_*` tools and to chat or workspace-file
+links you open in the app. `localhost` always means the desktop machine.
+
+Only the exact hosts `localhost`, `127.0.0.1`, and `[::1]` over HTTP(S) are
+allowed. Private-network addresses, link-local and cloud metadata addresses,
+`*.localhost` subdomains, `0.0.0.0`, and DNS names that resolve to loopback stay
+blocked. TLS, CORS, authentication, and
+[local network permission](#local-network-permission) rules still apply.
+
+The desktop app treats a session as local only when the session's host ID
+matches this machine's host ID and a live `omni host` daemon on this machine is
+connected to the same server as the window. It re-checks this on every
+navigation and agent action; if the check fails, the page is cleared and
+access is revoked. Sessions on remote or unknown hosts can open only public
+addresses — use a public preview URL or your regular browser for those. This
+requires an up-to-date desktop app and web UI; with an older web UI, the pane
+stays limited to public addresses.
+
+Hiding and reopening the Workspace, or switching tabs, keeps the page loaded
+without reloading it. Closing the Browser tab discards it. Browser tabs you
+open with **+ → Browser** are separate from the session's agent browser view,
+so the agent's browser tools don't act on them.
+
 ### Local network permission
 
 Sites in the embedded pane can ask for **local network access** — for example a

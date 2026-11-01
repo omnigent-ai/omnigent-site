@@ -246,28 +246,62 @@ rm ~/.kimi-code/credentials/kimi-code.json
 
 ## OpenCode
 
-The native OpenCode harness (`opencode-native`, alias `opencode`) brings **its
-own provider auth** — Omnigent stores no OpenCode credential. OpenCode reaches a
-provider through any of three routes, and `omni setup` reads each one (without
-touching the secrets) to report which providers OpenCode can reach:
+The native OpenCode harness (`opencode-native`, aliases `opencode` and
+`native-opencode`) runs the real OpenCode TUI in a runner-owned tmux pane and
+mirrors it into the Omnigent conversation. Launch it with `omni opencode`.
 
-1. **Stored login** — run `opencode auth login`; the credential lands in
-   `~/.local/share/opencode/auth.json`, keyed by provider id.
+### Supported version
+
+The harness requires **OpenCode 2.0.18 or a later 2.0.x patch**
+(`>=2.0.18,<2.1.0`), published on npm as `@opencode/cli`. Newer minors are
+refused until they are validated, and OpenCode 1.x (the `opencode-ai` package)
+is no longer supported. A host with an unsupported version reports the harness
+as **outdated** until you upgrade it. Set
+`OMNIGENT_OPENCODE_SKIP_VERSION_CHECK=1` to bypass the version gate at your own
+risk.
+
+```
+npm rm -g opencode-ai            # only if OpenCode 1.x is installed
+npm i -g @opencode/cli@2.0.32
+opencode auth login              # optional; free models need no sign-in
+omni opencode
+```
+
+`omni setup` → **OpenCode** runs the same install and offers the optional
+login. The web UI's setup dialog shows the same checklist for a remote host.
+Both OpenCode packages install the same global `opencode` binary, and Omnigent
+never removes packages. If `opencode-ai` is still installed, setup stops and
+asks you to run `npm rm -g opencode-ai` yourself.
+
+### Authentication
+
+No sign-in is required. Once OpenCode is installed the harness is ready, with
+OpenCode's built-in free models such as `opencode/big-pickle`. Sign in to a
+provider only to use your own models. Omnigent stores no OpenCode credential.
+`omni setup` reads these sources, without touching the secrets, to report
+which providers OpenCode can reach. With none of them it reports **free models
+only (no provider signed in)**.
+
+1. **Stored login** — run `opencode auth login`. OpenCode 2.x keeps the
+   credential in its database (`~/.local/share/opencode/opencode.db`). A legacy
+   `~/.local/share/opencode/auth.json` is still read.
 2. **Provider API-key variables** — a common provider key such as
    `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, or
    `DEEPSEEK_API_KEY` set in the environment where `omnigent host` runs.
 3. **Amazon Bedrock** — see below.
 
-A host where none of these is present shows `opencode-native` as **needs-auth**
-and the web picker disables its row; `omni setup` offers to run OpenCode's
-native login.
+At launch, the runner writes a per-conversation `auth.json` that merges your
+legacy `auth.json` with your OpenCode 2.x credential store (the store wins on
+conflicts). OpenCode imports it once into the conversation's private database.
+Provider keys that exist only in the runner's environment are then connected
+through OpenCode's integration API.
 
 ### Amazon Bedrock
 
 Bedrock is the exception to the API-key pattern: OpenCode loads it from the AWS
 credential chain and the AWS SDK authenticates at run time, so there is no
-`auth.json` entry or provider key to detect. Omnigent treats OpenCode as ready
-for Bedrock when **either** of the following holds:
+stored credential or provider key to detect. `omni setup` reports Bedrock as
+reachable when **either** of the following holds:
 
 - Any of these AWS credential-chain variables is set (any non-empty value):
   `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_PROFILE`, `AWS_REGION`,
@@ -276,8 +310,9 @@ for Bedrock when **either** of the following holds:
   `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`. `omni setup` lists this as
   `env: Amazon Bedrock`.
 - Your OpenCode config (`~/.config/opencode/opencode.json` or `.jsonc`)
-  declares a `provider.amazon-bedrock` block — an empty `{}` is enough. `omni
-  setup` lists this as `config: amazon-bedrock`.
+  declares an `amazon-bedrock` provider block, under either the 1.x `provider`
+  key or the 2.x `providers` key. An empty `{}` is enough. `omni setup` lists
+  this as `config: amazon-bedrock`.
 
 ```json
 {
@@ -297,11 +332,91 @@ file credits nothing.
 
 <div className="note">
 
-**Note:** The readiness probe only checks that Bedrock is declared — it never
-contacts AWS. A host can read as ready with a profile or key that AWS later
-rejects; the failure surfaces when OpenCode makes its first model call.
+**Note:** The Bedrock check only looks for a declaration and never contacts
+AWS. Setup can list Bedrock with a profile or key that AWS later rejects. The
+failure appears when OpenCode makes its first model call.
 
 </div>
+
+### Model and instructions
+
+A model id uses OpenCode's `provider/model` form, for example
+`anthropic/<model-id>`:
+
+```yaml
+executor:
+  type: omnigent
+  config:
+    harness: opencode-native
+    model: anthropic/<model-id>   # optional
+```
+
+When the agent is bound to the Omnigent or Databricks gateway, give a bare
+endpoint name and Omnigent qualifies it as `<gateway-provider>/<endpoint>`.
+`omni opencode --model` and `omni setup` → **OpenCode** → **Set default model**
+(`opencode_model`) set the same value. `/model <id>` in the web composer
+switches the running session.
+
+The agent's `prompt` / `instructions` and Omnigent's framework instructions are
+written to the conversation's private `AGENTS.md` once per launch, after your
+own global `~/.config/opencode/AGENTS.md` if you have one. OpenCode 2.x reads
+that file, not the config's `instructions` key.
+
+### Approvals and policies
+
+Every OpenCode tool call asks for approval first. The runner writes an ask-all
+`permissions` rule (`{action: "*", resource: "*", effect: "ask"}`) into the
+per-conversation config and never passes `--auto`, so every call goes through
+the Omnigent policy engine. An ASK verdict becomes a web approval card. The
+first answer wins, whether it comes from the web card or the TUI. OpenCode
+question forms appear as web question cards.
+
+Omnigent's relay tools, and any MCP servers merged from your own OpenCode
+config, run with OpenCode's Code Mode off. Each MCP call is asked under its own
+`<server>_<tool>` name, so a policy can gate it by name. OpenCode's
+`permission.asked` actions `shell`, `edit`, `read`, `grep`, and `glob` count as
+OS tools for `ask_on_os_tools`. So do OpenCode's MCP resource builtins
+(`opencode_list_mcp_resources`, `opencode_read_mcp_resource`): they can reach
+any configured server and have no config switch to turn them off.
+`block_skills` also applies to OpenCode's `skill` action.
+
+Images attached in the web UI are sent to OpenCode, and other attachments are
+flattened to text. A message sent during a running turn is delivered as a
+steer, and queued messages use OpenCode's own queue.
+
+### One server per conversation
+
+Each conversation gets its own `opencode serve` process, password, and data
+directory (with its own `opencode.db`) under
+`$OMNIGENT_DATA_DIR/opencode-native/` (default `~/.omnigent/opencode-native/`).
+Resume reattaches to the same data directory on the same host. Resuming on a
+different host, or resuming a lost session, starts a new OpenCode session
+seeded with the Omnigent transcript. A same-agent fork into the same workspace
+clones the OpenCode session natively. Any other fork replays the history as a
+text preamble.
+
+Known limits:
+
+- **Policy token snapshot.** The policy plugin gets its Omnigent credentials
+  when the server launches. If a session outlives that token, the request and
+  tool-result policy phases fail open until the session is relaunched.
+  Tool-call approvals are unaffected.
+- **No Direct mode.** OpenCode runs only as a native TUI harness.
+- **Session import** of your existing OpenCode sessions reads a snapshot copy
+  of your OpenCode 2.x database, never the live store. A database last written
+  by OpenCode 1.x must be opened once with OpenCode 2.0 to upgrade it before
+  import works.
+
+### Troubleshooting
+
+- **Harness is outdated** — install `@opencode/cli@2.0.32` as shown above.
+- **Auth-shaped turn error** — the model's provider needs a sign-in. Run
+  `opencode auth login` on the host, or pick a free `opencode/…` model.
+- **Diagnostics** — set `OMNIGENT_HARNESS_STDERR_ENABLED=1` before starting the
+  host to copy OpenCode's server logs, redacted, into the runner log. Startup
+  errors then quote the last lines. The per-conversation bridge directory holds
+  `opencode.json`, the policy plugin, and OpenCode's own log under
+  `xdg-data/opencode/log/`.
 
 ## Antigravity
 

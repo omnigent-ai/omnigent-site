@@ -896,5 +896,42 @@ removed in a future release. No other native command has a `--command` flag.
 
 </div>
 
+### Wrap the Codex app-server
+
+Native Codex sessions run two Codex processes: the terminal you attach to, and
+an app-server that Omnigent starts for each session. `harness.codex-native.command`
+and `args` apply to the terminal. To launch each session's app-server through a
+wrapper too, set `harness.codex-native.app_server` in `~/.omnigent/config.yaml`:
+
+```yaml
+harness:
+  codex-native:
+    app_server:
+      command: ucode
+      args: [codex]
+```
+
+- `command` (required) — the wrapper executable. An `app_server` entry without
+  a `command` is ignored with a warning.
+- `args` (optional list) — args placed right after the wrapper.
+
+Omnigent appends its own `-c` config overrides and then
+`app-server --listen <url>` to the wrapper's args. With the example above, each
+session's app-server runs as `ucode codex -c … app-server --listen …`. Your
+wrapper must pass those trailing args through to Codex. The overrides go before
+the `app-server` subcommand so they join any top-level `-c` flags the wrapper
+adds itself.
+
+When `app_server` is unset, Omnigent runs Codex directly. Like the other
+per-harness entries, it is read only from your user-level config. No environment
+variable overrides it. Setting `OMNIGENT_CODEX_PATH` replaces
+`harness.codex-native.command`, but it does not replace this wrapper.
+
+The wrapper only changes the session app-server. The terminal still connects
+through Codex itself, and model probes still run Codex directly. Omnigent also
+version-checks the Codex binary from
+[binary-path precedence](#binary-path-precedence) and keys its model catalog on
+that binary, so make sure the wrapper runs the same Codex.
+
 To add a runtime that Omnigent does not include, see
 [Community Harnesses](/docs/build/harnesses/community).

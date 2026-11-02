@@ -833,6 +833,24 @@ request the agent raises there is answered there too. The side chat starts
 visually empty — the history it inherited from the parent is hidden — but the
 agent has the parent conversation's full context.
 
+### Queuing and steering in a side chat
+
+The side-chat composer queues and steers follow-ups the same way the main
+composer does (see [Message queue and steering](#message-queue-and-steering)),
+with its own queue strip above the side-chat composer:
+
+- While the side chat is working, its button shows **Interrupt**. Once you type
+  a follow-up it switches to **Send**, which queues the message, or steers it
+  into the running turn if you've turned on the **Always steer** preference.
+  `Escape` still interrupts the side chat's turn.
+- Each queued row offers **Edit**, **Steer**, reorder, and **Delete**.
+  `⌘↵` (`Ctrl+Enter`) sends any draft, then steers the whole queue into the
+  running turn.
+- Closing the side chat discards any follow-ups still in its queue.
+
+In a Codex (`codex-native`) side chat, follow-ups sent while it's working also
+stay on the side chat's own thread rather than reaching the main conversation.
+
 ### Slash commands in a side chat
 
 The side-chat composer opens the same `/` menu as the main composer, with a

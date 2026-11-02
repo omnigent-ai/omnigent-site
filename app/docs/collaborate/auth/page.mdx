@@ -94,6 +94,32 @@ for an IdP you trust to vouch for the claim. When set, the claim value is
 trimmed and normalized like an email address. This applies to the generic-OIDC
 path only; GitHub always requires a verified primary email.
 
+### Re-authentication for CLI and device sign-ins
+
+CLI (`omni login`), host, and device-approval sign-ins (for example a Slack
+connection) force a fresh login: Omnigent sends `prompt=login` and `max_age=0`
+to the IdP, then checks that the returned `id_token` carries an `auth_time` at
+or after that request. If the claim is missing, or older than the request
+because the IdP reused its session, the sign-in fails with
+`IdP did not confirm re-authentication`.
+
+Some IdPs (for example Cloudflare Access) omit `auth_time` or ignore
+`max_age`, so this check can never pass. For those, opt out:
+
+```
+OMNIGENT_OIDC_REQUIRE_REAUTH=0
+```
+
+The server still sends `prompt=login` and still requires PKCE, a
+ticket-specific sign-in, and browser approval, but it no longer verifies that
+the IdP actually asked for credentials again. If the IdP reuses its session,
+only the consent screen confirms the request, and the server logs a warning at
+startup to say so.
+
+Verification is on by default. `0`, `false`, or `no` turn it off; `1`, `true`,
+`yes`, or an empty value keep it on. Any other value fails startup. The setting
+has no effect for GitHub login, which never forces re-authentication.
+
 ### Public PKCE clients and explicit endpoints
 
 The generic-OIDC path (Okta, Auth0, Keycloak, Entra ID, and any other IdP that
@@ -181,7 +207,10 @@ Both should identify the same expected account.
 If your enterprise directory omits `email_verified`, the separate
 `OMNIGENT_OIDC_SKIP_EMAIL_VERIFICATION=1` setting (see
 [Custom email claim](#custom-email-claim)) remains an explicit operator
-choice — the options above never enable it for you.
+choice — the options above never enable it for you. Likewise, if CLI or device
+sign-in fails with `IdP did not confirm re-authentication`, see
+[Re-authentication for CLI and device sign-ins](#re-authentication-for-cli-and-device-sign-ins)
+for the `OMNIGENT_OIDC_REQUIRE_REAUTH=0` opt-out.
 
 ## Header-based auth
 

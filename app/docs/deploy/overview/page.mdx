@@ -338,6 +338,33 @@ This is why your local Claude Code or Codex installation "just works." Runners
 started on your laptop have direct access to your machine's tools, files, and
 credentials.
 
+### Run the host as a service
+
+To keep your machine registered without leaving a terminal open, install the
+host as a per-user system service:
+
+```
+omni host enable --server <server-url>
+```
+
+Without `--server`, the command uses the server from your Omnigent config, or
+local mode if none is configured. Pass `--non-interactive` to
+fail instead of opening browser sign-in while the service is prepared. Remove
+the service with `omni host disable`.
+
+If a host is already running for that server, `omni host enable` replaces it.
+Replacing the host stops its runners, so by default the command first waits for
+any session that is mid-turn to finish. It prints
+`Waiting for N running session(s) to finish` and updates the count as turns
+complete. Idle sessions don't hold it up. If the existing host process is no
+longer alive, or its session list can't be read, the command replaces it right
+away. Press `Ctrl-C` to abort the wait, or pass `--force` to replace the host
+immediately, even mid-turn:
+
+```
+omni host enable --server <server-url> --force
+```
+
 However, moving the runner to a
 [cloud sandbox host](/docs/deploy/cloud-sandbox-host) gives you:
 

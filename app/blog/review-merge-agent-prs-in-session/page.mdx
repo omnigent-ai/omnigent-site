@@ -28,8 +28,8 @@ Now the same tab lets you finish the job. Tidy the PR's title and description,
 and paste a screenshot or video straight into it. Add or remove labels, request
 reviews from people or teams (or withdraw a pending request), and post a
 comment with a Markdown preview. Your draft stays put while you switch tabs or
-PRs. A failing check links to its CI run, so you can see what broke and tell the
-agent to fix it in the next message.
+PRs. Hover a check count to list its jobs, each linked to its CI run, so you can
+see what broke and tell the agent to fix it in the next message.
 
 <video
   src="/images/blog/review-merge-agent-prs-in-session-demo.mp4"
@@ -51,10 +51,14 @@ pushes again in the meantime, the merge is refused instead of shipping changes
 you haven't seen.
 
 To try it, open **Pull Requests** in the workspace rail of a coding-agent
-session with a GitHub PR. Edits, reviewers, and merging live on the Summary
-tab, and new comments go in the Comments tab. Every action runs as the GitHub
-account signed in on the session's host. For how the tab finds and tracks a session's PRs, see
-the [Web UI guide](/docs/interact/web-ui#github).
+session with a GitHub PR. PRs the agent opened or worked on appear there on
+their own; for any other PR, click **+** (Link a PR) and paste its URL. The
+title pencil sits in the panel header. Description edits, reviewers, labels,
+and merging live on the Summary tab, and new comments go in the Comments tab.
+Every action needs edit access to the session and runs on the session's host
+as the PR's selected GitHub account (by default, the host's active `gh`
+account). For how the tab finds and tracks a session's PRs, see the
+[Web UI guide](/docs/interact/web-ui#tracked-pull-requests).
 
 GitLab merge requests and Azure DevOps pull requests stay readable in the same
 tab, but these actions work only on GitHub for now.

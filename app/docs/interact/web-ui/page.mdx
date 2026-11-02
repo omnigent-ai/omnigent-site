@@ -542,6 +542,35 @@ Your mode and palette choices are remembered in the browser and reapplied on
 your next visit. Picking **Omnigent** clears any palette override and returns
 to the default look.
 
+### Show only the final answer
+
+By default, once a turn finishes its tool work folds behind a **Worked** row,
+but every assistant message — including the progress updates the agent posts
+between tool calls — stays visible in order. To keep finished turns down to
+just the answer, turn on **Settings → Appearance → Show only the final answer**.
+
+With it on, a settled turn's earlier assistant messages fold into the same
+**Worked** row as its tool work, and only the turn's last non-blank message
+stays visible as the answer. This also applies to turns with no tool calls: a
+turn made up of several text-only progress messages gets a **Worked** row
+holding all but the last one. Expand the row to read the full narration in
+order.
+
+Some turns stay unfolded so you can see what happened:
+
+- A turn that is still running shows its messages as they stream and folds only
+  once it settles.
+- A turn that failed, was cancelled, ended incomplete, or hit an error or a
+  policy denial keeps its narration visible next to the outcome. A retry that
+  later succeeded doesn't block folding.
+- A turn that is waiting on your approval stays expanded.
+- A turn with a single message has nothing to fold.
+
+The last message is only a heuristic for the final answer, so this setting is
+off by default. It's a per-device browser preference: it applies immediately to
+chats already open (including in other windows), is included in settings export
+and import, and is cleared by resetting Appearance.
+
 ### Workspace panel default
 
 New chats start with the right **Workspace** rail **collapsed** by default, so a

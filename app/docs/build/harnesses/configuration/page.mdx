@@ -529,7 +529,9 @@ the first source that applies wins:
 3. A **self-sufficient built-in Codex provider** selected by your own Codex
    `config.toml` (`~/.codex/config.toml`). Codex authenticates these providers
    itself, so no Omnigent provider and no Codex login is needed.
-4. The Codex CLI's own login (`codex login`).
+4. The Codex CLI's own login (`codex login`). You can also sign in or switch
+   the host's Codex account from the web UI — see
+   [Sign in and switch harness accounts](#sign-in-and-switch-harness-accounts).
 
 ### Use your Codex `config.toml` provider
 
@@ -808,6 +810,60 @@ messages entered there while Omnigent is offline are **not** imported into the
 Omnigent conversation — use Omnigent as the canonical conversation when you need
 its transcript and resume behavior. Bidirectional sync with the Control UI and
 per-session Omnigent MCP are not supported by this integration.
+
+## Sign in and switch harness accounts
+
+**Settings → Harnesses** shows the account each harness on the selected host is
+signed in with. For Codex and Claude you can repair or change that sign-in
+without opening a terminal on the host:
+
+- **Sign in again** — shown on a Codex card whose account has expired.
+- **Switch account** — shown on a configured Codex card signed in with ChatGPT,
+  or a configured Claude card signed in with a Claude subscription.
+
+**Switch account** asks for confirmation first. It shows the current account,
+then **Sign out and switch** signs the host out of it. Every session on that
+host that uses the harness then uses the new account. Sessions already running
+keep working until their token expires.
+
+### Codex device-code sign-in
+
+Codex signs in with a ChatGPT device code that the host requests. The dialog
+shows:
+
+1. An **Open sign-in page** button and **Copy sign-in link** for the HTTPS
+   ChatGPT sign-in page. Pick the account Codex should use there.
+2. The one-time code to enter on that page, with a copy button.
+3. A countdown until the code expires. The dialog keeps checking in the
+   background and closes with the signed-in email and plan once you finish.
+
+**Cancel** (or closing the dialog) stops the login on the host. After an
+error, **Try again** requests a new code. A host runs only one Codex login at
+a time. If one is already in progress, the dialog picks up that login instead
+of starting a second one.
+
+### Claude account switch
+
+After Claude signs out, the dialog shows the Claude sign-in command to run on
+the host. The confirmation step has an optional **Account to sign in with**
+field. Fill it in and the email is added to the command as an `--email`
+argument, shell-quoted when needed (for example,
+`claude auth login --claudeai --email name@example.com`).
+
+Older hosts don't support in-app sign-in. For those, and wherever a harness
+has no in-app flow, the dialog falls back to a copyable CLI sign-in command.
+
+The server exposes these flows under `/v1/hosts/{host_id}/harnesses/{harness}`:
+
+| Route | Purpose |
+| --- | --- |
+| `POST …/login` | Start a Codex device-code login (Codex only). Returns `409` with `code: "login_busy"` and the active `login_id` if one is already running. |
+| `GET …/login/{login_id}` | Poll the login status: `pending`, `succeeded`, or a terminal failure with an `error` message. |
+| `DELETE …/login/{login_id}` | Cancel the login on the host. |
+| `POST …/logout` | Sign Codex or Claude out and return the host's refreshed harness and account state. |
+
+A host that doesn't advertise login support returns `409` with code
+`login_unsupported`.
 
 ## Swap harnesses
 

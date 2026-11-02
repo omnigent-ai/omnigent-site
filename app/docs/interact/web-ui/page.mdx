@@ -974,7 +974,10 @@ runs the chosen agent, and keeps firing until you delete it.
 To create one manually, open the **New scheduled task** dialog and fill in:
 
 - **Name** — a label for the task (for example, `Nightly triage`).
-- **Prompt** — the instruction the agent receives on every run.
+- **Prompt** — the instruction the agent receives on every run. Each run's
+  message adds a short note after it telling the agent that no one is watching
+  (see [the unattended-run note](/docs/build/scheduled-tasks#the-unattended-run-note));
+  the saved task keeps your prompt as written.
 - **Runs with** — the agent or harness to run. Scheduled tasks use that agent's
   default model, effort, and permission settings; there are no per-task model or
   effort overrides in this dialog.

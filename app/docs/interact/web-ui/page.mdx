@@ -992,7 +992,15 @@ To create one manually, open the **New scheduled task** dialog and fill in:
   the server's sandbox configuration. Existing sandbox hosts can't be pinned.
 - **Workspace (optional)** — shown only once a connected host is pinned. Pick a
   directory to pin it; leave it unset to default to the host's home directory. A
-  workspace can't be set without a host, and doesn't apply to sandbox runs.
+  workspace can't be set without a host.
+- **Repository (optional)** — shown instead of the workspace picker when
+  **New Sandbox** is selected, the server's default sandbox provider supplies a
+  repository catalog, and the server supports sandbox repositories for
+  automations. Pick a repository from the catalog to run in it inside each
+  sandbox, or leave it on **Provider default** to leave it unpinned. Choosing
+  **Provider default** when you edit a task clears a saved repository. Switching
+  between a connected host and **New Sandbox** clears a selection that doesn't
+  apply to the new target.
 
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.

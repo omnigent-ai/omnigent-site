@@ -71,9 +71,13 @@ rules.
   connected host, from the current workspace's host list. Omit to run on your
   online host at fire time; a failed run is recorded if none is online. An
   existing managed sandbox host cannot be pinned.
-- **`workspace`** (optional, `connected_host` only) — an existing absolute path
-  on the host where the fired session's runner starts. Requires `host_id`; omit
-  it to start in the host's home directory.
+- **`workspace`** (optional) — its meaning depends on `execution_target`:
+  - `connected_host`: an existing absolute path on the host where the fired
+    session's runner starts. Requires `host_id`; omit it to start in the host's
+    home directory.
+  - `managed_sandbox`: a repository URL to clone into each run's sandbox,
+    optionally suffixed with `#<branch>`. Omit it to use the sandbox provider's
+    default.
 - **`timezone`** (optional) — the IANA timezone the rule is evaluated in, e.g.
   `America/Los_Angeles`. Defaults to `UTC`.
 - **`model_override`** (optional) — a per-run model override. Omit for the
@@ -109,9 +113,16 @@ untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
 `execution_target`, and `state`.
 
 Passing `execution_target=managed_sandbox` switches the task to a fresh sandbox
-per run and clears any pinned `host_id` and `workspace`; don't set either field
-in the same update. Switching back to `connected_host` leaves the task unpinned
-until you set a host again.
+per run and clears any pinned `host_id`; don't set `host_id` in the same update.
+Switching execution targets in either direction also clears the old
+`workspace`, because a connected-host directory and a sandbox repository URL are
+different inputs. Pass a new `workspace` in the same update to replace it.
+Switching back to `connected_host` leaves the task unpinned until you set a host
+again.
+
+On a `managed_sandbox` task, pass a repository URL as `workspace` to change the
+repository, or `workspace=null` to go back to the provider default. A
+`connected_host` task's `workspace` can't be set to `null`.
 
 The `state` field accepts `active` or `paused`:
 
@@ -140,11 +151,22 @@ is recorded as a failed run.
 
 Each firing provisions a **fresh** server-managed sandbox — the same launch path
 as choosing **New Sandbox** for a chat (see
-[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)). The session starts in
-the sandbox's clean server-created workspace, so `host_id` and `workspace` must
-not be set; a create or update that combines them with `managed_sandbox` is
-rejected. The server must have managed sandboxes configured — an unconfigured
-server rejects the task at create time rather than failing every fire.
+[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)). `host_id` must not be
+set; a create or update that combines it with `managed_sandbox` is rejected.
+The server must have managed sandboxes configured — an unconfigured server
+rejects the task at create time rather than failing every fire.
+
+To run in a specific repository, set `workspace` to its clone URL, optionally
+with `#<branch>` (for example `https://github.com/acme/api#main`). The URL is
+validated with the same rules as a repository for a new sandbox chat session,
+and each firing clones it into the fresh sandbox. Leave `workspace` unset to use
+the provider's default workspace. Servers that support sandbox repositories
+report `scheduled_task_sandbox_workspaces: true` in their server info; older
+servers reject a `workspace` on a sandbox task.
+
+An automation that pinned a directory path on a sandbox task (from before
+sandbox repositories were supported) already runs with the provider default.
+The next edit to that task clears the stale path.
 
 A sandbox created by an automation follows the server's normal sandbox
 lifecycle, exactly like one created for a chat: the automation does not

@@ -196,7 +196,10 @@ repositories.
 [Scheduled tasks](/docs/build/scheduled-tasks#where-a-task-runs) can use the same
 launch path: create a task with `execution_target: managed_sandbox` (or pick
 **New Sandbox** in the automation dialog's host picker) and each firing
-provisions a fresh sandbox with a clean workspace. Existing managed sandbox
+provisions a fresh sandbox. Set the task's `workspace` to a repository URL
+(optionally `#<branch>`), or pick one in the dialog's **Repository** control, to
+clone that repository into each run's sandbox; leave it unset for the provider's
+default workspace. Existing managed sandbox
 hosts cannot be pinned as an automation's host, and the option is only offered
 when this server has a managed sandbox provider configured.
 

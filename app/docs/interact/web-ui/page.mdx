@@ -993,6 +993,15 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 - **Workspace (optional)** — shown only once a connected host is pinned. Pick a
   directory to pin it; leave it unset to default to the host's home directory. A
   workspace can't be set without a host, and doesn't apply to sandbox runs.
+- **Random worktree (optional)** — a checkbox that appears only when the pinned
+  workspace is a Git repository. It defaults off. When it's on, each new session
+  the task starts gets a fresh, randomly named git worktree cut from the
+  repository's current `HEAD`; a task that continues the same session reuses
+  that session's worktree on later runs. Turn it off on edit to run in the
+  selected directory again. Picking a different directory clears the checkbox.
+  If the option is enabled but the directory can't be verified (for example,
+  the host is offline), the dialog says so and offers **Turn off random
+  worktree**. Servers that predate this option don't show it.
 
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.

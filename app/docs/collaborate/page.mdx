@@ -142,6 +142,11 @@ Pending prompts are answerable by anyone who can drive the agent (**Edit**),
 whether from the web UI's approval bar or the REST elicitation endpoints. A
 **Read** share can neither see nor answer them.
 
+Sharing a session with **Edit** access, including public Edit, also stops its
+agent from sending work to your other sessions or launching independent worker
+sessions. A **Read** share doesn't, because viewers can't add input. See
+[Send work to your other sessions](/docs/programmatic#orchestrate-your-other-sessions).
+
 <h3 id="owner-only-agent-changes">Only the owner can change the agent</h3>
 
 Co-driving lets a teammate send messages, but it does not let them reconfigure

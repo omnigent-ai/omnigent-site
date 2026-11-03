@@ -82,8 +82,40 @@ rules.
   `high`. Omit for the agent default (the spec's
   [`executor.reasoning_effort`](/docs/build/models#reasoning-effort), or the
   harness default when the spec sets none).
+- **`permission_mode`** (optional) — a per-run permission or execution mode for
+  native coding agents. Set `null` for the agent default. See
+  [Permission modes](#permission-modes).
 
 Once created, the task fires automatically on its schedule until you delete it.
+
+## Permission modes
+
+`permission_mode` uses the vocabulary of the agent's native harness. The fire
+path turns the value into that harness's launch flags:
+
+| Harness | Accepted values |
+| --- | --- |
+| Claude Code (`claude-native`) | `default`, `auto`, `acceptEdits`, `plan`, `dontAsk`, `bypassPermissions` |
+| Codex (`codex-native`) | `default`, `read-only`, `full-access`, `bypass` |
+| Cursor (`cursor-native`) | `default`, `auto-review`, `plan`, `ask`, `yolo` |
+| Antigravity (`antigravity-native`) | `default`, `skip` |
+| Devin (`devin-native`) | `normal`, `accept-edits`, `smart`, `dangerous` |
+
+The launch flags match the ones the interactive
+[permissions dropdown](/docs/interact/web-ui#set-what-the-agent-can-do-without-asking)
+uses. For example, Codex `full-access` launches with
+`--sandbox danger-full-access --ask-for-approval never`, and Antigravity `skip`
+launches with `--dangerously-skip-permissions`.
+
+A mode is validated against the agent's harness when you save it. A value that
+belongs to a different harness, or to no harness, is rejected. To check a mode,
+the server has to resolve the agent's harness. If the agent's bundle isn't
+available, the save is rejected and you can retry once the bundle is available.
+Clearing the mode to `null` is always allowed.
+
+Runs are unattended, so a mode that prompts for approval can leave a run
+waiting until someone responds. Choose an auto-running mode only when its
+permission level fits the task.
 
 ## Recurrence rules
 
@@ -105,8 +137,13 @@ minutes.
 
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
 untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
-`model_override`, `reasoning_effort`, `workspace`, `host_id`,
-`execution_target`, and `state`.
+`model_override`, `reasoning_effort`, `permission_mode`, `workspace`,
+`host_id`, `execution_target`, and `state`.
+
+Model ids and permission vocabularies are specific to each harness. If a task's
+agent changes, any `model_override`, `reasoning_effort`, or `permission_mode`
+you don't resend in the same update is cleared. When you switch to a harness
+without permission-mode support, send `permission_mode: null`.
 
 Passing `execution_target=managed_sandbox` switches the task to a fresh sandbox
 per run and clears any pinned `host_id` and `workspace`; don't set either field
@@ -168,8 +205,10 @@ When a task is due, Omnigent:
    task starts hostless and binds a new sandbox in step 4. Resolved values are
    never written back to the task.
 3. Creates a session bound to the task's agent, carrying the stored
-   `model_override` and `reasoning_effort`, and grants the task's owner
-   ownership of the new session so the run is visible.
+   `model_override`, `reasoning_effort`, and `permission_mode`, and grants the
+   task's owner ownership of the new session so the run is visible. If a saved
+   permission override can't be resolved or applied to the agent's harness, the
+   run fails with error code `session_create_failed` and no session is created.
 4. Launches the runner — on the resolved host, or in a freshly provisioned
    sandbox — and dispatches the prompt so the agent actually runs.
 5. Records the run — stamping the task's last-run time and the run's
@@ -187,3 +226,18 @@ A few scheduling guarantees:
   [removes a member](/docs/collaborate/auth#removing-a-member), all of that
   user's tasks are marked deleted. A username that is later re-registered does
   not see or inherit the old account's tasks.
+
+## Compatibility and rollback
+
+Servers that accept permission modes for harnesses other than Claude Code report
+`scheduled_task_harness_settings: true` in their server info. Every scheduler
+backend must support this before you save non-Claude permission overrides.
+On older servers the web UI falls back to offering permission modes only for
+Claude Code. That fallback doesn't make overrides you already saved work on an
+older scheduler.
+
+Before rolling back to an older server, pause the affected tasks. Then clear
+their permission overrides or convert them to settings the older backend
+supports, and review the resulting permissions before you resume them. An older
+scheduler may reject these modes. It may also lose their harness-specific
+behavior even when it accepts the spelling.

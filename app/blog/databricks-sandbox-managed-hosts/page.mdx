@@ -1,0 +1,62 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Launch agents in Databricks Sandboxes that run as you, with no shared credentials",
+  "Omnigent can now start each sandboxed session in a Databricks Sandbox created and run as the user who launched it, through their own Databricks connection.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/databricks-sandbox-managed-hosts",
+  },
+);
+
+export const meta = {
+  title:
+    "Launch agents in Databricks Sandboxes that run as you, with no shared credentials",
+  date: "2026-10-27",
+  category: "Sandbox",
+  author: "omnigent",
+  heroArt: "/images/blog/databricks-sandbox-managed-hosts.png",
+};
+
+<BlogPostHeader slug="databricks-sandbox-managed-hosts" />
+
+If your team runs Omnigent next to a Databricks workspace, you can now pick
+**New Sandbox** and have your agent start in a Databricks Sandbox that belongs
+to you. The Sandbox is created and driven with your own Databricks connection,
+so the agent works in the workspace as you and nobody else.
+
+Until now, a shared sandbox setup meant handing the server one set of
+credentials for everyone, which left you unable to say whose access an agent
+was really using. Now every Sandbox runs under the person who started the
+session. The server's own identity is never used, and there is no SSH and no
+shared secret inside the Sandbox. Someone who hasn't connected their account is
+asked to connect Databricks first, and no Sandbox is created for them. A
+Sandbox that stops after sitting idle starts again on your next message, so a
+long-running session picks up where it left off.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: connect Databricks under Settings → Connections, choose New Sandbox in the host picker, and show the agent's first turn running in the user's own Databricks Sandbox. */}
+
+To try it, open **Settings → Connections → Databricks** and connect your
+account. Then start a new chat and choose **New Sandbox** in the host picker.
+An admin turns this on once for the server by pointing the sandbox provider at
+the workspace where Sandboxes should run:
+
+```yaml
+sandbox:
+  provider: databricks
+  server_url: https://your-host
+  databricks:
+    workspace_host: https://<workspace>.cloud.databricks.com
+```
+
+The workspace needs the Databricks Sandbox preview enabled, and the server
+needs an account-level OAuth app so users can connect. Keep in mind that code
+in your Sandbox, including the agent, can use your token to act in the
+workspace as you. The [Cloud Sandbox Host guide](/docs/deploy/cloud-sandbox-host)
+covers setup end to end, and the
+[Databricks settings reference](/docs/reference/configuration/cloud-sandbox#databricks)
+lists every option.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

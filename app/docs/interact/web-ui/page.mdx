@@ -638,7 +638,7 @@ the referenced file themselves.
 Coding-agent sessions have a **Pull Requests** tab in the right workspace rail. It
 tracks the pull requests associated with the session and shows the selected
 one's summary (reviewers, CI checks, and the PR description), its conversation
-comments, and a stacked diff with a file-tree navigator. Nothing is pushed or
+comments and commit history, and a stacked diff with a file-tree navigator. Nothing is pushed or
 mutated — recording an association never touches the remote PR.
 
 ### Tracked pull requests
@@ -687,8 +687,30 @@ GitHub refuses the reviewer fields for the active token (or the host's `gh` is
 too old to know them), Omnigent re-fetches the PR without them: the Reviewers
 section is simply omitted and the summary, checks, and comments still load.
 
+### Comments tab
+
 In the **Comments** tab, each author's avatar initial gets a distinct color
 within the thread so you can follow who said what at a glance.
+
+For GitHub pull requests, the tab also shows the PR's commits and force pushes,
+sorted by time among the comments. A commit row reads `<author> committed
+<sha>` with the commit's headline. A force-push row reads `<author>
+force-pushed from <old sha> to <new sha>`. The short SHA links to the commit on
+GitHub, and hovering the relative time shows the exact timestamp. The
+**Comments** count badge counts only comments, not these rows.
+
+- **Timestamps** — GitHub doesn't report when a regular push happened, so
+  commit rows use the commit time (hence "committed"). Force-push rows use the
+  time of the force-push event.
+- **Latest 100 entries** — Omnigent loads the latest 100 commit and force-push
+  entries. If older entries exist or GitHub can't return the history, the tab
+  keeps what loaded and shows `Some commit and push history is unavailable.`
+  with a **View on GitHub** link to the full timeline.
+- **Refresh** — commit history can be cached for up to 30 seconds, but comments
+  still refresh as usual.
+
+Other providers and older hosts don't send commit history, so their Comments
+tab shows comments only.
 
 ### Link or unlink a PR
 

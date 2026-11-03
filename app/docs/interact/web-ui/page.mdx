@@ -638,8 +638,15 @@ the referenced file themselves.
 Coding-agent sessions have a **Pull Requests** tab in the right workspace rail. It
 tracks the pull requests associated with the session and shows the selected
 one's summary (reviewers, CI checks, and the PR description), its conversation
-comments, and a stacked diff with a file-tree navigator. Nothing is pushed or
-mutated — recording an association never touches the remote PR.
+comments, and a stacked diff with a file-tree navigator. Recording an
+association never touches the remote PR.
+
+For GitHub PRs you can also act from the tab: edit the title and description,
+add or remove labels, request or withdraw reviewers, post comments, and merge
+or disable auto-merge. These actions need edit access to the session and run as
+the host's active `gh` account, or the account saved for that repository (in
+a sandbox, the sandbox's GitHub identity).
+GitLab merge requests and Azure DevOps pull requests stay read-only.
 
 ### Tracked pull requests
 

@@ -175,6 +175,14 @@ When a task is due, Omnigent:
 5. Records the run — stamping the task's last-run time and the run's
    conversation id.
 
+If the latest run failed, the web UI marks the task with a **Last run failed**
+warning. If that run failed before it created a session, the failure also
+appears in the Inbox. See [Failed runs](/docs/interact/web-ui#failed-runs).
+Clients can read the same feed from `GET /v1/scheduled-tasks/inbox`. It returns
+the latest session-less failure for each of your tasks, checks up to `limit`
+tasks per page (default 50, max 100), and pages with the `after` cursor taken
+from `next_cursor`.
+
 A few scheduling guarantees:
 
 - **The database is the source of truth.** On server start, every active task is

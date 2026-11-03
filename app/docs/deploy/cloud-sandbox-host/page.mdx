@@ -189,7 +189,9 @@ Calling the [REST API](/reference) directly, pass a single repository in
 `workspace` or several in `workspaces` (a list of clone URLs, each optionally
 `#<branch>`) on `POST /v1/sessions`. The two are mutually exclusive, `workspaces`
 requires a managed session (`host_type: "managed"`), and it takes at most 10
-repositories.
+repositories. The Python SDK's `client.sessions.create_from_agent_id` accepts
+`host_type="managed"`, a single repository URL in `workspace`, and an optional
+`sandbox_provider`; see [Programmatic Usage](/docs/programmatic#start-a-session).
 
 ### 5. Run automations in sandboxes (optional)
 

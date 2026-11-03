@@ -165,9 +165,10 @@ doesn't rewrite those headers.
 ## Keyboard shortcuts
 
 The desktop app supports every
-[web UI shortcut](/docs/interact/web-ui#keyboard-shortcuts) and adds two of
-its own. Both appear in the in-app shortcuts overlay (`⌘/` / `Ctrl+/`) only
-when you're running the desktop app.
+[web UI shortcut](/docs/interact/web-ui#keyboard-shortcuts) and adds a few of
+its own. The session switcher and new-browser-tab shortcuts appear in the
+in-app shortcuts overlay (`⌘/` / `Ctrl+/`) only when you're running the
+desktop app; Close Tab and Close Window live in the **Server** menu.
 
 ### Switch recent sessions
 
@@ -195,6 +196,32 @@ which shows the keycaps next to the Browser row. If the rail is collapsed or
 hidden behind the Terminal panel, it's revealed with the new tab selected. The
 shortcut yields while you're typing in the code editor or a terminal, and is
 only bound where the embedded browser is available.
+
+### Close a tab
+
+Press `⌘W` (`Ctrl+W` on Windows/Linux) — **Server → Close Tab** — to close the
+selected tab in the Workspace rail of the conversation you're viewing. This
+covers file, terminal, browser, and side-chat tabs, plus other closable panel
+tabs, and each uses its usual close behavior:
+
+- **File tabs** ask you to confirm before discarding unsaved edits.
+- **Terminal tabs** show the same close confirmation as the tab's close button.
+  Read-only viewers can't close terminals, so the shortcut leaves the terminal
+  open.
+- **Side-chat tabs** close only that side chat; the parent and sibling chats
+  keep running. If stopping the side chat fails, the tab stays open.
+
+If the rail has no closable tab selected, or it's collapsed or hidden (for
+example, in a narrow window), `⌘W` leaves the conversation and returns to the
+new-session page instead. Outside a conversation, including grid workspaces,
+it closes the window. Grid panels don't respond to this shortcut yet. The
+shortcut also works while an embedded [Browser](#embedded-browser) page has
+keyboard focus.
+
+To close the window from anywhere, press `⌘⇧W` (`Ctrl+Shift+W`) —
+**Server → Close Window**. If your desktop app or server's web UI is older and
+doesn't support Close Tab, `⌘W` keeps its previous behavior and closes the
+window.
 
 `Cmd+N` still opens a new window; starting a new session is `⌘⌥N`
 (`Ctrl+Alt+N`). This differs from the browser web UI, which uses `⌘⇧O`

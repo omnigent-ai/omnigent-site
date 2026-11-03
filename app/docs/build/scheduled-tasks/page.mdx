@@ -136,6 +136,30 @@ interactive session would leak its state into the run and break once it is gone.
 If no live host can be resolved (or the pinned host is offline), the occurrence
 is recorded as a failed run.
 
+#### Random worktree
+
+A `connected_host` task pinned to a Git repository can start each new session
+in its own fresh git worktree instead of the repository directory itself. Turn
+on **Random worktree** in the [web UI](/docs/interact/web-ui#scheduled-tasks),
+or set `base_branch` to `HEAD` on the task through the `/v1/scheduled-tasks`
+REST API (`null`, the default, runs in the selected `workspace`).
+
+- `base_branch` requires `execution_target=connected_host` with both `host_id`
+  and `workspace` set; otherwise the request is rejected. Switching a task to
+  `managed_sandbox` clears it.
+- On each fire that starts a new session, Omnigent creates a randomly named
+  `worktree-<id>` branch from that ref in a new worktree on the host, and the
+  session starts there. If the host is offline the run fails with
+  `host_offline`; if the worktree can't be created it fails with
+  `worktree_create_failed`.
+- A task that continues one session reuses that session's worktree on later
+  runs. A continued session that isn't using this task's random worktree is
+  rejected as incompatible, and changing `base_branch` makes the next run start
+  a new session.
+- If a fire ends up discarding the session it just created (for example,
+  because another run already started the session being continued), its
+  worktree and branch are removed too.
+
 ### `managed_sandbox`
 
 Each firing provisions a **fresh** server-managed sandbox — the same launch path
@@ -168,7 +192,8 @@ When a task is due, Omnigent:
    task starts hostless and binds a new sandbox in step 4. Resolved values are
    never written back to the task.
 3. Creates a session bound to the task's agent, carrying the stored
-   `model_override` and `reasoning_effort`, and grants the task's owner
+   `model_override` and `reasoning_effort` — in a fresh worktree when
+   [Random worktree](#random-worktree) is on — and grants the task's owner
    ownership of the new session so the run is visible.
 4. Launches the runner — on the resolved host, or in a freshly provisioned
    sandbox — and dispatches the prompt so the agent actually runs.

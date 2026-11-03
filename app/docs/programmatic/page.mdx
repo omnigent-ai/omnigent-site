@@ -136,7 +136,7 @@ Common options:
 
 These examples use an agent YAML or directory through `omni run`; native
 terminal harnesses have their own CLI behavior. To run tools on another
-machine or in a cloud sandbox, use the REST API's host options.
+machine or in a cloud sandbox, use the Python SDK's or REST API's host options.
 
   </div>
   <div>
@@ -170,6 +170,31 @@ asyncio.run(main())
 
 Use the printed session ID to send a message in the next step, or open the
 URL to view the session.
+
+To run the session on a configured
+[cloud sandbox host](/docs/deploy/cloud-sandbox-host) instead of a connected
+runner, pass `host_type="managed"`. The optional `workspace` is then a
+repository clone URL rather than a host path, and `sandbox_provider` selects a
+specific provider such as `modal` (the server validates it; it is only
+accepted with `host_type="managed"`):
+
+```python
+session = await client.sessions.create_from_agent_id(
+    agent.id,
+    title="Code review",
+    host_type="managed",
+    workspace="https://github.com/example/repo",
+    sandbox_provider="modal",  # optional
+)
+```
+
+The server provisions the sandbox and connects its runner asynchronously, so
+don't call `bind_runner` for a managed session. While the launch is in
+progress or after it fails, `session.sandbox_status` holds a dict with the
+launch `stage` and, on failure, an `error` message, for example
+`{"stage": "failed", "error": "Launch failed"}`. It is `None` for sessions
+without a managed launch and once the launch succeeds. Re-read the session
+with `client.sessions.get(session.id)` to follow progress.
 
   </div>
   <div>

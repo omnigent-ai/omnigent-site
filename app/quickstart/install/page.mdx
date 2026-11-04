@@ -1,10 +1,10 @@
 import { pageMeta } from "@/lib/og";
-import InstallCommandTabs from "@/components/InstallCommandTabs";
+import InstallCommand from "@/components/InstallCommand";
 import MacDownloadButton from "@/components/MacDownloadButton";
 
 export const metadata = pageMeta(
   "Install",
-  "Install the Omnigent CLI with the installer script, uv, pip, or Homebrew, or download the desktop app.",
+  "Install the Omnigent CLI with the installer script, or download the desktop app.",
   {
     eyebrow: "Quickstart",
     path: "/quickstart/install",
@@ -22,12 +22,16 @@ native window? Add the [desktop app](#install-the-desktop-app).
 - **Node.js 22 LTS** and npm
 - **tmux**
 
+The installer offers to install uv and tmux if they're missing, and uses uv to
+set up Python 3.12.
+
 ## Install Omnigent
 
-The base install covers everyday use. Extra integrations are opt-in at install
-time. Run the same command to upgrade an existing installation.
+The base install covers everyday use and includes Databricks support; pass
+`--no-databricks` to omit it. Other integrations are opt-in at install time. Run
+the same command to upgrade an existing installation.
 
-<InstallCommandTabs />
+<InstallCommand />
 
 Available extras:
 
@@ -37,26 +41,6 @@ Available extras:
 | Sandbox providers  | `databricks`, `modal`, `daytona`, `blaxel`, `boxlite`, `cwsandbox`, `e2b`, `openshell`, `kubernetes` |
 | SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                                                     |
 | Storage and memory | `postgres`, `s3`, `hindsight`                                                                        |
-
-## Homebrew source builds behind a mirror
-
-The Homebrew tap installs a prebuilt bottle by default. If you build from source
-on a network that requires internal package mirrors, point the build at them with
-two optional environment variables:
-
-```bash
-HOMEBREW_PIP_INDEX_URL='https://pypi.example.com/simple' \
-HOMEBREW_CARGO_INDEX_URL='https://cargo.example.com/index/' \
-  brew install --build-from-source omnigent-ai/tap/omnigent
-```
-
-- `HOMEBREW_PIP_INDEX_URL` routes pip through your mirror, including pip's
-  isolated build dependencies.
-- `HOMEBREW_CARGO_INDEX_URL` takes a sparse registry index URL ending in `/`,
-  without the `sparse+` prefix.
-
-Both overrides are optional and do not affect prebuilt-bottle installs. Replace
-the example URLs with your own mirrors.
 
 ## Set up credentials
 
@@ -149,11 +133,11 @@ compose with `--nightly`:
 - `--extra` — keep or add extras (comma-separate to add several).
 
 `--pre` and `--target-version` do **not** apply to `--nightly` — it always
-tracks the newest nightly tag. To install one specific nightly, run your
-installer against that tag directly:
+tracks the newest nightly tag. To install one specific nightly, point the
+installer at that tag:
 
 ```
-uv tool install --force git+https://github.com/omnigent-ai/omnigent@v0.8.0.dev20260801
+curl -fsSL https://omnigent.ai/install.sh | sh -s -- --repo https://github.com/omnigent-ai/omnigent@v0.8.0.dev20260801
 ```
 
 Because `pip` and `uv pip` do not record which extras were requested, a

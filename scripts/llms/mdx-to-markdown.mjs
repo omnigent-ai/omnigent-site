@@ -18,8 +18,8 @@ import remarkParse from "remark-parse";
 import remarkMdx from "remark-mdx";
 import remarkGfm from "remark-gfm";
 import {
-  cliTabs,
   gateways,
+  installPageCommands,
   providerKeys,
 } from "../../lib/docs-component-data.js";
 import {
@@ -395,10 +395,8 @@ export async function convertMdx({ source, file, siteUrl }) {
     switch (name) {
       case "BlogPostHeader":
         return ""; // title/date/category are emitted from metadata instead
-      case "InstallCommandTabs":
-        return cliTabs(siteUrl)
-          .map((t) => `**${t.label}**\n\n\`\`\`sh\n${t.code}\n\`\`\``)
-          .join("\n\n");
+      case "InstallCommand":
+        return `\`\`\`sh\n${installPageCommands(siteUrl)}\n\`\`\``;
       case "ProviderKeyTable":
         return gfmTable(
           ["Provider", "Key source"],

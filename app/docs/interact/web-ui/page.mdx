@@ -990,6 +990,15 @@ To create one manually, open the **New scheduled task** dialog and fill in:
   provider's name, e.g. **Modal Sandbox**): each run then provisions a fresh
   sandbox instead of using a connected host, and the sandbox's shutdown follows
   the server's sandbox configuration. Existing sandbox hosts can't be pinned.
+
+  A new task's starting target depends on the server. If **New Sandbox** is
+  offered, the dialog starts on it, so the task doesn't depend on your machine
+  being online when it fires. Otherwise it starts on your first online
+  connected host, as New Chat does. The dialog picks the default once, after
+  the server info and host list have both loaded, and any target you choose
+  yourself is kept. If there is no sandbox option and no host is online, no
+  host is pre-selected until one comes online. Editing an existing task keeps
+  its saved target.
 - **Workspace (optional)** — shown only once a connected host is pinned. Pick a
   directory to pin it; leave it unset to default to the host's home directory. A
   workspace can't be set without a host, and doesn't apply to sandbox runs.

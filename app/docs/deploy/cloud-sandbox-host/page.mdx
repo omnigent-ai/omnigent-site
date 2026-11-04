@@ -198,7 +198,10 @@ launch path: create a task with `execution_target: managed_sandbox` (or pick
 **New Sandbox** in the automation dialog's host picker) and each firing
 provisions a fresh sandbox with a clean workspace. Existing managed sandbox
 hosts cannot be pinned as an automation's host, and the option is only offered
-when this server has a managed sandbox provider configured.
+when this server has a managed sandbox provider configured. On such a server,
+the web UI's **New scheduled task** dialog starts new tasks on **New Sandbox**
+by default; pick a connected host instead to run on your own machine. (The API
+and `sys_scheduled_task_create` still default to `connected_host`.)
 
 An automation's sandbox follows the server's sandbox configuration exactly like
 one launched for a chat — the automation does not override timeouts or

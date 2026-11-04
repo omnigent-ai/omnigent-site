@@ -133,11 +133,13 @@ compose with `--nightly`:
 - `--extra` — keep or add extras (comma-separate to add several).
 
 `--pre` and `--target-version` do **not** apply to `--nightly` — it always
-tracks the newest nightly tag. To install one specific nightly, point the
-installer at that tag:
+tracks the newest nightly tag. To install one specific nightly, pick its
+`vX.Y.Z.devYYYYMMDD` tag from the
+[repository's tags](https://github.com/omnigent-ai/omnigent/tags) and point the
+installer at it:
 
 ```
-curl -fsSL https://omnigent.ai/install.sh | sh -s -- --repo https://github.com/omnigent-ai/omnigent@v0.22.0.dev20261104
+curl -fsSL https://omnigent.ai/install.sh | sh -s -- --repo https://github.com/omnigent-ai/omnigent@<nightly-tag>
 ```
 
 Because `pip` and `uv pip` do not record which extras were requested, a

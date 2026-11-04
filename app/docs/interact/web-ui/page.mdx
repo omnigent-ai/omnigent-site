@@ -983,6 +983,14 @@ To create one manually, open the **New scheduled task** dialog and fill in:
   hour; Daily and Weekdays ask for a **time**; Weekly adds a weekday
   multi-select (**On days**). Times are chosen in 15-minute steps. The schedule
   is evaluated in your browser's local timezone.
+  When the `automations_v2` [release feature](/docs/deploy/overview#release-features) is on and
+  the server supports sub-hour schedules, **Custom schedule** also offers a
+  **Minutes** unit. It runs every 10 minutes or more when the task uses a
+  connected host, or a sandbox that continues in the same session. A sandbox
+  that starts a new session each run needs at least 60 minutes, and the dialog
+  won't save a shorter interval. Without sub-hour support, the editor keeps the
+  60-minute minimum and leaves existing minute-based schedules unchanged. See
+  [Recurrence rules](/docs/build/scheduled-tasks#recurrence-rules).
 - **Host (optional)** — pin the task to a specific connected host, or leave it
   set to **Resolve at fire time** to run on your connected host whenever the
   task fires. When the server has [managed sandboxes](/docs/deploy/cloud-sandbox-host)

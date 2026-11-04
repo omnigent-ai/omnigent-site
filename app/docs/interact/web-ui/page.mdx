@@ -997,6 +997,48 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+### Trigger templates
+
+The **Jira tickets**, **Slack messages**, **GitHub issues**, and **Linear
+issues** templates under **Suggested Automations** build an automation that
+watches a service. It starts one session for each newly created ticket,
+top-level message, or issue that matches. These templates appear only when the
+server supports keeping one session per automation and has session
+orchestration turned on (`features.session_orchestration` in `/v1/info`).
+
+When you pick a template, the dialog replaces the Prompt field with a
+sentence-style trigger builder, for example *Issue created in team equals ENG,
+and Assignee is unassigned, then Comment the session link on the issue*:
+
+| Template | Event | Scope (comma-separated for several) | Conditions you can add |
+| --- | --- | --- | --- |
+| Jira tickets | Ticket created | Project key | Label, Issue type, Component, Priority (equals / doesn't equal); Assignee (equals, doesn't equal, is unassigned, is assigned); raw JQL fragment |
+| Slack messages | Message posted | Channel | Text contains / doesn't contain; message is about a topic; Author |
+| GitHub issues | Issue opened, Pull request opened, or both | `owner/repo` | Label, Author, Assignee (equals, doesn't equal, is unassigned); search qualifiers |
+| Linear issues | Issue created | Team key (e.g. `ENG`) | Label, Status, Priority, Project, Creator (equals / doesn't equal); Assignee (equals, doesn't equal, is unassigned, is assigned); Title or description contains / doesn't contain |
+
+All condition rows must match. An Assignee (or Linear Creator) of `me` means the
+automation's owner. The **then** row either comments the session link back on
+the item or only starts the session. Jira and GitHub rows become the JQL or
+GitHub search in the generated prompt. Slack and Linear rows are written out as
+conditions for the agent to apply. You also write the instructions each session
+gets, up to 2,000 characters.
+
+Saving creates an ordinary automation that runs **Hourly** and keeps one
+session as its manager. Use **Preview prompt** to read the generated prompt, or
+**Edit as prompt** to keep editing it as plain text. On each run the manager
+searches for items created since its last check, plus a 5-minute overlap for
+slow search indexing. It skips items it has already handled and starts at most
+10 sessions per run. Linear lists issues newest first, so a Linear run reads
+every page before starting any sessions. If it can't read them all, it starts
+none and keeps its previous check time.
+
+The agent needs the service's tools wherever the task runs: a Jira, Slack, or
+Linear MCP server, or the GitHub CLI or a GitHub MCP server for GitHub. Anyone
+who can create items in the watched source can try to steer the sessions, and
+link-backs post with your account. Link-backs and anything the sessions post end
+with a `Sent with Omnigent` line.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

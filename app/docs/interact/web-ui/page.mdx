@@ -827,6 +827,12 @@ Start one from any of these places:
 - Select text in a reply and choose **Ask in side chat** — the quoted selection
   and your question are sent to the side chat instead of the main conversation.
 
+Only the session's owner can start side chats. On a
+[shared session](/docs/collaborate/auth), editors and viewers don't see any of
+these entry points, and the server rejects a side-chat fork or a Codex `/side`
+message from anyone but the owner with **Only the session's owner can start a
+side chat**.
+
 Inside the tab you get a scoped composer (attachments and dictation included).
 Follow-ups go to the side chat, not the main conversation, and any approval
 request the agent raises there is answered there too. The side chat starts
@@ -887,11 +893,20 @@ sidebar's session list — it surfaces only as a rail tab.
 
 ### Side-chat tabs
 
-Side-chat tabs are stored in your browser, like the rail's file and browser
-tabs: they survive reloads and restarts on this device but don't follow you to
-another device. Switching to another conversation shows that conversation's own
-side-chat tabs. Close a tab with its `✕` (or a middle-click) to stop the side
-chat's runner and drop the tab.
+The server records each side chat against its parent session, so a side chat
+you start on one device is available on your other devices too. To open one
+there, choose **Browse side chats** in the Workspace rail's toolbar (or in the
+side-chat drawer on mobile) and select a chat. The picker lists 20 side chats at
+a time; choose **Next 20** to load more. Side chats created before this listing
+was added stay local to the browser they were started in.
+
+Which tabs are open is still stored per browser, like the rail's file and
+browser tabs: open tabs survive reloads and restarts on this device and keep
+their order when you open more from the picker. Switching to another
+conversation shows that conversation's own side-chat tabs. Close a tab with its
+`✕` (or a middle-click) to stop the side chat's running turn and drop the tab.
+Closing discards only the follow-ups queued on that device; your other devices
+keep their tabs and queued work.
 
 Side chats are distinct from Claude Code's `/btw` overlay (below), which answers
 a one-off question inline without creating a session.
@@ -917,7 +932,10 @@ routed straight into the fork and leaves no bubble in the main transcript.
 
 Side chats are **ephemeral**: nothing is written to disk, so a side chat is not
 resumable after a runner restart. If a `/side` request can't be opened, the
-session posts a visible notice so the question is never silently dropped.
+session posts a visible notice so the question is never silently dropped. Only
+the text you type counts as a `/side` command, never an attachment's contents,
+and a `/side` message can't carry attachments: it is refused with **Codex /side
+doesn't support attachments. Remove the attachments and try again.**
 
 You can also start a side chat from selected text. Select part of a message and
 choose **Ask in side chat**: the selection is added as a quote card, and when

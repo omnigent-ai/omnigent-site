@@ -971,31 +971,69 @@ Run an agent on a recurring schedule instead of starting each session by hand. A
 scheduled task is a saved prompt plus a recurrence rule: it fires automatically,
 runs the chosen agent, and keeps firing until you delete it.
 
-To create one manually, open the **New scheduled task** dialog and fill in:
+To create one manually, click **New automation** on the Automations page. The
+dialog opens with **Instructions** focused, and the most common fields are
+visible right away:
 
-- **Name** — a label for the task (for example, `Nightly triage`).
-- **Prompt** — the instruction the agent receives on every run.
-- **Runs with** — the agent or harness to run. Scheduled tasks use that agent's
-  default model, effort, and permission settings; there are no per-task model or
-  effort overrides in this dialog.
-- **Frequency** — one of four presets: **Hourly**, **Daily**, **Weekdays**, or
-  **Weekly**. Hourly fires once an hour and asks only for the **minute** of the
-  hour; Daily and Weekdays ask for a **time**; Weekly adds a weekday
-  multi-select (**On days**). Times are chosen in 15-minute steps. The schedule
-  is evaluated in your browser's local timezone.
-- **Host (optional)** — pin the task to a specific connected host, or leave it
-  set to **Resolve at fire time** to run on your connected host whenever the
-  task fires. When the server has [managed sandboxes](/docs/deploy/cloud-sandbox-host)
-  configured, the picker also offers **New Sandbox** (labelled with the
-  provider's name, e.g. **Modal Sandbox**): each run then provisions a fresh
-  sandbox instead of using a connected host, and the sandbox's shutdown follows
-  the server's sandbox configuration. Existing sandbox hosts can't be pinned.
-- **Workspace (optional)** — shown only once a connected host is pinned. Pick a
-  directory to pin it; leave it unset to default to the host's home directory. A
-  workspace can't be set without a host, and doesn't apply to sandbox runs.
+- **Name** — a label for the automation (for example, `Nightly triage`).
+  Required. You can edit it without opening **Advanced**.
+- **Instructions** — what the agent should do on every run. When an automation
+  comes from a template, this field is labelled **Your prompt**, and the
+  template's **System prompt** sits below it, collapsed.
+- **Run on** — the connected host the automation runs on. Offline hosts are
+  marked **(offline)**. When the server has
+  [managed sandboxes](/docs/deploy/cloud-sandbox-host) configured, the picker
+  also offers a sandbox option labelled with the provider's name, which
+  provisions a sandbox for runs instead of using a connected host. Existing
+  sandbox hosts can't be pinned.
+- **Start each run in a new session** — a switch, shown when the server supports
+  session modes. With it on, each run starts a new session. With it off, later
+  runs continue in the same session and keep its context. When you edit an
+  automation that continues one session, you can also choose to start a new
+  session on the next run.
+- **Repeat** — how often the automation runs. Choose **Interval**, **Every
+  hour**, **Every day**, **Every weekday**, a weekly schedule, or **Custom
+  schedule**:
+  - **Interval** — type the number of minutes between runs in the **Time** row.
+    There's no extra popup or Apply step. The shortest interval depends on the
+    server, the **Run on** target, and the session mode. On servers that support
+    sub-hour schedules, a connected host (in either session mode) or a sandbox
+    that continues one session can run every 10 minutes. A sandbox that starts a
+    new session each run needs at least 60 minutes. Shorter values block saving.
+  - **Every hour** — type the minute of the hour (0–59) in the **Time** row.
+  - **Daily, weekday, and weekly presets** — type a 12-hour or 24-hour time
+    (for example, `9:45 AM` or `21:30`) in the **Time** row. Next to it, a
+    searchable **Timezone** dropdown sets the zone the schedule is evaluated in.
+    Weekly schedules add an **On** row for choosing weekdays.
+  - **Custom schedule** — opens extra rows in place: **Repeats** (**Hourly**,
+    **Daily**, **Weekly**, **Monthly**, **Yearly**, plus **Minutely** on servers
+    with sub-hour support), **Every** (the interval), **On** (days of the week
+    or month, for weekly, monthly, and yearly rules), **Month** (yearly rules),
+    and **Start time**. Changes take effect in the form right away. Saving the
+    automation stores them, and **Cancel** throws them away.
 
-The **Create task** button stays disabled until Name, Prompt, a valid schedule,
-and an agent are all set.
+Because **Run on** and the session switch set the minimum interval, they come
+before **Repeat** and **Time**.
+
+**Advanced** starts collapsed and holds the less common settings. While it's
+collapsed, any overrides you've set are summarized beside it:
+
+- **Workspace (optional)** — for a connected host. Pick a directory to pin it,
+  or leave it unset to use the host's home directory. For a sandbox target, this
+  is replaced by **Repository**, which defaults to **Provider default**.
+- **Project (optional)** — pick a project, or leave it set to **No project**.
+- **Agent** — the agent or harness to run, plus the model, effort, and
+  permission settings it supports. Future runs use the new agent; past runs keep
+  the agent they ran with.
+- **Ends** — **Never**, **On date**, or **After** a number of occurrences.
+  Interval schedules show their timezone next to the end date only when **Ends**
+  is **On date**.
+
+If a setting inside **Advanced** is invalid, the section expands on its own, or
+the dialog shows **Expand Advanced to fix settings before saving.** Pressing
+Escape closes whichever selector or folder browser is open, without discarding
+your draft. The footer stays visible as the form scrolls. Click **Create** (or
+**Save changes** when editing) to save the automation.
 
 ## Collaboration
 

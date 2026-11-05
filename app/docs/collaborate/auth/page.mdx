@@ -412,7 +412,9 @@ public grant from the Share dialog at any time, and existing sessions are never
 changed. A few sessions are always left private:
 
 - Sub-agent sessions, which follow their parent's grants instead.
-- Side chats, which are private scratch forks of the caller's own view.
+- Side chats, which are private scratch forks of the caller's own view. Only
+  the owner of a session can start side chats in it; editors and viewers of a
+  shared session can't.
 - Single-user (no-auth) servers, where there is no sharing at all.
 
 The default never grants more than an owner could grant by hand. It is

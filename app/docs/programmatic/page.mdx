@@ -519,7 +519,24 @@ Add `"side_chat": true` (default `false`) to mark the fork as a
 [side chat](/docs/interact/web-ui#side-chats): the fork is labeled
 `omnigent.side_chat` and omitted from `GET /v1/sessions`, so it stays out of
 the web UI's sidebar and appears only as a Workspace-rail tab. It otherwise
-behaves like any other fork, with its own runner and transcript.
+behaves like any other fork, with its own runner and transcript. Only the owner
+of the source's root session can create a side chat; anyone else gets
+`403 Forbidden`. The new session's `side_chat_parent_id` is set to the source
+session's ID.
+
+List a session's side chats, 20 at most per page and ordered by ID:
+
+```bash
+curl --fail-with-body "http://127.0.0.1:6767/v1/sessions/$SESSION_ID/side_chats?limit=20" | jq
+```
+
+Each entry has `id`, `object` (`"side_chat"`), `created_at`, and `title`.
+`limit` accepts 1–20 (default 20); pass the previous page's `last_id` as
+`after` to get the next page while `has_more` is `true`. Only the owner of the
+session's root gets results; any other caller with read access, admins
+included, gets an empty list. `GET /v1/sessions/{id}` also returns
+`side_chat_allowed`, which is `true` when the caller may start side chats in
+that session.
 
       </td>
     </tr>

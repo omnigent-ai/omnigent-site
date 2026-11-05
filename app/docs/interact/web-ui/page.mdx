@@ -997,6 +997,35 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+### Worker settings for trigger templates
+
+The *Jira tickets*, *Slack messages*, *GitHub issues*, and *Linear issues*
+trigger templates save an automation whose kept polling session starts one
+**worker** session for each matching item. The worker's harness, model, and
+effort are written into the generated `sys_session_create` call in the
+automation's prompt. New templates initially use the automation's own agent,
+model, and effort for workers.
+
+When you edit a saved trigger automation, **Edit automation** shows three
+controls for those workers:
+
+- **Harness for matching sessions** — the agent that new workers run with.
+- **Model** and **Effort** — the worker's model and reasoning effort.
+  **Default** uses the selected harness's configuration.
+
+These controls rewrite only the worker creation call. Saving keeps the polling
+session and its deduplication history; the polling session's own settings and
+any workers already started keep their settings, and the change applies to
+sessions started for future matching items. For an unbound trigger, or after
+choosing **Start a new session on the next run**, the poller launches with its
+saved settings — these worker controls don't change them.
+
+Worker placement also stays in the prompt: changing the polling host doesn't
+rewrite it, and worker model availability follows that placement. If you've
+customized the prompt so its creation call can't be recognized, the dialog shows
+**Edit worker instructions** instead, which opens the system prompt (or focuses
+the full Prompt when it can't be separated) so you can edit the call as text.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

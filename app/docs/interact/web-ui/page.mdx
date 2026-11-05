@@ -657,11 +657,11 @@ the first time it opens the editor's link.
   online. Remote links support POSIX paths only. Omnigent infers the alias for
   these hosts:
 
-  | Host | SSH alias |
-  | --- | --- |
-  | Sandbox provider `databricks-arca` | `arca.ssh` |
-  | Sandbox provider `arclet` | `arclet_<host name>.ssh` |
-  | User-connected host labeled `arca_type arca` | `arca.ssh` |
+  | Host                                           | SSH alias                                                              |
+  | ---------------------------------------------- | ---------------------------------------------------------------------- |
+  | Sandbox provider `databricks-arca`             | `arca.ssh`                                                             |
+  | Sandbox provider `arclet`                      | `arclet_<host name>.ssh`                                               |
+  | User-connected host labeled `arca_type arca`   | `arca.ssh`                                                             |
   | User-connected host labeled `arca_type arclet` | `arclet_<name>.ssh`, with the name read from `/opt/arclet/arclet-name` |
 
   On user-connected hosts with no sandbox provider, Omnigent reads the

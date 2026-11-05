@@ -127,7 +127,10 @@ const SECTIONS = [
   },
   {
     title: "Programmatic Usage",
-    pages: [{ href: "/docs/programmatic", label: "Overview" }],
+    pages: [
+      { href: "/docs/programmatic", label: "Overview" },
+      { href: "/docs/programmatic/github-actions", label: "GitHub Actions" },
+    ],
   },
   {
     title: "Reference",

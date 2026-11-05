@@ -73,16 +73,16 @@ Settings has no sandbox profile page. The provider owns the catalog.
 
 ### Lifecycle
 
-| Operation                                               | Behavior                                                                                                                                                                                                                   |
-| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| New session, including with attachments                 | You must choose an authorized ID and revision. Omnigent rejects an unavailable choice before allocating a sandbox.                                                                                                         |
+| Operation                                                        | Behavior                                                                                                                                                                                                                                          |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| New session, including with attachments                          | You must choose an authorized ID and revision. Omnigent rejects an unavailable choice before allocating a sandbox.                                                                                                                                |
 | **Clone session** (including branch clones) to the same provider | Defaults to the source session's profile. Omnigent resolves the revision the provider currently offers and shows a notice if it changed. You can pick a different profile. If the source profile was revoked or removed, you must choose another. |
-| Clone to an ordinary provider or a local host           | The profile is not copied.                                                                                                                                                                                                 |
-| Native `/clear` and `/fork`                             | The replacement session starts without a profile. Binding it to a managed runner reauthorizes the profile and adopts the host's profile. Local forks stay without a profile.                                               |
-| Side chat                                               | Keeps the source session's profile and runner.                                                                                                                                                                             |
-| Restart or wake                                         | Reauthorizes the exact saved revision. A session is never moved to a newer catalog revision.                                                                                                                                |
-| Missing sandbox replacement                             | Reauthorizes the saved revision before allocating a replacement.                                                                                                                                                           |
-| Scheduled task on a fresh sandbox                       | Creating or updating the task fails if the default provider requires profiles. Use a connected host or a default provider without profiles.                                                                               |
+| Clone to an ordinary provider or a local host                    | The profile is not copied.                                                                                                                                                                                                                        |
+| Native `/clear` and `/fork`                                      | The replacement session starts without a profile. Binding it to a managed runner reauthorizes the profile and adopts the host's profile. Local forks stay without a profile.                                                                      |
+| Side chat                                                        | Keeps the source session's profile and runner.                                                                                                                                                                                                    |
+| Restart or wake                                                  | Reauthorizes the exact saved revision. A session is never moved to a newer catalog revision.                                                                                                                                                      |
+| Missing sandbox replacement                                      | Reauthorizes the saved revision before allocating a replacement.                                                                                                                                                                                  |
+| Scheduled task on a fresh sandbox                                | Creating or updating the task fails if the default provider requires profiles. Use a connected host or a default provider without profiles.                                                                                                       |
 
 If your access is revoked, future launches and reuse are blocked, but sandboxes
 that are already running keep running. A fork checks the new owner's access. A
@@ -167,21 +167,21 @@ Embedding deployments that construct `ManagedSandboxConfig` directly also set
 `SandboxProfileContext` is a frozen dataclass that holds the trusted server
 identity, never client input:
 
-| Field          | Meaning                                                                    |
-| -------------- | -------------------------------------------------------------------------- |
-| `user_id`      | Execution identity from server authentication.                             |
-| `workspace_id` | Tenant scope. OSS servers use workspace `0`.                               |
+| Field          | Meaning                                                                      |
+| -------------- | ---------------------------------------------------------------------------- |
+| `user_id`      | Execution identity from server authentication.                               |
+| `workspace_id` | Tenant scope. OSS servers use workspace `0`.                                 |
 | `sandbox_id`   | An existing sandbox. Set only for sandbox-scoped lookup. Defaults to `None`. |
 
 `ProviderSandboxProfile` is a strict, frozen model that contains public
 metadata only:
 
-| Field         | Constraint                                                                     |
-| ------------- | ------------------------------------------------------------------------------ |
-| `id`          | Matches `[a-z0-9][a-z0-9_-]{0,63}`. Stable and unique within the provider.     |
-| `name`        | 1–100 characters.                                                              |
-| `description` | Optional, up to 500 characters.                                                |
-| `revision`    | Opaque, 1–64 characters.                                                       |
+| Field         | Constraint                                                                 |
+| ------------- | -------------------------------------------------------------------------- |
+| `id`          | Matches `[a-z0-9][a-z0-9_-]{0,63}`. Stable and unique within the provider. |
+| `name`        | 1–100 characters.                                                          |
+| `description` | Optional, up to 500 characters.                                            |
+| `revision`    | Opaque, 1–64 characters.                                                   |
 
 Keep launch configuration, credentials, and access lists out of this model.
 Change the revision whenever the effective configuration changes, and never
@@ -203,13 +203,13 @@ after a catalog update, keep their historical revisions available.
 - Cleanup and status checks must work from the stable provider configuration
   and sandbox ID alone, even after a profile is revoked or deleted.
 
-| Provider result                                 | Omnigent response                                                   |
-| ----------------------------------------------- | ------------------------------------------------------------------- |
-| Empty catalog                                   | No profiles to choose; launch stays blocked.                        |
-| `SandboxProfileAccessDenied`                    | Sanitized 403. Omnigent never falls back to defaults.               |
-| `SandboxProfileChanged`                         | Sanitized 409. The user must choose again for a new session.        |
-| `OwnerCredentialMissingError`                   | 409 that tells the user to connect their account.                   |
-| Any other exception                             | Generic 503. Private error details aren't returned to clients.      |
+| Provider result               | Omnigent response                                              |
+| ----------------------------- | -------------------------------------------------------------- |
+| Empty catalog                 | No profiles to choose; launch stays blocked.                   |
+| `SandboxProfileAccessDenied`  | Sanitized 403. Omnigent never falls back to defaults.          |
+| `SandboxProfileChanged`       | Sanitized 409. The user must choose again for a new session.   |
+| `OwnerCredentialMissingError` | 409 that tells the user to connect their account.              |
+| Any other exception           | Generic 503. Private error details aren't returned to clients. |
 
 Providers that use connected user accounts declare `owner_credential_provider`
 and implement `bind_owner_credential`. Omnigent binds the owner's credential

@@ -94,6 +94,7 @@ const SECTIONS = [
         href: "/docs/deploy/community-sandbox-providers",
         label: "Community Sandbox Providers",
       },
+      { href: "/docs/deploy/sandbox-profiles", label: "Sandbox Profiles" },
     ],
   },
   {

@@ -8,8 +8,6 @@ Omnigent 0.21.0 is a major release focused on making your agents' work easier to
 
 ## 1. Compact Pull Requests list with inline GitHub reviews
 
-![TODO: add a demo screenshot or GIF for "Compact Pull Requests list with inline GitHub reviews"](TODO)
-
 Keeping track of what your agent opened on GitHub shouldn't mean switching back and forth to the browser. The Pull Requests UI is now a compact list that shows each PR's checks and gives you merge actions in place. A session's linked PRs stay visible even while its host is offline, so you can still see where things stand when the machine running the session isn't connected.
 
 Review conversations happen in the Changes view too. You can read and reply to GitHub review threads inline, or start a new one, right next to the code they're about. The composer also highlights PRs that need your attention, so you notice them before you send your next message.
@@ -18,15 +16,11 @@ _Learn more in the [Tracked pull requests](/docs/interact/web-ui#tracked-pull-re
 
 ## 2. Plain-language tool calls and per-file diffs
 
-![TODO: add a demo screenshot or GIF for "Plain-language tool calls and per-file diffs"](TODO)
-
 Scrolling through raw JSON to work out what an agent just did slows down every review. Chats now show tool calls as plain-language actions with a one-line result, so you can follow the agent's steps at a glance. When you need the details, expand a call to see labeled fields instead of a JSON blob.
 
 File changes are clearer as well. Edits and new files show their line counts and a per-file diff, so you can check exactly what changed without leaving the conversation.
 
 ## 3. SSH sessions from the desktop app
-
-![TODO: add a demo screenshot or GIF for "SSH sessions from the desktop app"](TODO)
 
 Your code doesn't always live on the laptop in front of you. You can now run sessions on any machine over SSH and launch them straight from the desktop app. Pick the machine, start the session, and work with it the same way you would a local one.
 
@@ -36,15 +30,11 @@ _Learn more in the [Desktop App](/docs/interact/desktop)._
 
 ## 4. Model and reasoning-effort controls for side chats
 
-![TODO: add a demo screenshot or GIF for "Model and reasoning-effort controls for side chats"](TODO)
-
 A quick follow-up question doesn't always need the same model or effort level as your main task. Side chats now have their own model and reasoning-effort controls. You can send a side-chat follow-up to a different model, or turn the effort up or down, and the main conversation keeps its own settings.
 
 _Learn more in the [Side chats](/docs/interact/web-ui#side-chats)._
 
 ## 5. Configurable New Chat agents and model picker
-
-![TODO: add a demo screenshot or GIF for "Configurable New Chat agents and model picker"](TODO)
 
 A long list of agents and models can make it harder to pick the right one. Deployments can now choose which built-in agents New Chat offers and which one it starts on, so every user sees the options that make sense for that deployment.
 
@@ -59,7 +49,7 @@ Full Changelog: https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md
 Install or upgrade Omnigent:
 
 ```bash
-uv tool install --python 3.12 omnigent   # or: pip install "omnigent"
+curl -fsSL https://omnigent.ai/install.sh | sh
 ```
 
 - Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).

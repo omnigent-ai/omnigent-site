@@ -975,9 +975,11 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 
 - **Name** — a label for the task (for example, `Nightly triage`).
 - **Prompt** — the instruction the agent receives on every run.
-- **Runs with** — the agent or harness to run. Scheduled tasks use that agent's
-  default model, effort, and permission settings; there are no per-task model or
-  effort overrides in this dialog.
+- **Runs with** — the agent or harness to run. If you leave the settings below
+  alone, the task uses that agent's own model, effort, and permission settings.
+- **Model**, **Effort**, and **Permission mode** (optional) — these appear only
+  when the selected harness supports them. Each one starts at **Default**,
+  which keeps the agent's configuration. See [Per-harness settings](#per-harness-settings).
 - **Frequency** — one of four presets: **Hourly**, **Daily**, **Weekdays**, or
   **Weekly**. Hourly fires once an hour and asks only for the **minute** of the
   hour; Daily and Weekdays ask for a **time**; Weekly adds a weekday
@@ -996,6 +998,37 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
+
+### Per-harness settings
+
+The dialog shows only the settings the selected harness supports:
+
+- **Model** and **Effort** come from the selected target's catalog: the pinned
+  connected host, or the sandbox provider for **New Sandbox**. Codex and Devin
+  efforts depend on the model you pick, and Pi shows thinking levels. If you
+  change the model, an effort the new model doesn't support goes back to
+  **Default**.
+- **Permission mode** lists the harness's create-time choices, the same ones
+  the new-chat
+  [permissions dropdown](#set-what-the-agent-can-do-without-asking) offers. It
+  covers Claude Code, Codex, Cursor, Antigravity, and Devin. Some harnesses,
+  such as Cursor, have a permission mode but no model settings. Those show only
+  this control. The saved values are listed under
+  [Permission modes](/docs/build/scheduled-tasks#permission-modes).
+
+Settings belong to their harness, so picking a different agent in **Runs with**
+clears Model, Effort, and Permission mode. Switching
+between hosts or between a host and a sandbox resets Model and Effort. If you
+switch back to the agent and target the task was saved with, its saved values
+come back. While a pinned host is offline, the dialog shows **Connect your host
+to load models.** Model catalogs you loaded in the last 24 hours stay cached,
+so you can reopen and edit a task while its host is offline. If a sandbox
+provider reports that the selected harness has no models, the dialog shows an
+error and won't save; choose another harness. If a catalog fails
+to load for a temporary reason, you can still save with **Default**.
+
+Automations run unattended, so a permission mode that needs approval can pause
+a run until you respond.
 
 ## Collaboration
 

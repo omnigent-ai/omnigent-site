@@ -1006,8 +1006,8 @@ matches. It works like a creation trigger, but there is no webhook: the
 automation runs **Hourly** and checks for new items on each run.
 
 Picking a chip replaces the **Prompt** field with a sentence-style trigger
-builder, for example *Ticket created in project equals `ES`, and Label equals
-`bug`, then Comment the session link on the ticket*:
+builder, for example _Ticket created in project equals `ES`, and Label equals
+`bug`, then Comment the session link on the ticket_:
 
 - **Event** — fixed for Jira (**Ticket created**) and Slack (**Message
   posted**). GitHub offers **Issue opened**, **Pull request opened**, or
@@ -1023,8 +1023,9 @@ builder, for example *Ticket created in project equals `ES`, and Label equals
   - **Slack**: Text contains / doesn't contain, Message is about a topic, or
     Author equals / doesn't equal.
 
-  An Assignee of `me` means the automation's owner, and *doesn't equal* also
+  An Assignee of `me` means the automation's owner, and _doesn't equal_ also
   keeps unassigned items.
+
 - **then** — post the session link back (comment on the ticket or issue, or
   reply in the Slack thread), or **Only start the session**.
 - **Instructions for each session** — what every started session should do.

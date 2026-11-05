@@ -898,6 +898,37 @@ For agents with named sub-agents, reusing the same `agent` and `title` continues
 that child conversation; a different title starts a separate one. Child sessions
 appear in the Web UI, where you can follow their progress.
 
+<h4 id="orchestrate-your-other-sessions">Send work to your other sessions</h4>
+
+An agent can also work with sessions you own that aren't its children:
+
+- `sys_session_message` sends a task (`session_id`, `message`, 1–8000
+  characters) to another session you own. The task goes through that session's
+  normal queue and steering behavior. Replies are not forwarded back; the
+  sender reads them with `sys_session_get_info` and `sys_session_get_history`.
+  A queued result means the task was accepted, not that it ran. If delivery
+  is uncertain, check the destination before sending again.
+- `sys_session_create` with `agent_id` and `placement: "same_host"` creates an
+  independent, initially private session on the caller's host and workspace.
+  `placement: "managed"` provisions a new sandbox with the server's configured
+  default provider.
+
+Both work only when the sending session (and the source chain of a side chat)
+is **private or shared read-only**. If anyone else holds **Edit** or higher
+access, including public Edit access, the tool refuses with "Sessions shared
+with edit access cannot send messages or launch independent sessions". A
+read-only share, including public read access and sessions that start public by
+default, does not block them, because viewers can't add input and so can't
+steer your other sessions through the sender. Read-only viewers do see the
+sender's transcript, including these tool calls, worker session IDs, and any
+history it reads from your other sessions.
+
+Work that was already accepted keeps running after you share the sender with
+Edit access. To use the tools again, downgrade every Edit grant to read-only or
+revoke it. The destination session may itself be shared, and its viewers see
+the message. A server admin can turn the feature off by adding
+`-session_orchestration` to `OMNIGENT_FEATURES`.
+
 ### Use bundled skills for multi-agent workflows
 
 Skills are reusable instructions that guide how an agent uses its tools.

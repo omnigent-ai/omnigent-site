@@ -719,6 +719,34 @@ reads the on-disk file directly (no upload). This button shows only for native
 coding-agent sessions, since those harnesses run in the workspace and resolve
 the referenced file themselves.
 
+### Open in VS Code or Cursor
+
+The Files panel header and the file viewer toolbar have an outlined **Open**
+split button. Click **Open** to open the current folder (from the Files panel)
+or file (from the viewer) in your preferred editor. Use the chevron
+(`Choose app to open in`) to pick **VS Code** or **Cursor**. Omnigent remembers
+the editor you picked last on this device and uses it for both buttons. When the
+file viewer toolbar is too narrow, its other actions collapse into the `⋯` menu
+but **Open** stays visible.
+
+The button works in the browser and the [desktop app](/docs/interact/desktop).
+The mobile apps hide it. Your browser or the desktop app may ask for permission
+the first time it opens the editor's link.
+
+- **Local files**: the desktop app opens the path directly when the session's
+  host is the machine it runs on. The menu also includes your file manager's
+  reveal action (for example `Open in Finder` for a folder or `Show in Finder`
+  for a file).
+- **Remote hosts**: for some managed sandbox hosts, the editor can open the
+  path over Remote SSH. Install the editor and its Remote SSH support on the
+  machine where you click the button, and make sure the host's SSH alias exists
+  in your local SSH config. The host must be online, and remote links support
+  POSIX paths only.
+
+Omnigent hides the remote options when it can't infer an SSH alias for the
+host, including for custom SSH aliases and offline hosts. The browser can't
+check whether the editor or the SSH alias is installed on your machine.
+
 ## GitHub
 
 Coding-agent sessions have a **Pull Requests** tab in the right workspace rail. It

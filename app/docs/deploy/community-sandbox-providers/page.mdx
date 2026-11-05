@@ -309,7 +309,8 @@ string so it need not load during entry-point discovery.
 host launch-token lifetime in seconds. If omitted, it currently defaults to
 25 hours. Choose a positive value appropriate for your sandbox lifetime: this
 is an authentication lifetime, not a provider-side timeout or an instruction to
-delete compute.
+delete compute. Server operators can override it with
+[`sandbox.token_ttl_s`](/docs/reference/configuration/cloud-sandbox#host-token-expiry).
 
 ## 5. Install and configure
 

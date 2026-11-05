@@ -32,8 +32,46 @@ sandbox:
 | `server_url`  | Yes      | Omnigent server URL reachable from the sandbox.                                                                       |
 | `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).                  |
 | `git_clone`   | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).                             |
+| `token_ttl_s` | No       | Host token validity window in seconds. See [Host token expiry](#host-token-expiry).                                   |
 
 Provider-specific blocks are optional. Omit one to use that provider's defaults.
+
+## Host token expiry
+
+Each sandbox authenticates back to the server with a server-minted, per-launch
+host token. Set `token_ttl_s` to control how long that token stays valid, in
+seconds:
+
+```yaml
+sandbox:
+  server_url: https://your-server.example.com
+  token_ttl_s: 86400 # shared default: 1 day
+  providers:
+    - provider: daytona
+    - provider: kubernetes
+      token_ttl_s: 604800 # override: 7 days
+```
+
+- Omitted or `null` keeps the provider default: seven days for most providers,
+  25 hours for Modal, and derived from the sandbox lifetime for Blaxel, E2B, and
+  CoreWeave.
+- Values must be integers from `300` to `31536000` (5 minutes to 365 days). Any
+  other value stops server startup.
+- With a single `provider`, put `token_ttl_s` beside it. In a `providers` list,
+  an entry can override the shared value, or set `null` to restore its provider
+  default.
+
+Allow enough time for sandbox startup and repository setup before the host's
+first connection. Restart the server after editing the setting. It applies to
+newly issued tokens and future renewals; lowering it does not shorten an expiry
+already granted to an existing token.
+
+Connected hosts renew the same token halfway through the window, on their next
+heartbeat. Expiry is measured from the last renewal, so a disconnected host
+stops receiving renewals, and an expired token cannot open a new connection.
+Renewal also extends the validity of any leaked copy of the token. A relaunch
+mints a fresh token. This setting does not change sandbox lifetime or Mac/Arca
+user-login credentials.
 
 ## Git clone options
 
@@ -256,8 +294,10 @@ sandbox:
   combined, such as `1h30m`.
 
 `ttl` is the sandbox's maximum age from creation, not an idle timeout. Blaxel
-deletes the sandbox at that age even while its session is active. The launch
-token lasts for `ttl + 1h`; provider command output is capped at 4 MiB.
+deletes the sandbox at that age even while its session is active. The default
+host token window is `ttl + 1h`;
+[`token_ttl_s`](#host-token-expiry) overrides it independently. Provider
+command output is capped at 4 MiB.
 
 The default image combines the Omnigent host runtime with Blaxel's required
 `sandbox-api`. Pin a published tag with `image` when deployments must remain
@@ -431,8 +471,9 @@ launcher directly. An explicit `sandbox.gensee.endpoint` takes precedence in the
 server-managed configuration.
 
 The Gensee API token stays in the server and authorizes lifecycle requests. Each
-sandbox receives a separate server-minted Omnigent host token (valid for seven
-days) through Gensee's short-lived secret store; it is not included in the
+sandbox receives a separate server-minted Omnigent host token (a seven-day
+validity window by default, renewed while connected; see
+[Host token expiry](#host-token-expiry)) through Gensee's short-lived secret store; it is not included in the
 durable operation request. By default no model or Git credentials are injected —
 list only variables every sandbox on the server may receive in `env`, or leave
 it empty and let each user sign in from their own sandbox terminal.

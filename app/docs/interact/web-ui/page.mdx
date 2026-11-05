@@ -997,6 +997,38 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+### Trigger templates
+
+The **Jira tickets**, **Slack messages**, **GitHub issues**, and **Linear
+issues** templates under Suggestions create an automation that watches a
+service. It starts one session for each new matching ticket, message, or issue.
+These automations poll the service; they don't receive webhooks.
+
+A trigger template has no schedule controls. Instead, the dialog shows how often
+it checks for new matches. The list row and detail page show **Runs when new
+items match** in place of the schedule and next-run time, and offer no **Run
+now**.
+
+- **Polling interval.** New templates use the server's polling default when
+  automations v2 is enabled. That default is every 10 minutes unless the
+  operator changes
+  [`automation_trigger_poll_minutes`](/docs/reference/configuration#automation-trigger-polling).
+  Servers without sub-hour schedule support poll at least hourly; servers
+  without automations v2 poll hourly. Existing automations keep their saved
+  schedules.
+- **First run.** The first check looks back one polling interval or one hour,
+  whichever is longer, plus a five-minute overlap for slow search indexing.
+- **Unsupported saved polling.** If the server no longer supports an
+  automation's saved polling interval, editing shows **Use server default**.
+  Click it to switch to a supported interval, then save your changes.
+- **Session name.** The polling session these automations keep is named
+  `[automation job] <automation name>`.
+- **Recognition.** An automation counts as a trigger template while it keeps one
+  session and its prompt starts with the template's opening sentence. If you
+  replace that sentence, save, and reopen the automation, it becomes a regular
+  scheduled automation and the schedule controls return. Switching it to a new
+  session each run also brings back the schedule controls.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

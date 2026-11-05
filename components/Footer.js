@@ -30,34 +30,38 @@ export default function Footer() {
           Built by the Databricks AI team, Neon and the Omnigent Contributors.
         </span>
         <span className="spacer" />
-        <Link href="/quickstart/install">Get Started</Link>
-        <Link href="/docs/use/coding-agents">Docs</Link>
-        <Link href="/privacy">Privacy</Link>
-        <a href={GITHUB_URL} target="_blank" rel="noreferrer">
-          <span className="footer-icon-link">
-            <GitHubIcon size={15} /> GitHub
+        <nav className="footer-links" aria-label="Footer">
+          <Link href="/docs/use/coding-agents">Docs</Link>
+          <Link href="/answers">Answers</Link>
+          <Link href="/privacy">Privacy</Link>
+          <a href={GITHUB_URL} target="_blank" rel="noreferrer">
+            <span className="footer-icon-link">
+              <GitHubIcon size={15} /> GitHub
+            </span>
+          </a>
+          <a href={DISCORD_URL} target="_blank" rel="noreferrer">
+            <span className="footer-icon-link">
+              <DiscordIcon size={15} /> Discord
+            </span>
+          </a>
+        </nav>
+        <div className="footer-secondary">
+          <span className="footer-profiles">
+            {FOOTER_PROFILE_LINKS.map(({ href, label, Icon }) => (
+              <a
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={label}
+                title={label}
+              >
+                <Icon size={14} />
+              </a>
+            ))}
           </span>
-        </a>
-        <a href={DISCORD_URL} target="_blank" rel="noreferrer">
-          <span className="footer-icon-link">
-            <DiscordIcon size={15} /> Discord
-          </span>
-        </a>
-        <span className="footer-profiles">
-          {FOOTER_PROFILE_LINKS.map(({ href, label, Icon }) => (
-            <a
-              key={href}
-              href={href}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={label}
-              title={label}
-            >
-              <Icon size={15} />
-            </a>
-          ))}
-        </span>
-        <span className="muted">Apache 2.0</span>
+          <span className="muted">Apache 2.0</span>
+        </div>
       </div>
     </footer>
   );

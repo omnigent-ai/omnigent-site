@@ -757,6 +757,13 @@ association never touches the remote PR; only an explicit action, such as
 posting a [review reply or new conversation](#review-conversations), writes to
 GitHub.
 
+For GitHub PRs you can also act from the tab: edit the title and description,
+add or remove labels, request or withdraw reviewers, post comments, and merge
+or disable auto-merge. These actions need edit access to the session and run as
+the host's active `gh` account, or the account saved for that repository (in
+a sandbox, the sandbox's GitHub identity).
+GitLab merge requests and Azure DevOps pull requests stay read-only.
+
 ### Tracked pull requests
 
 Omnigent discovers a session's pull requests automatically by observing the

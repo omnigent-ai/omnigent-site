@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import InstallTabs from "@/components/InstallTabs";
+import InstallTerminal from "@/components/InstallTerminal";
 import CtaButtons from "@/components/CtaButtons";
 import PillarsTabs from "@/components/PillarsTabs";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
@@ -56,7 +56,7 @@ export default function Home() {
             check with policies and sandboxing, and collaborate in real time on
             the same live session, from any device.
           </p>
-          <InstallTabs />
+          <InstallTerminal />
           <CtaButtons />
         </section>
 

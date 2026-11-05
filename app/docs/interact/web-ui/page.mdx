@@ -997,6 +997,43 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+### Trigger type
+
+When you create an automation with **New automation**, the dialog shows a
+**Trigger type** field right below **Name**. It starts on **Schedule**, which
+gives you the recurring-schedule form described above. Pick **Jira**, **Slack**,
+**GitHub**, or **Linear** to make the same dialog an integration trigger that
+acts on matching items:
+
+- The schedule presets and session-mode controls are hidden. The automation
+  checks for matches at a fixed cadence that the server sets (shown as, for
+  example, **Every 30 minutes**) and keeps working in one continuing session.
+- The Prompt field is replaced by the integration's fields: a scope (the
+  project, channel, repository, or team to match), optional conditions, and the
+  session instructions. The create button stays disabled until the scope and
+  instructions are filled in.
+- Templates from the gallery open the dialog with their integration already
+  selected.
+
+Switching types doesn't lose your work:
+
+- The first time you pick a type, it starts with the instructions you've
+  already typed. A custom name also carries over.
+- Each type keeps its own draft. Switching back to a type you've already used
+  brings back its fields, including its schedule, timezone, session mode, and
+  any prompt you customized. Scope and conditions stay with their own
+  integration and don't copy to another one.
+- Drafts last until the dialog closes. Closing it clears them, and the next
+  **New automation** starts on Schedule again.
+
+The integration options need the same server capabilities as the template
+gallery. If the server doesn't support them, they're greyed out and the dialog
+says **Integration triggers aren't available on this server.** **Schedule**
+always works.
+
+Trigger type appears only when you create an automation. Editing a saved
+automation opens the same editor as before, with no Trigger type field.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

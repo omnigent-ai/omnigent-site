@@ -248,6 +248,41 @@ effort ladder — `antigravity` declares none, so its sessions show no dial.
 Native TUI sessions (`claude-native`, `codex-native`, …) keep their own effort
 controls.
 
+### Clear the conversation with `/clear`
+
+Type **`/clear`** in the composer and press `Enter`, or pick **/clear** from the
+slash menu, to start over with an empty context. The composer offers it in:
+
+- **Claude Code** and **Codex** native sessions (`claude-native`,
+  `codex-native`), when the server lists `clear` in `session_event_types` in
+  `/v1/info`.
+- **`claude-sdk`** sessions, when the server reports
+  `session_claude_sdk_clear: true` in `/v1/info`. Older servers don't report it,
+  so the composer doesn't offer `/clear` there.
+
+On any other harness, or a server that doesn't advertise the control, a typed
+`/clear` goes to the harness as ordinary text.
+
+On `claude-sdk`, `/clear` doesn't empty the session in place, because the SDK
+replays the Omnigent transcript every time its client restarts. Omnigent
+instead continues your work in a **new, empty session**, and the view switches
+to it:
+
+- The new session runs on the same host, workspace and runner as the original
+  and keeps its agent, labels and run settings. On a managed sandbox it stays
+  in the same sandbox. No messages or files are copied over.
+- It starts untitled, so its first message names it like any new chat. It is
+  shared with exactly the people the original was shared with.
+- The original chat ends with the notice **This conversation was ended by
+  `/clear`.**, which links to the new chat. Sending a message in the original
+  chat resumes it with its own history.
+
+`/clear` on `claude-sdk` is available only to the session's owner, and only in
+a top-level session (not a sub-agent or a side chat). It is refused while a
+turn is running or starting (**Stop the current turn before running
+/clear.**). Messages and `/compact` sent to the original chat while the clear
+is in progress are refused and point you to the new session.
+
 ### Set what the agent can do without asking
 
 Native coding-agent sessions choose their permission or approval mode from the

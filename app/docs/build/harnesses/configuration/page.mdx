@@ -128,6 +128,16 @@ Approvals surface two ways: Omnigent policies gate each request, tool call, and
 tool result, and Devin's own consent prompt is republished as a Chat approval
 card (answerable in the web UI or the embedded terminal).
 
+When Devin asks you a question with its `ask_user_question` tool, Omnigent
+shows the question form in Chat and Inbox under **Devin needs your input**,
+even in `bypass` permission mode. Pick an option (or several, when the question
+allows multiple selections), or type a custom answer, and Omnigent passes the
+answer back to the running tool. A pending question is still there after a page
+reload. Your contextual policies run first, so a policy denial blocks the
+question. If Omnigent can't deliver the form or the request times out, Devin
+opens its own picker in the terminal instead. Dismissing the form cancels the
+question.
+
 ### Model and effort
 
 Devin encodes reasoning effort as a suffix on the model id. Omnigent keeps model

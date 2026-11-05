@@ -120,6 +120,29 @@ desktop app to be running with the session open. If no desktop window is subscri
 the action fails cleanly with `browser action timed out — is the session open in the
 Omnigent desktop app?` rather than hanging.
 
+### Open chat links in the in-app browser
+
+Web links in chat open in your default browser unless you change that. To open
+them in the embedded browser, turn on **Settings → General → Links → Open links
+in the in-app browser**. It's off by default, it's saved per device, and it only
+appears where the embedded browser is available.
+
+With the setting on:
+
+- **Click or `⌘`/`Ctrl`-click** an `http(s)` link to open it in a **Browser**
+  tab in the Workspace rail. If a tab in that conversation already shows the
+  same URL, the app switches to it and doesn't reload it. If not, the link
+  opens in a new tab, so the tabs you already have stay where they are. A URL
+  that differs only in its query string or `#fragment` counts as a different
+  URL. Links never open in the tab your agent drives with `browser_navigate`.
+- **Shift-click**, **Alt-click**, middle-click, and non-web links (such as
+  `mailto:`) keep using your default browser or system handler.
+
+Links opened this way follow the agent's navigation policy, so loopback and
+private-network hosts are blocked, including through redirects. If the
+embedded browser can't open a link, the link opens in your default browser and
+a toast tells you why.
+
 ### Local network permission
 
 Sites in the embedded pane can ask for **local network access** — for example a

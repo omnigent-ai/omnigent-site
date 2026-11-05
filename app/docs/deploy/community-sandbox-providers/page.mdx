@@ -384,6 +384,10 @@ options. `managed_launch=False` is **not** a way to hide a configured plugin
 from the picker; only configure providers that actually implement managed
 launch.
 
+To offer users a choice of provider-authorized configurations, set
+`manages_profiles` and implement `list_profiles` and `select_profile`. See
+[Sandbox Profiles](/docs/deploy/sandbox-profiles).
+
 If your platform needs expiry refreshes, implement a cheap, idempotent
 `keep_alive()`; the server calls it periodically for live managed runners.
 `is_running()` may return `True`, `False`, or `None` when status is unknown.

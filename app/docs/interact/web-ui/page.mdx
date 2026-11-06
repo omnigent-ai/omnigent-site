@@ -332,15 +332,47 @@ The **MCPs** control appears, and the catalog is requested, only when the server
 advertises the `mcp` connection capability; on other servers the composer shows
 no picker.
 
-### Shared sessions
+### Sidebar filter menu
 
-On a multi-user server the sidebar splits your session list across two tabs:
+The funnel button on the `Projects` header opens the sidebar's filter menu.
+Your choices are saved on this device. The menu has four submenus:
 
-- **My sessions** — the sessions you own. This tab keeps the full sidebar
-  structure: the `Pinned` section, `Project` folders, and the `Sessions`
-  list.
-- **Shared with me** — a flat list of sessions other people have
-  [shared with you](/docs/collaborate).
+- **Grouping**: **Default**, **Status**, **Harness**, **Created**, or
+  **Updated**. **Default** keeps the `Pinned`, `Projects`, `Shared with me`,
+  and `Sessions` sections. Every other grouping replaces `Projects`,
+  `Shared with me`, and `Sessions` with titled groups, and the funnel moves to
+  the first group's header:
+  - **Status** sorts sessions into **Needs attention**, **Unread**,
+    **Working**, **Draft**, and **Done**.
+  - **Harness** groups sessions under each harness name (for example Claude
+    Code, Codex, or Pi). Sessions with no harness information go under
+    **Unknown harness**.
+  - **Created** and **Updated** group sessions by date, under headings such as
+    "Yesterday" and "Earlier".
+- **Display**: **All**, **My sessions**, **Shared with me**, or **Archived**.
+  On a multi-user server, sessions other people have
+  [shared with you](/docs/collaborate) appear in their own `Shared with me`
+  section above `Sessions`. When you choose **Shared with me**, `Projects` is
+  hidden, because project folders only hold your own sessions. Choose
+  **Archived** to see archived sessions, which you can filter by project.
+- **Ordering**: **Updated**, **Created**, or **Custom**. To switch to
+  **Custom**, drag one of your sessions onto another row in the same list,
+  project, or group, or use **Move up** and **Move down** in the row's menu.
+  On mobile, press and hold a row in the sidebar drawer, then drag it. Custom
+  positions are saved on this device, and new sessions appear above them.
+- **Show**: the metadata displayed on each row: **Updated**, **Environment**,
+  **Repo**, and **Branch**.
+
+**Select sessions** sits next to the funnel and selects rows in every list
+below it. Hover a session row to see its tooltip, which includes the session's
+repo, pull request, and creator.
+
+These options are a [release feature](/docs/deploy/overview#release-features),
+`sidebar_grouping_ui`, which is on by default. An operator can bring back the
+previous sidebar with `OMNIGENT_FEATURES=-sidebar_grouping_ui`. That sidebar
+has a Display-only filter on the `Sessions` header and a plain tooltip. The
+flag, and with it the option to turn this off, is scheduled for removal in
+0.23.0.
 
 ### Browser-first mode
 

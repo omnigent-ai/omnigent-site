@@ -393,20 +393,28 @@ Exceptions: `Ctrl+Shift+M` (model picker), `Ctrl+Shift+L` (focus chat input), an
 What you see in the shortcuts overlay is what fires: the overlay shows ⌘ on
 macOS and Ctrl elsewhere.
 
-### Switch sessions
+### Go back and forward
 
-Move between sidebar sessions without leaving the composer:
+Step back and forward through the pages you've visited in the app, as in a
+browser:
 
-- **Previous session** — `⌘[` (`Ctrl+[`)
-- **Next session** — `⌘]` (`Ctrl+]`)
+- **Go back** — `⌘[` (`Ctrl+[`)
+- **Go forward** — `⌘]` (`Ctrl+]`)
 
-The selection wraps at the ends of the list. The bracket chords carry no
-text-editing meaning, so they fire even while the composer is focused; inside a
-terminal or the code editor — which bind `⌘[` / `⌘]` themselves (indent/outdent,
-or forwarding to the PTY) — the shortcut yields to that surface.
+Back stops at the first page you opened in the app, so it never leaves Omnigent
+for a sign-in or setup page. When the web UI is embedded in another page, Back
+stops at the page the app opened on, and earlier pages stay with the host.
 
-In the [desktop app](/docs/interact/desktop#keyboard-shortcuts), `Ctrl+Tab`
-additionally opens a switcher over your five most recent sessions.
+The bracket chords carry no text-editing meaning, so they fire even while the
+composer is focused. Inside a terminal, the code editor, or the command palette —
+which handle `⌘[` / `⌘]` themselves (indent/outdent, or forwarding to the PTY) —
+the shortcut yields to that surface.
+
+To jump to a specific session, use the command modifier plus a digit (see
+[Other global shortcuts](#other-global-shortcuts)), the
+[session picker](#find-a-session-by-name), or, in the
+[desktop app](/docs/interact/desktop#keyboard-shortcuts), `Ctrl+Tab` to switch
+between your five most recent sessions.
 
 ### Find a session by name
 

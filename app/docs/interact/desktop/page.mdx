@@ -201,6 +201,21 @@ only bound where the embedded browser is available.
 (`Ctrl+Shift+O`); the shortcuts overlay and the sidebar's **New session**
 button show the chord for whichever app you're in.
 
+### Go back and forward
+
+The app's **Go** menu has **Back** (`⌘[` / `Ctrl+[`) and **Forward**
+(`⌘]` / `Ctrl+]`), which step through your in-app navigation history like the
+[web UI shortcut](/docs/interact/web-ui#go-back-and-forward). The desktop app
+also maps:
+
+- **Trackpad swipes** (macOS) — swipe left to go back, right to go forward.
+- **Mouse back/forward buttons** — the side buttons on a mouse step back and
+  forward the same way.
+
+Back stops at the first page you opened in the app. When an embedded
+[Browser](#embedded-browser) page has keyboard focus, **Back**, **Forward**, and
+trackpad swipes step through that page's own history instead, as in a browser.
+
 ## Prerequisites
 
 - **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.

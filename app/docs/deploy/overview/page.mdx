@@ -236,12 +236,14 @@ after you change the value, then reload the web app. To roll a feature back,
 add `-feature_name` and redeploy the same image.
 
 Most release features (such as `usage_page`, `harness_install`, and
-[`canvas`](/docs/interact/web-ui#canvas)) are off by default. Runner features
-are resolved by each runner instead of the server:
+[`canvas`](/docs/interact/web-ui#canvas)) are off by default. The features
+below are on by default. Runner features are resolved by each runner, either
+instead of the server or in addition to it:
 
-| Feature             | Default | Applies to    | Effect                                                                                                                                                                                                             |
-| ------------------- | ------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `claude_osc_status` | On      | Host / runner | `claude-native` sessions take their working, blocked, and idle status from Claude Code's OSC 7501 terminal reports, falling back to Claude's session status file and then pane activity. Not listed in `/v1/info`. |
+| Feature                  | Default | Applies to               | Effect                                                                                                                                                                                                                                                                                                                              |
+| ------------------------ | ------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `claude_osc_status`      | On      | Host / runner            | `claude-native` sessions take their working, blocked, and idle status from Claude Code's OSC 7501 terminal reports, falling back to Claude's session status file and then pane activity. Not listed in `/v1/info`.                                                                                                                  |
+| `peer_session_messaging` | On      | Server and host / runner | Lets agents use `sys_session_message` to message sessions that aren't their children. Disabling it on the server refuses those messages and locks the [admin switch](/docs/collaborate/auth#agent-messaging). Disabling it on a host hides the tool and refuses calls there. Both sides must leave it on. Not listed in `/v1/info`. |
 
 The OSC path needs Claude Code 2.1.295 or later. Older CLIs use the fallback.
 Setting `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` also suppresses these status

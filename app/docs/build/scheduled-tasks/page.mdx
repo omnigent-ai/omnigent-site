@@ -121,6 +121,56 @@ The `state` field accepts `active` or `paused`:
 To remove a task permanently, use `sys_scheduled_task_delete` — deletion is not
 done through `update`.
 
+## Permission modes for unattended runs
+
+A scheduled run has nobody at the keyboard to answer an approval prompt, so an
+automation must launch in a mode that still has an approval gate — one that
+asks for approval, or one that uses the auto classifier in your place.
+Automations refuse the modes that skip that gate:
+
+| Mode | Harness |
+| --- | --- |
+| `bypassPermissions` | `claude-native`, `claude-sdk`, `acp` |
+| `dontAsk` | `claude-native` |
+| `full-access`, `bypass` | `codex-native` |
+| `yolo` | `cursor-native` |
+| `skip` | `antigravity-native` |
+| `dangerous` | `devin-native` |
+
+Claude's `dontAsk` denies instead of approving, but it is refused anyway: it
+skips the auto classifier and relies only on pre-approved rules the server
+cannot see.
+
+The check applies when a task is saved and again each time it fires:
+
+- **Saving.** Creating or updating a task with one of these as its
+  `permission_mode` is rejected (HTTP 400) with *Automations run unattended, so
+  they cannot use permission mode '…'; choose a mode that asks for approval or
+  uses the auto classifier*.
+- **The agent's default.** When a task sets no `permission_mode` (or an update
+  clears it to `null`), the agent's own default is checked instead. Native
+  harnesses start in their CLI's default mode, which is allowed. SDK harnesses
+  use the spec's `executor.config.permission_mode`, and run in `auto` when the
+  spec sets none. A spec that sets a refused mode (for example
+  `permission_mode: bypassPermissions` on a `claude-sdk` agent) can't be saved
+  as an automation until you change `permission_mode` in the agent spec.
+- **Tasks saved earlier.** A task that already stored a refused mode, or whose
+  agent's default has since become a refused mode, does not run. The occurrence
+  is recorded as a failed run with error code `permission_mode_not_allowed`, and
+  no session is created.
+- **Continued sessions.** A task that keeps running in an existing session uses
+  that session's own mode, so the session is checked as well. If it is in a
+  refused mode (including a mode you switched to inside the CLI, or a session
+  launched with flags such as `--dangerously-skip-permissions`,
+  `--dangerously-bypass-approvals-and-sandbox`, or `--ask-for-approval never`),
+  the run fails with `permission_mode_not_allowed`. Switch the session to a mode
+  that asks for approval or uses the auto classifier.
+
+In the web UI, the automation dialog's **Permission** picker leaves these modes
+out. Opening a task that stored one of them shows **Default** instead, and
+saving the task clears the stored mode. Antigravity's only non-default mode is
+`skip`, so Antigravity automations have no permission picker at all.
+
 ## Where a task runs
 
 `execution_target` picks the machine each firing runs on.

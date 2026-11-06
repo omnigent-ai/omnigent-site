@@ -187,3 +187,31 @@ A few scheduling guarantees:
   [removes a member](/docs/collaborate/auth#removing-a-member), all of that
   user's tasks are marked deleted. A username that is later re-registered does
   not see or inherit the old account's tasks.
+
+## Continuing in the same session
+
+By default, every firing starts a new session (`session_mode: "new"`). With
+`session_mode: "continue"`, every firing sends its prompt into one session,
+which is saved as the task's `session_id`. The agent then keeps the context of
+earlier runs. If you leave `session_id` unset, the first firing creates the
+session and saves it on the task. In the web UI dialog, pick **Continue in the
+same session** under **Session**. The option appears when the server advertises
+`scheduled_task_session_modes` in `/v1/info`.
+
+If the continued session can't take the prompt, the run fails with one of the
+error codes below. Omnigent never silently starts a replacement session for one
+of these:
+
+| Situation | Run | `error_code` |
+| --- | --- | --- |
+| The session is archived | `failed` | `continued_session_archived` |
+| The owner no longer owns the session | `failed` | `continued_session_forbidden` |
+| The automation has a budget, and the session already has a cost cap it did not set (for example, another automation's) | `failed` | `continued_session_budget_conflict` |
+
+**A deleted session is replaced.** If the continued session was deleted, the
+run doesn't fail. The next firing (or **Run now**) starts a new session, saves
+it as the task's `session_id`, and later firings continue in it. If two firings
+find the deleted session at the same time, the first one to save its new
+session wins, and the other continues in that session. For a `managed_sandbox`
+task, the task's sandbox is provisioned again under the same host id if no
+earlier session on it is known.

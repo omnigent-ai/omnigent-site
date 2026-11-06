@@ -857,6 +857,7 @@ need to write an API client to use them.
 | `sys_agent_list`          | Find available agents and their IDs.                                                                       |
 | `sys_session_create`      | Create a child session from an existing agent ID or a local agent config, optionally with a first message. |
 | `sys_session_send`        | Send a follow-up to a child session, or start a named sub-agent declared by the parent agent.              |
+| `sys_session_message`     | Send a message to another session owned by the same user that is not a child of this one.                  |
 | `sys_session_list`        | Find child sessions and other sessions you can access.                                                     |
 | `sys_session_get_info`    | Check a session's status, agent, and workspace.                                                            |
 | `sys_session_get_history` | Read a session's recent messages and tool results.                                                         |
@@ -893,6 +894,13 @@ Ask the "Review tests" child session to prioritize its findings by risk.
 For agents with named sub-agents, reusing the same `agent` and `title` continues
 that child conversation; a different title starts a separate one. Child sessions
 appear in the Web UI, where you can follow their progress.
+
+To reach a session that isn't a child, the agent uses `sys_session_message`
+with a message of 1–8000 characters. Admins can turn this off with
+[**Message other sessions**](/docs/collaborate/auth#agent-messaging) under
+**Settings > Sharing**. Deployments can turn it off with the
+`peer_session_messaging` [release feature](/docs/deploy/overview#release-features).
+Either way, `sys_session_send` to child sessions keeps working.
 
 ### Use bundled skills for multi-agent workflows
 

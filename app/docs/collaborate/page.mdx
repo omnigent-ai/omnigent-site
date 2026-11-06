@@ -52,6 +52,39 @@ Great for pairing or handing the keyboard to a domain expert mid-investigation.
 Teammates see everything in real time: messages, tool calls, and file changes stream to every
 connected viewer.
 
+### The Share dialog
+
+The web UI's **Share this session** dialog has these controls:
+
+- **Who can access** — **Only added people** (the default) limits the session
+  to the people listed under **People with access**. **Anyone signed in** lets
+  anyone who can sign in to this Omnigent server open the session from its link,
+  without an individual grant. The **Anyone signed in** option is available only
+  when the server allows public access.
+- **What can they do?** — **Read** or **Edit**. The dialog sets one level for
+  everyone you share with. Changing it updates every existing collaborator's
+  grant, plus the public grant when **Anyone signed in** is selected. The owner,
+  **Manage** grants, and your own grant stay as they are. If existing grants
+  have different levels, the selector shows **Mixed access** until you pick a
+  level. **Edit** isn't offered when the server allows only read-only sharing.
+  With **Anyone signed in**, it's capped at the highest level the server allows
+  for public access.
+- **People with access** — lists the owner, **Everyone** (when **Anyone signed
+  in** is selected), and each person the session is shared with, along with
+  their level. While **Who can access** is **Only added people**, enter a user ID
+  and click **Add** to share at the selected level. Click a person's remove
+  button to revoke their access. With **Anyone signed in** selected, the add
+  field and remove buttons are hidden. Switch back to **Only added people** to
+  manage individual people.
+- **What they can access** — the **Viewers can browse workspace files** toggle
+  (see [below](#read-only-sharing-keeps-workspace-files-private)).
+- **Copy link** copies the session link, and **Open in mobile app** shows a QR
+  code for opening the session on your phone.
+
+A note at the top of the dialog shows what the server allows: whether people
+you add can get Read and Edit or only Read, and the highest level available to
+**Anyone signed in**.
+
 <div className="note">
 
 An admin can restrict or disable sharing server-wide (read-only, or off
@@ -70,9 +103,9 @@ default, view-only viewers don't see the **Files**, **Changes**, or GitHub diff
 surfaces, because a workspace routinely holds secrets like `.env` files and
 keys. **Edit** collaborators always have workspace access.
 
-To let view-only viewers browse the files too, open the **Share** dialog and
-turn on **Workspace files** ("Let people with view access browse this session's
-files"). This toggle appears only for sessions that have a workspace on disk,
+To let view-only viewers browse the files too, open the **Share** dialog and,
+under **What they can access**, turn on **Viewers can browse workspace files**.
+This toggle appears only for sessions that have a workspace on disk,
 and only the session owner can change it. It's off by default. Turning it off
 again returns view-only viewers to conversation-only access.
 
@@ -110,8 +143,8 @@ actions bypass the agent entirely and stay with the session owner:
 | Browse absolute paths on the host filesystem             |      |      |   ✓   |
 | Run a raw shell command in the session's environment     |      |      |   ✓   |
 
-\* Off by default; the owner can enable it with the **Workspace files** toggle
-described above.
+\* Off by default; the owner can enable it with the **Viewers can browse
+workspace files** toggle described above.
 
 † The caller must own both sessions and the host the terminal runs on.
 

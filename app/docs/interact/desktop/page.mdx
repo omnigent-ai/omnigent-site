@@ -120,6 +120,34 @@ desktop app to be running with the session open. If no desktop window is subscri
 the action fails cleanly with `browser action timed out — is the session open in the
 Omnigent desktop app?` rather than hanging.
 
+### Preview local dev servers
+
+Sessions running on this desktop machine can open HTTP(S) `localhost`,
+`127.0.0.1`, `[::1]`, and `*.localhost` subdomains such as
+`spog.dev.localhost` in the embedded browser — through the address bar, chat
+and file links, and the agent's browser tools. Start your app locally, open
+**+ → Browser**, and enter its URL. Redirects and links that would open a new
+window stay in the same pane.
+
+`localhost` and its subdomains always name the desktop machine, but the page
+still receives the subdomain in its `Host` header, so dev servers and reverse
+proxies that route on the hostname work as expected. Sessions on remote or
+unknown hosts can only open public pages; use a public preview URL or your
+regular browser for those.
+
+A few limits apply to `*.localhost`:
+
+- The request is sent only on a direct route and must connect to a loopback
+  address. Chromium already sends these names around ordinary system and PAC
+  proxies, but a proxy rule that removes that bypass (`<-loopback>`) leaves the
+  page blank.
+- Trailing-dot or empty-label forms such as `app.localhost.` are blocked, as
+  are DNS aliases that resolve to loopback.
+
+Other loopback addresses, private networks, link-local and metadata addresses,
+and `0.0.0.0` remain blocked. Normal TLS, CORS, authentication, and
+[local network permission](#local-network-permission) rules still apply.
+
 ### Local network permission
 
 Sites in the embedded pane can ask for **local network access** — for example a

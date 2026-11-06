@@ -381,8 +381,9 @@ OMNIGENT_PUBLIC_SHARING=off omni server start
 Public access is enabled unless the value is explicitly falsy
 (`0` / `false` / `no` / `off`); unset or unrecognized fails open to enabled. It
 is also editable at runtime from **Settings > Sharing**. When disabled, the
-Share dialog hides its **Public access** toggle and the server rejects new
-public grants; sessions already shared publicly stay public until revoked.
+Share dialog's **Who can access** selector no longer offers **Anyone signed
+in**, and the server rejects new public grants. Sessions already shared
+publicly stay public until revoked.
 
 #### Default visibility for new sessions
 
@@ -408,7 +409,8 @@ also editable at runtime from **Settings > Sharing**, or via
 The default is applied when a session is created, forked, or fired by a
 [scheduled task](/docs/build/scheduled-tasks) (a task whose execution target is
 `managed_sandbox` counts as a sandbox session). It is only the creation default: owners can revoke the
-public grant from the Share dialog at any time, and existing sessions are never
+public grant at any time by setting the Share dialog's **Who can access** to
+**Only added people**, and existing sessions are never
 changed. A few sessions are always left private:
 
 - Sub-agent sessions, which follow their parent's grants instead.

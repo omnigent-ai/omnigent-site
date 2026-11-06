@@ -82,6 +82,16 @@ rules.
   `high`. Omit for the agent default (the spec's
   [`executor.reasoning_effort`](/docs/build/models#reasoning-effort), or the
   harness default when the spec sets none).
+- **`permission_mode`** (optional) — a per-run permission mode for native
+  coding agents that support one. Use the selected harness's vocabulary:
+  Claude Code (for example, `acceptEdits`), Codex (`default`,
+  `ask-for-approval`, `approve-for-me`, `read-only`), Cursor (`default`,
+  `auto-review`, `plan`, `ask`, `yolo`), Antigravity (`default`, `skip`), or
+  Devin (`normal`, `accept-edits`, `smart`, `dangerous`). Omit it for the agent
+  default. For Codex, that's Codex's own default, which asks before escalations
+  and Omnigent tool calls. Runs are unattended, so a mode that prompts can leave
+  a run waiting for approval. Pick an auto-running mode only when its permission
+  level suits the task.
 
 Once created, the task fires automatically on its schedule until you delete it.
 

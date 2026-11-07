@@ -385,7 +385,11 @@ from the picker; only configure providers that actually implement managed
 launch.
 
 If your platform needs expiry refreshes, implement a cheap, idempotent
-`keep_alive()`; the server calls it periodically for live managed runners.
+`keep_alive()`. The server calls it periodically while the sandbox's runner
+reports agent work, and for the runner idle timeout after that. Viewing a session
+does not count as work. Once the calls stop, your platform's own idle or expiry
+behavior takes over (see
+[how long a sandbox stays warm](/docs/deploy/cloud-sandbox-host#how-long-a-sandbox-stays-warm)).
 `is_running()` may return `True`, `False`, or `None` when status is unknown.
 
 The reaper can reuse one launcher per workspace and provider. Override

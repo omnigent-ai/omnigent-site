@@ -191,6 +191,28 @@ Calling the [REST API](/reference) directly, pass a single repository in
 requires a managed session (`host_type: "managed"`), and it takes at most 10
 repositories.
 
+#### How long a sandbox stays warm
+
+While a managed sandbox's runner is connected, the server renews the sandbox
+(through the provider's keepalive) only while the runner reports **agent work**,
+and for the runner idle timeout afterwards (`host_config.runner.idle_timeout_s`,
+one hour by default). So a sandbox stays warm about as long as an idle runner
+stays alive. Agent work means a turn in progress, a turn waiting on a permission
+prompt, or a background shell that a native session reports as still running.
+These do **not** count:
+
+- viewing a session or attaching to its terminal
+- a command left running in a plain shell terminal with no agent turn
+
+Sending a message or an approval renews the sandbox right away, so resumed work
+doesn't wait for the next keepalive tick. After renewal stops, the provider's own
+idle or expiry behavior applies (see each provider's lifetime settings in the
+[configuration reference](/docs/reference/configuration/cloud-sandbox)). For the
+Kubernetes `agent_sandbox` provider, `sandbox.keep_warm_s` sets the runner idle
+timeout. The Pod suspends a few minutes after renewal stops, and its storage is
+kept. Runners from older builds don't report work, so their sandboxes are renewed
+for as long as the runner stays connected.
+
 ### 5. Run automations in sandboxes (optional)
 
 [Scheduled tasks](/docs/build/scheduled-tasks#where-a-task-runs) can use the same

@@ -997,6 +997,43 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+### Slack message triggers
+
+Instead of a schedule, an automation can watch Slack and start a session for
+each matching message. Set the trigger type to **Slack** (or pick the **Slack
+messages** template), then choose what to watch:
+
+| Event | Watches | Scope input |
+| --- | --- | --- |
+| **Message posted in a channel** | Top-level messages in the listed channels. | `where channel` **equals** / **in**, prefixed with `#` |
+| **Direct message received** | Messages the listed senders send you in your one-to-one DM with each of them. | `where sender` **equals** / **in**, prefixed with `@` |
+| **Group DM message received** | Top-level messages in the one group DM whose members are exactly you and the listed people. | `where group DM with`, prefixed with `@` (no operator) |
+
+- **Prefixes are added for you.** A `#` or `@` sits in front of the scope
+  input, and a leading `#` or `@` you paste is stripped, so `#eng-support`
+  becomes `eng-support`. Slack channel and user IDs (e.g. `C0123ABCD`,
+  `U0123ABCD`) and email addresses are used as entered.
+- **People** can be listed by handle, display name, or email. A name that
+  matches no one, or more than one person, counts as no match, and the agent
+  says so in its reply. Repeated names (ignoring case) count once.
+- **Group DMs need at least two people** besides you. With fewer, the dialog
+  shows *List at least two people. For one person, choose Direct message
+  received.* and the task can't be created. A group DM that also includes
+  anyone else doesn't match.
+- **Switching events** between a channel event and a DM event clears the scope,
+  since channel names aren't people. Switching between the two DM events keeps
+  the names.
+- **Direct message received** hides the **Author** condition (the sender is
+  already the scope) and drops any Author condition you'd added. Other
+  conditions, such as text filters, still apply.
+- Your own messages and replies inside a thread don't start a new session.
+- DM triggers need a Slack MCP server that can read your direct messages (or
+  group DMs). If the agent's Slack tools can't, it says so in its reply instead.
+
+Anyone who can send you a direct message from one of the listed accounts (or
+post in the watched channel or group DM) can direct the agent, and the dialog
+warns about this.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

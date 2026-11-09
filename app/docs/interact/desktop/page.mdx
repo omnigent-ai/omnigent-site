@@ -201,6 +201,29 @@ only bound where the embedded browser is available.
 (`Ctrl+Shift+O`); the shortcuts overlay and the sidebar's **New session**
 button show the chord for whichever app you're in.
 
+## Voice dictation
+
+The desktop app's built-in browser engine can't transcribe speech itself, so
+the composer's microphone button works differently than it does in a browser:
+
+- **Server dictation.** If the connected server has dictation available (the
+  `dictation` extra plus its models installed, reported as
+  `dictation_available` by `GET /v1/info`), the mic button and `⌘⌥V`
+  (`Ctrl+Alt+V`) stream your audio to the server for transcription. As in the
+  browser, press `Enter` to keep the dictated text or `Esc` to discard it.
+- **macOS Dictation.** If the server has no dictation, on a Mac the mic button
+  starts macOS Dictation (the same action as **Edit > Start Dictation…**) with
+  the message box focused, and the spoken text is typed into it. macOS shows
+  its own listening indicator; stop with the macOS Dictation controls rather
+  than `Enter`/`Esc`. If Dictation can't start, the button shows **Voice input
+  isn't available on this device.**
+- **Windows and Linux.** If the server has no dictation, there's no mic button,
+  and `Ctrl+Alt+V` does nothing.
+
+The same rule applies to the in-session, new-session, and side-chat composers.
+The side-chat composer has the mic button but not the `⌘⌥V` shortcut, which
+belongs to the main composer.
+
 ## Prerequisites
 
 - **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.

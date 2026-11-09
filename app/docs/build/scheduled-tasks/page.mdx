@@ -153,6 +153,47 @@ operators should choose provider lifetime, idle, and cleanup settings that fit
 their automation frequency and resource budget; enabling managed sandboxes
 alone does not guarantee a short shutdown time.
 
+## Starting each run from a session
+
+Instead of a prompt alone, an automation can start every run from a copy of an
+existing session, so each run has that session's context without one transcript
+growing from run to run.
+
+**In the web UI**, choose **Create automation** from a session's menu in the
+sidebar or in the session header. The option is offered on top-level sessions
+you own when the server advertises `scheduled_task_source_sessions` in
+`/v1/info`. The **New automation** dialog shows the session under **Starts
+from**, and its prompt field becomes optional **Additional instructions**.
+Saving copies the session, through its last finished reply, into the
+automation's project under the session's title; the automation's page links that
+copy under **Starts from**.
+
+**Over the REST API**, send `source_session_id` together with the runs'
+`agent_id` to `POST /v1/scheduled-tasks`. `session_mode` must stay `new` (a
+`continue` task is rejected). Responses return the **copy's** id in
+`source_session_id`, not the id you sent.
+
+How these automations behave:
+
+- **Each run starts a new session** from a copy of the saved copy. A run sends
+  the automation's additional instructions as typed or, when there are none,
+  `Perform the task from this conversation again.` — followed by the
+  unattended-run note.
+- **The snapshot is fixed.** Messages added to the original session after you
+  save don't reach the automation.
+- **Agents.** Runs use the agent you pick, which defaults to the session's; the
+  copy itself keeps the session's own agent. Runs rebuild the agent's native
+  transcript from the copied messages, so Claude Code, Codex, Pi, Cursor,
+  OpenCode and SDK agents are supported; other native harnesses are rejected.
+- **Restrictions.** A session can't be used if it is a sub-agent's session or a
+  side chat, already has an automation running from it, has no agent, or has no
+  finished reply yet.
+- **Deleting.** Deleting the automation keeps the copy as an ordinary session.
+  Deleting a session an automation runs from asks to **Delete both** (bulk
+  deletes from the sidebar name those automations and delete them first). If
+  the copy is deleted anyway, the next run fails with `source_session_missing`
+  and the automation is paused.
+
 ## How a firing runs
 
 When a task is due, Omnigent:

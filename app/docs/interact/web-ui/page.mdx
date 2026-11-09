@@ -703,6 +703,49 @@ it. When a session tracks no PRs yet, the tab's empty state offers the same
 The composer status line mirrors this: it shows `#123` for a single tracked PR
 or `N PRs` when several are tracked, and clicking it opens the **Pull Requests** tab.
 
+### GitLab merge requests
+
+The same tab shows GitLab merge requests. The execution host reads them with
+either its `glab` login or a GitLab token. The GitHub CLI (`gh`) is not
+required. To use an existing CLI login:
+
+```sh
+glab auth login --hostname gitlab.com
+```
+
+If `glab` is not installed, the panel can read GitLab directly using an exported
+`GITLAB_TOKEN` with API read access. For a private instance, select its HTTPS
+host explicitly. When Omnigent launches a background host and runner, opt in to
+forwarding the token:
+
+```sh
+export GITLAB_HOST=git.example.com
+export GITLAB_TOKEN=<token>
+export OMNIGENT_RUNNER_ENV_PASSTHROUGH=GITLAB_TOKEN
+```
+
+Keep any existing names in the comma-separated
+`OMNIGENT_RUNNER_ENV_PASSTHROUGH` list. `GLAB_HOST` and `GLAB_TOKEN` work too;
+if you use `GLAB_TOKEN`, put that name in the passthrough list instead. Restart
+the host and reconnect the session after setting these variables.
+
+- The token is used only for the selected host, including its HTTPS port. With
+  no `GITLAB_HOST` or `GLAB_HOST` set, it applies to GitLab.com. Other instances
+  use their saved `glab` login.
+- When `glab` is installed, its configuration still controls API routing.
+- `GITLAB_HOST` and `GLAB_HOST` are passed on to background hosts, runners, and
+  agent tools automatically, but the tokens are not. Agent tools need token
+  access granted to them separately.
+- SSH keys authenticate git fetch and push, but they cannot read merge request
+  details from the GitLab API.
+
+If a token is rejected, the panel shows an access hint rather than asking you
+to install a CLI. If Omnigent can't identify a remote's git provider, the panel
+suggests running `glab auth login --hostname <host>` (GitLab) or
+`gh auth login --hostname <host>` (GitHub Enterprise) on the execution host. For
+a GitHub SSH alias, it suggests `git config --local omnigent.gitprovider github`
+in the checkout.
+
 ## Mentioning workspace files
 
 In a coding-agent session, type `@` in the composer to browse and attach

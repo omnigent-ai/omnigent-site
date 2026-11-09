@@ -997,6 +997,44 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+### Trigger templates
+
+Trigger templates watch a service and start one session for each newly created
+item that matches. They are offered as **Jira tickets**, **Slack messages**,
+**GitHub issues**, **Linear issues**, and **PagerDuty incidents** chips under
+Suggestions, and as **Trigger type** options (**Jira**, **Slack**, **GitHub**,
+**Linear**, or **PagerDuty**, each shown with the service's logo) in the **New
+automation** dialog. They appear only when the server supports scheduled-task
+session modes and has session orchestration enabled
+(`features.session_orchestration` in `/v1/info`).
+
+Instead of a free-form prompt, the form builds a trigger sentence: an event, a
+scope, optional **Add condition** rows (all must match), and a *then* row that
+either posts the session link back to the service or only starts the session.
+You also write the instructions each new session receives (up to 2,000
+characters). Each run starts at most 10 sessions, and anything the sessions post
+ends with a `Sent with Omnigent` line.
+
+**PagerDuty incidents** use these fields:
+
+- **Event** — fixed to **Incident triggered**.
+- **Scope** — a PagerDuty service name or ID. **equals** matches one service;
+  choose **in** to match any service in a comma-separated list. A name that
+  matches no service, or more than one, counts as no match and is reported in
+  the automation's reply.
+- **Conditions** — **Urgency**, **Priority**, **Status**, or **Assignee**
+  (equals or doesn't equal), or **Title** (contains or doesn't contain). An
+  Assignee of `me` is the automation's owner.
+- **Link-back** — **Add the session link as a note on the incident**.
+
+Each run looks up the watched services, then lists incidents created on them
+since the previous check in any status, not only the ones assigned to you, and
+reads every page before starting sessions. Each new session is titled
+`PagerDuty #<incident number>`. The agent needs a PagerDuty MCP server where the
+task runs; the form warns about this except when the task runs in an Arclet
+sandbox. Anyone who can trigger an incident on a watched service can influence
+the sessions it starts, and link-back notes are written with your account.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

@@ -62,6 +62,28 @@ sharing policy — see [Session sharing](/docs/collaborate/auth#session-sharing)
 
 </div>
 
+### The Share dialog
+
+**Share this session** has these controls:
+
+- **General access** — access for _anyone with the link_ (sign-in still
+  required). Choose **No access** (the default for a private session),
+  **Read**, or **Edit**. **Edit** appears only when the server allows public
+  edit access, and it's disabled on a read-only sharing server.
+- **Workspace files** — lets people with view access browse the session's
+  files (see [below](#read-only-sharing-keeps-workspace-files-private)).
+- **People** — everyone you've shared with directly, listed by **Name** and
+  **Permission**. Change a person's level between **Read** and **Edit** from
+  their row, or remove them with the revoke (trash) button. The owner's row
+  can't be changed or removed. A **Manage** grant shows as a fixed label that
+  you can still revoke. On a read-only sharing server, every level is a fixed
+  label.
+- **Add people** — enter a **User ID** (for example `alice@example.com`), pick
+  a **Level** (**Read** or **Edit**; only **Read** on a read-only sharing
+  server), and click **Grant**.
+- **Copy link** and **Open in mobile app** (a QR code) to hand off the session
+  link. Click **Done** to close the dialog.
+
 ### Read-only sharing keeps workspace files private
 
 A **Read** (view-only) share gives a teammate the conversation — messages, tool

@@ -165,9 +165,21 @@ doesn't rewrite those headers.
 ## Keyboard shortcuts
 
 The desktop app supports every
-[web UI shortcut](/docs/interact/web-ui#keyboard-shortcuts) and adds two of
-its own. Both appear in the in-app shortcuts overlay (`⌘/` / `Ctrl+/`) only
-when you're running the desktop app.
+[web UI shortcut](/docs/interact/web-ui#keyboard-shortcuts) and adds some of
+its own. The recent-session switcher and the new-browser-tab shortcut appear in
+the in-app shortcuts overlay (`⌘/` / `Ctrl+/`) only when you're running the
+desktop app.
+
+### Go back and forward
+
+`⌘[` / `⌘]` (`Ctrl+[` / `Ctrl+]` on Windows/Linux), the **Go** menu, trackpad
+swipes, and the mouse back/forward buttons step back and forward through the
+pages you've visited in the app. The sidebar's
+[**Back** and **Forward** buttons](/docs/interact/web-ui#back-and-forward) do
+the same. On macOS they sit beside the window controls with the sidebar
+toggle, and Settings lives in the
+[profile footer](/docs/interact/web-ui#profile-menu-and-settings) at the bottom
+of the sidebar.
 
 ### Switch recent sessions
 
@@ -282,6 +294,15 @@ Each window connects to one server. To work with multiple servers at the same ti
 2. Enter the URL of the second server
 
 Notifications and badge counts are combined across all connected servers.
+
+To switch the current window to another server, click your profile at the
+bottom of the sidebar. Below **Settings**, the profile menu lists servers
+**Provided by your organization** (see
+[Preset server URLs via MDM](#preset-server-urls-via-mdm-macos)) and your
+**Recents**, with a check next to the current one. Pick a server to re-point the
+window to it, or choose **Connect to new server…** to return to the setup page.
+When the app manages your sign-in to the current server, the menu also offers
+**Sign out of `<host>`**.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 

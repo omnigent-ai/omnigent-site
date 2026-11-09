@@ -342,6 +342,33 @@ On a multi-user server the sidebar splits your session list across two tabs:
 - **Shared with me** — a flat list of sessions other people have
   [shared with you](/docs/collaborate).
 
+### Profile menu and Settings
+
+The bottom of the sidebar shows your profile: an avatar, your name (**Local
+user** on a local server), and the host of the server you're connected to. Click
+it to open the profile menu:
+
+- **Settings** — opens Settings; the row shows the `⌘⌥,` (`Ctrl+Alt+,`)
+  shortcut.
+- **Server** — the server this window is connected to. In the
+  [desktop app](/docs/interact/desktop#work-with-multiple-servers) this section
+  is the server switcher instead.
+- **Sign out** — ends your browser session. It appears only when the server
+  requires sign-in: with built-in accounts it returns you to the login form,
+  and under OIDC it follows the server's `/auth/logout` redirect.
+
+The gear button beside the profile goes straight to Settings. While you're in
+Settings it becomes a **Home** button that takes you back to the app.
+
+### Back and Forward
+
+The sidebar header has **Back** and **Forward** buttons that step through the
+pages you've visited in the app. They appear once there is in-app history to
+move through, and each one is disabled when there's nothing in that direction.
+Their tooltips show the `⌘[` / `⌘]` (`Ctrl+[` / `Ctrl+]`) chords that do the
+same in the [desktop app](/docs/interact/desktop#go-back-and-forward). The
+buttons are hidden on narrow (phone-width) layouts.
+
 ### Browser-first mode
 
 If you prefer to work in the browser rather than the terminal UI, one command
@@ -373,7 +400,8 @@ terminal to prompt on.
 The web UI ships a set of global keyboard shortcuts. Press `⌘/` (`Ctrl+/` on
 Windows/Linux) at any time to open the in-app shortcuts overlay, which lists the
 current bindings for your platform. Many controls also show their shortcut
-inline: hover the sidebar's collapse, **Search**, or **Settings** button or a
+inline: hover the sidebar's collapse, **Back**, **Forward**, **Search**, or
+**Settings** button or a
 Workspace tab, or open the Workspace rail's **+** menu, and the keycaps appear
 in the tooltip or menu row.
 

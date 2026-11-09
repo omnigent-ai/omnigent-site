@@ -32,8 +32,10 @@ Omnigent currently supports
 [Databricks Sandbox](https://docs.databricks.com/aws/en/compute/serverless/sandbox),
 [Modal](https://modal.com), [Daytona](https://www.daytona.io),
 [Blaxel](https://blaxel.ai), [Islo](https://islo.dev), [Gensee](https://gensee.ai),
-[NVIDIA OpenShell](https://github.com/NVIDIA/openshell), and
-[Boxlite](https://github.com/boxlite-ai/boxlite) for cloud sandbox hosts.
+[NVIDIA OpenShell](https://github.com/NVIDIA/openshell),
+[Boxlite](https://github.com/boxlite-ai/boxlite), and
+[AWS Lambda MicroVMs](https://aws.amazon.com/about-aws/whats-new/2026/06/aws-lambda-microvms/)
+for cloud sandbox hosts.
 
 The hosted-platform comparison below covers Databricks, Modal, Daytona, Blaxel, and Islo.
 OpenShell connects to your selected gateway; Boxlite can use a local micro-VM runtime
@@ -41,6 +43,9 @@ or a remote `boxlite serve` pool. Gensee and Databricks are managed-host provide
 only: their control planes start the host over HTTPS, so they support the
 server-managed flow but not the CLI bootstrap commands. Databricks
 sandboxes are driven through the [Databricks Sandbox SDK](https://databricks-sdk-py.readthedocs.io/en/latest/workspace/sandbox/sandbox.html).
+AWS Lambda MicroVMs is also managed-host only: the server runs a microVM from a
+MicroVM image you build ahead of time, and the host inside it dials back to the
+server. See [AWS Lambda MicroVMs settings](/docs/reference/configuration/cloud-sandbox#aws-lambda-microvms).
 
 For local microVMs, use [Microsandbox](/docs/reference/configuration/cloud-sandbox#microsandbox).
 Its VMs run on the machine running the server or CLI, so they depend on that
@@ -68,6 +73,7 @@ pip install 'omnigent[islo]'        # for Islo
 pip install 'omnigent[openshell]'   # for OpenShell
 pip install 'omnigent[boxlite]'     # for Boxlite
 pip install 'omnigent[microsandbox]' # for local microVMs
+pip install 'omnigent[lambda-microvm]' # for AWS Lambda MicroVMs
 ```
 
 Gensee needs no extra: it talks to the Gensee control plane over HTTPS and
@@ -130,6 +136,12 @@ export GENSEE_CONTROLLER_API_TOKEN=…
 **Boxlite:** local mode requires KVM on Linux and no provider credential. For a
 remote `boxlite serve` pool, set `BOXLITE_API_KEY` on the server and configure
 the pool endpoint in the [Boxlite settings](/docs/reference/configuration/cloud-sandbox#boxlite).
+
+**AWS Lambda MicroVMs:** give the server process AWS credentials through the
+standard boto3 chain (profile, environment, or instance role). They must allow
+calls to the `lambda-microvms` API and allow passing the microVM execution role.
+You also need a prebuilt MicroVM image; see
+[AWS Lambda MicroVMs settings](/docs/reference/configuration/cloud-sandbox#aws-lambda-microvms).
 
 **Microsandbox:** no provider credentials or daemon are needed; the install extra
 includes the runtime. Use Apple Silicon macOS or glibc Linux with access to
@@ -218,8 +230,8 @@ omni sandbox connect --provider modal \
   --sandbox-id <id> --server <url>
 ```
 
-Databricks, Boxlite, and Gensee support the server-managed flow but not these CLI
-bootstrap commands.
+Databricks, Boxlite, Gensee, and AWS Lambda MicroVMs support the server-managed
+flow but not these CLI bootstrap commands.
 
 For Microsandbox, use `--provider microsandbox` and pass a `--server` URL
 reachable from the VM; see [Microsandbox settings](/docs/reference/configuration/cloud-sandbox#microsandbox).

@@ -690,6 +690,29 @@ section is simply omitted and the summary, checks, and comments still load.
 In the **Comments** tab, each author's avatar initial gets a distinct color
 within the thread so you can follow who said what at a glance.
 
+### Browse commits
+
+On GitHub pull requests, the **Changes** tab's toolbar starts with a
+**Changes | Commits** switch. It appears once the changed-files list is pinned
+to the PR's head commit. **Commits** lists the PR's commits oldest first, each
+with its title, short sha, author, and date. **Search commits** narrows the
+list by sha, title, or author, ignoring case. A PR with more than 250 commits
+shows `History limited to 250 commits`.
+
+Select a commit to see only that commit's patch, with the same file list, diff,
+and find bar as **Changes**. **Previous commit** and **Next commit** step
+through the history, and **Back to commits** returns to the list. A commit view
+has no **Viewed** checkboxes or **Hide viewed**, no review conversations or
+drafts, and no context expansion. **Open in** opens files at the commit's sha.
+Switching back to **Changes** leaves your viewed marks as they were.
+
+The commit list is tied to the head the Changes list loaded. A newer push only
+shows up after the Changes list reloads. GitHub truncates the diff of a commit
+that touches more than 300 files, and no warning is shown. GitLab and Azure
+DevOps pull requests show **Changes** only. If the Omnigent server is too old
+to serve commits, the switch disappears for that PR and the toast
+`Commits need an updated Omnigent server.` appears.
+
 ### Link or unlink a PR
 
 Use the **+** (`Link a PR`) button to attach a pull request by URL — paste a

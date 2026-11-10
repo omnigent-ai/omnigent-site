@@ -1002,6 +1002,44 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+### One task session for every trigger match
+
+An integration trigger (Jira, Slack, GitHub, Linear, or PagerDuty) checks for
+new matching items on its schedule. By default, it starts a new session for
+each match. To send every match to **one task session** instead, turn off
+**Start a new session for each match** under **Advanced** when you create the
+trigger. This suits an orchestrator that decides which items are worth acting
+on, and whether to start new work or follow up on existing work.
+
+With the switch off:
+
+- The polling session starts the task session on the first match. The task
+  session is titled with the automation's name, cut to the 200-character
+  session title limit.
+- Later matches arrive in the task session as messages from the polling
+  session. These messages follow the normal queue and steering behavior, so one
+  can reach a turn that is still in progress. Each message starts with the
+  item's title (for example `Jira ES-123`) and repeats your instructions, so it
+  stands on its own.
+- The instructions field is labeled **Instructions for the task session**. The
+  Advanced summary shows **One task session**, and the cadence line reads
+  "Matching items go to the task session automatically."
+- Link-back posts the task session's link on the item.
+- If you archive or delete the task session, the next match starts a new one.
+  Changes to the settings for new sessions don't affect the current task
+  session. They apply to the next one, so archive the current task session to
+  pick them up.
+
+The choice is saved in the automation's prompt, so editing the automation keeps
+it. It stays set when you switch trigger types while creating the automation,
+but you can't change it after the automation is created.
+
+Delivery uses peer session messaging, which is on by default: the
+`peer_session_messaging` release feature and **Message other sessions** under
+Sharing settings. If the runner doesn't provide `sys_session_message`, each run
+reports that it couldn't deliver. If the server refuses the message, the run
+reports the refusal and keeps its previous check time.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

@@ -126,13 +126,15 @@ The keys are read only from the YAML passed to `omni server --config` (or
 - **`default_agent_name`**: the agent New Chat pre-selects for a user with no
   remembered pick. A user's own earlier pick wins while it is still offered; a
   remembered pick the restriction no longer offers falls back to this default.
-  A default that `restrict_to_agent_names` doesn't include is ignored with a
-  warning.
+  Without a default, New Chat starts on the first offered agent. A default that
+  `restrict_to_agent_names` doesn't include is ignored with a warning.
 
 Both keys fail open: a value of the wrong type, such as a non-string list
 element or a non-string default, is logged and ignored rather than emptying the
-picker. At startup the server logs a warning for each restricted name that
-matches no server agent, or that `OMNIGENT_SEEDED_AGENTS` leaves out. If no
+picker. At startup the server logs one warning that lists the restricted names
+matching no server agent, and another for names that
+[`OMNIGENT_SEEDED_AGENTS`](/docs/deploy/overview#trimming-the-packaged-built-in-agents)
+leaves out. If no
 restricted name matches, New Chat shows an empty state unless a user has their
 own agent with one of those names. An agent that `OMNIGENT_SEEDED_AGENTS`
 removes stays hidden even when `restrict_to_agent_names` lists it.

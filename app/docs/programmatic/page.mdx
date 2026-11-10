@@ -3,7 +3,7 @@ import ContentTabs, { ContentTabsProvider } from "@/components/ContentTabs";
 
 export const metadata = pageMeta(
   "Programmatic Usage",
-  "Run agents from scripts and CI, drive sessions with the Python SDK, and manage sessions through the Omnigent REST API.",
+  "Run agents from scripts and CI, drive sessions with the Python SDK, and manage sessions and automations through the Omnigent REST API.",
   {
     eyebrow: "Programmatic Usage",
     path: "/docs/programmatic",
@@ -21,6 +21,12 @@ their progress and results.
 - **Python SDK:** Send messages and manage sessions from Python.
 - **REST API:** Create sessions, read their history, and manage their lifecycle
   over HTTP.
+- **Automations:** Run an agent on a recurring schedule and manage those runs
+  over HTTP. See [Automate recurring work](#automate-recurring-work).
+
+Every session you start this way is an ordinary Omnigent session, so it gets
+the same Web UI, sharing, and sub-agent support as one you start by hand. For
+request fields and response schemas, see the [API Reference](/reference).
 
 <ContentTabsProvider labels={["CLI", "Python", "REST API"]} defaultLabel="CLI">
 
@@ -803,17 +809,205 @@ A few things to know:
 - Re-uploading the bundle through the install API still replaces the whole
   bundle; use it when you need to change files the PATCH fields don't cover.
 
-## API endpoints reference
+## Automate recurring work
 
-The server exposes these agent configuration endpoints. Replace `{id}` with an
-agent ID from `GET /v1/agents`.
+An automation runs an agent with a saved prompt on a recurring schedule, with
+no one at the keyboard. Each run starts a new session, or continues one kept
+session, so you can follow and review runs in the Web UI like any other
+session. The web UI calls these **Automations**; the API and agent tools call
+them **scheduled tasks** (`/v1/scheduled-tasks`).
+
+You can create the same automation in three ways:
+
+- **Web UI:** the **Automations** page, including templates that start a
+  session for each new Jira ticket, Slack message, or GitHub issue. See
+  [Scheduled tasks in the Web UI](/docs/interact/web-ui#scheduled-tasks).
+- **Agent tools:** ask an agent to schedule its own follow-up work. See
+  [Schedule recurring agent runs](#schedule-recurring-agent-runs).
+- **REST API:** create and manage automations from your own scripts, as shown
+  below.
+
+Before you call these endpoints:
+
+- Use your own user credentials, such as a session cookie or a CLI login bearer
+  token. Machine client-credentials tokens can't access `/v1/scheduled-tasks`.
+  Each automation belongs to the user who created it, and you can see only
+  your own.
+- Check that `GET /v1/info` returns `automations_enabled: true`. If it doesn't,
+  every `/v1/scheduled-tasks` route returns `404`.
+- Make sure that a host is online when the automation runs, or choose a fresh
+  [cloud sandbox](/docs/deploy/cloud-sandbox-host) for each run. The agent
+  needs credentials and tool permissions that work without a person approving
+  requests.
+
+```bash
+SERVER_URL="http://127.0.0.1:6767"
+# For a shared server, add -H "Authorization: Bearer $ACCESS_TOKEN" to each request.
+```
+
+<div style={{ overflowX: "auto" }}>
+<table style={{ tableLayout: "fixed", minWidth: "36rem" }}>
+  <thead>
+    <tr>
+      <th style={{ width: "25%" }}>Use case</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Create an automation</td>
+      <td>
+
+Run a review every weekday at 9am on a connected host. Get the agent ID from
+`GET /v1/agents` and the host ID from `GET /v1/hosts`. `TASK_ID` stores the
+new automation's ID:
+
+```bash
+TASK_ID=$(curl --fail-with-body "$SERVER_URL/v1/scheduled-tasks" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Weekday code review",
+    "prompt": "Review the latest commit and report findings without editing files.",
+    "rrule": "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0",
+    "timezone": "America/Los_Angeles",
+    "agent_id": "ag_reviewer",
+    "host_id": "host_example",
+    "workspace": "/home/ci/my-repository"
+  }' | jq -er '.id')
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Run it now</td>
+      <td>
+
+Start a run immediately to test the automation. This does not change the
+schedule, and it also works on a paused automation. The server returns `202`
+and starts the run in the background:
+
+```bash
+curl --fail-with-body -X POST "$SERVER_URL/v1/scheduled-tasks/$TASK_ID/run"
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Check run history</td>
+      <td>
+
+List the most recent runs, newest first. Open a run's session at
+`$SERVER_URL/c/<conversation_id>`:
+
+```bash
+curl --fail-with-body "$SERVER_URL/v1/scheduled-tasks/$TASK_ID/runs?limit=10" \
+  | jq '.runs[] | {status, conversation_id, error_code}'
+```
+
+Run `status` values include `running`, `succeeded`, `failed`, and `skipped`.
+For a failed run, `error_code` gives the reason, such as `no_online_host` or
+`host_offline`. To read older runs, pass the returned `next_cursor` as `after`.
+
+      </td>
+    </tr>
+    <tr>
+      <td>List your automations</td>
+      <td>
+
+```bash
+curl --fail-with-body "$SERVER_URL/v1/scheduled-tasks" \
+  | jq '.scheduled_tasks[] | {id, name, state, next_run_at, last_run_status}'
+```
+
+      </td>
+    </tr>
+    <tr>
+      <td>Update or pause</td>
+      <td>
+
+Pause the automation without deleting it:
+
+```bash
+curl --fail-with-body -X PATCH "$SERVER_URL/v1/scheduled-tasks/$TASK_ID" \
+  -H 'Content-Type: application/json' \
+  -d '{"state": "paused"}' | jq
+```
+
+Send `{"state": "active"}` to resume it. The same request can change fields
+such as `prompt`, `rrule`, `timezone`, or `host_id`; fields you don't send stay
+the same.
+
+      </td>
+    </tr>
+    <tr>
+      <td>Delete</td>
+      <td>
+
+Stop all future runs and remove the run history. Sessions from earlier runs
+remain:
+
+```bash
+curl --fail-with-body -X DELETE "$SERVER_URL/v1/scheduled-tasks/$TASK_ID"
+```
+
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+The create request requires `name`, `prompt`, `rrule`, and `agent_id`. The
+schedule is an RFC 5545 recurrence rule, evaluated in `timezone` (`UTC` by
+default). See [Recurrence rules](/docs/build/scheduled-tasks#recurrence-rules)
+for the minimum interval. These optional fields control each run:
 
 <div style={{ overflowX: "auto" }}>
 
-| Method  | Path                     | What you can do                                                    |
-| ------- | ------------------------ | ------------------------------------------------------------------ |
-| `GET`   | `/v1/agents/{id}/config` | Read an owned agent's editable configuration and its `ETag`        |
-| `PATCH` | `/v1/agents/{id}`        | Update only the supplied configuration fields; requires `If-Match` |
+| Field                                | Behavior                                                                                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `host_id`, `workspace`               | Run on a specific connected host and directory. A `workspace` requires a `host_id`. Omit both to use your most recently active online host and its home directory. |
+| `execution_target`                   | `connected_host` (default) or `managed_sandbox`, which starts each run in a fresh sandbox. Don't set `host_id` or `workspace` with `managed_sandbox`.              |
+| `session_mode`, `session_id`         | `new` (default) starts a new session for each run. `continue` sends every run's prompt into one session, so the agent keeps the context from earlier runs.         |
+| `model_override`, `reasoning_effort` | Override the agent's model or reasoning effort for each run.                                                                                                       |
+| `permission_mode`                    | The native harness's permission mode, such as Claude Code's `acceptEdits`. A mode that asks for approval can leave an unattended run waiting.                      |
+| `max_cost_usd`                       | A cost cap for each run. Once the run's recorded cost reaches the cap, its later requests and tool calls are blocked.                                              |
+| `project_id`                         | File each run's session into one of your [projects](/docs/interact/web-ui#projects).                                                                               |
+
+</div>
+
+Each run sends your prompt followed by a short note that tells the agent no one
+is watching. For the full run sequence, see
+[How a firing runs](/docs/build/scheduled-tasks#how-a-firing-runs).
+
+Automations created from Jira, Slack, or GitHub
+[trigger templates](/docs/interact/web-ui#trigger-templates) are ordinary
+scheduled tasks with a generated prompt. You can list, run, pause, and delete
+them with the same endpoints. The templates check for new items on a schedule;
+they don't receive webhooks. To react to events that the templates don't
+cover, receive the event in your own service, then start a session and send
+it the work with `POST /v1/sessions` and `POST /v1/sessions/{id}/events`.
+
+## API endpoints reference
+
+These tables summarize the main endpoints for agents, sessions, and
+automations.
+
+The server exposes these agent, host, and project endpoints. Replace `{id}`
+with an agent ID from `GET /v1/agents`.
+
+<div style={{ overflowX: "auto" }}>
+
+| Method   | Path                     | What you can do                                                    |
+| -------- | ------------------------ | ------------------------------------------------------------------ |
+| `GET`    | `/v1/agents`             | List server agents, or your own agents with `scope=user`           |
+| `POST`   | `/v1/agents`             | Install or reinstall one of your agents from a bundle              |
+| `GET`    | `/v1/agents/{id}`        | Read one agent's summary                                           |
+| `DELETE` | `/v1/agents/{id}`        | Remove one of your agents                                          |
+| `GET`    | `/v1/agents/{id}/config` | Read an owned agent's editable configuration and its `ETag`        |
+| `PATCH`  | `/v1/agents/{id}`        | Update only the supplied configuration fields; requires `If-Match` |
+| `GET`    | `/v1/hosts`              | List your hosts and their IDs                                      |
+| `GET`    | `/v1/projects`           | List your projects and their IDs                                   |
 
 </div>
 
@@ -836,10 +1030,29 @@ The server exposes these session endpoints. Replace `{id}` with a session ID.
 | `PUT`    | `/v1/sessions/{id}/permissions`           | Grant or update user/public access            |
 | `GET`    | `/v1/sessions/{id}/permissions`           | List permission grants                        |
 | `DELETE` | `/v1/sessions/{id}/permissions/{user_id}` | Revoke a permission grant                     |
+| `GET`    | `/v1/sessions/{id}/pull-requests`         | List the pull requests linked to a session    |
 
 </div>
 
-See the [API Reference](/reference) for more details on these and other endpoints.
+The server exposes these automation endpoints. Replace `{id}` with an
+automation ID from `GET /v1/scheduled-tasks`.
+
+<div style={{ overflowX: "auto" }}>
+
+| Method   | Path                            | What you can do                               |
+| -------- | ------------------------------- | --------------------------------------------- |
+| `POST`   | `/v1/scheduled-tasks`           | Create an automation                          |
+| `GET`    | `/v1/scheduled-tasks`           | List your automations                         |
+| `GET`    | `/v1/scheduled-tasks/{id}`      | Read one automation                           |
+| `PATCH`  | `/v1/scheduled-tasks/{id}`      | Update fields, or pause and resume            |
+| `DELETE` | `/v1/scheduled-tasks/{id}`      | Delete an automation and its run history      |
+| `POST`   | `/v1/scheduled-tasks/{id}/run`  | Start a run now without changing the schedule |
+| `GET`    | `/v1/scheduled-tasks/{id}/runs` | Read run history, newest first                |
+
+</div>
+
+See the [API Reference](/reference) for request and response schemas and for
+other endpoints.
 
 ## Automation features
 
@@ -987,5 +1200,5 @@ Listing and deleting tasks do not ask. See
 [Approval for create and update](/docs/build/scheduled-tasks#approval-for-create-and-update).
 
 See [Scheduled Tasks](/docs/build/scheduled-tasks) for the full configuration.
-Scripts can also manage tasks through `/v1/scheduled-tasks`; machine
-client-credentials tokens do not grant access to that endpoint.
+To create and manage the same tasks from a script, see
+[Automate recurring work](#automate-recurring-work).

@@ -710,10 +710,12 @@ starts rather than during routing.
 
 ## Pi
 
-The native Pi harness (`pi`, alias `pi-native`) runs the Pi CLI against the
-provider you configured with `omni setup`, writing a managed `models.json` and
-per-session Pi settings so Pi authenticates with the provider's key rather than
-its own credential env vars.
+Omnigent has two Pi harnesses. `pi` is the SDK harness, which runs the Pi CLI
+as a subprocess. `pi-native` (alias `native-pi`) is the native Pi TUI, which
+runs Pi in a terminal that Omnigent mirrors into the conversation. Both run
+against the provider you configured with `omni setup`, writing a managed
+`models.json` and per-session Pi settings so Pi authenticates with the
+provider's key rather than its own credential env vars.
 
 ### Curated `/model` shortlist
 
@@ -783,6 +785,44 @@ carries **names only**, so it is forwarded through both the host daemon and the
 spawned runner without forwarding the named secrets themselves, and the Pi
 terminal removes those variables before launching `pi`. Other harnesses in the
 same deployment are unaffected.
+
+### Ship Pi resources in an agent bundle
+
+A `harness: pi` directory bundle can ship Pi's project-local resources. Pi runs
+in the session workspace rather than in the bundle, so Omnigent passes these to
+Pi explicitly. Bundled skills are also covered in
+[Prompts & Skills](/docs/build/prompts).
+
+```
+my-pi-agent/
+  config.yaml
+  AGENTS.md              # bundle-root context file
+  .pi/
+    extensions/
+      my-hook/
+        index.ts
+```
+
+| Resource | Where it lives | Passed to Pi as |
+| --- | --- | --- |
+| Extensions | `.pi/extensions/<name>/` directories, or top-level `.pi/extensions/*.ts` and `*.js` files | `--extension` |
+| Skills | `skills/<name>/SKILL.md` or `.pi/skills/<name>/SKILL.md` | `--skill`, following the agent's `skills` filter |
+| Context file | Bundle-root `AGENTS.override.md`, `AGENTS.md`, or `CLAUDE.md` (first found, in Pi's order) | Appended to the agent's instructions |
+
+An extension directory's entry point is `index.ts` or `index.js`, or the files
+listed in its `package.json` `pi.extensions` field. A top-level `index.ts` or
+`index.js` in `.pi/extensions/` loads alone, in place of the other entries. When
+`skills/` and `.pi/skills/` define the same name, `skills/` wins.
+
+Extensions run as code inside the Pi process, so bundle only extensions you
+trust. Hook-style extensions such as `before_agent_start` take full effect;
+tools an extension registers are loaded but not offered to the model, because
+sessions expose only Omnigent's bridged tools to Pi.
+
+Under an `os_env` sandbox, Pi is granted read-only access to the `skills/`,
+`.pi/skills/` and `.pi/extensions/` directories it is passed, so bundled
+resources load from inside the sandbox too. The bundle root itself is not
+exposed.
 
 ## Custom ACP agents
 

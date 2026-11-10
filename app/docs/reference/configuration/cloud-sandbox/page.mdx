@@ -452,7 +452,7 @@ microVM when a managed session is created and terminates it when the session is
 deleted. There is no `omnigent sandbox` CLI flow for this provider.
 
 Install the extra on the server. It pulls in boto3 and botocore `1.43.35` or
-newer, which is the first release that includes the `lambda-microvms` service:
+newer, the minimum version with the `lambda-microvms` service model:
 
 ```bash
 pip install 'omnigent[lambda-microvm]'
@@ -461,8 +461,8 @@ pip install 'omnigent[lambda-microvm]'
 The server reads AWS credentials from the standard boto3 chain (profile,
 environment, or instance role). Those credentials must be allowed to call the
 `lambda-microvms` API and to pass the execution role. Pick a region where Lambda
-MicroVMs is available. At release time those were `us-east-1`, `us-east-2`,
-`us-west-2`, `ap-northeast-1`, and `eu-west-1`.
+MicroVMs is available; the [AWS announcement](https://aws.amazon.com/about-aws/whats-new/2026/06/aws-lambda-microvms/)
+is the starting point for the current list.
 
 ```yaml
 sandbox:
@@ -476,9 +476,10 @@ sandbox:
     env: [ANTHROPIC_API_KEY, GIT_TOKEN] # server env var names copied into the microVM
 ```
 
-A complete config needs `provider`, `server_url`, `image_identifier`, and
-`execution_role_arn`. Every key under `sandbox.lambda_microvm` can also be set
-with an environment variable. When both are set, the config value wins.
+`provider` and `server_url` are always required. `image_identifier` and
+`execution_role_arn` can be set in the config or in their environment variables.
+Every key under `sandbox.lambda_microvm` can be set with an environment variable,
+and when both are set, the config value wins.
 
 | Setting                     | Environment variable                         | Default              | Purpose                                                                                                                                                                                                                     |
 | --------------------------- | -------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -577,7 +578,7 @@ size. Deliver large secrets through the execution role or a secrets store.
   to the lifetime. The timer runs from launch or the last resume, whatever the
   agent is doing.
 - **Resume.** The next message to a suspended session makes the server resume
-  the same microVM explicitly. The snapshot restores the workspace *and* the
+  the same microVM explicitly. The snapshot restores the workspace _and_ the
   running `omnigent host` process, which still holds its launch token.
   Omnigent therefore reconnects that host instead of starting a new one.
 - **Host supervision.** The host runs under the same crash supervisor as other
@@ -587,15 +588,12 @@ size. Deliver large secrets through the execution role or a secrets store.
 - **Repositories.** A single repository workspace is cloned into the microVM
   on first start. A request for several repositories is rejected, and so are
   non-default [`git_clone`](#git-clone-options) settings.
-- **Snapshot uniqueness.** A resumed microVM restores its memory state. Reseed
-  random-number generators and rotate in-memory secrets on resume; see the AWS
-  "snapshots and uniqueness" guidance. A microVM cannot suspend itself.
-  Suspension comes from the idle policy or an external `suspend-microvm` call.
-
-`OMNIGENT_LAMBDA_MICROVM_DEBUG_INGRESS` is a debugging-only setting: a
-comma-separated list of ingress network-connector ARNs that lets an operator
-shell into a managed microVM. It opens an inbound path to the guest, so leave it
-unset in production. It has no config-file equivalent.
+- **Snapshot uniqueness.** A resumed microVM restores its memory state, and
+  Omnigent keeps the host's launch token rather than rotating it. If you run your
+  own processes in the microVM, reseed their random-number generators and rotate
+  their in-memory secrets after a resume; see the AWS "snapshots and uniqueness"
+  guidance. A microVM cannot suspend itself. Suspension comes from the idle
+  policy or an external `suspend-microvm` call.
 
 ## Native harness bridge servers
 

@@ -39,18 +39,10 @@ a new top-level session; turn it off to keep the default session name and
 rename sessions yourself. This is a per-user preference stored on the server, so
 it follows your account across browsers and devices.
 
-To set your own title format, open **Settings → General → Sessions** and enter
-guidance under **Title instructions**, for example
-`Start every title with the ticket id, like OMNI-123.`, then click **Save**.
-The field accepts up to 4,000 characters and shows a running count. Your
-instructions are stored on the server per user and apply to automatic titles
-of sessions you own, including agent renames through `sys_session_rename`. The
-server adds them after any server-wide
-[`session_title_instructions`](/docs/reference/configuration#automatic-session-titles);
-where the two conflict, yours win. Click **Clear** (or save an empty field) to
-remove them and fall back to the server's instructions, or the default prompt
-if the server has none. The field appears only when the server supports
-per-user title instructions.
+To set your own title format, open **Settings → General → Sessions**, enter
+guidance under **Title instructions**, and click **Save**. These apply on top
+of the server's instructions; see
+[Personal title instructions](/docs/reference/configuration#personal-title-instructions).
 
 ### Export a session
 

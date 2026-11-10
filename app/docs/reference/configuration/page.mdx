@@ -111,19 +111,7 @@ titles then use the server setting, or the default prompt if there is none.
 If a user's saved instructions can't be read, titles fall back to the server
 setting alone.
 
-The same value is available over the API at
-`GET /v1/settings/session-title-instructions` and
-`PUT /v1/settings/session-title-instructions` with a body of
-`{"instructions": "..."}`; `null` or a blank string clears it, and longer than
-4,000 characters (after trimming whitespace) is rejected. Responses include the
-saved `instructions` and the server's `max_chars` limit. Servers that support
-this report `session_title_instructions: true` from `/v1/info`; the web UI shows
-the field only then.
-
-Runners from Omnigent 0.21 and earlier accept at most 4,000 characters of
-combined title guidance. For those runners, the server shortens longer guidance: it
-drops the follow-the-user's-language rule first, then the server's
-instructions, and keeps the personal instructions.
+The same value is available through the [REST API](/reference).
 
 ## Web UI base path
 

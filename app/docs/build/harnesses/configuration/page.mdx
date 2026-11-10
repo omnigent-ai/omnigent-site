@@ -510,16 +510,17 @@ falling back to ambient credentials.
 
 ### MCP servers
 
-Each `omni agy` session runs with its own isolated agy Gemini directory, so
-Omnigent never writes to your real `~/.gemini`. That directory gets a
+Each agy session (`omni agy` and web-started sessions) runs with its own
+isolated agy Gemini directory, so Omnigent never writes to your real
+`~/.gemini`. That directory gets a
 session-scoped `config/mcp_config.json` containing the Omnigent MCP relay (the
 `omnigent` server) **plus every server in the `mcpServers` object of your own
 `~/.gemini/config/mcp_config.json`**. MCP servers you've already configured
 for agy are available inside Omnigent sessions without extra setup.
 
 - Your file is read again each time Omnigent writes a session's config, and
-  Omnigent never modifies it. Edits you make take effect in sessions started
-  after the change.
+  Omnigent never modifies it. Edits you make take effect on the next launch,
+  including `omni agy --resume`.
 - On a name collision the relay wins: a server of your own named `omnigent` is
   dropped from the session config.
 - If the file doesn't exist, the session gets only the relay. If it can't be

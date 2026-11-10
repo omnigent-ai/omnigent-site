@@ -146,6 +146,13 @@ not be set; a create or update that combines them with `managed_sandbox` is
 rejected. The server must have managed sandboxes configured — an unconfigured
 server rejects the task at create time rather than failing every fire.
 
+If the server's default sandbox provider requires a sandbox profile, the task
+is also rejected at create or update time, unless that provider has a
+[default profile](/docs/reference/configuration/cloud-sandbox#default-sandbox-profile).
+With a default profile, each firing authorizes the default for the task's owner
+and saves it on the new session. Otherwise, use `connected_host` or a default
+provider that doesn't use profiles.
+
 A sandbox created by an automation follows the server's normal sandbox
 lifecycle, exactly like one created for a chat: the automation does not
 override timeouts or terminate the sandbox when the run finishes. Server

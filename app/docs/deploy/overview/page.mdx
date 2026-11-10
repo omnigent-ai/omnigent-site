@@ -106,6 +106,53 @@ Each agent is available to all users and named after its YAML file stem or bundl
 directory. Use a distinct name unless you intend to replace an existing built-in.
 Invalid or missing entries are logged and skipped.
 
+### Trimming the packaged built-in agents
+
+`OMNIGENT_SEEDED_AGENTS` is a comma-separated allowlist of the packaged built-in
+agents the server offers in the new-session picker: the native CLI harnesses
+(`claude-native-ui`, `codex-native-ui`, …), the built-in ACP agents, `polly`, and
+`debby`.
+
+- **Unset** (the default) keeps every packaged built-in.
+- **Set** keeps only the agents you name.
+- **Empty** keeps none, so the picker offers only your own agents.
+
+```bash
+# Keep Claude Code, drop everything else packaged:
+OMNIGENT_SEEDED_AGENTS=claude-native-ui
+
+# Keep nothing packaged:
+OMNIGENT_SEEDED_AGENTS=
+```
+
+Use the agent's name (`claude-native-ui`), not its display label ("Claude Code").
+Blank entries are ignored. Names that match no packaged built-in are logged as a
+warning at startup. To see which agents a given value trimmed, check the startup log
+for the `Suppressing` line (`docker compose logs omnigent | grep Suppressing`). In
+Docker Compose, the variable is passed through from `.env` with no default, so
+leaving it out of `.env` keeps it unset (keep all) rather than empty (keep none).
+
+The allowlist never filters agents loaded from `OMNIGENT_BUILTIN_AGENT_DIRS` or
+user-configured ACP agents. To run a picker that offers only your agents, set an
+empty allowlist and add your own specs as
+[extra built-in agents](#extra-built-in-agents).
+
+Trimming hides agents but never deletes them. A packaged agent seeded by an earlier
+boot keeps its database row, so existing sessions bound to it keep working and keep
+their history. Only the new-session picker leaves it out. The native CLI harness
+agents are always seeded, even when trimmed, because transcript imports bind to
+them. If you add a name back to the allowlist, the agent returns on the next restart.
+
+<div className="note">
+
+Trimming is not access control. A hidden agent can still be read and launched by
+its id through the API. `GET /v1/agents` leaves trimmed agents out of `data` and
+lists their names in `suppressed_agent_names`. Because filtering happens after
+each page is read, a page can return fewer than `limit` rows, or none. Keep
+following `last_id` while `has_more` is true.
+
+</div>
+
 ### Cloud platforms
 
 Deploy the server to a cloud platform with managed infrastructure.
@@ -236,14 +283,16 @@ after you change the value, then reload the web app. To roll a feature back,
 add `-feature_name` and redeploy the same image.
 
 Most release features (such as `usage_page`, `harness_install`, and
-[`canvas`](/docs/interact/web-ui#canvas)) are off by default. The features below are
-on by default. Server features are resolved by the server; runner features are
-resolved by each runner:
+[`canvas`](/docs/interact/web-ui#canvas), and
+[`sandbox_profiles`](/docs/deploy/sandbox-profiles)) are off by default. The
+features below are on by default. Server features are resolved by the server;
+runner features are resolved by each runner:
 
-| Feature                 | Default | Applies to    | Effect                                                                                                                                                                                                    |
-| ----------------------- | ------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `session_orchestration` | On      | Server        | Agents in private sessions can [message peer sessions and create independent workers](/docs/programmatic#send-work-to-peer-sessions-and-independent-workers). Not listed in `/v1/info`.                     |
-| `claude_osc_status`     | On      | Host / runner | `claude-native` sessions take their working, blocked, and idle status from Claude Code's OSC 7501 terminal reports, falling back to Claude's session status file and then pane activity. Not listed in `/v1/info`. |
+| Feature | Default | Applies to | Effect |
+| --- | --- | --- | --- |
+| `session_orchestration` | On | Server | Agents in private sessions can [message peer sessions and create independent workers](/docs/programmatic#send-work-to-peer-sessions-and-independent-workers). Listed in `/v1/info` as `features.session_orchestration`. |
+| `peer_session_messaging` | On | Server and runner | `sys_session_message` can message sessions other than the sender's own child sessions. Not listed in `/v1/info`. |
+| `claude_osc_status` | On | Host / runner | `claude-native` sessions take their working, blocked, and idle status from Claude Code's OSC 7501 terminal reports, falling back to Claude's session status file and then pane activity. Not listed in `/v1/info`. |
 
 To turn off session orchestration, add `-session_orchestration` to the
 server's `OMNIGENT_FEATURES` and restart every server replica. The server's
@@ -251,9 +300,13 @@ setting wins even if a host or runner enables the feature. New peer messages
 and independent-worker creation are then refused with a "Session orchestration
 is disabled" error. Work that was already accepted can still finish, and
 session reads, ordinary messages, and child sessions keep working. The tools
-still appear in agents' tool lists while the feature is off. Because
-`/v1/info` doesn't report this feature, check the setting by making a peer
-message or independent-create request.
+still appear in agents' tool lists while the feature is off.
+
+To stop only messages to other sessions, add `-peer_session_messaging`
+instead. On the server, peer messages are then refused with a "Messaging other
+sessions is disabled" error. On a runner, agents no longer get the
+`sys_session_message` tool. Independent workers and child sessions keep
+working either way.
 
 The OSC path needs Claude Code 2.1.295 or later. Older CLIs use the fallback.
 Setting `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` also suppresses these status
@@ -358,8 +411,10 @@ However, moving the runner to a
 - **Isolation.** Each Omnigent runs in its own container, separate from your local environment.
 - **Scalability.** Run many Omnigents in parallel without taxing your machine.
 
-We currently support the [Modal](https://modal.com), [Daytona](https://www.daytona.io),
-and [Blaxel](https://blaxel.ai) platforms, with more integrations on the way. Check out the
+We currently support the
+[Databricks](https://docs.databricks.com/aws/en/compute/serverless/sandbox),
+[Modal](https://modal.com), [Daytona](https://www.daytona.io), and
+[Blaxel](https://blaxel.ai) platforms, with more integrations on the way. Check out the
 [Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host) page for more detailed setup instructions.
 
 ## UI

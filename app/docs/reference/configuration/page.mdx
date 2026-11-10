@@ -214,8 +214,9 @@ to `OMNIGENT_SERVER`, then the configured `server`.
 - Harness `args` copy verbatim, so check them for secrets or machine-specific
   paths before you save.
 - Copying a default harness doesn't install it on the other machine.
-- Import leaves a backup next to each file it overwrites. Backups keep the
-  original contents, including credentials, until you delete them.
+- Import leaves a backup next to each file it overwrites and prints its path.
+  If an import stops partway, restore those backups. Backups keep the original
+  contents, including credentials, until you delete them.
 
 Launchers that keep their own plugin preferences can pass
 `--plugin-opt-outs <file>` to include them. Omnigent doesn't install or manage

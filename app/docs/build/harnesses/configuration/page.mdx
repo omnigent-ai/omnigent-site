@@ -493,7 +493,7 @@ their original connection, and `/model` changes the model, not the provider,
 endpoint, or authentication method. Claude, Codex, and Pi defaults are separate.
 
 If two providers both claim a family's default, `omni setup` first asks which
-one to keep (**Multiple defaults for ... - choose one to keep**) before opening
+one to keep (**Multiple defaults for … — choose one to keep**) before opening
 the harness menu. Canceling stops at that family: choices already made for
 earlier families stay saved, and running `omni setup` again resolves the rest.
 
@@ -624,8 +624,9 @@ omni agy
 Ask: *Read gateway-smoke.txt using the file tool and quote its contents.*
 Confirm a tool call occurs and the reply contains the file's actual text, then
 ask a follow-up question about it. Exit and run `omni agy --resume` to verify
-continuity. If the web UI shows a terminal-exited error, click **Resume
-session**, then ask another question about the file without using tools;
+continuity. In the web UI, stop the session's terminal, click **Resume
+session** on the terminal-exited error card, then ask another question about
+the file without using tools;
 earlier messages and the original tool result should appear once, followed by
 the new turn. Repeat in a fresh conversation after switching credentials.
 

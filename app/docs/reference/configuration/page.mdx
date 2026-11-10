@@ -28,7 +28,8 @@ Use `omni config unset KEY` or `omni config unset --global KEY` to remove a
 value from the corresponding scope.
 
 Not every key is valid in every scope. Each setting below identifies its scope,
-type, default, and validation behavior.
+type, default, and validation behavior. To copy your user-level defaults to
+another machine, see [Copy configuration between machines](#copy-configuration-between-machines).
 
 ### User-level-only settings
 
@@ -176,6 +177,54 @@ the whole data directory, which also contains credentials.
 Request-phase [custom policies](/docs/policies/custom#reference-policyevent)
 receive the filename and content type of these attachments with an empty `text`
 value; their contents are not scanned as text.
+
+## Copy configuration between machines
+
+| Setting | Value                                                    |
+| ------- | -------------------------------------------------------- |
+| Key     | `shared_preferences_authority_id`                        |
+| Scope   | Deployed server (`omni server --config`)                 |
+| Type    | Nonempty string, up to 128 characters                    |
+| Default | Unset: `omni config cloud` is unavailable on that server |
+
+`omni config cloud` saves a snapshot of your user-level defaults to that server
+and imports it on another machine. It copies once: later edits on either
+machine stay local until you save or import again. Use an HTTPS server you
+trust, because the CLI sends your normal server login.
+
+```sh
+omni config cloud --server "$SERVER_URL" save    # on this machine
+omni config cloud --server "$SERVER_URL" import  # on the other machine
+omni config cloud --server "$SERVER_URL" show    # print the saved snapshot
+```
+
+`show` prints the saved snapshot. `save` and `import` show both sets of values,
+ask for confirmation (`--yes` skips the prompt), then write. `--server` defaults
+to `OMNIGENT_SERVER`, then the configured `server`.
+
+| Copied                                      | Kept on each machine                  |
+| ------------------------------------------- | ------------------------------------- |
+| `model` and `opencode_model`                | Provider credentials and login tokens |
+| `harness.default` and each harness's `args` | Per-harness `command`                 |
+
+- Only `~/.omnigent/config.yaml` is copied. Project `.omnigent/config.yaml`
+  files are not.
+- Import replaces the copied settings. A setting missing from the snapshot is
+  removed on this machine.
+- Harness `args` copy verbatim, so check them for secrets or machine-specific
+  paths before you save.
+- Copying a default harness doesn't install it on the other machine.
+- Import leaves a backup next to each file it overwrites and prints its path.
+  If an import stops partway, restore those backups. Backups keep the original
+  contents, including credentials, until you delete them.
+
+Launchers that keep their own plugin preferences can pass
+`--plugin-opt-outs <file>` to include them. Omnigent doesn't install or manage
+those plugins.
+
+The web UI's settings export and import ([Web UI](/docs/interact/web-ui))
+moves per-device browser preferences, such as picker visibility. This command
+moves CLI defaults through the server.
 
 ## Managed sandboxes
 

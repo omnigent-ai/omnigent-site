@@ -927,11 +927,12 @@ For example, a manager agent might call `sys_session_create` with:
 }
 ```
 
-These tools are refused when the sending session is shared, when it was
-started by a scheduled task, or when the request doesn't come from the
-sender's bound runner. Orchestration is on by default. Administrators can turn
-it off with the `session_orchestration`
-[release feature](/docs/deploy/overview#release-features).
+These tools are refused when the sending session is shared with edit access
+(read-only shares are fine), or when the request doesn't come from the sender's
+bound runner. Orchestration is on by default. Administrators can turn it off
+with the `session_orchestration`
+[release feature](/docs/deploy/overview#release-features), or turn off only
+peer messages with `peer_session_messaging`.
 
 ### Use bundled skills for multi-agent workflows
 

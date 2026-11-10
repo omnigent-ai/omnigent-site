@@ -1,0 +1,69 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Review, label, and merge your agents' pull requests without leaving the session",
+  "The Pull Requests tab now acts on GitHub pull requests: edit the title and description, add labels, request reviewers, post comments, open CI runs, and merge, all beside the agent's conversation.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/review-merge-agent-prs-in-session",
+  },
+);
+
+export const meta = {
+  title:
+    "Review, label, and merge your agents' pull requests without leaving the session",
+  date: "2026-11-03",
+  category: "Web UI",
+  author: "omnigent",
+  heroArt: "/images/blog/review-merge-agent-prs-in-session.png",
+};
+
+<BlogPostHeader slug="review-merge-agent-prs-in-session" />
+
+If your agents open GitHub pull requests for you, you can now review and merge
+them directly in the same session. Previously, the **Pull Requests** tab was
+read-only, so any follow-up changes had to be made in GitHub.
+
+You can now edit a PR's title and description, paste screenshots or videos
+directly into it, add or remove labels, and request reviews from people or
+teams (or cancel pending requests). You can also leave comments with a Markdown
+preview, and your drafts are preserved when switching between tabs or PRs.
+Hover over the check count to see individual CI jobs and links to their runs,
+making it easier to spot failures and ask the agent to fix them in your next
+message.
+
+<video
+  src="/images/blog/review-merge-agent-prs-in-session-demo.mp4"
+  poster="/images/blog/review-merge-agent-prs-in-session-poster.png"
+  controls
+  muted
+  playsInline
+  preload="metadata"
+  aria-label="In the Pull Requests tab, request a reviewer, add a label, and paste a screenshot into a PR description; draft a comment, link and squash-merge a second PR, then switch back and post the saved draft"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+_Request a reviewer, add a label, and paste a screenshot into the description, then link a second PR and squash-merge it. Back on the first PR, the comment draft is still there to post._
+
+When the PR is ready, merge it from the **Summary** tab using any method your
+repository allows (merge, squash, or rebase), or turn off auto-merge if you set
+it too early. Omnigent merges only the commit you were looking at. If the agent
+pushes again in the meantime, the merge is refused instead of shipping changes
+you haven't seen.
+
+To try it, open **Pull Requests** in the workspace rail of a coding-agent
+session with a GitHub PR. PRs the agent opened or worked on appear there on
+their own; for any other PR, click **+** (Link a PR) and paste its URL. The
+title pencil sits in the panel header. Description edits, reviewers, labels,
+and merging live on the Summary tab, and new comments go in the Comments tab.
+Every action needs edit access to the session and runs on the session's host
+as the PR's selected GitHub account (by default, the host's active `gh`
+account). For how the tab finds and tracks a session's PRs, see the
+[Web UI guide](/docs/interact/web-ui#tracked-pull-requests).
+
+GitLab merge requests and Azure DevOps pull requests stay readable in the same
+tab, but these actions work only on GitHub for now.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

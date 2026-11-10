@@ -592,27 +592,6 @@ pre code {
 .term-dots i:nth-child(3) {
   background: #28c840;
 }
-.term-tabs {
-  display: flex;
-  gap: 0.15rem;
-}
-.term-tab {
-  font-family: var(--font-mono);
-  font-size: 0.76rem;
-  padding: 0.15rem 0.7rem;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.45);
-  cursor: pointer;
-}
-.term-tab:hover {
-  color: rgba(255, 255, 255, 0.8);
-}
-.term-tab.is-active {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-}
 .term-body {
   position: relative;
   padding: 0.85rem 3.5rem 0.85rem 1rem;
@@ -688,6 +667,9 @@ figcaption {
   min-width: 42rem;
   height: auto;
   margin: 0 auto;
+}
+.github-actions-flow .mermaid-diagram {
+  min-height: 0;
 }
 .mermaid-error {
   padding: 1rem;
@@ -1057,6 +1039,18 @@ figcaption {
   flex: 1;
   min-width: 1rem;
 }
+.footer-links,
+.footer-secondary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.footer-links {
+  flex-wrap: wrap;
+}
+.footer-secondary {
+  font-size: 0.85rem;
+}
 .footer a,
 .footer .muted {
   color: var(--fg-soft);
@@ -1083,6 +1077,17 @@ figcaption {
   }
   .footer-inner .spacer {
     display: none;
+  }
+  .footer-links,
+  .footer-secondary {
+    flex-basis: 100%;
+    gap: 0.75rem;
+  }
+  .footer-links {
+    font-size: 0.875rem;
+  }
+  .footer-secondary {
+    font-size: 0.8rem;
   }
   .footer {
     margin-top: 0;
@@ -1391,55 +1396,6 @@ figcaption {
 .setup-tabs--full .setup-tab {
   flex: 1;
   text-align: center;
-}
-
-/* ---- tabbed code ---- */
-.tabbed-code {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  margin: 0 0 1rem;
-  background: var(--bg-grey-pink);
-}
-.tab-bar {
-  display: flex;
-  gap: 0;
-  padding: 0;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-}
-.tab-bar button {
-  padding: 0.5rem 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  border: none;
-  background: none;
-  color: var(--fg-soft);
-  cursor: pointer;
-  position: relative;
-  transition: color 0.1s;
-}
-.tab-bar button:hover {
-  color: var(--fg);
-}
-.tab-bar button.active {
-  color: var(--accent);
-  font-weight: 600;
-}
-.tab-bar button.active::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent);
-}
-.tabbed-code pre {
-  margin: 0;
-  border: none;
-  border-radius: 0;
-  background: transparent;
 }
 
 /* ---- docs details/summary ---- */

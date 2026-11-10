@@ -813,8 +813,8 @@ my-pi-agent/
   directory's entry point is `index.ts` / `index.js`, or the files listed in
   its `package.json` `pi.extensions` field; those entries must be files inside
   the extension directory. An `index.ts` or `index.js` directly in
-  `.pi/extensions/` is loaded alone, in place of the other entries. Extensions run as code inside the Pi process, so
-  bundle only extensions you trust. Hook-style extensions (for example
+  `.pi/extensions/` is loaded alone, in place of the other entries. Extensions
+  run as code inside the Pi process, so bundle only extensions you trust. Hook-style extensions (for example
   `before_agent_start`) take full effect; tools an extension registers are
   loaded but not offered to the model, because sessions expose only Omnigent's
   bridged tools to Pi.

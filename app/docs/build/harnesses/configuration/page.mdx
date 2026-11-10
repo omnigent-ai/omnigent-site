@@ -601,8 +601,8 @@ checked when agy starts, and a profile with no accessible Gemini model services
 cannot launch a session. The model catalog is discovered once at startup, so
 start a new session to pick up models added later.
 
-The selected profile owns both the workspace and the
-identity: ambient `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, and OAuth client
+The selected profile owns both the workspace and the identity: ambient
+`DATABRICKS_HOST`, `DATABRICKS_TOKEN`, and OAuth client
 settings cannot override it, and an invalid profile fails instead of using
 ambient credentials.
 
@@ -624,17 +624,12 @@ omni agy
 Ask: *Read gateway-smoke.txt using the file tool and quote its contents.*
 Confirm a tool call occurs and the reply contains the file's actual text, then
 ask a follow-up question about it. Exit and run `omni agy --resume` to verify
-continuity. In the web UI, stop the session's terminal, click **Resume
-session** on the terminal-exited error card, then ask another question about
-the file without using tools;
-earlier messages and the original tool result should appear once, followed by
+continuity. Resuming from the web UI should show earlier turns once, followed by
 the new turn. Repeat in a fresh conversation after switching credentials.
 
-On resume, Omnigent deduplicates transcript items by a stable source ID, so
-replaying agy's trajectory does not duplicate messages or tool calls. Items
-recorded by older Omnigent versions lack those IDs and may be replayed once
-the first time they are resumed after upgrading; existing duplicate history is
-not removed.
+Resume does not duplicate transcript items. History saved by older Omnigent
+versions may replay once on its first resume after upgrading, and existing
+duplicates are not removed.
 
 - **404** — check both the API route and the availability of the requested
   model; changing `/model` cannot repair an incompatible API protocol.
@@ -647,9 +642,10 @@ falling back to ambient credentials.
 
 - Existing `kind: gateway` and `kind: local` providers keep their pre-upgrade
   routing: `default: true` does **not** activate a `gemini:` block for native
-  agy. To route agy through such a provider, select it and choose **Make
-  default for Gemini** in setup, or list `gemini` explicitly in its default
-  scope (for example `default: [anthropic, openai, gemini]`). Setup preserves
+  agy. To route agy through such a provider, select it as the Gemini default
+  (see [Configure native agy credentials](#configure-native-agy-credentials)),
+  or list `gemini` explicitly in its default scope (for example
+  `default: [anthropic, openai, gemini]`). Setup preserves
   the provider's other families and writes the explicit scope. Until then,
   existing Gemini-key, legacy-key, ambient-key, and OAuth routing stays in
   effect.

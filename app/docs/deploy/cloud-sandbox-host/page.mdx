@@ -28,26 +28,29 @@ That's [Omnibox](/docs/omnibox).
 | **Environment**  | Local files              | Isolated, reproducible |
 | **Best for**     | Interactive work         | Long-running tasks     |
 
-Omnigent currently supports [Modal](https://modal.com), [Daytona](https://www.daytona.io),
+Omnigent currently supports
+[Databricks Sandbox](https://docs.databricks.com/aws/en/compute/serverless/sandbox),
+[Modal](https://modal.com), [Daytona](https://www.daytona.io),
 [Blaxel](https://blaxel.ai), [Islo](https://islo.dev), [Gensee](https://gensee.ai),
 [NVIDIA OpenShell](https://github.com/NVIDIA/openshell), and
 [Boxlite](https://github.com/boxlite-ai/boxlite) for cloud sandbox hosts.
 
-The hosted-platform comparison below covers Modal, Daytona, Blaxel, and Islo.
+The hosted-platform comparison below covers Databricks, Modal, Daytona, Blaxel, and Islo.
 OpenShell connects to your selected gateway; Boxlite can use a local micro-VM runtime
-or a remote `boxlite serve` pool. Gensee is a managed-host provider only: its
-control plane starts the host over HTTPS, so it supports the server-managed flow
-but not the CLI bootstrap commands.
+or a remote `boxlite serve` pool. Gensee and Databricks are managed-host providers
+only: their control planes start the host over HTTPS, so they support the
+server-managed flow but not the CLI bootstrap commands. Databricks
+sandboxes are driven through the [Databricks Sandbox SDK](https://databricks-sdk-py.readthedocs.io/en/latest/workspace/sandbox/sandbox.html).
 
 For local microVMs, use [Microsandbox](/docs/reference/configuration/cloud-sandbox#microsandbox).
 Its VMs run on the machine running the server or CLI, so they depend on that
 machine staying awake.
 
-|                          | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) | [Blaxel](https://blaxel.ai)              | [Islo](https://islo.dev)                       |
-| ------------------------ | ---------------------------------- | --------------------------------- | ---------------------------------------- | ---------------------------------------------- |
-| **Runner lifetime**      | 24 hours (platform cap)            | No cap (runs until deleted)       | 24h max age by default (raise via `ttl`) | No cap (idle-paused after 15 min when managed) |
-| **Credential injection** | Named secrets (Modal secret store) | Env vars copied from server       | Env vars copied from server              | Env vars copied from server / gateway profile  |
-| **Free-tier egress**     | Full egress                        | Allowlisted domains only          | Full egress                              | Gateway profile controls egress                |
+|                          | [Databricks Sandbox](https://docs.databricks.com/aws/en/compute/serverless/sandbox) | [Modal](https://modal.com)         | [Daytona](https://www.daytona.io) | [Blaxel](https://blaxel.ai)              | [Islo](https://islo.dev)                       |
+| ------------------------ | ----------------------------------------------------------------------------------- | ---------------------------------- | --------------------------------- | ---------------------------------------- | ---------------------------------------------- |
+| **Runner lifetime**      | Idle-stops after configurable `inactivity_timeout_s`, resumed on next turn          | 24 hours (platform cap)            | No cap (runs until deleted)       | 24h max age by default (raise via `ttl`) | No cap (idle-paused after 15 min when managed) |
+| **Credential injection** | Owner's own Databricks OAuth token                                                  | Named secrets (Modal secret store) | Env vars copied from server       | Env vars copied from server              | Env vars copied from server / gateway profile  |
+| **Free-tier egress**     | Full egress (not configurable)                                                      | Full egress                        | Allowlisted domains only          | Full egress                              | Gateway profile controls egress                |
 
 ## Server-managed (recommended)
 
@@ -57,6 +60,7 @@ web UI.
 ### 1. Install
 
 ```
+pip install 'omnigent[databricks]'  # for Databricks Sandbox
 pip install 'omnigent[modal]'       # for Modal
 pip install 'omnigent[daytona]'     # for Daytona
 pip install 'omnigent[blaxel]'      # for Blaxel
@@ -76,6 +80,12 @@ posture. To launch Blaxel sandboxes from the CLI you also need the
 [Blaxel CLI](https://docs.blaxel.ai/cli-reference/introduction) (`brew tap blaxel-ai/blaxel && brew install blaxel`).
 
 ### 2. Set provider credentials
+
+**Databricks:** Sandboxes run as each user's own Databricks account, so there is
+no shared provider key on the server. Each user connects under
+**Settings → Connections → Databricks**, which needs an account-level custom OAuth
+app integration configured on the server; see
+[Databricks settings](/docs/reference/configuration/cloud-sandbox#databricks).
 
 **Modal:** run `modal setup` to authenticate, or set
 `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET` on the server.
@@ -208,8 +218,8 @@ omni sandbox connect --provider modal \
   --sandbox-id <id> --server <url>
 ```
 
-Boxlite and Gensee support the server-managed flow but not these CLI bootstrap
-commands.
+Databricks, Boxlite, and Gensee support the server-managed flow but not these CLI
+bootstrap commands.
 
 For Microsandbox, use `--provider microsandbox` and pass a `--server` URL
 reachable from the VM; see [Microsandbox settings](/docs/reference/configuration/cloud-sandbox#microsandbox).

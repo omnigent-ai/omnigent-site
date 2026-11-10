@@ -41,6 +41,7 @@ showing how many sessions are waiting, and multiple independent windows.
 - **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
 - **Recent-session switcher.** Hold `Ctrl` and press `Tab` to flip between your five most recent sessions — see [Keyboard shortcuts](#keyboard-shortcuts).
 - **One-click host reconnect.** When a session's host is this machine and it has gone offline, the app restarts the host for you instead of asking you to run a command in a terminal.
+- **Connect a host over SSH.** Turn a machine you reach over SSH into a host without opening a terminal on it — see [Connect a host over SSH](#connect-a-host-over-ssh).
 
 Everything else (sessions, file editor, inline comments, collaboration) works exactly the
 same as the web UI.
@@ -119,6 +120,29 @@ Because the browser runs inside the desktop window, these tools require the Omni
 desktop app to be running with the session open. If no desktop window is subscribed,
 the action fails cleanly with `browser action timed out — is the session open in the
 Omnigent desktop app?` rather than hanging.
+
+### Open chat links in the in-app browser
+
+Web links in chat open in your default browser unless you change that. To open
+them in the embedded browser, turn on **Settings → General → Links → Open links
+in the in-app browser**. It's off by default, it's saved per device, and it only
+appears where the embedded browser is available.
+
+With the setting on:
+
+- **Click or `⌘`/`Ctrl`-click** an `http(s)` link to open it in a **Browser**
+  tab in the Workspace rail. If a tab in that conversation already shows the
+  same URL, the app switches to it and doesn't reload it. If not, the link
+  opens in a new tab, so the tabs you already have stay where they are. A URL
+  that differs only in its query string or `#fragment` counts as a different
+  URL. Links never open in the tab your agent drives with `browser_navigate`.
+- **Shift-click**, **Alt-click**, middle-click, and non-web links (such as
+  `mailto:`) keep using your default browser or system handler.
+
+Links opened this way follow the agent's navigation policy, so loopback and
+private-network hosts are blocked, including through redirects. If the
+embedded browser can't open a link, the link opens in your default browser and
+a toast tells you why.
 
 ### Local network permission
 
@@ -204,7 +228,67 @@ button show the chord for whichever app you're in.
 ## Prerequisites
 
 - **A running server.** The [server](/docs/deploy/overview) stores your sessions and serves the UI the desktop app connects to; run it locally with `omni server start` or point the app at a deployed URL.
-- **At least one runner.** A [runner](/docs/deploy/overview) is the process that actually executes your agent. If you have [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host) set up, you'll be able to launch them from the app. Otherwise, register your machine by running `omni host` from your CLI.
+- **At least one runner.** A [runner](/docs/deploy/overview) is the process that actually executes your agent. If you have [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host) set up, you'll be able to launch them from the app. Otherwise, register your machine by running `omni host` from your CLI, or [connect a remote machine over SSH](#connect-a-host-over-ssh) from the app.
+
+## Connect a host over SSH
+
+On macOS and Linux, the desktop app can connect a machine you reach over SSH
+(a dev box or a remote workstation, for example) as a host for the current
+server. You don't need to open a terminal on that machine. This isn't available
+on Windows yet.
+
+The SSH field appears under the `omni host` instructions wherever the app
+offers to connect a host:
+
+- **Connect new host** in a new session's host menu.
+- The clone dialog (opened from the session header or from the reconnect
+  dialog's **Clone** tab), when no host is online or under **Connect another
+  host from your terminal**.
+
+Enter a host alias from your `~/.ssh/config`, a host name, or `user@host`, then
+click **Connect**. Spaces, quotes, and a leading `-` aren't accepted.
+
+The app then opens its own **Connect over SSH** window:
+
+1. **Consent.** The window shows the exact commands it will run, and nothing
+   runs until you click **Connect**:
+
+   ```bash
+   ssh <destination> omnigent login '<server-url>'
+   ssh <destination> omnigent host --server '<server-url>' --background --non-interactive
+   ```
+
+   Once connected, the server can run agent code and commands on that machine,
+   so only confirm for machines and servers you trust.
+
+2. **SSH prompts.** The app runs your system `ssh` with your own SSH config
+   and keys. If SSH asks you to trust a new host key, or for a key passphrase,
+   password, or one-time code, the question appears in this window.
+3. **Install if missing.** If `omnigent` isn't on the remote machine's `PATH`,
+   the window offers **Install Omnigent?**. The app installs `uv` if needed,
+   then runs its bundled installer on the remote machine. Omnigent goes into
+   `~/.local/bin`, which the app adds to the `PATH` it uses there.
+4. **Sign in.** `omnigent login` runs on the remote machine, and the sign-in
+   link opens in your laptop's browser. For a Databricks sign-in, the app
+   forwards the CLI's local callback port (in the range 8020–8040) from your
+   laptop to the remote machine over the same SSH connection, so the browser
+   redirect can reach it. If the window shows a confirmation code, confirm it
+   in the browser.
+5. **Start the host.** The app runs `omnigent host --background` on the remote
+   machine and then closes the SSH connection. From then on, the host keeps its
+   own outbound connection to the server.
+
+When it finishes, the new host is selected in the dialog you started from. If
+the machine was already connected to this server, or the app can't confirm
+which host is new, the dialog asks you to pick it from the host list.
+
+Progress and errors appear in the **Connect over SSH** window. These include a
+changed host key, a rejected key or password, a host name that won't resolve,
+and a sign-in that times out. If you close the window during sign-in, the app
+stops the remote `omnigent login` too, so nothing is left running on the
+machine. A server that signs in with a username and password can't be
+connected this way. Run `omnigent login <server-url>` on the machine in a
+terminal, then connect again.
 
 ## Install
 
@@ -425,8 +509,8 @@ omnigent://my-workspace.cloud.databricks.com/c/conv_xyz
 The link carries no `http`/`https` — the app infers it the same way the setup
 screen does: `http` for a loopback host (`localhost`, `127.0.0.1`), `https` for
 a remote host. A Databricks workspace mount is discovered automatically, so you
-don't include it in the link. Only `/c/<session_id>` links are recognized;
-other paths are ignored.
+don't include it in the link. Only `/c/<session_id>` links and the server-home
+root (`omnigent://<host>/`) are recognized; other paths are ignored.
 
 Clicking a link behaves like opening a page for a known site:
 
@@ -439,3 +523,27 @@ Clicking a link behaves like opening a page for a known site:
   and registering this machine as a runner. Cancel is the default; only open
   links from servers you trust. Once you allow it, the server is remembered so
   future links open without a prompt.
+
+### Open the host UI from the CLI
+
+By default, `omni host` and `omni start` open the host web UI in your browser.
+To open it in the desktop app instead, pass `--open-in-desktop` or set
+`OMNIGENT_HOST_OPEN_IN_DESKTOP=1`:
+
+```
+omni host --open-in-desktop
+omni start --open-in-desktop
+```
+
+The CLI hands the app an `omnigent://` link and waits up to five seconds for
+the app to accept it. It falls back to opening the URL in your browser when:
+
+- the desktop app isn't installed,
+- the installed app is too old to accept the request, or
+- the app doesn't respond within five seconds.
+
+URLs that a deep link can't represent — ones with a base path (such as a
+Databricks workspace mount or a proxy prefix) or with query parameters or a
+fragment — always open in the browser so they keep their destination. Once the
+app accepts the request, cancelling its connect prompt doesn't open a browser.
+`--no-open` suppresses both the desktop app and the browser.

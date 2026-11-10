@@ -18,29 +18,69 @@ native window? Add the [desktop app](#install-the-desktop-app).
 
 ## Requirements
 
-- **Python 3.12+**
-- **Node.js 22 LTS** and npm
+- **macOS or Linux** for the installer script (see [Windows](#windows) below)
+- **uv**
+- **Node.js 22.10 or later** and npm, for the Claude, Codex, and Pi harnesses
 - **tmux**
+- **bubblewrap** (`bwrap`), on Linux only, to sandbox agent terminals
 
-The installer offers to install uv and tmux if they're missing, and uses uv to
-set up Python 3.12.
+The installer offers to install uv, tmux, and bubblewrap if they're missing, and
+uses uv to set up Python 3.12 itself, so you don't need Python installed first.
+A missing or older Node.js is a warning, not a failure: the install finishes,
+but the Claude, Codex, and Pi harnesses won't run until you upgrade Node.js.
 
 ## Install Omnigent
 
-The base install covers everyday use and includes Databricks support; pass
-`--no-databricks` to omit it. Other integrations are opt-in at install time. Run
-the same command to upgrade an existing installation.
+The base install covers everyday use and includes Databricks support: it
+installs the Databricks CLI, or reuses one you already have. Pass
+`--no-databricks` to omit both. Other integrations are opt-in at install time.
+Run the same command to upgrade an existing installation.
 
 <InstallCommand />
 
 Available extras:
 
-| Category           | Extras                                                                                               |
-| ------------------ | ---------------------------------------------------------------------------------------------------- |
-| Model providers    | `databricks`, `bedrock`, `vertex`                                                                    |
-| Sandbox providers  | `databricks`, `modal`, `daytona`, `blaxel`, `boxlite`, `cwsandbox`, `e2b`, `openshell`, `kubernetes` |
-| SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                                                     |
-| Storage and memory | `postgres`, `s3`, `hindsight`                                                                        |
+| Category           | Extras                                                                                                               |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| Model providers    | `databricks` (included by default), `bedrock`, `vertex`                                                              |
+| Sandbox providers  | `databricks`, `modal`, `daytona`, `blaxel`, `boxlite`, `microsandbox`, `cwsandbox`, `e2b`, `openshell`, `kubernetes` |
+| SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                                                                     |
+| Storage and memory | `postgres`, `s3`, `hindsight`                                                                                        |
+
+The `antigravity` extra conflicts with the Databricks dependencies, so install
+it with `--no-databricks --extra antigravity`.
+
+### Windows
+
+The installer script runs on macOS and Linux only. On Windows, install with uv
+directly, pinning `--python 3.12`, as shown in the Windows section of the
+[README install guide](https://github.com/omnigent-ai/omnigent#1-install)
+(manual installs need Python 3.12 or later, which that flag has uv provide).
+Windows runs in a reduced mode: the server, web UI, and SDK-based harnesses
+work, but the tmux terminal wrappers and filesystem and network sandboxing do
+not. Use macOS, Linux, or WSL for those.
+
+## Install from a package mirror
+
+If your network blocks pypi.org, the installer stops with an error like
+`Failed to fetch: https://pypi.org/simple/omnigent/`. Point uv at a PyPI mirror
+that your network allows by setting `UV_DEFAULT_INDEX` for the install:
+
+```
+curl -fsSL https://omnigent.ai/install.sh | UV_DEFAULT_INDEX="<your-mirror-url>" sh
+```
+
+After an installer install, `omni upgrade` also runs through uv, so make the
+mirror uv's default index for later upgrades. Add this to
+`~/.config/uv/uv.toml` (`%APPDATA%\uv\uv.toml` on Windows):
+
+```
+[[index]]
+url = "<your-mirror-url>"
+default = true
+```
+
+If you installed with pip, set `PIP_INDEX_URL` to your mirror instead.
 
 ## Set up credentials
 
@@ -130,7 +170,7 @@ compose with `--nightly`:
 - `--check` — report the newest nightly and exit non-zero if upgrading would
   change the install, without changing anything.
 - `--dry-run` — print the command that would run and exit.
-- `--extra` — keep or add extras (comma-separate to add several).
+- `--extra`: keep or add an extra. Repeat the flag to add several.
 
 `--pre` and `--target-version` do **not** apply to `--nightly` — it always
 tracks the newest nightly tag. To install one specific nightly, pick its

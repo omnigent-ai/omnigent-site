@@ -8,6 +8,7 @@
 //   - every app/quickstart/**/page.mdx and app/docs/**/page.mdx
 //   - every blog post from getBlogPosts() (lib/blog.js)
 //   - every release from getReleases() (lib/releases.js)
+//   - shared-data answers from lib/answers.js and their hub
 //   - plus the homepage and FAQ summaries below (those pages are JSX, not MDX)
 // llms.txt links docs/quickstart in full and keeps blog posts and releases
 // under "Optional"; llms-full.txt contains the full text of everything.
@@ -24,6 +25,7 @@ import { getReleases } from "../lib/releases.js";
 import { discoverPages } from "../lib/routes.js";
 import { productionSiteUrl } from "../lib/site.js";
 import { convertMdx } from "./llms/mdx-to-markdown.mjs";
+import { answers, answerPath, answerMarkdown } from "../lib/answers.js";
 
 const SITE_URL = productionSiteUrl;
 
@@ -196,13 +198,22 @@ export async function buildLlmsFiles() {
     });
   }
 
-  const pages = [...docs, ...blog, ...releases];
+  const answerPages = answers.map((answer) => ({
+    href: answerPath(answer.id),
+    title: answer.question,
+    description: answer.summary,
+    h1: answer.question,
+    kind: "answer",
+    markdown: answerMarkdown(answer, SITE_URL),
+    warnings: [],
+  }));
+  const pages = [...docs, ...answerPages, ...blog, ...releases];
   const warnings = pages.flatMap((page) => page.warnings);
   for (const warning of warnings) console.warn(`llms: warning: ${warning}`);
 
   return {
-    llmsTxt: buildLlmsTxt({ docs, blog, releases }),
-    llmsFullTxt: buildLlmsFullTxt({ docs, blog, releases }),
+    llmsTxt: buildLlmsTxt({ docs, blog, releases, answerPages }),
+    llmsFullTxt: buildLlmsFullTxt({ docs, blog, releases, answerPages }),
     pages,
     warnings,
   };
@@ -215,7 +226,7 @@ function link(page, description = page.description) {
   return `- [${page.title}](${absolute(page.href)})${text}`;
 }
 
-function buildLlmsTxt({ docs, blog, releases }) {
+function buildLlmsTxt({ docs, blog, releases, answerPages }) {
   const lines = [
     "# Omnigent",
     "",
@@ -238,7 +249,13 @@ function buildLlmsTxt({ docs, blog, releases }) {
   }
   lines.push("");
 
-  lines.push("## Optional", "");
+  lines.push(
+    "## Answers",
+    "",
+    `- [Answers](${absolute("/answers")}): Browse question-led explanations and practical examples.`,
+  );
+  for (const page of answerPages) lines.push(link(page));
+  lines.push("", "## Optional", "");
   lines.push(
     `- [Homepage](${absolute("/")}): Product overview and architecture.`,
     `- [FAQ](${absolute("/faq")}): Answers to common questions about Omnigent, models, custom agents, safety, Databricks, and production readiness.`,
@@ -288,11 +305,11 @@ function fullEntry(page) {
   return ["---", "", `## ${absolute(page.href)}`, "", body.join("\n\n"), ""];
 }
 
-function buildLlmsFullTxt({ docs, blog, releases }) {
+function buildLlmsFullTxt({ docs, blog, releases, answerPages }) {
   const lines = [
     "# Omnigent Full Documentation",
     "",
-    "> Expanded LLM context for Omnigent. This file contains the homepage summary and cleaned Markdown content for every quickstart, documentation, blog, and release page listed in /llms.txt.",
+    "> Expanded LLM context for Omnigent. This file contains the homepage summary and cleaned Markdown content for every quickstart, documentation, answer, blog, and release page listed in /llms.txt.",
     "",
     `Source: ${SITE_URL}`,
     "Generated from: https://github.com/omnigent-ai/omnigent-site",
@@ -305,6 +322,10 @@ function buildLlmsFullTxt({ docs, blog, releases }) {
     "",
   ];
   for (const page of docs) lines.push(...fullEntry(page));
+  lines.push("---", "", `## ${absolute("/answers")}`, "", "# Answers", "");
+  for (const page of answerPages) lines.push(link(page));
+  lines.push("");
+  for (const page of answerPages) lines.push(...fullEntry(page));
   lines.push("---", "", `## ${absolute("/faq")}`, "", faqSummary, "");
   for (const page of [...blog, ...releases]) lines.push(...fullEntry(page));
   return lines.join("\n");

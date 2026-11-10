@@ -94,6 +94,7 @@ const SECTIONS = [
         href: "/docs/deploy/community-sandbox-providers",
         label: "Community Sandbox Providers",
       },
+      { href: "/docs/deploy/sandbox-profiles", label: "Sandbox Profiles" },
     ],
   },
   {
@@ -126,7 +127,10 @@ const SECTIONS = [
   },
   {
     title: "Programmatic Usage",
-    pages: [{ href: "/docs/programmatic", label: "Overview" }],
+    pages: [
+      { href: "/docs/programmatic", label: "Overview" },
+      { href: "/docs/programmatic/github-actions", label: "GitHub Actions" },
+    ],
   },
   {
     title: "Reference",

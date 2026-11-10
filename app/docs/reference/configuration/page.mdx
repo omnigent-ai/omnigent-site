@@ -120,8 +120,8 @@ saved `instructions` and the server's `max_chars` limit. Servers that support
 this report `session_title_instructions: true` from `/v1/info`; the web UI shows
 the field only then.
 
-Runners older than the server accept at most 4,000 characters of combined
-title guidance. For those runners, the server shortens longer guidance: it
+Runners from Omnigent 0.21 and earlier accept at most 4,000 characters of
+combined title guidance. For those runners, the server shortens longer guidance: it
 drops the follow-the-user's-language rule first, then the server's
 instructions, and keeps the personal instructions.
 

@@ -79,6 +79,39 @@ stays in sync with the [Web UI](/docs/interact/web-ui) both ways: run the
 agent in your terminal and glance at the browser whenever you want file diffs or inline
 comments.
 
+### Forward shell variables to one session
+
+Sessions run under the host daemon, which may have started from a different
+shell, so your terminal's variables don't reach the agent by default. To forward
+specific ones to the session you're launching, list their names in
+`OMNIGENT_SESSION_ENV_PASSTHROUGH`, comma-separated:
+
+```
+OMNIGENT_SESSION_ENV_PASSTHROUGH=TERMINAL_PANE_SOCKET,TOOL_TOKEN omni claude
+```
+
+- **Scope.** The values go only to the runner this command launches, through an
+  owner-only file in the `session-env/` folder of the Omnigent data directory
+  (`~/.omnigent` by default, or `OMNIGENT_DATA_DIR`) that the local daemon reads
+  and deletes at launch. They aren't sent to the server or stored in the
+  session. The server relays only an opaque handoff ID.
+- **Inheritance.** The forwarded variables become part of that runner's
+  environment, so the agent and any stdio MCP server that declares `env`
+  inherit them too.
+- **Lifetime.** A session whose runner is already running keeps its original
+  values. A runner the server relaunches later (for example, after an idle
+  timeout) starts without them.
+- **Names.** Names listed but unset in your shell are skipped, so one setting
+  works both inside and outside the terminal that defines them. Malformed names,
+  names starting with `OMNIGENT`, and `RUNNER_SERVER_URL` are rejected before
+  launch.
+- **Fallback.** If the daemon doesn't pick up the values (for example, the
+  server or daemon is older than the CLI, or the daemon uses a different data
+  directory), the CLI prints a warning and the runner starts without them.
+
+Forwarding isn't available on Windows yet: launching with values to forward
+fails there, so unset the variable to launch without forwarding.
+
 ## Sessions and conversations
 
 A session is a conversation. Every message, tool call, and file change lives in one

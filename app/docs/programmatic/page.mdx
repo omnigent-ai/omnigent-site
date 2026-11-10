@@ -819,26 +819,34 @@ them **scheduled tasks** (`/v1/scheduled-tasks`).
 
 You can create the same automation in three ways:
 
-- **Web UI:** the **Automations** page, including templates that start a
-  session for each new Jira ticket, Slack message, or GitHub issue. See
-  [Scheduled tasks in the Web UI](/docs/interact/web-ui#scheduled-tasks).
+- **REST API:** create and manage automations from your own scripts. See
+  [Manage automations with the REST API](#manage-automations-with-the-rest-api).
 - **Agent tools:** ask an agent to schedule its own follow-up work. See
   [Schedule recurring agent runs](#schedule-recurring-agent-runs).
-- **REST API:** create and manage automations from your own scripts, as shown
-  below.
+- **Web UI:** use the **Automations** page. See
+  [Scheduled tasks in the Web UI](/docs/interact/web-ui#scheduled-tasks).
+
+Each automation belongs to the user who created it, and you can see only your
+own. Whichever way you create one, a host must be online when the automation
+runs, or the automation must use a fresh
+[cloud sandbox](/docs/deploy/cloud-sandbox-host) for each run. The agent also
+needs credentials and tool permissions that work without a person approving
+requests.
+
+Each run sends your prompt followed by a short note that tells the agent no one
+is watching. See [Scheduled Tasks](/docs/build/scheduled-tasks) for the full
+configuration, and
+[How a firing runs](/docs/build/scheduled-tasks#how-a-firing-runs) for the run
+sequence.
+
+### Manage automations with the REST API
 
 Before you call these endpoints:
 
 - Use your own user credentials, such as a session cookie or a CLI login bearer
   token. Machine client-credentials tokens can't access `/v1/scheduled-tasks`.
-  Each automation belongs to the user who created it, and you can see only
-  your own.
 - Check that `GET /v1/info` returns `automations_enabled: true`. If it doesn't,
   every `/v1/scheduled-tasks` route returns `404`.
-- Make sure that a host is online when the automation runs, or choose a fresh
-  [cloud sandbox](/docs/deploy/cloud-sandbox-host) for each run. The agent
-  needs credentials and tool permissions that work without a person approving
-  requests.
 
 ```bash
 SERVER_URL="http://127.0.0.1:6767"
@@ -976,17 +984,56 @@ for the minimum interval. These optional fields control each run:
 
 </div>
 
-Each run sends your prompt followed by a short note that tells the agent no one
-is watching. For the full run sequence, see
-[How a firing runs](/docs/build/scheduled-tasks#how-a-firing-runs).
+### Schedule recurring agent runs
+
+Ask an agent to create a scheduled task when you want the same work repeated.
+Omnigent provides four built-in tools:
+
+<div style={{ overflowX: "auto" }}>
+
+| Tool                        | What it does                                         |
+| --------------------------- | ---------------------------------------------------- |
+| `sys_scheduled_task_create` | Save a prompt, agent, and recurring schedule.        |
+| `sys_scheduled_task_list`   | List your scheduled tasks.                           |
+| `sys_scheduled_task_update` | Change a task's prompt, schedule, or other settings. |
+| `sys_scheduled_task_delete` | Remove a task so it no longer runs.                  |
+
+</div>
+
+For example, replace the host name and repository path in this prompt:
+
+```text
+Create a scheduled task named "Weekday code review". Every weekday at 9am
+Asia/Singapore, run native Claude Code on host "my-host" in
+/home/ci/my-repository. Ask it to review the latest commit and report findings
+without editing files. Look up the agent and host IDs first.
+```
+
+The schedule uses this recurrence rule with `timezone: "Asia/Singapore"`:
+
+```text
+FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0
+```
+
+You can later ask, "Move Weekday code review to 10am," or "Delete Weekday code
+review." The agent uses the list and update or delete tools to make the change.
+
+Creating or updating a task from an agent always pauses for your approval
+before anything is saved, even when no policies are configured — review the
+agent, prompt, host, and permission settings in the prompt before accepting.
+Listing and deleting tasks do not ask. See
+[Approval for create and update](/docs/build/scheduled-tasks#approval-for-create-and-update).
+
+### Start a session for each new ticket, message, or issue
 
 Automations created from Jira, Slack, or GitHub
-[trigger templates](/docs/interact/web-ui#trigger-templates) are ordinary
-scheduled tasks with a generated prompt. You can list, run, pause, and delete
-them with the same endpoints. The templates check for new items on a schedule;
-they don't receive webhooks. To react to events that the templates don't
-cover, receive the event in your own service, then start a session and send
-it the work with `POST /v1/sessions` and `POST /v1/sessions/{id}/events`.
+[trigger templates](/docs/interact/web-ui#trigger-templates) in the Web UI are
+ordinary scheduled tasks with a generated prompt. You can list, run, pause, and
+delete them with the same endpoints and tools. The templates check for new
+items on a schedule; they don't receive webhooks. To react to events that the
+templates don't cover, receive the event in your own service, then start a
+session and send it the work with `POST /v1/sessions` and
+`POST /v1/sessions/{id}/events`.
 
 ## API endpoints reference
 
@@ -1058,7 +1105,8 @@ other endpoints.
 
 For GitHub-hosted automation, see
 [Configure Omnigent in GitHub Actions](/docs/programmatic/github-actions),
-including provider settings and a PR-review example.
+including provider settings and a PR-review example. To run an agent on a
+schedule, see [Automate recurring work](#automate-recurring-work).
 
 ### Let an agent manage other sessions
 
@@ -1155,50 +1203,3 @@ Polly needs the worker harnesses and their credentials configured. The skills
 coordinate the work; the workers still need access to the repository and models.
 See [Prompts & Skills](/docs/build/prompts) to add your own workflows in an
 agent's `skills/` directory or the project's `.agents/skills/` directory.
-
-### Schedule recurring agent runs
-
-Ask an agent to create a scheduled task when you want the same work repeated.
-Omnigent provides four built-in tools:
-
-<div style={{ overflowX: "auto" }}>
-
-| Tool                        | What it does                                         |
-| --------------------------- | ---------------------------------------------------- |
-| `sys_scheduled_task_create` | Save a prompt, agent, and recurring schedule.        |
-| `sys_scheduled_task_list`   | List your scheduled tasks.                           |
-| `sys_scheduled_task_update` | Change a task's prompt, schedule, or other settings. |
-| `sys_scheduled_task_delete` | Remove a task so it no longer runs.                  |
-
-</div>
-
-For example, replace the host name and repository path in this prompt:
-
-```text
-Create a scheduled task named "Weekday code review". Every weekday at 9am
-Asia/Singapore, run native Claude Code on host "my-host" in
-/home/ci/my-repository. Ask it to review the latest commit and report findings
-without editing files. Look up the agent and host IDs first.
-```
-
-The schedule uses this recurrence rule with `timezone: "Asia/Singapore"`:
-
-```text
-FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0
-```
-
-The chosen host must be online when the task fires, and the agent needs
-credentials and tool permissions suitable for unattended work.
-
-You can later ask, "Move Weekday code review to 10am," or "Delete Weekday code
-review." The agent uses the list and update or delete tools to make the change.
-
-Creating or updating a task from an agent always pauses for your approval
-before anything is saved, even when no policies are configured — review the
-agent, prompt, host, and permission settings in the prompt before accepting.
-Listing and deleting tasks do not ask. See
-[Approval for create and update](/docs/build/scheduled-tasks#approval-for-create-and-update).
-
-See [Scheduled Tasks](/docs/build/scheduled-tasks) for the full configuration.
-To create and manage the same tasks from a script, see
-[Automate recurring work](#automate-recurring-work).

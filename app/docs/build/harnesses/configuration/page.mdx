@@ -447,8 +447,10 @@ first source that applies:
    Google API key, a native Gemini gateway, or a Databricks profile (see
    [Configure native agy credentials](#configure-native-agy-credentials)).
 2. The Antigravity API key saved by earlier versions of `omni setup`
-   (`antigravity.api_key_ref`), always sent to Google's API root. Remove it in
-   setup before switching to an ambient gateway.
+   (`antigravity.api_key_ref`). It is sent to Google's API root, except
+   `env:GEMINI_API_KEY` and `env:OMNIGENT_GEMINI_API_KEY`, which use
+   `GOOGLE_GEMINI_BASE_URL` when set. Remove it in setup before switching to an
+   ambient gateway.
 3. A `GEMINI_API_KEY` in the environment where the harness runs, paired with
    `GOOGLE_GEMINI_BASE_URL` when that is also set (otherwise Google's API
    root). Both variables are forwarded from the host to the runner.
@@ -491,9 +493,9 @@ their original connection, and `/model` changes the model, not the provider,
 endpoint, or authentication method. Claude, Codex, and Pi defaults are separate.
 
 If two providers both claim a family's default, `omni setup` first asks which
-one to keep (**Multiple defaults for … — choose one to keep**) before opening
-the harness menu. Canceling leaves the conflict unresolved and the
-configuration unchanged; run `omni setup` again to choose.
+one to keep (**Multiple defaults for ... - choose one to keep**) before opening
+the harness menu. Canceling stops at that family: choices already made for
+earlier families stay saved, and running `omni setup` again resolves the rest.
 
 <div className="note">
 
@@ -622,8 +624,8 @@ omni agy
 Ask: *Read gateway-smoke.txt using the file tool and quote its contents.*
 Confirm a tool call occurs and the reply contains the file's actual text, then
 ask a follow-up question about it. Exit and run `omni agy --resume` to verify
-continuity. In the web UI, stop the session's terminal, click **Resume
-session**, and ask another question about the file without using tools —
+continuity. If the web UI shows a terminal-exited error, click **Resume
+session**, then ask another question about the file without using tools;
 earlier messages and the original tool result should appear once, followed by
 the new turn. Repeat in a fresh conversation after switching credentials.
 

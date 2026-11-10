@@ -62,12 +62,12 @@ omni config cloud --server "$SERVER_URL" show
 omni config cloud --server "$SERVER_URL" import
 ```
 
-| Subcommand | Behavior                                                                                         |
-| ---------- | ------------------------------------------------------------------------------------------------ |
-| `show`     | Prints the saved snapshot without changing this machine.                                         |
-| `save`     | Previews the saved and local values, asks for confirmation, then replaces the cloud snapshot.    |
+| Subcommand | Behavior                                                                                          |
+| ---------- | ------------------------------------------------------------------------------------------------- |
+| `show`     | Prints the saved snapshot without changing this machine.                                          |
+| `save`     | Previews the saved and local values, asks for confirmation, then replaces the cloud snapshot.     |
 | `import`   | Previews local and saved values, asks for confirmation, then writes the snapshot to this machine. |
-| `onboard`  | Offers save or import once per server and login on interactive startup.                          |
+| `onboard`  | Offers save or import once per server and login, when a launcher runs it.                         |
 
 `save` and `import` take `--yes` to confirm without prompting. If the cloud
 snapshot or your login changes between the preview and the write, the command
@@ -83,11 +83,11 @@ local testing.
 
 ### What is copied
 
-| Copied                                                                | Kept on each machine                           |
-| --------------------------------------------------------------------- | ---------------------------------------------- |
-| `model` and `opencode_model`                                          | Provider credentials and login tokens          |
-| `harness.default` and each harness's ordered `args`                   | Per-harness `command` and host metadata        |
-| Launcher plugin opt-outs, when supplied with `--plugin-opt-outs`      | Installed plugins, binaries, and project config |
+| Copied                                                           | Kept on each machine                            |
+| ---------------------------------------------------------------- | ----------------------------------------------- |
+| `model` and `opencode_model`                                     | Provider credentials and login tokens           |
+| `harness.default` and each harness's ordered `args`              | Per-harness `command` and host metadata         |
+| Launcher plugin opt-outs, when supplied with `--plugin-opt-outs` | Installed plugins, binaries, and project config |
 
 - Only `~/.omnigent/config.yaml` is read and written; project
   `.omnigent/config.yaml` files are not copied.
@@ -135,19 +135,19 @@ files and restore the printed backups if needed.
 
 `omni config cloud onboard` is a hook for launchers. When a snapshot exists it
 offers to import it; otherwise it offers to save this machine's configuration.
-It asks once per server and login context and remembers a decline. It does
+It asks once per server and login context and remembers the answer. It does
 nothing unless both stdin and stdout are terminals, but it still needs a server.
 Omnigent startup doesn't call it automatically. Explicit `save` and `import`
 are always available.
 
 ### Server setup
 
-| Setting | Value                                                                    |
-| ------- | ------------------------------------------------------------------------ |
-| Key     | `shared_preferences_authority_id`                                        |
-| Scope   | Deployed server (`omni server --config`)                                 |
-| Type    | Nonempty string, up to 128 characters, no surrounding whitespace         |
-| Default | Unset: preference storage is disabled and the endpoint returns 404       |
+| Setting | Value                                                              |
+| ------- | ------------------------------------------------------------------ |
+| Key     | `shared_preferences_authority_id`                                  |
+| Scope   | Deployed server (`omni server --config`)                           |
+| Type    | Nonempty string, up to 128 characters, no surrounding whitespace   |
+| Default | Unset: preference storage is disabled and the endpoint returns 404 |
 
 Set a stable value in the server YAML to enable preference storage:
 
@@ -159,9 +159,9 @@ The CLI uses `GET` and `PUT /v1/preferences/configuration`. Snapshots are
 scoped to the authenticated user and workspace and stored as one row in the
 existing `preferences` table, so no migration is needed. Each save must include
 the current revision. Stale saves are rejected, and no history is kept. `PUT`
-bodies are limited to 16,000 bytes. Uploads that take longer than five seconds
-return 408. A busy server returns 429 with `Retry-After`, and invalid bodies
-return 422.
+bodies are limited to 16,000 bytes; larger bodies return 413. Uploads that take
+longer than five seconds return 408. A busy server returns 429 with
+`Retry-After`, and invalid bodies return 422.
 
 ## Automatic session titles
 

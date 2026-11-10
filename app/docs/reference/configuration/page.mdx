@@ -98,12 +98,12 @@ prompt is used.
 
 ## New Chat picker curation
 
-| Setting | Value                                                                 |
-| ------- | --------------------------------------------------------------------- |
-| Keys    | `restrict_to_agent_names`, `default_agent_name`                       |
-| Scope   | Deployed server config (`omni server --config`)                       |
-| Type    | List of agent names, or one name; `default_agent_name` is one string  |
-| Default | Unset — New Chat offers the full roster with no server-chosen default |
+| Setting | Value                                                                |
+| ------- | -------------------------------------------------------------------- |
+| Keys    | `restrict_to_agent_names`, `default_agent_name`                      |
+| Scope   | Deployed server config (`omni server --config`)                      |
+| Type    | List of agent names, or one name; `default_agent_name` is one string |
+| Default | Unset: New Chat offers the full roster with no server-chosen default |
 
 Use these keys to limit and order what the web UI's New Chat picker offers,
 and to choose the agent a fresh chat starts on:
@@ -129,23 +129,18 @@ The keys are read only from the YAML passed to `omni server --config` (or
   Without a default, New Chat starts on the first offered agent. A default that
   `restrict_to_agent_names` doesn't include is ignored with a warning.
 
-Both keys fail open: a value of the wrong type, such as a non-string list
-element or a non-string default, is logged and ignored rather than emptying the
-picker. At startup the server logs one warning that lists the restricted names
-matching no server agent, and another for names that
+A value of the wrong type is logged and ignored, so a bad value never empties
+the picker. The server logs a startup warning for restricted names that match no
+agent. If no restricted name matches, New Chat shows an empty state unless a
+user has an agent with one of those names. An agent removed by
 [`OMNIGENT_SEEDED_AGENTS`](/docs/deploy/overview#trimming-the-packaged-built-in-agents)
-leaves out. If no
-restricted name matches, New Chat shows an empty state unless a user has their
-own agent with one of those names. An agent that `OMNIGENT_SEEDED_AGENTS`
-removes stays hidden even when `restrict_to_agent_names` lists it.
+stays hidden even when `restrict_to_agent_names` lists it.
 
 This is display only, not access control. The API, the CLI, the scheduled-task
 and project-default pickers, and existing sessions still reach every agent. If
 a project's configured agent isn't offered, New Chat reports it as unavailable
-until the user picks an offered agent. To remove packaged agents everywhere,
-use `OMNIGENT_SEEDED_AGENTS` instead. Both keys are published in the `picker`
-block of the unauthenticated `GET /v1/info` response, so don't put anything
-sensitive in agent names.
+until the user picks an offered agent. Anyone who can reach the server can read
+these names, so don't put anything sensitive in them.
 
 ## Web UI base path
 

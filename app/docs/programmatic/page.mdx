@@ -894,6 +894,67 @@ For agents with named sub-agents, reusing the same `agent` and `title` continues
 that child conversation; a different title starts a separate one. Child sessions
 appear in the Web UI, where you can follow their progress.
 
+### Let an agent file sessions into projects
+
+Agents can organize your sessions into sidebar
+[projects](/docs/interact/web-ui#projects) with two built-in tools. They make
+the same move you would make from the sidebar, so they grant no access you
+don't already have.
+
+<div style={{ overflowX: "auto" }}>
+
+| Tool                 | What it does                                                                                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `sys_project_list`   | List your projects (oldest first) and your own sessions (most recently updated first), with each session's current project. The calling session is marked `this_session`. |
+| `sys_session_update` | File one of your sessions into a project by name, or remove it from its project with `""`. A project that doesn't exist yet is created.                          |
+
+</div>
+
+For example, send this prompt in an Omnigent session:
+
+```text
+List my projects, then file this session and the other release-prep sessions
+into a "release prep" project.
+```
+
+`sys_session_update` takes a `session_id` and a `project` name (up to 100
+characters), and updates one session per call:
+
+```json
+{
+  "session_id": "<session_id from sys_project_list>",
+  "project": "release prep"
+}
+```
+
+`sys_project_list` accepts an optional `project` filter (`""` lists only
+unfiled sessions) and a `limit` of 1–200 (default 50) that applies separately
+to sessions and projects. To page further, pass `next_cursor` back as `after`
+for more sessions, and `projects_next_cursor` as `projects_after` for more
+projects.
+
+- Changing a session's project only changes its folder. Running sessions,
+  including the one calling the tool, keep working, and an open sidebar
+  regroups without a reload.
+- Only the session's owner can change its project. A session someone else
+  shared with you is refused.
+- Sub-agent sessions follow their parent's project, and sessions in a family
+  share the project of their representative session (listed as `moves_with`).
+  The tool refuses those sessions and names the session to update instead.
+- If the calling session is shared with edit access, it can still list projects
+  but can't change a session's project or create a project.
+- The server must advertise `session_move_source_checks` in `GET /v1/info`;
+  against an older server, `sys_session_update` refuses and asks you to move
+  the session from the sidebar instead.
+
+Both tools are on by default. To remove them from an agent, set
+`projects: false` under `tool_groups` in its configuration:
+
+```yaml
+tool_groups:
+  projects: false # sys_project_list / sys_session_update
+```
+
 ### Use bundled skills for multi-agent workflows
 
 Skills are reusable instructions that guide how an agent uses its tools.

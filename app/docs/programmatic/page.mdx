@@ -122,19 +122,23 @@ Common options:
 
 <div style={{ overflowX: "auto" }}>
 
-| Option                                  | When to use it                                                                                                              |
-| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `-p "<prompt>"` / `--prompt "<prompt>"` | Run a task without an interactive chat; the response goes to stdout.                                                        |
-| `--server "<server-url>"`               | Save the session on a shared server. The agent definition is uploaded, and tools still run on the machine invoking the CLI. |
-| `--no-session`                          | Run a disposable local task with no history to view or resume afterward.                                                    |
-| `--model "<model>"`                     | Override the agent's model. See [Models & Credentials](/docs/build/models).                                                 |
-| `--harness "<harness>"`                 | Override the agent's harness. See [Harnesses](/docs/build/harnesses) for supported configurations.                          |
-| `--continue` / `-c`                     | Continue the most recent conversation for the same agent.                                                                   |
-| `--resume "<conversation_id>"`          | Continue a specific conversation using the ID from its session URL.                                                         |
+| Option                                  | When to use it                                                                                                                                 |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-p "<prompt>"` / `--prompt "<prompt>"` | Run a task without an interactive chat; the response goes to stdout.                                                                           |
+| `--server "<server-url>"`               | Save the session on a shared server. With an agent path, the agent definition is uploaded and tools still run on the machine invoking the CLI. |
+| `--agent "<name>"`                      | Run an agent registered on the `--server`, instead of an agent path. Required with `-p` when the server has several agents you could run.      |
+| `--no-session`                          | Run a disposable local task with no history to view or resume afterward.                                                                       |
+| `--model "<model>"`                     | Override the agent's model. See [Models & Credentials](/docs/build/models).                                                                    |
+| `--harness "<harness>"`                 | Override the agent's harness. See [Harnesses](/docs/build/harnesses) for supported configurations.                                             |
+| `--continue` / `-c`                     | Continue the most recent conversation for the same agent.                                                                                      |
+| `--resume "<conversation_id>"`          | Continue a specific conversation using the ID from its session URL.                                                                            |
 
 </div>
 
-These examples use an agent YAML or directory through `omni run`; native
+For how Omnigent picks a registered agent with `--agent` and where its runner
+runs, see [Run an agent registered on a server](/docs/interact/terminal#run-an-agent-registered-on-a-server).
+
+The examples above use an agent YAML or directory through `omni run`; native
 terminal harnesses have their own CLI behavior. To run tools on another
 machine or in a cloud sandbox, use the REST API's host options.
 
@@ -167,6 +171,17 @@ async def main():
 
 asyncio.run(main())
 ```
+
+`resolve_agent` looks for the name among the server's registered agents first,
+then among your own (from `omni agent add`).
+`client.sessions.list_registered_agents()` returns both lists. Each entry has
+an `id`, `name`, `harness`, and `source` (`"server"` or `"user"`). If no runner
+is online, you can have the server launch one on a connected host:
+
+- `client.sessions.list_launch_hosts(harness=agent.harness)` lists your online
+  hosts and whether each one can run that harness.
+- Pass a host's ID to `create_from_agent_id(agent.id, host_id=...)` instead of
+  calling `bind_runner`.
 
 Use the printed session ID to send a message in the next step, or open the
 URL to view the session.

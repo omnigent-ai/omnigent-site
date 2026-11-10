@@ -73,6 +73,37 @@ omni run agent.yaml --harness codex --model gpt-4.1-mini
 The `--harness` and `--model` flags map directly to the `executor` block. This lets
 you reuse the same config across different LLM backends.
 
+### Run an agent registered on a server
+
+To chat with an agent registered on a [shared server](/docs/deploy/overview),
+pass the server URL and leave out the agent path:
+
+```
+omni run --server https://your-server.example.com                        # pick from a menu
+omni run --server https://your-server.example.com --agent scribe         # choose by name
+omni run --server https://your-server.example.com --agent scribe -p "hi" # one-shot
+```
+
+The menu lists the agents registered on the server and your own agents from
+`omni agent add <path> --server <url>`, with each agent's source (`server` or
+`user`) and harness. If a server agent and one of yours share a name, the server
+agent wins. With one agent, it's selected automatically.
+
+`--agent <name>` skips the menu. An unknown name fails before a session is
+created and lists the registered agents. With `-p` and several agents, you must
+pass `--agent`; otherwise the run fails, lists the choices, and creates no
+session.
+
+`--agent` works only with `--server <url>`, without an agent path or `--harness`.
+It always starts a new session, so it can't be combined with `--resume`,
+`--continue`, or `--fork`. `--fork` works only in interactive mode.
+
+**Where the agent runs.** The session uses an online runner on the server that
+supports the agent's harness. If none is online and this machine is connected as
+a host (`omni host --server <url>`), the server launches a runner here, with your
+current directory as the workspace. If only other machines are hosts, or this
+machine's host can't run the harness, the command fails with a hint.
+
 From here, the agent streams its output as it thinks and acts. Tool calls run in real time,
 so you watch file writes, shell commands, and API calls land as they happen. The session also
 stays in sync with the [Web UI](/docs/interact/web-ui) both ways: run the

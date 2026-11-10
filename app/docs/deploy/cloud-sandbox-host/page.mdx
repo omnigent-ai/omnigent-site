@@ -43,6 +43,7 @@ or a remote `boxlite serve` pool. Gensee and Databricks are managed-host provide
 only: their control planes start the host over HTTPS, so they support the
 server-managed flow but not the CLI bootstrap commands. Databricks
 sandboxes are driven through the [Databricks Sandbox SDK](https://databricks-sdk-py.readthedocs.io/en/latest/workspace/sandbox/sandbox.html).
+
 AWS Lambda MicroVMs is also managed-host only: the server runs a microVM from a
 MicroVM image you build ahead of time, and the host inside it dials back to the
 server. See [AWS Lambda MicroVMs settings](/docs/reference/configuration/cloud-sandbox#aws-lambda-microvms).

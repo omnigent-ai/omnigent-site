@@ -492,108 +492,46 @@ and when both are set, the config value wins.
 
 Any other key under `sandbox.lambda_microvm` stops server startup.
 
-### Build the MicroVM image
-
-Lambda MicroVMs boot from a **MicroVM image** that you build ahead of time with
-`aws lambda-microvms create-microvm-image`. They do not pull a registry
-reference the way Modal or Daytona do. The Omnigent repository includes the
-image build inputs under `deploy/aws-lambda-microvm/`: a `Dockerfile` that adds
-a small lifecycle-hooks shim to
-`ghcr.io/omnigent-ai/omnigent-host:latest` (pinned to `linux/arm64`, which Lambda
-MicroVMs require), plus `hooks_server.py`, `entrypoint.sh`, and `start_host.sh`.
-
-```bash
-# 1. Zip the build context (Dockerfile at the zip root) and upload it to S3
-#    in the same region as the image.
-zip -j omnigent-host-microvm.zip \
-  deploy/aws-lambda-microvm/Dockerfile \
-  deploy/aws-lambda-microvm/hooks_server.py \
-  deploy/aws-lambda-microvm/entrypoint.sh \
-  deploy/aws-lambda-microvm/start_host.sh
-aws s3 cp omnigent-host-microvm.zip s3://my-omnigent-artifacts/omnigent-host-microvm.zip
-
-# 2. Build the MicroVM image. --hooks is required, and its port must be 9000.
-aws lambda-microvms create-microvm-image \
-  --name omnigent-host \
-  --base-image-arn arn:aws:lambda:<region>:aws:microvm-image:al2023-1 \
-  --build-role-arn arn:aws:iam::<acct>:role/omnigent-microvm-build \
-  --code-artifact '{"uri":"s3://my-omnigent-artifacts/omnigent-host-microvm.zip"}' \
-  --hooks '{"port":9000,"microvmHooks":{"run":"ENABLED","resume":"ENABLED"},"microvmImageHooks":{"ready":"ENABLED"}}'
-```
-
-Without `--hooks`, Lambda never delivers the per-launch identity to the image,
-so no host starts. To confirm that both runtime hooks are on, run
-`aws lambda-microvms get-microvm-image-version` and look for `"run": "ENABLED"`
-and `"resume": "ENABLED"` under `microvmHooks`. Image versions incur storage
-cost even when idle; delete old ones with `delete-microvm-image-version`.
-
-<div className="note">
-
-The image's `start_host.sh` and `hooks_server.py` must match the server version.
-The server sends the host configuration in the launch payload, and only the
-current `start_host.sh` reads it. Rebuild the image whenever you upgrade the
-server; a stale image can start the host without its configuration.
-
-</div>
-
-### IAM roles
-
-Lambda MicroVMs uses two roles. See the AWS documentation for the exact trust
-policies.
-
-- **Build role** (`--build-role-arn`). Assumed while `create-microvm-image` runs.
-  It needs `s3:GetObject` on the artifact bucket and CloudWatch Logs write
-  access. It must trust `lambda.amazonaws.com` for both `sts:AssumeRole` and
-  `sts:TagSession`; the build fails without `sts:TagSession`.
-- **Execution role** (`execution_role_arn`). Assumed by the running microVM. It
-  needs CloudWatch Logs write access. Without it, the guest's output never
-  reaches CloudWatch and a host that fails to connect leaves no trace. To reach
-  Bedrock without putting a model key in the microVM, grant this role
-  `bedrock:InvokeModel` and point runners at Bedrock.
+Lambda MicroVMs boot from a prebuilt **MicroVM image**, not a registry
+reference, so build it with `aws lambda-microvms create-microvm-image` before
+the first launch; the [deploy README](https://github.com/omnigent-ai/omnigent/blob/main/deploy/aws-lambda-microvm/README.md)
+has the build steps and the IAM trust policies for both roles.
 
 ### Credentials
 
-As with Daytona and Boxlite, `env` lists variable **names**. The server reads
-their values from its own environment at launch and passes them into the
-microVM. If a listed variable is not set, the launch fails. Names that
-Omnigent sets itself (`OMNIGENT_HOST_ID`, `OMNIGENT_HOST_NAME`,
-`OMNIGENT_HOST_TOKEN`, `OMNIGENT_SERVER`, `IS_SANDBOX`) are rejected.
+As with Daytona and Boxlite, `env` lists variable **names**; the server copies
+their values at launch, and an unset name fails the launch. Names Omnigent sets
+itself (`OMNIGENT_HOST_ID`, `OMNIGENT_HOST_NAME`, `OMNIGENT_HOST_TOKEN`,
+`OMNIGENT_SERVER`, `IS_SANDBOX`) are rejected.
 
-The launch identity, the passed-through credentials, the repository fields, and
-the `host_config` all travel in one launch payload. Lambda caps that payload at
-4,096 characters, and a launch that goes over fails with an error naming the
-size. Deliver large secrets through the execution role or a secrets store.
+Lambda caps the launch payload, which carries the passed-through credentials and
+`host_config`, at 4,096 characters, so deliver large secrets through the
+execution role or a secrets store.
 
 ### Lifecycle
 
-- **Lifetime.** A microVM lives at most 8 hours, which is the default. To request
-  a shorter lifetime, set `OMNIGENT_LAMBDA_MICROVM_MAX_LIFETIME_S` on the server
-  to a value from `60` to `28800` seconds. The launch token's lifetime is the
-  microVM lifetime plus one hour.
+- **Lifetime.** A microVM lives at most 8 hours by default. To request a shorter
+  lifetime, set `OMNIGENT_LAMBDA_MICROVM_MAX_LIFETIME_S` on the server to a value
+  from `60` to `28800` seconds. The launch token lasts one hour longer than the
+  microVM.
 - **Idle suspend.** By default the idle window equals the lifetime, so Omnigent
   never suspends a microVM between turns on its own. Lambda counts only inbound
-  traffic as activity, and the host's tunnel is outbound. A shorter window can
-  therefore freeze an agent that is still working. To opt in anyway, set
+  traffic as activity and the host's tunnel is outbound, so a shorter window can
+  freeze an agent that is still working. To opt in, set
   `OMNIGENT_LAMBDA_MICROVM_MAX_IDLE_S` to a whole number of seconds from `60` up
   to the lifetime. The timer runs from launch or the last resume, whatever the
   agent is doing.
-- **Resume.** The next message to a suspended session makes the server resume
-  the same microVM explicitly. The snapshot restores the workspace _and_ the
-  running `omnigent host` process, which still holds its launch token.
-  Omnigent therefore reconnects that host instead of starting a new one.
-- **Host supervision.** The host runs under the same crash supervisor as other
-  providers, so a crash restarts it in place. A host that exited cleanly before
-  a suspend restarts on the next resume. A host that exited with the fatal
-  status (a rejected credential or a version mismatch) does not.
-- **Repositories.** A single repository workspace is cloned into the microVM
-  on first start. A request for several repositories is rejected, and so are
-  non-default [`git_clone`](#git-clone-options) settings.
-- **Snapshot uniqueness.** A resumed microVM restores its memory state, and
-  Omnigent keeps the host's launch token rather than rotating it. If you run your
-  own processes in the microVM, reseed their random-number generators and rotate
-  their in-memory secrets after a resume; see the AWS "snapshots and uniqueness"
-  guidance. A microVM cannot suspend itself. Suspension comes from the idle
-  policy or an external `suspend-microvm` call.
+- **Resume.** The next message to a suspended session resumes the same microVM.
+  The snapshot keeps the running `omnigent host` and its launch token, so
+  Omnigent reconnects that host instead of starting a new one.
+- **Host supervision.** A crashed host restarts in place. A host that exited
+  with the fatal status (a rejected credential or a version mismatch) stays down.
+- **Repositories.** A single repository workspace is cloned on first start.
+  Several repositories, or non-default [`git_clone`](#git-clone-options)
+  settings, are rejected.
+- **Snapshot uniqueness.** A resumed microVM restores its memory state, so
+  reseed random-number generators and rotate in-memory secrets in any processes
+  you run there. See the AWS snapshot guidance.
 
 ## Native harness bridge servers
 

@@ -380,8 +380,8 @@ set a flag only when the corresponding behavior is implemented and tested.
 | `foreground_exec`            | Implements `exec_foreground(sandbox_id, command) -> int`, including Ctrl-C cleanup.                                                                                   |
 | `local_port_forward`         | Implements a `forward_local_port()` context manager for local-to-sandbox callback forwarding.                                                                         |
 | `resume_stopped`             | Implements `resume(sandbox_id)` to restore compute and persistent storage under the same id. Core restarts the host separately unless `resume_preserves_host` is set. |
-| `snapshot_restore`           | Resume restores a suspend-time snapshot rather than a cold start; meaningful with `resume_stopped`.                                                                   |
 | `resume_preserves_host`      | Resume brings back the running `omnigent host` with its launch token, so core keeps the token and does not restart the host; meaningful with `resume_stopped`.        |
+| `snapshot_restore`           | Resume restores a suspend-time snapshot rather than a cold start; meaningful with `resume_stopped`.                                                                   |
 | `multi_repo`                 | Handles multiple `RepoWorkspace` entries and returns their parent workspace. Explicit opt-in, including for exec-model subclasses.                                    |
 | `classifies_runner_by_agent` | Accepts an additional `agent_name` keyword in `start_host()` and stamps the resolved built-in agent into provider metadata.                                           |
 

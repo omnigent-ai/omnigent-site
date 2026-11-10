@@ -681,6 +681,41 @@ spawned runner without forwarding the named secrets themselves, and the Pi
 terminal removes those variables before launching `pi`. Other harnesses in the
 same deployment are unaffected.
 
+### MCP servers from Claude Code, Codex, and Cursor
+
+Pi sessions that Omnigent manages (`omnigent pi` with an Omnigent provider,
+and the Pi gateway executor) also get the MCP servers you've configured for
+Claude Code (`~/.claude.json`), Codex (`config.toml`), and Cursor
+(`~/.cursor/mcp.json`). You don't need to repeat them in Pi's own
+`~/.pi/agent/mcp.json`; run `/mcp` in the session to see them listed and
+connected. Pi's built-in MCP support requires Pi 0.99 or newer.
+
+- **Your Pi config wins.** If an entry in `~/.pi/agent/mcp.json` has the same
+  name and defines a transport (`command`, `url`, or `type`), it replaces the
+  host server. If it sets only `enabled`, `exposure`, or `toolExposure`, it
+  adjusts the host server instead. For example, `{"name": {"enabled": false}}`
+  turns that server off for Pi. Pi treats `-` and `_` in server names as the
+  same, so `search-docs` and `search_docs` clash.
+- **Your agent dir is never written.** When the host servers aren't already in
+  your file, the session's managed agent dir gets a merged copy of
+  `mcp.json`, readable only by its owner (`0600`). When your file already
+  defines every host server, the session links your file directly.
+- **Order on name clashes.** When more than one harness defines the same
+  name, Claude Code wins over Codex, and Codex wins over Cursor.
+- **Skipped servers.** Omnigent leaves out (and logs) any server that Pi can't
+  load: SSE transports, names with characters other than letters, digits,
+  `-`, and `_`, Cursor substitutions other than `${env:NAME}` and
+  `${userHome}`, and commands or URLs that reference an unset variable.
+- **Variables.** Claude Code and Cursor `${VAR}` placeholders in `command`,
+  `args`, and `url` resolve when the session launches. Placeholders in `env`
+  and `headers` stay as variables that Pi reads when it starts the server, so
+  the session's copy doesn't hold those secrets. A server that uses
+  `${VAR}` in its env or headers connects only if the runner has that
+  variable, for example through `OMNIGENT_RUNNER_ENV_PASSTHROUGH=VAR`. Codex
+  values are copied literally. Codex `env_http_headers`,
+  `bearer_token_env_var`, `tool_timeout_sec`, and `enabled_tools` /
+  `disabled_tools` are carried over.
+
 ## Custom ACP agents
 
 Beyond the built-in harnesses, the generic `acp` harness drives *any* agent that

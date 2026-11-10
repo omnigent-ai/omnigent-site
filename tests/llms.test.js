@@ -8,6 +8,7 @@ import { discoverPages } from "../lib/routes";
 import { getBlogPosts } from "../lib/blog";
 import { getReleases } from "../lib/releases";
 import { productionSiteUrl } from "../lib/site";
+import { answers, answerPath } from "../lib/answers";
 
 const { llmsTxt, llmsFullTxt, pages, warnings } = await buildLlmsFiles();
 
@@ -54,7 +55,10 @@ test("blog posts and releases are in llms-full.txt, with releases summarized in 
     expect(llmsFullTxt).toContain(`\n## ${productionSiteUrl}${release.href}\n`);
   }
   expect(pages.length).toBe(
-    docRoutes.length + getBlogPosts().length + getReleases().length,
+    docRoutes.length +
+      answers.length +
+      getBlogPosts().length +
+      getReleases().length,
   );
 });
 
@@ -153,4 +157,17 @@ test("generated llms.txt links the Feature notes archive with production identit
   expect(llmsTxt).toContain(
     `- [Feature notes](${productionSiteUrl}/feature-notes): Short posts spotlighting individual Omnigent features.`,
   );
+});
+
+test("canonical answers have one full opener each", () => {
+  expect(llmsTxt).toContain(`](${productionSiteUrl}/answers)`);
+  expect(llmsFullTxt).toContain(`\n## ${productionSiteUrl}/answers\n`);
+  for (const answer of answers) {
+    const href = answerPath(answer.id);
+    expect(llmsTxt).toContain(`](${productionSiteUrl}${href})`);
+    expect(
+      llmsFullTxt.split(`\n## ${productionSiteUrl}${href}\n`),
+    ).toHaveLength(2);
+    expect(llmsFullTxt.split(answer.answer)).toHaveLength(2);
+  }
 });

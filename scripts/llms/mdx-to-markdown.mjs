@@ -12,14 +12,15 @@
 //   3. Everything else is a presentational wrapper: tags dropped, text kept.
 
 import path from "node:path";
+import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkMdx from "remark-mdx";
 import remarkGfm from "remark-gfm";
 import {
-  cliTabs,
   gateways,
+  installPageCommands,
   providerKeys,
 } from "../../lib/docs-component-data.js";
 import {
@@ -395,10 +396,8 @@ export async function convertMdx({ source, file, siteUrl }) {
     switch (name) {
       case "BlogPostHeader":
         return ""; // title/date/category are emitted from metadata instead
-      case "InstallCommandTabs":
-        return cliTabs(siteUrl)
-          .map((t) => `**${t.label}**\n\n\`\`\`sh\n${t.code}\n\`\`\``)
-          .join("\n\n");
+      case "InstallCommand":
+        return `\`\`\`sh\n${installPageCommands(siteUrl)}\n\`\`\``;
       case "ProviderKeyTable":
         return gfmTable(
           ["Provider", "Key source"],
@@ -438,10 +437,9 @@ export async function convertMdx({ source, file, siteUrl }) {
         }
         return node.children
           .map((child, i) => {
-            const body = dedent(
-              renderNode(child),
-              child.position.start.column - 1,
-            ).trim();
+            // JSX children already normalize their own indentation. Dedenting
+            // again here would strip meaningful spaces inside fenced YAML.
+            const body = renderNode(child).trim();
             return body ? `**${labels[i]}**\n\n${body}` : "";
           })
           .filter(Boolean)

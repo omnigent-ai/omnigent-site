@@ -856,15 +856,16 @@ need to write an API client to use them.
 
 <div style={{ overflowX: "auto" }}>
 
-| Tool                      | What it does                                                                                               |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `sys_agent_list`          | Find available agents and their IDs.                                                                       |
-| `sys_session_create`      | Create a child session from an existing agent ID or a local agent config, optionally with a first message. |
-| `sys_session_send`        | Send a follow-up to a child session, or start a named sub-agent declared by the parent agent.              |
-| `sys_session_list`        | Find child sessions and other sessions you can access. Pass `include_archived` to also list archived ones. |
-| `sys_session_get_info`    | Check a session's status, agent, and workspace.                                                            |
-| `sys_session_get_history` | Read a session's recent messages and tool results.                                                         |
-| `sys_session_close`       | Close a finished child session while retaining its history.                                                |
+| Tool                      | What it does                                                                                                                                                     |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sys_agent_list`          | Find available agents and their IDs.                                                                                                                             |
+| `sys_session_create`      | Create a child session from an existing agent ID or a local agent config, optionally with a first message. Set `placement` to create a top-level worker instead. |
+| `sys_session_send`        | Send a follow-up to a child session, or start a named sub-agent declared by the parent agent.                                                                    |
+| `sys_session_message`     | Send work to another session you own, such as an independent worker. See [Send work to peer sessions](#send-work-to-peer-sessions-and-independent-workers).      |
+| `sys_session_list`        | Find child sessions and other sessions you can access. Pass `include_archived` to also list archived ones.                                                       |
+| `sys_session_get_info`    | Check a session's status, agent, and workspace.                                                                                                                  |
+| `sys_session_get_history` | Read a session's recent messages and tool results.                                                                                                               |
+| `sys_session_close`       | Close a finished child session while retaining its history.                                                                                                      |
 
 </div>
 
@@ -905,7 +906,8 @@ appear in the Web UI, where you can follow their progress.
 ### Send work to peer sessions and independent workers
 
 An agent in a private session can also coordinate sessions that aren't its
-children:
+children. Use `sys_session_send` for your own child sessions and
+`sys_session_message` for other sessions you own:
 
 - **Message a peer session.** `sys_session_message` sends work to another
   session you own. The receiving session can be shared; its readers see the
@@ -929,10 +931,8 @@ For example, a manager agent might call `sys_session_create` with:
 
 These tools are refused when the sending session is shared with edit access
 (read-only shares are fine), or when the request doesn't come from the sender's
-bound runner. Orchestration is on by default. Administrators can turn it off
-with the `session_orchestration`
-[release feature](/docs/deploy/overview#release-features), or turn off only
-peer messages with `peer_session_messaging`.
+bound runner. Orchestration is on by default. Administrators can switch it off
+as described in [Release features](/docs/deploy/overview#release-features).
 
 ### Use bundled skills for multi-agent workflows
 

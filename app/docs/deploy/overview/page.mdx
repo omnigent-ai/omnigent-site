@@ -294,23 +294,22 @@ runner features are resolved by each runner:
 | `peer_session_messaging` | On      | Server and runner | `sys_session_message` can message sessions other than the sender's own child sessions. Not listed in `/v1/info`.                                                                                                        |
 | `claude_osc_status`      | On      | Host / runner     | `claude-native` sessions take their working, blocked, and idle status from Claude Code's OSC 7501 terminal reports, falling back to Claude's session status file and then pane activity. Not listed in `/v1/info`.      |
 
-To turn off session orchestration, add `-session_orchestration` to the
-server's `OMNIGENT_FEATURES` and restart every server replica. The server's
-setting wins even if a host or runner enables the feature. New peer messages
-and independent-worker creation are then refused with a "Session orchestration
-is disabled" error. Work that was already accepted can still finish, and
-session reads, ordinary messages, and child sessions keep working. The tools
-still appear in agents' tool lists while the feature is off.
-
-To stop only messages to other sessions, add `-peer_session_messaging`
-instead. On the server, peer messages are then refused with a "Messaging other
-sessions is disabled" error. On a runner, agents no longer get the
-`sys_session_message` tool. Independent workers and child sessions keep
-working either way.
-
 The OSC path needs Claude Code 2.1.295 or later. Older CLIs use the fallback.
 Setting `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` also suppresses these status
 reports.
+
+To turn off session orchestration, add `-session_orchestration` to the
+server's `OMNIGENT_FEATURES` and restart every server replica. The server's
+setting wins even if a host or runner enables the feature. New peer messages
+and independent-worker creation are then refused. Work that was already
+accepted can still finish, and session reads, ordinary messages, and child
+sessions keep working. The tools still appear in agents' tool lists while the
+feature is off.
+
+To stop only messages to other sessions, add `-peer_session_messaging`
+instead. On the server, peer messages are then refused. On a runner, agents no
+longer get the `sys_session_message` tool. Independent workers and child
+sessions keep working either way.
 
 <div className="note">
 

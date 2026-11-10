@@ -23,6 +23,8 @@ their progress and results.
   over HTTP.
 - **Automations:** Run an agent on a recurring schedule and manage those runs
   over HTTP. See [Automate recurring work](#automate-recurring-work).
+- **GitHub Actions:** Run an agent in a CI workflow, such as a PR review. See
+  [Configure Omnigent in GitHub Actions](/docs/programmatic/github-actions).
 
 Every session you start this way is an ordinary Omnigent session, so it gets
 the same Web UI, sharing, and sub-agent support as one you start by hand. For
@@ -1035,6 +1037,65 @@ templates don't cover, receive the event in your own service, then start a
 session and send it the work with `POST /v1/sessions` and
 `POST /v1/sessions/{id}/events`.
 
+## Let an agent manage other sessions
+
+You can ask an agent to delegate work to another Omnigent agent. It uses
+built-in session tools to create a child conversation, send instructions, and
+read the results. These are tools the agent calls during a session; you don't
+need to write an API client to use them.
+
+<div style={{ overflowX: "auto" }}>
+
+| Tool                      | What it does                                                                                               |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `sys_agent_list`          | Find available agents and their IDs.                                                                       |
+| `sys_session_create`      | Create a child session from an existing agent ID or a local agent config, optionally with a first message. |
+| `sys_session_send`        | Send a follow-up to a child session, or start a named sub-agent declared by the parent agent.              |
+| `sys_session_list`        | Find child sessions and other sessions you can access. Pass `include_archived` to also list archived ones. |
+| `sys_session_get_info`    | Check a session's status, agent, and workspace.                                                            |
+| `sys_session_get_history` | Read a session's recent messages and tool results.                                                         |
+| `sys_session_close`       | Close a finished child session while retaining its history.                                                |
+
+</div>
+
+For example, send this prompt in an Omnigent session:
+
+```text
+Find the native Claude Code agent and create a child session titled
+"Review tests". Ask it to review the test coverage in this repository without
+editing files. Read its findings and summarize the missing coverage for me.
+```
+
+The agent can use `sys_agent_list` to find the agent, then call
+`sys_session_create` with arguments like these:
+
+```json
+{
+  "agent_id": "<agent_id from sys_agent_list>",
+  "title": "Review tests",
+  "message": "Review the test coverage in this repository. Report missing coverage without editing files."
+}
+```
+
+The returned `conversation_id` identifies the child. To continue its work, ask:
+
+```text
+Ask the "Review tests" child session to prioritize its findings by risk.
+```
+
+By default, `sys_session_list` leaves out archived sessions. With
+`include_archived: true`, the global `sessions` view lists them too, and each
+row carries an `archived` field.
+
+`sys_session_send` can write only to the calling session's direct children.
+For agents with named sub-agents, reusing the same `agent` and `title` continues
+that child conversation; a different title starts a separate one. Child sessions
+appear in the Web UI, where you can follow their progress.
+
+Some agents bundle skills that coordinate this work for you. For example,
+[Polly](/docs/use/builtin-agents/polly#skills) provides `investigate`,
+`fanout`, and `cross-review`.
+
 ## API endpoints reference
 
 These tables summarize the main endpoints for agents, sessions, and
@@ -1100,106 +1161,3 @@ automation ID from `GET /v1/scheduled-tasks`.
 
 See the [API Reference](/reference) for request and response schemas and for
 other endpoints.
-
-## Automation features
-
-For GitHub-hosted automation, see
-[Configure Omnigent in GitHub Actions](/docs/programmatic/github-actions),
-including provider settings and a PR-review example. To run an agent on a
-schedule, see [Automate recurring work](#automate-recurring-work).
-
-### Let an agent manage other sessions
-
-You can ask an agent to delegate work to another Omnigent agent. It uses
-built-in session tools to create a child conversation, send instructions, and
-read the results. These are tools the agent calls during a session; you don't
-need to write an API client to use them.
-
-<div style={{ overflowX: "auto" }}>
-
-| Tool                      | What it does                                                                                               |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `sys_agent_list`          | Find available agents and their IDs.                                                                       |
-| `sys_session_create`      | Create a child session from an existing agent ID or a local agent config, optionally with a first message. |
-| `sys_session_send`        | Send a follow-up to a child session, or start a named sub-agent declared by the parent agent.              |
-| `sys_session_list`        | Find child sessions and other sessions you can access. Pass `include_archived` to also list archived ones. |
-| `sys_session_get_info`    | Check a session's status, agent, and workspace.                                                            |
-| `sys_session_get_history` | Read a session's recent messages and tool results.                                                         |
-| `sys_session_close`       | Close a finished child session while retaining its history.                                                |
-
-</div>
-
-For example, send this prompt in an Omnigent session:
-
-```text
-Find the native Claude Code agent and create a child session titled
-"Review tests". Ask it to review the test coverage in this repository without
-editing files. Read its findings and summarize the missing coverage for me.
-```
-
-The agent can use `sys_agent_list` to find the agent, then call
-`sys_session_create` with arguments like these:
-
-```json
-{
-  "agent_id": "<agent_id from sys_agent_list>",
-  "title": "Review tests",
-  "message": "Review the test coverage in this repository. Report missing coverage without editing files."
-}
-```
-
-The returned `conversation_id` identifies the child. To continue its work, ask:
-
-```text
-Ask the "Review tests" child session to prioritize its findings by risk.
-```
-
-By default, `sys_session_list` leaves out archived sessions. With
-`include_archived: true`, the global `sessions` view lists them too, and each
-row carries an `archived` field.
-
-`sys_session_send` can write only to the calling session's direct children.
-For agents with named sub-agents, reusing the same `agent` and `title` continues
-that child conversation; a different title starts a separate one. Child sessions
-appear in the Web UI, where you can follow their progress.
-
-### Use bundled skills for multi-agent workflows
-
-Skills are reusable instructions that guide how an agent uses its tools.
-The skills available depend on the agent you run. For example,
-[Polly](/docs/use/builtin-agents/polly) bundles these coding workflows:
-
-<div style={{ overflowX: "auto" }}>
-
-| Skill          | When to use it                                                                                      |
-| -------------- | --------------------------------------------------------------------------------------------------- |
-| `investigate`  | Delegate code exploration or debugging, then combine the findings.                                  |
-| `fanout`       | Split independent implementation tasks across workers, each in its own worktree and PR.             |
-| `cross-review` | Have a different vendor's agent review an implementation and send blocking findings back for fixes. |
-
-</div>
-
-Start Polly in your repository:
-
-```bash
-omni polly
-```
-
-Then name the skill in your prompt:
-
-```text
-Use the investigate skill to trace how this repository authenticates API
-requests. Have separate agents examine the server routes and client code,
-then summarize the flow with file references. Do not edit files.
-```
-
-For a change that is ready for review:
-
-```text
-Use cross-review to review PR #123 against its stated requirements.
-```
-
-Polly needs the worker harnesses and their credentials configured. The skills
-coordinate the work; the workers still need access to the repository and models.
-See [Prompts & Skills](/docs/build/prompts) to add your own workflows in an
-agent's `skills/` directory or the project's `.agents/skills/` directory.

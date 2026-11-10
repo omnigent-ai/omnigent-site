@@ -997,6 +997,55 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+### Trigger templates
+
+The **Jira tickets**, **Slack messages**, **GitHub issues**, **Linear issues**,
+and **PagerDuty incidents** chips under Suggestions create an automation that
+watches a service and starts one session for each matching item. The dialog
+replaces the Prompt field with a sentence-style trigger builder: pick an event,
+add conditions, and choose whether to post the session link back. These are
+polling triggers, not webhooks. The chips appear only when the server advertises
+`scheduled_task_session_modes` and has session orchestration on
+(`features.session_orchestration` in `/v1/info`).
+
+Most events fire when an item is created: Jira **Ticket created**, Slack
+**Message posted**, GitHub **Issue opened** and **Pull request opened**, Linear
+**Issue created**, and PagerDuty **Incident triggered**. Items created before
+the automation's first search window are never picked up, even if they're
+edited to match later. *Pull request opened* also takes a **Reviewer** condition
+(equals or doesn't equal). It only sees reviewers who were requested by the time
+the run polls, so use *Review requested* to catch later requests.
+
+#### Change events
+
+Two events fire when an existing item changes, not when it's created:
+
+- **GitHub — Review requested from _reviewer_.** Takes `me`, a username, or
+  `org/team`, and is required. It fires on each review request or re-request on
+  an open, non-draft pull request, however long ago the pull request was opened.
+  Each run lists the reviewer's current queue with
+  `is:pr is:open -is:draft user-review-requested:<reviewer>` (or
+  `team-review-requested:<org/team>` for a team). It then reads each pull
+  request's timeline for the latest matching `review_requested` event since the
+  last check. Worker sessions are titled
+  `GitHub <owner/repo>#<number> review <event id>`, so a re-request after a
+  review starts a new session. A queue that hits GitHub's 1,000-result search
+  cap starts no sessions; add conditions to narrow it. Link-back starts
+  **off** for this event, since a session link on every request is noisy on
+  other people's pull requests. A link-back choice you set yourself is kept
+  when you switch events.
+- **Jira — Assignee changed to _assignee_.** Takes `me`, an email, or
+  `unassigned`; leave it empty to match any assignee. Each run searches
+  `assignee CHANGED TO <assignee> AFTER "-<N>m"` and requires the ticket to
+  still be assigned that way. Worker sessions are titled
+  `Jira <ticket key> assigned <time>`. A ticket that already has a session
+  counts again only when it's assigned again later. A reassignment within about
+  a minute of the previous search can be missed, but none is repeated.
+
+Both change events record a `Watching since:` time on their first run and never
+search before it, so changes made before the automation existed don't count.
+Both also hide the Assignee condition.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

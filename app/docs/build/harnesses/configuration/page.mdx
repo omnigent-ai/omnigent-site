@@ -842,7 +842,10 @@ authored `prompt:` / `instructions:` to Pi:
   instructions.
 - **`pi-native`** loads the agent's authored instructions once each time its
   terminal launches or resumes. Any `--append-system-prompt` you pass as a
-  launch arg is added alongside them.
+  launch arg is added alongside them. In `append` mode, Omnigent also adds
+  Pi's `APPEND_SYSTEM.md`: the project's `.pi/` copy first when the project is
+  trusted, then the agent directory's copy. It skips this when you pass your
+  own `--append-system-prompt`.
 
 Two executor settings control how Pi combines those instructions with its own
 prompt sources. Both are supported with `harness: pi` and `harness: pi-native`

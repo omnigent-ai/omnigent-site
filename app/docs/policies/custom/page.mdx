@@ -17,8 +17,8 @@ options:
 1. **`cel_policy`** — write a [CEL](https://cel.dev) expression directly in your config. No
    code to deploy. Start here.
 2. **Python policy** — a full Python function registered on the server. Use this only when
-   your logic requires state, external calls, or anything else CEL's non-Turing-complete
-   expressions cannot express.
+   your logic needs external calls, I/O, or anything else CEL's non-Turing-complete
+   expressions cannot express. Simple per-session counters and flags work in CEL.
 
 ## Using `cel_policy`
 
@@ -28,8 +28,11 @@ language — no loops, no I/O, no side effects — which makes it the right defa
 custom rules.
 
 The expression receives an `event` object with `type` and `data` fields (the same
-[`PolicyEvent`](#reference-policyevent) every policy sees). Return `true` to deny the
-action.
+[`PolicyEvent`](#reference-policyevent) every policy sees). Return a map with a `result` key
+(`"DENY"`, `"ASK"`, or `"ALLOW"`) and optional `reason` and `state_updates` keys. When a
+`DENY` or `ASK` map omits `reason`, the `reason` factory parameter is used. Any other return
+value (including a bare `true` or `false`), a map without a valid `result`, or an evaluation
+error such as a missing field abstains, so the action proceeds.
 
 ### Examples
 
@@ -39,9 +42,12 @@ action.
 policies:
   no_dangerous_tool:
     type: function
-    handler: omnigent.policies.builtins.safety.cel_policy
+    handler: omnigent.policies.builtins.cel.cel_policy
     factory_params:
-      expression: "event.type == 'tool_call' && event.data.name == 'dangerous_tool'"
+      expression: >
+        event.type == 'tool_call' && event.data.name == 'dangerous_tool'
+          ? {"result": "DENY"}
+          : {"result": "ALLOW"}
       reason: "dangerous_tool is not allowed in this session."
 ```
 
@@ -51,12 +57,14 @@ policies:
 policies:
   confine_writes:
     type: function
-    handler: omnigent.policies.builtins.safety.cel_policy
+    handler: omnigent.policies.builtins.cel.cel_policy
     factory_params:
       expression: >
         event.type == 'tool_call' &&
         event.data.name in ['sys_os_write', 'sys_os_edit'] &&
         !event.data.arguments.path.startsWith('/home/user/project/')
+          ? {"result": "DENY"}
+          : {"result": "ALLOW"}
       reason: "Writes are only allowed inside /home/user/project/."
 ```
 
@@ -70,7 +78,7 @@ via `event.session_state`.
 policies:
   track_tool_calls:
     type: function
-    handler: omnigent.policies.builtins.safety.cel_policy
+    handler: omnigent.policies.builtins.cel.cel_policy
     factory_params:
       expression: >
         event.type == 'tool_call'
@@ -85,13 +93,14 @@ policies:
 State persists across the whole session. A companion policy can read
 `event.session_state.tool_count` to gate on the accumulated total.
 
-Use `cel_policy` whenever your rule can be expressed as a boolean over the event fields. You
-get the same policy lifecycle (ALLOW / ASK / DENY) without writing or deploying any code.
+Use `cel_policy` whenever your rule can be expressed as a condition over the event fields and
+session state. You get the same policy lifecycle (ALLOW / ASK / DENY) without writing or
+deploying any code.
 
 ## Python policies
 
-Use a Python policy when `cel_policy` isn't enough — for example, when your rule needs
-accumulated state across calls, a database lookup, or control flow that CEL cannot express.
+Use a Python policy when `cel_policy` isn't enough — for example, when your rule needs a
+database lookup, another external call, or control flow that CEL cannot express.
 
 ### 1. Write a policy function
 

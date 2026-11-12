@@ -883,6 +883,38 @@ The agent can use `sys_agent_list` to find the agent, then call
 }
 ```
 
+To start the new session in a specific permission mode, add `permission_mode`
+in its harness's vocabulary — for example Claude Code `auto` or Codex
+`approve-for-me`. Omit it to use the agent's default mode:
+
+```json
+{
+  "agent_id": "<agent_id from sys_agent_list>",
+  "title": "Review tests",
+  "permission_mode": "approve-for-me",
+  "message": "Review the test coverage in this repository. Report missing coverage without editing files."
+}
+```
+
+A few rules apply to `permission_mode`:
+
+- **Modes that skip approval are refused**, such as `bypassPermissions` or
+  `full-access`. The creating agent chooses the mode, and text it reads (a
+  ticket, a message) could try to steer that choice, so the new session always
+  keeps an approval prompt or the harness's own reviewer.
+- **The mode must belong to the session's harness.** An unknown mode is refused
+  with an error listing that harness's allowed modes; for a harness with no
+  modes, omit the argument.
+- **It requires `agent_id`.** It can't be combined with `config_path`, since a
+  new agent's own config sets its permission mode.
+- **The server must support it.** Servers that accept `permission_mode`
+  advertise `session_create_permission_modes: true` in `GET /v1/info`. On a
+  server without it, the tool refuses the call and creates no session, rather
+  than quietly starting one in the agent's default mode.
+
+On `POST /v1/sessions`, `permission_mode` (1–64 characters) can't be combined
+with `terminal_launch_args` or `sub_agent_name`.
+
 The returned `conversation_id` identifies the child. To continue its work, ask:
 
 ```text

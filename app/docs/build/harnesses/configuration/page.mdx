@@ -605,6 +605,36 @@ and a malformed selector — a missing value, a repeated `--profile`, or an
 invalid profile name — is reported by launch-arg validation when the session
 starts rather than during routing.
 
+### Async questions
+
+When Codex asks questions with `request_user_input_async` (in Default mode),
+it keeps working while it waits for your answer. This is the same as the queued
+questions in the Codex TUI (shift+← in the terminal). Omnigent shows a card for
+each question in Chat and **Inbox**. Each card lists the question's options and
+a free-text **Other** row. These cards don't pause the turn, so the composer
+stays usable and the working indicator stays on.
+
+- **Answering.** Answer a card and Omnigent sends your answer as an ordinary
+  user message, in the same reply format the TUI picker uses. The answer steers
+  Codex's current turn. In the transcript the answer appears as it does in the
+  TUI: `↪ Re: <question>` above the answer. Answers picked in the TUI picker
+  look the same.
+- **Closing.** A card closes in any of these cases:
+  - its question is answered, either on the card or in the TUI picker
+  - any other user message is sent, from the web or the terminal
+  - you press **Cancel**
+  - the turn ends
+
+  Cancel only dismisses the card: Codex keeps working, like skipping a question
+  in the TUI. Cancel doesn't clear the question in the terminal.
+- **Failures.** If the answer can't be sent, a notice in the chat asks you to
+  answer the question again in the terminal. An open question isn't restored
+  after the Codex forwarder reconnects.
+
+Cards need a server whose `GET /v1/info` reports
+`codex_nonblocking_decline: true`. Older servers stop Codex when you decline a
+card, so against them Omnigent shows no card and you answer in the terminal.
+
 ## Pi
 
 The native Pi harness (`pi`, alias `pi-native`) runs the Pi CLI against the

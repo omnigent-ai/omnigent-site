@@ -695,6 +695,45 @@ section is simply omitted and the summary, checks, and comments still load.
 In the **Comments** tab, each author's avatar initial gets a distinct color
 within the thread so you can follow who said what at a glance.
 
+### Comment for the agent in Changes
+
+In the **Changes** tab you can leave review comments for the session's agent
+instead of posting them to the pull request. Select a line (or a same-side
+range) on either side of a diff and start a new comment. The **Comment
+destination** toggle offers two choices:
+
+- **GitHub** — post a review comment on the GitHub pull request.
+- **Agent** — leave a comment for your agent in this session. It is saved with
+  the session and never posted to GitHub.
+
+For GitLab merge requests and Azure DevOps pull requests the GitHub destination
+is unavailable, and Agent comments are never published to those providers
+either. New comments use the destination you last picked in this browser; drafts
+you already have open keep theirs. `Cmd+Enter` (`Ctrl+Enter` on Windows/Linux)
+does the same as **Submit**. Saved comments show pencil (edit) and trash
+(delete) actions in their header.
+
+Submitting an **Agent** comment attaches it as a chip in the session composer.
+Your draft text and other attachments stay as they are. Hover a chip to preview
+the comment, click it to jump to the comment in **Changes** (its border
+highlights briefly), or click its **X** to delete the saved comment. If the
+delete fails, the chip stays. Chips are saved with the session draft, so they
+survive a reload.
+
+Attached comments reach the agent only when you send your chat message, and
+only the ones attached as chips are included. Comments left in the
+[file viewer](#inline-comments-and-addressing) are not added automatically. In
+the sent message each comment shows its file and line plus a Markdown preview of
+its text. Expand **Comment reference** to see the comment ID and the revisions
+it was written against.
+
+Each comment is pinned to the head and base revisions it was written against, so
+after a new commit it keeps its original line references. Earlier local comments
+and outdated GitHub threads are hidden by default. To toggle them, use **Show
+earlier comments** / **Hide earlier comments** in each file's overflow menu. In
+the Inbox, items for these comments link to the session (**Open session**)
+rather than to a file.
+
 ### Link or unlink a PR
 
 Use the **+** (`Link a PR`) button to attach a pull request by URL — paste a

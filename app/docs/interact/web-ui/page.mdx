@@ -315,6 +315,16 @@ connected. The selected ids ride along on session creation as
 attach or restart step. Selection is per session, not a host- or sandbox-wide
 default.
 
+Sessions the server starts for you also carry a selection. A
+[scheduled task](/docs/build/scheduled-tasks#mcp-services) can save the services
+every run starts with. A worker session that an agent starts with
+`sys_session_create` inherits the calling session's services when it doesn't
+choose any itself. The worker starts without them if any of them is no longer
+usable (for example, the account was disconnected), if one collides with a
+custom server name in the worker's agent, if that agent can't be loaded to
+check, or if the worker's host or runner doesn't support registry services. Named sub-agents keep their own
+configuration.
+
 **Remembered selections.** The composer remembers your explicit choices in this
 browser and applies them to the next new session — including choosing none. An
 unsent draft takes precedence over the remembered set. The preference applies

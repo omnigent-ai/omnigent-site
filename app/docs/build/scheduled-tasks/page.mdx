@@ -82,6 +82,9 @@ rules.
   `high`. Omit for the agent default (the spec's
   [`executor.reasoning_effort`](/docs/build/models#reasoning-effort), or the
   harness default when the spec sets none).
+- **`mcp_services`** (optional) — MCP registry services every run starts with,
+  as the deployment's service ids, e.g. `["github", "linear"]`. Omit for none.
+  See [MCP services](#mcp-services).
 
 Once created, the task fires automatically on its schedule until you delete it.
 
@@ -106,7 +109,9 @@ minutes.
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
 untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
 `model_override`, `reasoning_effort`, `workspace`, `host_id`,
-`execution_target`, and `state`.
+`execution_target`, `mcp_services`, and `state`.
+
+Passing `mcp_services` replaces the task's whole list; `[]` clears it.
 
 Passing `execution_target=managed_sandbox` switches the task to a fresh sandbox
 per run and clears any pinned `host_id` and `workspace`; don't set either field
@@ -153,6 +158,40 @@ operators should choose provider lifetime, idle, and cleanup settings that fit
 their automation frequency and resource budget; enabling managed sandboxes
 alone does not guarantee a short shutdown time.
 
+## MCP services
+
+On a server that publishes an administrator-managed MCP registry, a task can
+save the registry services its runs start with — the same services you can pick
+for an interactive session from the composer's **MCPs** control (see
+[Choose MCP services before launch](/docs/interact/web-ui#choose-mcp-services-before-launch)).
+Set `mcp_services` on `sys_scheduled_task_create` / `sys_scheduled_task_update`,
+or on `POST` / `PATCH /v1/scheduled-tasks`. Clients can check that the server
+supports it with the `scheduled_task_mcp_services` flag in `GET /v1/info`.
+
+The list is checked when the task is saved, not only when it fires:
+
+- Each id must be a registry service you are allowed to use, and you must
+  already have connected any account it needs — otherwise the save is rejected
+  with **Connect your `<service>` account before selecting it**.
+- A service whose name the task's agent already uses for a custom MCP server is
+  rejected.
+- At most 40 services can be selected; duplicates are collapsed.
+- When the task's agent changes, the saved services are re-checked against the
+  new agent.
+
+Every session the task creates starts with those services, recorded as
+`omnigent.mcp_service.<id>` session labels. A task with no services adds no
+selection to its runs.
+
+Changing `mcp_services` is treated like changing the agent, host, or workspace:
+a task that continues one session starts a new session on its next run, because
+an existing session can't pick up different services. If you pick an existing
+session for a task to continue, any services you save must match the ones that
+session already runs; otherwise the request is rejected with **The picked
+session runs different MCP services**. A task that starts each run from a copy
+of a session uses its own services in place of the copy's; with no services of
+its own, the copy keeps the source session's selection.
+
 ## How a firing runs
 
 When a task is due, Omnigent:
@@ -168,7 +207,7 @@ When a task is due, Omnigent:
    task starts hostless and binds a new sandbox in step 4. Resolved values are
    never written back to the task.
 3. Creates a session bound to the task's agent, carrying the stored
-   `model_override` and `reasoning_effort`, and grants the task's owner
+   `model_override`, `reasoning_effort`, and `mcp_services`, and grants the task's owner
    ownership of the new session so the run is visible.
 4. Launches the runner — on the resolved host, or in a freshly provisioned
    sandbox — and dispatches the prompt so the agent actually runs.

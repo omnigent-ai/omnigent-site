@@ -821,21 +821,22 @@ The server exposes these session endpoints. Replace `{id}` with a session ID.
 
 <div style={{ overflowX: "auto" }}>
 
-| Method   | Path                                      | What you can do                               |
-| -------- | ----------------------------------------- | --------------------------------------------- |
-| `POST`   | `/v1/sessions`                            | Create a session                              |
-| `GET`    | `/v1/sessions`                            | List and filter sessions                      |
-| `GET`    | `/v1/sessions/{id}`                       | Read session details and status               |
-| `PATCH`  | `/v1/sessions/{id}`                       | Rename, configure, archive, or unarchive      |
-| `DELETE` | `/v1/sessions/{id}`                       | Delete a session and its associated resources |
-| `POST`   | `/v1/sessions/{id}/fork`                  | Copy conversation history into a new session  |
-| `GET`    | `/v1/sessions/{id}/items`                 | Read conversation history                     |
-| `GET`    | `/v1/sessions/{id}/child_sessions`        | List child sessions                           |
-| `GET`    | `/v1/sessions/{id}/stream`                | Receive live events via SSE                   |
-| `POST`   | `/v1/sessions/{id}/events`                | Send a message or interrupt active work       |
-| `PUT`    | `/v1/sessions/{id}/permissions`           | Grant or update user/public access            |
-| `GET`    | `/v1/sessions/{id}/permissions`           | List permission grants                        |
-| `DELETE` | `/v1/sessions/{id}/permissions/{user_id}` | Revoke a permission grant                     |
+| Method   | Path                                      | What you can do                                                |
+| -------- | ----------------------------------------- | -------------------------------------------------------------- |
+| `POST`   | `/v1/sessions`                            | Create a session                                               |
+| `GET`    | `/v1/sessions`                            | List and filter sessions                                       |
+| `GET`    | `/v1/sessions/{id}`                       | Read session details and status                                |
+| `PATCH`  | `/v1/sessions/{id}`                       | Rename, configure, archive, or unarchive                       |
+| `DELETE` | `/v1/sessions/{id}`                       | Delete a session and its associated resources                  |
+| `POST`   | `/v1/sessions/{id}/fork`                  | Copy conversation history into a new session                   |
+| `POST`   | `/v1/sessions/{id}/managed-host`          | [Move a session onto a new sandbox](/docs/deploy/cloud-sandbox-host#move-an-existing-session-into-a-sandbox) |
+| `GET`    | `/v1/sessions/{id}/items`                 | Read conversation history                                      |
+| `GET`    | `/v1/sessions/{id}/child_sessions`        | List child sessions                                            |
+| `GET`    | `/v1/sessions/{id}/stream`                | Receive live events via SSE                                    |
+| `POST`   | `/v1/sessions/{id}/events`                | Send a message or interrupt active work                        |
+| `PUT`    | `/v1/sessions/{id}/permissions`           | Grant or update user/public access                             |
+| `GET`    | `/v1/sessions/{id}/permissions`           | List permission grants                                         |
+| `DELETE` | `/v1/sessions/{id}/permissions/{user_id}` | Revoke a permission grant                                      |
 
 </div>
 

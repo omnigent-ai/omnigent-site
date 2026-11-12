@@ -191,6 +191,42 @@ Calling the [REST API](/reference) directly, pass a single repository in
 requires a managed session (`host_type: "managed"`), and it takes at most 10
 repositories.
 
+#### Move an existing session into a sandbox
+
+A session already running on one of your connected machines can continue in a
+new sandbox. Open the composer's host menu and choose **Switch host…**. When the
+server has managed sandboxes configured, the host picker lists a new sandbox for
+each provider above your machines. It preselects one only when none of your
+other machines is online.
+
+Pick a sandbox, optionally enter a **Repository** URL and **Branch** to clone as
+the session's working directory (leave both blank for an empty sandbox), then
+choose **Switch host**. The session shows the same launch progress as a new
+sandbox session and continues there. A message you send while the sandbox
+provisions waits until it's ready. If the launch is refused, the dialog stays
+open so you can pick the old host again.
+
+The transcript moves with the session, but files don't: anything uncommitted
+stays on the old machine. The reconnect dialog's **Switch host** opens the same
+picker, so a session whose machine is offline can recover onto a new sandbox
+too.
+
+The picker offers a sandbox only when the server supports moving sessions and
+the provider accepts moved sessions. Providers that manage sandbox profiles
+don't, because they bind a profile when the session is created. Sub-agents, side
+chats, sessions that already run in a sandbox, and sessions with no host can't
+move into a new sandbox.
+
+Over the [REST API](/reference), release the session's runner with
+`PATCH /v1/sessions/{id}` and `{"runner_id": ""}`, then call
+`POST /v1/sessions/{id}/managed-host`. The body takes optional
+`sandbox_provider`, `host_id`, and `workspace` fields, with the same meaning as
+on a `host_type: "managed"` fork, and the call returns `202 Accepted` with
+`sandbox_status` reporting the launch. Servers that support the route report
+`move_to_managed_sandbox` on `GET /v1/info`, and each provider that takes moved
+sessions reports `accepts_session_move` in `sandbox_provider_capabilities`.
+Only the session's owner can move it.
+
 ### 5. Run automations in sandboxes (optional)
 
 [Scheduled tasks](/docs/build/scheduled-tasks#where-a-task-runs) can use the same

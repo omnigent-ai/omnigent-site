@@ -99,7 +99,12 @@ Once created, the task fires automatically on its schedule until you delete it.
 
 To start one session per new Jira ticket, Slack message, or GitHub issue, use a
 [trigger template](/docs/interact/web-ui#trigger-templates) in the web UI. It
-saves an ordinary hourly task whose prompt is generated for you.
+saves an ordinary hourly task whose prompt is generated for you. On servers
+that advertise `scheduled_task_trigger_headers` in `/v1/info`, that prompt
+starts with a `<!-- omnigent-trigger v1 {...} -->` line holding the form's
+settings. The server strips that line before each run's message is sent, so the
+agent never sees it. If you edit the prompt text over the API, the web UI stops
+reopening the trigger form and shows the full prompt as plain text instead.
 
 ## Recurrence rules
 

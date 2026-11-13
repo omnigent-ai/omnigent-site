@@ -98,12 +98,13 @@ curl -fsSL https://x.ai/cli/install.sh | bash
 grok login --device-auth   # xAI OAuth (device-code capable)
 ```
 
-Use the vendor login rather than an API key. The builtin `grok` row has no
-`env_passthrough` of its own, and `XAI_API_KEY` is not in the host-to-runner
-credential allowlist, so exporting it in your shell does **not** reach the
-agent. If you need the key route, pass it explicitly with
-`OMNIGENT_RUNNER_ENV_PASSTHROUGH=XAI_API_KEY`, or configure an
-[`acp:` agent](#custom-acp-agents) that declares the passthrough.
+Use the vendor login, or forward an `XAI_API_KEY` explicitly. The builtin
+`grok` row declares `XAI_API_KEY` in its `env_passthrough`, so the runner passes
+the key to the `grok` CLI while other provider variables stay filtered out.
+Getting the key from your host to the runner is a separate step: set
+`OMNIGENT_RUNNER_ENV_PASSTHROUGH=XAI_API_KEY`. Exporting the key in your host
+shell alone does **not** reach a host-managed runner. A custom
+[`acp:` agent](#custom-acp-agents) can declare its own passthrough variables.
 
 ## Devin
 

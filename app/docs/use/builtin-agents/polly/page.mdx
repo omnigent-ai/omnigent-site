@@ -95,6 +95,11 @@ immediately if the session is idle, or queued to open the next turn if one is
 already streaming — so the objective persists across turns rather than being a
 one-off instruction.
 
+To view or set the goal from the composer, send bare `/goal` or pick **/goal**
+from the slash menu. Either opens the same Goal dialog. `/goal <condition>`
+typed with text after it is still sent as a message. See
+[Open the session goal with `/goal`](/docs/interact/web-ui#open-the-session-goal-with-goal).
+
 Goal mode is available on top-level Polly sessions whose **brain harness** is
 `claude-sdk` or `codex`. This is the harness Polly's own supervisor loop runs
 on — not the sub-agent harnesses in the table above, and sub-agent sessions

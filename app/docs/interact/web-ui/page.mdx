@@ -1400,11 +1400,20 @@ builder, for example _Ticket created in project equals `ES`, and Label equals
   Capped at 2,000 characters so each session's first message (which must stay
   under 8,000) has room for the item.
 
-The rows compile to JQL or a GitHub search inside a generated prompt. Open
-**Preview prompt** to read it, or **Edit as prompt** to switch back to the
-plain Prompt field with that text. Saving creates an ordinary scheduled task:
+The rows compile to JQL or a GitHub search inside a generated prompt. The
+generated prompt is never shown or editable in the dialog; you edit the
+trigger only through the form. Saving creates an ordinary scheduled task:
 Hourly, set to continue one session (the session-mode picker is locked), with
 the rendered prompt.
+
+The saved prompt's first line is a
+`<!-- omnigent-trigger v1 {...} -->` header that holds the form's fields.
+**Edit automation** reads it to reopen the trigger form with the same scope,
+conditions, instructions, and link-back choice, and saving renders the prompt
+again from the form. The server removes the header line before the prompt
+reaches the model. The header is written only when the server advertises
+`scheduled_task_trigger_headers` in `/v1/info`; on older servers the dialog
+saves the rendered prompt without it.
 
 **Which items count.** Each run looks for items created since the previous
 run that meet every condition by the time it checks, so a label added half an
@@ -1448,9 +1457,14 @@ Keep in mind:
 - Link-back uses the manager's own tools unattended. Claude Code's auto mode
   can block an external write such as `gh issue comment` unless its permission
   settings allow that command.
-- Editing a saved trigger automation edits the rendered prompt as plain text.
-  Changing its host, model, or effort afterwards doesn't update the worker
-  settings written into the prompt.
+- Editing a saved trigger automation reopens the trigger form, and the
+  automation's detail page shows only its instructions. The header also stores
+  a fingerprint of its fields and the prompt below it. If either is changed
+  outside the form (for example, a REST update that edits the prompt text),
+  the editor ignores the header and shows the full prompt as one editable
+  field, and saving keeps that text. Trigger automations saved before the
+  header existed open with only their instructions editable; the generated
+  text stays hidden and unchanged when you save.
 - Starting a new manager session, or switching the session mode, loses the
   manager's state, so its first run may start sessions again for items created
   in the last hour.

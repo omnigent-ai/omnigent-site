@@ -46,6 +46,11 @@ defaults (for example, the host resolved at fire time or the agent's own model
 and permission mode) are persisted too, so they also need your consent.
 Declining denies the call and nothing is saved.
 
+If the request selects a [permission mode that skips approval](#modes-that-skip-approval),
+the prompt marks it as one, since unattended runs in that mode act without
+asking. For a task that continues an existing session, the prompt also notes that
+the continued session keeps its own permission mode.
+
 This check is an always-on guard, not something you configure: it is appended
 to every session's policy set — including sub-agent sessions — even when no
 [policies](/docs/policies/overview) are declared anywhere, and it cannot be
@@ -82,8 +87,58 @@ rules.
   `high`. Omit for the agent default (the spec's
   [`executor.reasoning_effort`](/docs/build/models#reasoning-effort), or the
   harness default when the spec sets none).
+- **`permission_mode`** — the permission mode for native coding agents, in the
+  selected harness's vocabulary. Pass `null` for the agent default. See
+  [Permission modes](#permission-modes).
 
 Once created, the task fires automatically on its schedule until you delete it.
+
+## Permission modes
+
+`permission_mode` uses the selected native harness's vocabulary:
+
+| Harness | Modes |
+| --- | --- |
+| Claude Code | Claude Code's permission modes, for example `acceptEdits` |
+| Codex | `default`, `ask-for-approval`, `approve-for-me`, `full-access`, `read-only`, `bypass` |
+| Cursor | `default`, `auto-review`, `plan`, `ask`, `yolo` |
+| Antigravity | `default`, `skip` |
+| Devin | `normal`, `accept-edits`, `smart`, `dangerous` |
+
+Without a `permission_mode`, the task uses the agent default. For Codex that is
+Codex's own default, which asks before escalations and Omnigent tool calls.
+Runs are unattended, so a mode that prompts can leave a run waiting for approval.
+Pick a mode that runs on its own only when its permission level suits the task.
+
+### Modes that skip approval
+
+These modes decide every tool call without asking anyone:
+
+- Claude Code: `bypassPermissions`, `dontAsk`
+- Codex: `full-access`, `bypass`
+- Cursor: `yolo`
+- Antigravity: `skip`
+- Devin: `dangerous`
+
+Use one only when the prompt and everything the run reads are trusted. A run
+uses one of these modes only when the task selects it:
+
+- **Inherited from the agent spec.** If `permission_mode` is omitted and the
+  agent's spec sets a mode that skips approval, saving the task fails. Each
+  firing checks again, because the agent's default can change after the task is
+  saved: the run fails with error code `permission_mode_not_allowed` before it
+  creates or prompts a session.
+- **Continued sessions.** A task that continues an existing session
+  (`session_mode: continue`) runs in that session's own mode. The firing fails
+  the same way if that mode, or the agent spec's mode, skips approval and the
+  task doesn't select a mode that skips approval itself. Saving likewise refuses
+  a task that would continue such a session without selecting one.
+
+The web UI offers these modes only when the server advertises
+`scheduled_task_approval_skipping_modes` in `GET /v1/info`. On a server without
+it, the picker hides them, and editing a task that saved one switches it to the
+harness default. Older servers may refuse these modes when saving or firing, so
+move such tasks to another mode before rolling back to an older server.
 
 ## Recurrence rules
 
@@ -105,8 +160,8 @@ minutes.
 
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
 untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
-`model_override`, `reasoning_effort`, `workspace`, `host_id`,
-`execution_target`, and `state`.
+`model_override`, `reasoning_effort`, `permission_mode`, `workspace`,
+`host_id`, `execution_target`, and `state`.
 
 Passing `execution_target=managed_sandbox` switches the task to a fresh sandbox
 per run and clears any pinned `host_id` and `workspace`; don't set either field

@@ -26,12 +26,13 @@ sandbox:
   server_url: https://your-server.example.com
 ```
 
-| Field         | Required | Description                                                                                                           |
-| ------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
-| `provider`    | Yes      | Provider id: `databricks`, `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `openshell`, `boxlite`, or `microsandbox`. |
-| `server_url`  | Yes      | Omnigent server URL reachable from the sandbox.                                                                       |
-| `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).                  |
-| `git_clone`   | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).                             |
+| Field                | Required | Description                                                                                                           |
+| -------------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
+| `provider`           | Yes      | Provider id: `databricks`, `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `openshell`, `boxlite`, or `microsandbox`. |
+| `server_url`         | Yes      | Omnigent server URL reachable from the sandbox.                                                                       |
+| `host_config`        | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).                  |
+| `git_clone`          | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).                             |
+| `default_profile_id` | No       | Profile used when a new session names none. See [Default sandbox profile](#default-sandbox-profile).                  |
 
 Provider-specific blocks are optional. Omit one to use that provider's defaults.
 
@@ -125,6 +126,52 @@ tools that expect broad history. `blob:none` is opt-in because it moves work to
 later reads: a first historical `git show` or `git blame` can fetch more data
 and take longer. Sparse checkout, submodule recursion, and LFS behavior are
 unchanged.
+
+## Default sandbox profile
+
+Some providers manage their own sandbox profiles: the provider decides which
+configurations and revisions exist and who may use them. When such a provider
+is enabled, every new managed session must pick a profile. Callers that don't
+pick one are rejected, such as older API clients and scheduled tasks that
+launch fresh sandboxes. To give these callers a profile automatically, set
+`default_profile_id`:
+
+```yaml
+sandbox:
+  provider: customer
+  server_url: https://your-server.example.com
+  default_profile_id: standard-build
+```
+
+With a `sandbox.providers` list, set `default_profile_id` inside the entry
+for the provider that owns the profile. A top-level `sandbox.default_profile_id`
+next to a `providers` list fails server startup. Embedding deployments set
+`default_profile_id` on `ManagedSandboxConfig`.
+
+- The value must be a profile id: lowercase letters, digits, `_`, or `-`, at
+  most 64 characters, starting with a letter or digit. Anything else fails
+  server startup.
+- The provider must manage profiles. Setting the key for any other provider
+  fails server startup.
+- The default is authorized the same way as a profile the user picks. A user who
+  cannot use it is rejected. The accepted revision is saved on the session, so
+  waking or replacing the sandbox later keeps that revision instead of moving to
+  a newer one.
+- It applies only to new sessions. Existing sessions without a profile keep
+  their current behavior.
+- Leave it unset if every caller must choose a profile.
+
+`GET /v1/sandbox-profiles` returns the configured defaults in
+`default_profile_ids`, a map from provider to profile id. When nothing else is
+chosen, the web composer and fork dialog preselect this profile, including when
+it isn't on the first page of results. An explicit choice always wins. A fork to
+the same provider still starts on its source session's profile.
+
+If a provider stops managing profiles, its sessions keep working as sessions
+without a profile. The saved profile is kept, so if the provider starts
+managing profiles again, a session still on the same host gets it back. A
+session that moved to a new host in the meantime has no profile on that host,
+and it can't wake until it is detached from that host.
 
 ## Databricks
 

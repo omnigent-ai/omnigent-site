@@ -144,7 +144,7 @@ Common options:
 
 These examples use an agent YAML or directory through `omni run`; native
 terminal harnesses have their own CLI behavior. To run tools on another
-machine or in a cloud sandbox, use the REST API's host options.
+machine or in a cloud sandbox, use the Python SDK's or REST API's host options.
 
   </div>
   <div>
@@ -178,6 +178,31 @@ asyncio.run(main())
 
 Use the printed session ID to send a message in the next step, or open the
 URL to view the session.
+
+To run the session on a configured
+[cloud sandbox host](/docs/deploy/cloud-sandbox-host) instead of a connected
+runner, pass `host_type="managed"`. The optional `workspace` is then a
+repository clone URL rather than a host path, and `sandbox_provider` selects a
+specific provider such as `modal` (the server validates it; it is only
+accepted with `host_type="managed"`):
+
+```python
+session = await client.sessions.create_from_agent_id(
+    agent.id,
+    title="Code review",
+    host_type="managed",
+    workspace="https://github.com/example/repo",
+    sandbox_provider="modal",  # optional
+)
+```
+
+The server provisions the sandbox and connects its runner asynchronously, so
+don't call `bind_runner` for a managed session. While the launch is in
+progress or after it fails, `session.sandbox_status` holds a dict with the
+launch `stage` and, on failure, an `error` message, for example
+`{"stage": "failed", "error": "Launch failed"}`. It is `None` for sessions
+without a managed launch and once the launch succeeds. Re-read the session
+with `client.sessions.get(session.id)` to follow progress.
 
   </div>
   <div>
@@ -527,7 +552,23 @@ Add `"side_chat": true` (default `false`) to mark the fork as a
 [side chat](/docs/interact/web-ui#side-chats): the fork is labeled
 `omnigent.side_chat` and omitted from `GET /v1/sessions`, so it stays out of
 the web UI's sidebar and appears only as a Workspace-rail tab. It otherwise
-behaves like any other fork, with its own runner and transcript.
+behaves like any other fork, with its own runner and transcript. Only the owner of the source session can create a side chat; anyone else gets
+`403 Forbidden`. The new session's `side_chat_parent_id` is set to the source
+session's ID.
+
+List a session's side chats, 20 at most per page and ordered by ID:
+
+```bash
+curl --fail-with-body "http://127.0.0.1:6767/v1/sessions/$SESSION_ID/side_chats?limit=20" | jq
+```
+
+Each entry has `id`, `object` (`"side_chat"`), `created_at`, and `title`.
+`limit` accepts 1–20 (default 20); pass the previous page's `last_id` as
+`after` to get the next page while `has_more` is `true`. Only the owner of the
+session's root gets results; any other caller with read access, admins
+included, gets an empty list. `GET /v1/sessions/{id}` also returns
+`side_chat_allowed`, which is `true` when the caller may start side chats in
+that session.
 
       </td>
     </tr>
@@ -1017,6 +1058,9 @@ The schedule uses this recurrence rule with `timezone: "Asia/Singapore"`:
 FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0
 ```
 
+The chosen host must be online when the task fires, and the agent needs
+credentials and tool permissions suitable for unattended work.
+
 You can later ask, "Move Weekday code review to 10am," or "Delete Weekday code
 review." The agent uses the list and update or delete tools to make the change.
 
@@ -1025,6 +1069,10 @@ before anything is saved, even when no policies are configured — review the
 agent, prompt, host, and permission settings in the prompt before accepting.
 Listing and deleting tasks do not ask. See
 [Approval for create and update](/docs/build/scheduled-tasks#approval-for-create-and-update).
+
+See [Scheduled Tasks](/docs/build/scheduled-tasks) for the full configuration.
+Scripts can also manage tasks through `/v1/scheduled-tasks`; machine
+client-credentials tokens do not grant access to that endpoint.
 
 ### Start a session for each new ticket, message, or issue
 
@@ -1051,6 +1099,7 @@ need to write an API client to use them.
 | `sys_agent_list`          | Find available agents and their IDs.                                                                       |
 | `sys_session_create`      | Create a child session from an existing agent ID or a local agent config, optionally with a first message. |
 | `sys_session_send`        | Send a follow-up to a child session, or start a named sub-agent declared by the parent agent.              |
+| `sys_session_message`     | Send a message to another session owned by the same user that is not a child of this one.                  |
 | `sys_session_list`        | Find child sessions and other sessions you can access. Pass `include_archived` to also list archived ones. |
 | `sys_session_get_info`    | Check a session's status, agent, and workspace.                                                            |
 | `sys_session_get_history` | Read a session's recent messages and tool results.                                                         |
@@ -1083,18 +1132,104 @@ The returned `conversation_id` identifies the child. To continue its work, ask:
 Ask the "Review tests" child session to prioritize its findings by risk.
 ```
 
-By default, `sys_session_list` leaves out archived sessions. With
-`include_archived: true`, the global `sessions` view lists them too, and each
-row carries an `archived` field.
-
 `sys_session_send` can write only to the calling session's direct children.
 For agents with named sub-agents, reusing the same `agent` and `title` continues
 that child conversation; a different title starts a separate one. Child sessions
 appear in the Web UI, where you can follow their progress.
 
-Some agents bundle skills that coordinate this work for you. For example,
-[Polly](/docs/use/builtin-agents/polly#skills) provides `investigate`,
-`fanout`, and `cross-review`.
+By default, `sys_session_list` leaves out archived sessions. With
+`include_archived: true`, the global `sessions` view lists them too, and each
+row carries an `archived` field.
+
+To reach a session that isn't a child, the agent uses `sys_session_message`
+with a message of 1–8000 characters. Admins can turn this off with
+[**Message other sessions**](/docs/collaborate/auth#agent-messaging) under
+**Settings > Sharing**. Deployments can turn it off with the
+`peer_session_messaging` [release feature](/docs/deploy/overview#release-features).
+`sys_session_send` to child sessions keeps working either way.
+
+## Let an agent organize sessions and projects
+
+An agent can tidy your sidebar for you: find sessions, file them into
+[projects](/docs/interact/web-ui#projects), rename, pin, or archive them, and
+rename projects. These tools act only on sessions you own, and they make the
+same changes as the sidebar's row and project menus. An open sidebar updates
+live.
+
+<div style={{ overflowX: "auto" }}>
+
+| Tool                 | What it does                                                                                                                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sys_project_list`   | List your projects and your sessions with each one's project. Filter by `project` (`""` for unfiled), `search` (title or transcript text, case-insensitive), `pinned`, or `include_archived`.                       |
+| `sys_session_update` | Update one session; pass only the fields to change. `project` files it by name (a missing project is created; `""` unfiles it), `title` renames it, `pinned` pins or unpins it, `archived` archives or restores it. |
+| `sys_project_update` | Rename a project (`project` is its current name, `name` the new one) or set its emoji `icon` (`""` removes it). Its sessions stay in it.                                                                            |
+
+</div>
+
+For example:
+
+```text
+Find my sessions that mention "billing migration", file them into a project
+called "Billing", pin the newest one, and give the project a 💳 icon.
+```
+
+A few things to know:
+
+- Filing, renaming, and pinning only change how a session is listed, so running
+  sessions, including the calling one, keep working.
+- Archiving a session stops its runner and unpins it, ending any running turn.
+  An agent cannot archive its own session or a session it runs under.
+- Sub-agent sessions follow their parent, and sessions in a family share their
+  representative's project; the tool names the session to update instead.
+- Agents cannot delete projects. When renaming a project, any session that could
+  not be moved is reported back in `sessions_not_moved`.
+- A session shared with you but owned by someone else is refused. If the
+  calling session is shared with edit access, it cannot create, rename, or file
+  into projects, or rename, pin, or archive sessions; listing still works, and
+  a read-only share leaves every tool available.
+- Set `tool_groups.projects: false` in the agent configuration to remove all
+  three tools.
+
+## Use bundled skills for multi-agent workflows
+
+Skills are reusable instructions that guide how an agent uses its tools.
+The skills available depend on the agent you run. For example,
+[Polly](/docs/use/builtin-agents/polly) bundles these coding workflows:
+
+<div style={{ overflowX: "auto" }}>
+
+| Skill          | When to use it                                                                                      |
+| -------------- | --------------------------------------------------------------------------------------------------- |
+| `investigate`  | Delegate code exploration or debugging, then combine the findings.                                  |
+| `fanout`       | Split independent implementation tasks across workers, each in its own worktree and PR.             |
+| `cross-review` | Have a different vendor's agent review an implementation and send blocking findings back for fixes. |
+
+</div>
+
+Start Polly in your repository:
+
+```bash
+omni polly
+```
+
+Then name the skill in your prompt:
+
+```text
+Use the investigate skill to trace how this repository authenticates API
+requests. Have separate agents examine the server routes and client code,
+then summarize the flow with file references. Do not edit files.
+```
+
+For a change that is ready for review:
+
+```text
+Use cross-review to review PR #123 against its stated requirements.
+```
+
+Polly needs the worker harnesses and their credentials configured. The skills
+coordinate the work; the workers still need access to the repository and models.
+See [Prompts & Skills](/docs/build/prompts) to add your own workflows in an
+agent's `skills/` directory or the project's `.agents/skills/` directory.
 
 ## API endpoints reference
 

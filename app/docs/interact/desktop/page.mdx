@@ -38,7 +38,7 @@ showing how many sessions are waiting, and multiple independent windows.
 
 - **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing.
 - **Dock badge.** See at a glance how many sessions need your attention, without switching to the app.
-- **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
+- **Multiple windows.** Open additional windows with `⌘⇧N` (`Ctrl+Shift+N`), **File → New Window**, to watch multiple sessions or servers side by side.
 - **Recent-session switcher.** Hold `Ctrl` and press `Tab` to flip between your five most recent sessions — see [Keyboard shortcuts](#keyboard-shortcuts).
 - **One-click host reconnect.** When a session's host is this machine and it has gone offline, the app restarts the host for you instead of asking you to run a command in a terminal.
 - **Connect a host over SSH.** Turn a machine you reach over SSH into a host without opening a terminal on it — see [Connect a host over SSH](#connect-a-host-over-ssh).
@@ -121,6 +121,34 @@ desktop app to be running with the session open. If no desktop window is subscri
 the action fails cleanly with `browser action timed out — is the session open in the
 Omnigent desktop app?` rather than hanging.
 
+### Preview local dev servers
+
+Sessions running on this desktop machine can open HTTP(S) `localhost`,
+`127.0.0.1`, `[::1]`, and `*.localhost` subdomains such as
+`app.dev.localhost` in the embedded browser — through the address bar, chat
+and file links, and the agent's browser tools. Start your app locally, open
+**+ → Browser**, and enter its URL. Redirects and links that would open a new
+window stay in the same pane.
+
+`localhost` and its subdomains always name the desktop machine, but the page
+still receives the subdomain in its `Host` header, so dev servers and reverse
+proxies that route on the hostname work as expected. Sessions on remote or
+unknown hosts can only open public pages; use a public preview URL or your
+regular browser for those.
+
+A few limits apply to `*.localhost`:
+
+- The request is sent only on a direct route and must connect to a loopback
+  address. Chromium already sends these names around ordinary system and PAC
+  proxies, but a proxy rule that removes that bypass (`<-loopback>`) leaves the
+  page blank.
+- Trailing-dot or empty-label forms such as `app.localhost.` are blocked, as
+  are DNS aliases that resolve to loopback.
+
+Other loopback addresses, private networks, link-local and metadata addresses,
+and `0.0.0.0` remain blocked. Normal TLS, CORS, authentication, and
+[local network permission](#local-network-permission) rules still apply.
+
 ### Open chat links in the in-app browser
 
 Web links in chat open in your default browser unless you change that. To open
@@ -189,9 +217,20 @@ doesn't rewrite those headers.
 ## Keyboard shortcuts
 
 The desktop app supports every
-[web UI shortcut](/docs/interact/web-ui#keyboard-shortcuts) and adds two of
-its own. Both appear in the in-app shortcuts overlay (`⌘/` / `Ctrl+/`) only
-when you're running the desktop app.
+[web UI shortcut](/docs/interact/web-ui#keyboard-shortcuts) and adds some of
+its own. The recent-session switcher and the new-browser-tab shortcut appear in
+the in-app shortcuts overlay (`⌘/` / `Ctrl+/`) only when you're running the
+desktop app. Close and Close Window are in the **File** menu.
+
+### Go back and forward
+
+`⌘[` / `⌘]` (`Ctrl+[` / `Ctrl+]` on Windows/Linux) and the **Go** menu's **Back**
+and **Forward** items step back and forward through the pages you've visited in
+the app. Trackpad swipes (macOS) and the mouse back and forward buttons do the
+same. The sidebar's [**Back** and **Forward** buttons](/docs/interact/web-ui#back-and-forward)
+also work.
+
+Back stops at the first page you opened in the app.
 
 ### Switch recent sessions
 
@@ -213,17 +252,60 @@ the switcher instead of letting the page handle it.
 
 ### Open a new browser tab
 
-Press `⌘⌥B` (`Ctrl+Alt+B` on Windows/Linux) to open a new **Browser** soft tab
-in the Workspace rail — the same action as **+ → Browser** in the rail's menu,
-which shows the keycaps next to the Browser row. If the rail is collapsed or
-hidden behind the Terminal panel, it's revealed with the new tab selected. The
-shortcut yields while you're typing in the code editor or a terminal, and is
-only bound where the embedded browser is available.
+Press `⌘T` (`Ctrl+T` on Windows/Linux) — the menu's **New Browser Tab** — to
+open a new **Browser** soft tab in the Workspace rail. It's the same action as
+**+ → Browser** in the rail's menu, which shows the keycaps next to the Browser
+row. If the rail is collapsed or hidden behind the Terminal panel, it's
+revealed with the new tab selected. The shortcut is only available where the
+embedded browser is. Older desktop builds without the **New Browser Tab** menu
+command have no browser-tab shortcut; use **+ → Browser** instead.
 
-`Cmd+N` still opens a new window; starting a new session is `⌘⌥N`
-(`Ctrl+Alt+N`). This differs from the browser web UI, which uses `⌘⇧O`
+Starting a new session is `⌘N` (`Ctrl+N`). This differs from the browser web UI, which uses `⌘⇧O`
 (`Ctrl+Shift+O`); the shortcuts overlay and the sidebar's **New session**
 button show the chord for whichever app you're in.
+
+### Close a tab
+
+`⌘W` (`Ctrl+W` on Windows/Linux), the **File → Close** menu item, closes the
+selected tab in the Workspace rail. The shortcut closes a tab only when focus is
+in the Workspace rail or in the embedded Browser page. With focus elsewhere in the
+conversation, `⌘W` leaves the conversation.
+
+- **File tabs** ask you to confirm before discarding unsaved edits.
+- **Side-chat tabs** close only that side chat. The parent and sibling chats keep
+  running.
+
+If the rail has focus and no closable tab is selected, `⌘W` hides the rail when
+the layout supports hiding. Otherwise it leaves the conversation.
+
+On the new-session page, `⌘W` asks for confirmation and then closes the window.
+On other pages outside a conversation, it goes to the new-session page, after the
+unsaved-file check.
+
+`⌘⇧W` (`Ctrl+Shift+W`), **File → Close Window**, closes the window.
+
+## Voice dictation
+
+The desktop app's built-in browser engine can't transcribe speech itself, so
+the composer's microphone button works differently than it does in a browser:
+
+- **Server dictation.** If the connected server has dictation available (the
+  `dictation` extra plus its models installed, reported as
+  `dictation_available` by `GET /v1/info`), the mic button and `⌘⌥V`
+  (`Ctrl+Alt+V`) stream your audio to the server for transcription. As in the
+  browser, press `Enter` to keep the dictated text or `Esc` to discard it.
+- **macOS Dictation.** If the server has no dictation, on a Mac the mic button
+  starts macOS Dictation (the same action as **Edit > Start Dictation…**) with
+  the message box focused, and the spoken text is typed into it. macOS shows
+  its own listening indicator; stop with the macOS Dictation controls rather
+  than `Enter`/`Esc`. If Dictation can't start, the button shows **Voice input
+  isn't available on this device.**
+- **Windows and Linux.** If the server has no dictation, there's no mic button,
+  and `Ctrl+Alt+V` does nothing.
+
+The same rule applies to the in-session, new-session, and side-chat composers.
+The side-chat composer has the mic button but not the `⌘⌥V` shortcut, which
+belongs to the main composer.
 
 ## Prerequisites
 
@@ -366,6 +448,15 @@ Each window connects to one server. To work with multiple servers at the same ti
 2. Enter the URL of the second server
 
 Notifications and badge counts are combined across all connected servers.
+
+To switch the current window to another server, click your profile at the
+bottom of the sidebar. Below **Settings**, the profile menu lists servers
+**Provided by your organization** (see
+[Preset server URLs via MDM](#preset-server-urls-via-mdm-macos)) and your
+**Recents**, with a check next to the current one. Pick a server to switch the
+window to it, or choose **Connect to new server…** to return to the setup page.
+When the app manages your sign-in to the current server, the menu also offers
+**Sign out of `<host>`**.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 

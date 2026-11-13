@@ -265,6 +265,11 @@ This lets Omnigent register the launch token **before** the new host connects.
 Do not block `start_host()` for the host's entire lifetime; after it returns,
 the server waits for online registration.
 
+Some platforms assign the real sandbox id only when compute is created. In that
+case, set `self.started_sandbox_id` to the provider's id inside `start_host()`.
+The server then stores that id in place of the reserved one, so later
+`resume()` and `terminate()` calls receive the id the provider knows.
+
 See the built-in
 [Kubernetes launcher](https://github.com/omnigent-ai/omnigent/blob/main/omnigent/onboarding/sandboxes/kubernetes.py)
 and [Gensee launcher](https://github.com/omnigent-ai/omnigent/blob/main/omnigent/onboarding/sandboxes/gensee.py)
@@ -309,7 +314,8 @@ string so it need not load during entry-point discovery.
 host launch-token lifetime in seconds. If omitted, it currently defaults to
 25 hours. Choose a positive value appropriate for your sandbox lifetime: this
 is an authentication lifetime, not a provider-side timeout or an instruction to
-delete compute.
+delete compute. Server operators can override it with
+[`sandbox.token_ttl_s`](/docs/reference/configuration/cloud-sandbox#host-token-expiry).
 
 ## 5. Install and configure
 
@@ -365,19 +371,20 @@ for the optional stale-sandbox reaper.
 Return an explicit `SandboxCapabilities` object. Its fields default to `False`;
 set a flag only when the corresponding behavior is implemented and tested.
 
-| Capability                   | Contract                                                                                                                           |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `managed_launch`             | Implements the server-managed `prepare` / `provision` / `start_host` flow.                                                         |
-| `programmatic_terminate`     | Implements idempotent `terminate()`. Needed for reliable automatic cleanup.                                                        |
-| `cli_bootstrap`              | Supports the separate `omnigent sandbox create` / `connect` flows described below.                                                 |
-| `file_copy`                  | Implements `put(sandbox_id, local_path, remote_path)`.                                                                             |
-| `streaming_exec`             | Implements `stream_exec(..., pty=False)` returning a `RemoteProcess`.                                                              |
-| `foreground_exec`            | Implements `exec_foreground(sandbox_id, command) -> int`, including Ctrl-C cleanup.                                                |
-| `local_port_forward`         | Implements a `forward_local_port()` context manager for local-to-sandbox callback forwarding.                                      |
-| `resume_stopped`             | Implements `resume(sandbox_id)` to restore compute and persistent storage under the same id. Core restarts the host separately.    |
-| `snapshot_restore`           | Resume restores a suspend-time snapshot rather than a cold start; meaningful with `resume_stopped`.                                |
-| `multi_repo`                 | Handles multiple `RepoWorkspace` entries and returns their parent workspace. Explicit opt-in, including for exec-model subclasses. |
-| `classifies_runner_by_agent` | Accepts an additional `agent_name` keyword in `start_host()` and stamps the resolved built-in agent into provider metadata.        |
+| Capability                   | Contract                                                                                                                                                              |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `managed_launch`             | Implements the server-managed `prepare` / `provision` / `start_host` flow.                                                                                            |
+| `programmatic_terminate`     | Implements idempotent `terminate()`. Needed for reliable automatic cleanup.                                                                                           |
+| `cli_bootstrap`              | Supports the separate `omnigent sandbox create` / `connect` flows described below.                                                                                    |
+| `file_copy`                  | Implements `put(sandbox_id, local_path, remote_path)`.                                                                                                                |
+| `streaming_exec`             | Implements `stream_exec(..., pty=False)` returning a `RemoteProcess`.                                                                                                 |
+| `foreground_exec`            | Implements `exec_foreground(sandbox_id, command) -> int`, including Ctrl-C cleanup.                                                                                   |
+| `local_port_forward`         | Implements a `forward_local_port()` context manager for local-to-sandbox callback forwarding.                                                                         |
+| `resume_stopped`             | Implements `resume(sandbox_id)` to restore compute and persistent storage under the same id. Core restarts the host separately unless `resume_preserves_host` is set. |
+| `resume_preserves_host`      | Resume brings back the running `omnigent host` with its launch token, so core keeps the token and does not restart the host; meaningful with `resume_stopped`.        |
+| `snapshot_restore`           | Resume restores a suspend-time snapshot rather than a cold start; meaningful with `resume_stopped`.                                                                   |
+| `multi_repo`                 | Handles multiple `RepoWorkspace` entries and returns their parent workspace. Explicit opt-in, including for exec-model subclasses.                                    |
+| `classifies_runner_by_agent` | Accepts an additional `agent_name` keyword in `start_host()` and stamps the resolved built-in agent into provider metadata.                                           |
 
 The server currently treats configured community providers as managed-launch
 options. `managed_launch=False` is **not** a way to hide a configured plugin
@@ -389,7 +396,11 @@ To offer users a choice of provider-authorized configurations, set
 [Sandbox Profiles](/docs/deploy/sandbox-profiles).
 
 If your platform needs expiry refreshes, implement a cheap, idempotent
-`keep_alive()`; the server calls it periodically for live managed runners.
+`keep_alive()`. The server calls it periodically while the sandbox's runner
+reports agent work, and for the runner idle timeout after that. Viewing a session
+does not count as work. Once the calls stop, your platform's own idle or expiry
+behavior takes over (see
+[how long a sandbox stays warm](/docs/deploy/cloud-sandbox-host#how-long-a-sandbox-stays-warm)).
 `is_running()` may return `True`, `False`, or `None` when status is unknown.
 
 The reaper can reuse one launcher per workspace and provider. Override

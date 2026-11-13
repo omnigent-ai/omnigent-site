@@ -244,14 +244,17 @@ built-in accounts and OIDC modes:
 - **Settings > Members** — the user roster (username, role, last login).
 - **Settings > Policies** — server-wide [contextual policies](/docs/policies/overview).
 - **Settings > Sharing** — the server-wide session-sharing policy (see
-  [Session sharing](#session-sharing) below).
+  [Session sharing](#session-sharing) below) and the
+  [agent messaging](#agent-messaging) switch.
 
 In built-in accounts mode, **Members** also carries the management actions
 (`Invite member`, per-user `Reset` password, and `Remove`); under OIDC it is a
 read-only roster, since identities are owned by your IdP and provisioned on
 first sign-in. Separately, every signed-in account (built-in or OIDC) gets a
 **Settings > Account** section showing who they're signed in as, with a sign-out
-control and, in built-in accounts mode only, `Change password`. Both `Reset`
+control and, in built-in accounts mode only, `Change password`. The
+[profile menu](/docs/interact/web-ui#profile-menu-and-settings) at the bottom of
+the sidebar also has a **Sign out** item. Both `Reset`
 and `Change password` sign the account out everywhere else — see
 [Changing or resetting a password](#changing-or-resetting-a-password).
 
@@ -414,8 +417,10 @@ OMNIGENT_PUBLIC_SHARING=off omni server start
 Public access is enabled unless the value is explicitly falsy
 (`0` / `false` / `no` / `off`); unset or unrecognized fails open to enabled. It
 is also editable at runtime from **Settings > Sharing**. When disabled, the
-Share dialog hides its **Public access** toggle and the server rejects new
-public grants; sessions already shared publicly stay public until revoked.
+server rejects new public grants and the Share dialog hides its **General
+access** selector. Sessions already shared publicly stay public until revoked:
+on those sessions the selector stays visible, but only **No access** can be
+chosen.
 
 #### Default visibility for new sessions
 
@@ -445,7 +450,9 @@ public grant from the Share dialog at any time, and existing sessions are never
 changed. A few sessions are always left private:
 
 - Sub-agent sessions, which follow their parent's grants instead.
-- Side chats, which are private scratch forks of the caller's own view.
+- Side chats, which are private forks of the caller's own view. Only
+  the owner of a session can start side chats in it; editors and viewers of a
+  shared session can't.
 - Single-user (no-auth) servers, where there is no sharing at all.
 
 The default never grants more than an owner could grant by hand. It is
@@ -463,6 +470,39 @@ itself (for example a managed service that injects its own policy),
 here.
 
 </div>
+
+#### Agent messaging
+
+The **Agent messaging** group in **Settings > Sharing** has a **Message other
+sessions** switch. It controls whether agents can use `sys_session_message` to
+send messages to other sessions owned by the same user. It is on by default and
+separate from the sharing mode, so turning sharing `off` does not change it.
+
+Changes apply immediately, with no restart, and persist across restarts in
+`<data_dir>/peer_session_messaging` (`on` / `off`). Admins can also set it with
+`peer_session_messaging` (a boolean) on `PUT /v1/sharing`. `GET /v1/sharing`
+reports the setting as `peer_session_messaging_enabled` and whether you can
+change it as `peer_session_messaging_editable`. When the switch is off:
+
+- New messages to other sessions are refused.
+- Messages to child sessions keep working, and work already accepted can
+  finish.
+- Creating sessions is unaffected. It has its own `session_orchestration`
+  gate.
+
+If the stored setting can't be read or has an unrecognized value, messages are
+refused rather than allowed.
+
+A deployment can also turn this off with the `peer_session_messaging`
+[release feature](/docs/deploy/overview#release-features), which takes
+precedence over the switch. If `-peer_session_messaging` or
+`-session_orchestration` is set in the server's `OMNIGENT_FEATURES`, the
+switch stays off and you can't change it. The page shows "Disabled by this
+deployment", and a `PUT` returns 403. If `-peer_session_messaging` is set
+where a host runs, sessions on that host don't get the `sys_session_message`
+tool, and calls to it are refused there. The server and the host each
+enforce their own setting, so neither can re-enable messaging that the other
+has turned off. Restart the server or host after changing its environment.
 
 ### Domain allowlist
 

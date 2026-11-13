@@ -20,7 +20,7 @@ native window? Add the [desktop app](#install-the-desktop-app).
 
 - **Python 3.12+**
 - **Node.js 22 LTS** and npm
-- **tmux**
+- **tmux 3.3 or newer** (for [native TUI harnesses](/docs/build/harnesses/supported#native-tui-harnesses-need-tmux))
 
 The installer offers to install uv and tmux if they're missing, and uses uv to
 set up Python 3.12.
@@ -35,12 +35,12 @@ the same command to upgrade an existing installation.
 
 Available extras:
 
-| Category           | Extras                                                                                               |
-| ------------------ | ---------------------------------------------------------------------------------------------------- |
-| Model providers    | `databricks`, `bedrock`, `vertex`                                                                    |
-| Sandbox providers  | `databricks`, `modal`, `daytona`, `blaxel`, `boxlite`, `cwsandbox`, `e2b`, `openshell`, `kubernetes` |
-| SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                                                     |
-| Storage and memory | `postgres`, `s3`, `hindsight`                                                                        |
+| Category           | Extras                                                                                                                 |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Model providers    | `databricks`, `bedrock`, `vertex`                                                                                      |
+| Sandbox providers  | `databricks`, `modal`, `daytona`, `blaxel`, `boxlite`, `cwsandbox`, `e2b`, `openshell`, `kubernetes`, `lambda-microvm` |
+| SDK harnesses      | `antigravity`, `copilot`, `cursor`, `agents-sdk`                                                                       |
+| Storage and memory | `postgres`, `s3`, `hindsight`                                                                                          |
 
 ## Set up credentials
 

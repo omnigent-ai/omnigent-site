@@ -633,12 +633,137 @@ falling back to ambient credentials.
   remove that saved provider too — changing the environment alone does not
   replace it.
 
+### MCP servers
+
+Each agy session (`omni agy` and web-started sessions) runs with its own
+isolated agy Gemini directory, so Omnigent never writes to your real
+`~/.gemini`. That directory gets a
+session-scoped `config/mcp_config.json` containing the Omnigent MCP relay (the
+`omnigent` server) **plus every server in the `mcpServers` object of your own
+`~/.gemini/config/mcp_config.json`**. MCP servers you've already configured
+for agy are available inside Omnigent sessions without extra setup.
+
+- Your file is read again each time Omnigent writes a session's config, and
+  Omnigent never modifies it. Edits you make take effect on the next launch,
+  including `omni agy --resume`.
+- On a name collision the relay wins: a server of your own named `omnigent` is
+  dropped from the session config.
+- If the file doesn't exist, the session gets only the relay. If it can't be
+  read, isn't valid JSON, or `mcpServers` isn't an object, the session also
+  gets only the relay, and Omnigent logs a warning that it is
+  *seeding only the Omnigent relay*.
+- Server `env` blocks are copied exactly as written, so the session copy can
+  hold credentials. Omnigent writes it readable by its owner only (`0600`).
+
 ### Permission prompts
 
 Antigravity permission prompts appear in Chat and **Inbox**. You can approve
 or reject commands and use agy's pattern-based always-allow choices when
 available. Rules saved through these prompts apply only to the current
 Omnigent session.
+
+## Claude Code
+
+### Enterprise `managed-mcp.json`
+
+An organization can pin Claude Code's MCP servers with an enterprise
+`managed-mcp.json` (`/Library/Application Support/ClaudeCode/managed-mcp.json` on
+macOS, `/etc/claude-code/managed-mcp.json` on Linux). While that file exists,
+Claude Code loads only the servers it lists. It ignores user, project, and plugin
+servers, and it refuses `--mcp-config`, which is how Omnigent normally hands each
+`claude-sdk` and `claude-native` session its own tools (`sys_session_*`,
+`sys_os_*`, skills, and the rest).
+
+To keep those tools, add one static `omnigent` entry to the file. Omnigent sets
+the variables it reads for each session, so the same entry serves every session
+and every user on the machine. Merge it into the file's `mcpServers` and keep the
+organization's other servers:
+
+```json
+{
+  "mcpServers": {
+    "omnigent": {
+      "command": "${OMNIGENT_MCP_RELAY_PYTHON}",
+      "args": [
+        "-I",
+        "-m",
+        "omnigent.harnesses.claude_native.bridge",
+        "serve-mcp",
+        "--bridge-dir",
+        "${OMNIGENT_MCP_RELAY_BRIDGE_DIR}"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1",
+        "TMPDIR": "${OMNIGENT_MCP_RELAY_TMPDIR}",
+        "OMNIGENT_HARNESS_TMP_PARENT": "${OMNIGENT_MCP_RELAY_SOCKET_DIR:-}"
+      }
+    }
+  }
+}
+```
+
+- Name the entry `omnigent`. Sessions call these tools `mcp__omnigent__<tool>`,
+  and Omnigent looks for this name to decide whether the entry is deployed.
+- Keep the `${...}` references as written. Claude Code expands them from its own
+  environment when it starts:
+
+| Variable | Set by Omnigent to |
+| --- | --- |
+| `OMNIGENT_MCP_RELAY_PYTHON` | The Python interpreter that runs Omnigent. |
+| `OMNIGENT_MCP_RELAY_BRIDGE_DIR` | The session's private relay directory, which also holds the relay's access token. |
+| `OMNIGENT_MCP_RELAY_TMPDIR` | The temporary directory Omnigent's relay directories live under. |
+| `OMNIGENT_MCP_RELAY_SOCKET_DIR` | Where the relay's control socket goes. `claude-sdk` sessions get a private directory, so a sandbox can grant it without sharing the socket root. `claude-native` sessions get the configured harness socket root (`OMNIGENT_HARNESS_TMP_PARENT`). Empty means the default root. |
+
+- An entry without the `OMNIGENT_HARNESS_TMP_PARENT` line still works for
+  unsandboxed sessions. A `claude-sdk` session in a macOS Seatbelt sandbox needs
+  it: without it, the relay can't create its control socket and exits.
+- If managed settings define `allowedMcpServers`, also list
+  `{"serverName": "omnigent"}` there. Claude Code applies that allowlist to any
+  managed entry that uses `${VAR}`, and silently drops the entry when it isn't
+  listed.
+- Don't name `omnigent` in `deniedMcpServers`. The denylist wins over the
+  allowlist, and Claude Code drops a denied entry just as silently. Omnigent reads
+  only `managed-mcp.json`, not this policy, so with the entry denied or left off
+  the allowlist, sessions start without Omnigent's tools and without the
+  missing-entry warning. `claude-sdk` tells the model that a missing
+  `mcp__omnigent__` tool means the managed server didn't load, so the model
+  reports that instead of retrying.
+
+**Security note.** This entry hands its executable
+(`${OMNIGENT_MCP_RELAY_PYTHON}`) and its tool surface (the bridge directory) to
+whatever environment launches Claude Code. A Claude started separately can set
+these variables and run another program under the approved `omnigent` name. An
+organization that needs an administrator-fixed tool catalog shouldn't deploy
+this entry.
+
+What to expect:
+
+- **With the entry:** `claude-sdk` sessions and `claude-native` sessions (both
+  web-launched and `omni claude`) start with Omnigent's tools.
+- **Without it:** sessions still start, but without Omnigent's tools. The
+  launching process logs: *"Claude Code has an enterprise managed-mcp.json
+  without Omnigent's relay entry; starting without Omnigent's MCP tools."*
+- **Outside Omnigent:** a plain `claude` started by hand doesn't have these
+  variables, so `claude mcp list` reports the `omnigent` entry as failed to
+  connect. Nothing else is affected.
+- **In a Linux bubblewrap sandbox:** each `claude-sdk` Claude Code process can
+  read the managed config directory and use only its own session's relay
+  directory. Other sessions' relay directories stay hidden.
+- **`/mcp`:** while the file exists, `/mcp` in an Omnigent session lists only
+  the servers in `managed-mcp.json`, because those are the only ones Claude Code
+  loads. The `omnigent` entry itself is never listed.
+
+Through this entry, each Omnigent tool call runs in the relay with a budget of
+300 seconds of active work; time spent waiting for an approval doesn't count.
+When a call runs past it, Omnigent asks the tool to stop and returns an error:
+*"Omnigent tool dispatch timed out after 300s of active work (approval waiting
+excluded). Cancellation requested; completion is unknown."* The work may have
+partly finished, so check its effects before retrying. The budget applies even
+to a tool given a longer timeout of its own, such as a `sys_os_shell` command,
+and no setting changes it. Claude Code's own MCP tool timeout
+(`MCP_TOOL_TIMEOUT`, or a per-server timeout) also applies, so whichever is
+shorter ends the call. Without a managed file, `claude-sdk` runs Omnigent's
+tools in-process, where this relay budget doesn't apply.
 
 ## Codex
 
@@ -783,6 +908,41 @@ carries **names only**, so it is forwarded through both the host daemon and the
 spawned runner without forwarding the named secrets themselves, and the Pi
 terminal removes those variables before launching `pi`. Other harnesses in the
 same deployment are unaffected.
+
+### MCP servers from Claude Code, Codex, and Cursor
+
+Pi sessions that Omnigent manages (`omnigent pi` with an Omnigent provider,
+and the Pi gateway executor) also get the MCP servers you've configured for
+Claude Code (`~/.claude.json`), Codex (`config.toml`), and Cursor
+(`~/.cursor/mcp.json`). You don't need to repeat them in Pi's own
+`~/.pi/agent/mcp.json`; run `/mcp` in the session to see them listed and
+connected. Pi's built-in MCP support requires Pi 0.99 or newer.
+
+- **Your Pi config wins.** If an entry in `~/.pi/agent/mcp.json` has the same
+  name and defines a transport (`command`, `url`, or `type`), it replaces the
+  host server. If it sets only `enabled`, `exposure`, or `toolExposure`, it
+  adjusts the host server instead. For example, `{"name": {"enabled": false}}`
+  turns that server off for Pi. Pi treats `-` and `_` in server names as the
+  same, so `search-docs` and `search_docs` clash.
+- **Your agent dir is never written.** When the host servers aren't already in
+  your file, the session's managed agent dir gets a merged copy of
+  `mcp.json`, readable only by its owner (`0600`). When your file already
+  defines every host server, the session links your file directly.
+- **Order on name clashes.** When more than one harness defines the same
+  name, Claude Code wins over Codex, and Codex wins over Cursor.
+- **Skipped servers.** Omnigent leaves out (and logs) any server that Pi can't
+  load: SSE transports, names with characters other than letters, digits,
+  `-`, and `_`, Cursor substitutions other than `${env:NAME}` and
+  `${userHome}`, and commands or URLs that reference an unset variable.
+- **Variables.** Claude Code and Cursor `${VAR}` placeholders in `command`,
+  `args`, and `url` resolve when the session launches. Placeholders in `env`
+  and `headers` stay as variables that Pi reads when it starts the server, so
+  the session's copy doesn't hold those secrets. A server that uses
+  `${VAR}` in its env or headers connects only if the runner has that
+  variable, for example through `OMNIGENT_RUNNER_ENV_PASSTHROUGH=VAR`. Codex
+  values are copied literally. Codex `env_http_headers`,
+  `bearer_token_env_var`, `tool_timeout_sec`, and `enabled_tools` /
+  `disabled_tools` are carried over.
 
 ## Custom ACP agents
 

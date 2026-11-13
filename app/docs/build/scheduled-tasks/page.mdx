@@ -46,6 +46,11 @@ defaults (for example, the host resolved at fire time or the agent's own model
 and permission mode) are persisted too, so they also need your consent.
 Declining denies the call and nothing is saved.
 
+If the request selects a [permission mode that skips approval](#modes-that-skip-approval),
+the prompt marks it as one, since unattended runs in that mode act without
+asking. For a task that continues an existing session, the prompt also notes that
+the continued session keeps its own permission mode.
+
 This check is an always-on guard, not something you configure: it is appended
 to every session's policy set — including sub-agent sessions — even when no
 [policies](/docs/policies/overview) are declared anywhere, and it cannot be
@@ -71,9 +76,13 @@ rules.
   connected host, from the current workspace's host list. Omit to run on your
   online host at fire time; a failed run is recorded if none is online. An
   existing managed sandbox host cannot be pinned.
-- **`workspace`** (optional, `connected_host` only) — an existing absolute path
-  on the host where the fired session's runner starts. Requires `host_id`; omit
-  it to start in the host's home directory.
+- **`workspace`** (optional) — its meaning depends on `execution_target`:
+  - `connected_host`: an existing absolute path on the host where the fired
+    session's runner starts. Requires `host_id`; omit it to start in the host's
+    home directory.
+  - `managed_sandbox`: a repository URL to clone into each run's sandbox,
+    optionally suffixed with `#<branch>`. Omit it to use the sandbox provider's
+    default.
 - **`timezone`** (optional) — the IANA timezone the rule is evaluated in, e.g.
   `America/Los_Angeles`. Defaults to `UTC`.
 - **`model_override`** (optional) — a per-run model override. Omit for the
@@ -82,6 +91,10 @@ rules.
   `high`. Omit for the agent default (the spec's
   [`executor.reasoning_effort`](/docs/build/models#reasoning-effort), or the
   harness default when the spec sets none).
+- **`permission_mode`** — the permission mode for native coding agents, in the
+  selected harness's vocabulary. Pass `null` for the agent default. See
+  [Permission modes](#permission-modes).
+
 - **`project_name`** (optional) — file every fired session into a
   [project](/docs/interact/web-ui#projects), by name. The tool uses your
   existing project with exactly that name, or creates one if you have none.
@@ -101,28 +114,104 @@ To start one session per new Jira ticket, Slack message, or GitHub issue, use a
 [trigger template](/docs/interact/web-ui#trigger-templates) in the web UI. It
 saves an ordinary hourly task whose prompt is generated for you.
 
+## Permission modes
+
+`permission_mode` uses the selected native harness's vocabulary:
+
+| Harness | Modes |
+| --- | --- |
+| Claude Code | Claude Code's permission modes, for example `acceptEdits` |
+| Codex | `default`, `ask-for-approval`, `approve-for-me`, `full-access`, `read-only`, `bypass` |
+| Cursor | `default`, `auto-review`, `plan`, `ask`, `yolo` |
+| Antigravity | `default`, `skip` |
+| Devin | `normal`, `accept-edits`, `smart`, `dangerous` |
+
+Without a `permission_mode`, the task uses the agent default. For Codex that is
+Codex's own default, which asks before escalations and Omnigent tool calls.
+Runs are unattended, so a mode that prompts can leave a run waiting for approval.
+Pick a mode that runs on its own only when its permission level suits the task.
+
+### Modes that skip approval
+
+These modes decide every tool call without asking anyone:
+
+- Claude Code: `bypassPermissions`, `dontAsk`
+- Codex: `full-access`, `bypass`
+- Cursor: `yolo`
+- Antigravity: `skip`
+- Devin: `dangerous`
+
+Use one only when the prompt and everything the run reads are trusted. A run
+uses one of these modes only when the task selects it:
+
+- **Inherited from the agent spec.** If `permission_mode` is omitted and the
+  agent's spec sets a mode that skips approval, saving the task fails. Each
+  firing checks again, because the agent's default can change after the task is
+  saved: the run fails with error code `permission_mode_not_allowed` before it
+  creates or prompts a session.
+- **Continued sessions.** A task that continues an existing session
+  (`session_mode: continue`) runs in that session's own mode. The firing fails
+  the same way if that mode, or the agent spec's mode, skips approval and the
+  task doesn't select a mode that skips approval itself. Saving likewise refuses
+  a task that would continue such a session without selecting one.
+
+The web UI offers these modes only when the server advertises
+`scheduled_task_approval_skipping_modes` in `GET /v1/info`. Older servers may
+refuse these modes when saving or firing, so move such tasks to another mode
+before rolling back to an older server.
+
 ## Recurrence rules
 
 The schedule is an [RFC 5545](https://icalendar.org/) `RRULE` string, evaluated
 in the task's `timezone`. Examples:
 
 ```
+FREQ=MINUTELY;INTERVAL=10                            # every 10 minutes (see below)
+FREQ=HOURLY                                          # every hour
 FREQ=DAILY;BYHOUR=9;BYMINUTE=0                       # daily at 9am
 FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0 # weekday mornings
 ```
 
 Rules are validated when you create or update a task. A rule is rejected (HTTP
 400) if it has bad syntax, never fires, fires only once, or fires more often
-than the minimum interval. **A task must fire at least twice and no more often
-than once per hour** — the minimum gap between any two consecutive fires is 60
-minutes.
+than the minimum interval. **A task must fire at least twice**, and the minimum
+gap between consecutive fires depends on where the task runs and its session
+mode:
+
+| Execution target | Session mode | Minimum interval |
+| --- | --- | --- |
+| `connected_host` | either (`new` or `continue`) | 10 minutes |
+| `managed_sandbox` | `continue` (keep using the existing session) | 10 minutes |
+| `managed_sandbox` | `new` (fresh sandbox session each run) | 1 hour |
+
+Use `FREQ=MINUTELY;INTERVAL=10` for a ten-minute schedule. The shorter minimum
+is allowed because connected hosts and continued sessions don't provision a new
+sandbox on every fire.
+
+The validator checks consecutive occurrences from a fixed UTC anchor, sampling
+until it reaches an occurrence at least 25 hours after the first or has sampled
+2,000 occurrences. Irregular recurrence sets can contain shorter gaps later, so
+passing validation does not guarantee the minimum for every future firing.
+
+An update that changes `rrule`, `execution_target`, or the session mode
+revalidates the schedule against the resulting combination. For example,
+switching a ten-minute sandbox task from `continue` to `new` is rejected until
+the interval is at least an hour. If another change to the task's schedule,
+session mode, or execution target lands while your update is being validated,
+the update fails with HTTP 409 and nothing is applied. Reload the task and try
+again.
+
+Servers that accept sub-hour schedules report `scheduled_task_subhour: true` in
+`GET /v1/info`. Clients connected to an older server that omits the field keep
+the hourly minimum.
 
 ## Pausing, updating, and deleting
 
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
 untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
-`model_override`, `reasoning_effort`, `workspace`, `host_id`,
-`execution_target`, `state`, and the project (`project_name` or `project_id`).
+`model_override`, `reasoning_effort`, `permission_mode`, `workspace`,
+`host_id`, `execution_target`, `state`, and the project (`project_name` or
+`project_id`).
 
 Setting a project moves **future** runs into it; `project_id=null` stops filing
 them into a project. Sessions from earlier runs stay where they are.
@@ -157,15 +246,39 @@ interactive session would leak its state into the run and break once it is gone.
 If no live host can be resolved (or the pinned host is offline), the occurrence
 is recorded as a failed run.
 
+#### Random worktree
+
+A `connected_host` task pinned to a Git repository can start each new session
+in its own fresh git worktree instead of the repository directory itself. Turn
+on **Random worktree** in the [web UI](/docs/interact/web-ui#scheduled-tasks),
+or set `base_branch` to `HEAD` on the task through the `/v1/scheduled-tasks`
+REST API (`null`, the default, runs in the selected `workspace`).
+
+- `base_branch` requires `execution_target=connected_host` with both `host_id`
+  and `workspace` set; otherwise the request is rejected.
+- On each fire that starts a new session, Omnigent creates a randomly named
+  `worktree-<id>` branch from that ref in a new worktree on the host, and the
+  session starts there. If the host is offline the run fails with
+  `host_offline`; if the worktree can't be created it fails with
+  `worktree_create_failed`.
+- A task that continues one session reuses that session's worktree on later
+  runs. A continued session that isn't using this task's random worktree is
+  rejected as incompatible.
+
 ### `managed_sandbox`
 
 Each firing provisions a **fresh** server-managed sandbox — the same launch path
 as choosing **New Sandbox** for a chat (see
-[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)). The session starts in
-the sandbox's clean server-created workspace, so `host_id` and `workspace` must
-not be set; a create or update that combines them with `managed_sandbox` is
-rejected. The server must have managed sandboxes configured — an unconfigured
-server rejects the task at create time rather than failing every fire.
+[Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)). `host_id` must not be
+set; a create or update that combines it with `managed_sandbox` is rejected.
+The server must have managed sandboxes configured — an unconfigured server
+rejects the task at create time rather than failing every fire.
+
+To run in a specific repository, set `workspace` to a repository URL, optionally
+with `#<branch>`. Each firing clones that repository into the fresh sandbox.
+Leave `workspace` unset to use the sandbox provider's default workspace. Servers
+that support this report `scheduled_task_sandbox_workspaces: true` in their
+server info.
 
 A sandbox created by an automation follows the server's normal sandbox
 lifecycle, exactly like one created for a chat: the automation does not
@@ -173,6 +286,39 @@ override timeouts or terminate the sandbox when the run finishes. Server
 operators should choose provider lifetime, idle, and cleanup settings that fit
 their automation frequency and resource budget; enabling managed sandboxes
 alone does not guarantee a short shutdown time.
+
+## Starting each run from a session
+
+Instead of a prompt alone, an automation can start every run from a copy of an
+existing session. Each run then starts with that session's history.
+
+**In the web UI**, choose **Create automation** from a session's menu in the
+sidebar or in the session header. The option is offered on sessions you own when
+the server advertises `scheduled_task_source_sessions` in `/v1/info`. The **New
+automation** dialog shows the session under **Starts from**, and its prompt field
+becomes optional **Additional instructions**. Saving copies the session, through
+its last finished reply, into the automation's project.
+
+**Over the REST API**, send `source_session_id` together with the runs'
+`agent_id` to `POST /v1/scheduled-tasks`. `session_mode` must be `new`. A
+`continue` task is rejected.
+
+How these automations behave:
+
+- **Each run starts a new session** from the copy. A run sends the automation's
+  additional instructions as typed or, when there are none,
+  `Perform the task from this conversation again.`, followed by the unattended-run
+  note.
+- **The snapshot is fixed.** Messages added to the original session after you
+  save don't reach the automation.
+- **Harnesses.** Runs rebuild the agent's native transcript from the copied
+  messages where the harness supports it. Other native harnesses are rejected.
+- **Restrictions.** A session can't be used if it is a sub-agent's session or a
+  side chat, already has an automation running from it, has no agent, or has no
+  finished reply yet.
+- **Deleting.** Deleting a session that an automation runs from asks to **Delete
+  both**. If the copy is deleted anyway, the next run fails with
+  `source_session_missing`.
 
 ## How a firing runs
 
@@ -189,17 +335,30 @@ When a task is due, Omnigent:
    task starts hostless and binds a new sandbox in step 4. Resolved values are
    never written back to the task.
 3. Creates a session bound to the task's agent, carrying the stored
-   `model_override` and `reasoning_effort`, and grants the task's owner
-   ownership of the new session so the run is visible. If the task has a
-   project, the session is filed into it. If that project has been deleted
-   since the task was saved, the session is left unfiled (the run does not
-   fail) and the project is cleared from the task.
+   `model_override`, `reasoning_effort`, and `permission_mode` — in a fresh
+   worktree when [Random worktree](#random-worktree) is on — and grants the
+   task's owner ownership of the new session so the run is visible. If the
+   saved permission mode can't be resolved for the agent's harness, the run
+   fails with error code `permission_harness_unresolved`. If the mode isn't in
+   that harness's vocabulary, the run fails with `permission_mode_unsupported`.
+   In either case no session is created. If the task has a project, the session
+   is filed into it. If that project has been deleted since the task was saved,
+   the session is left unfiled (the run does not fail) and the project is
+   cleared from the task.
 4. Launches the runner — on the resolved host, or in a freshly provisioned
    sandbox — and dispatches the prompt so the agent actually runs. The message
    it sends is the prompt followed by the
    [unattended-run note](#the-unattended-run-note).
 5. Records the run — stamping the task's last-run time and the run's
    conversation id.
+
+If the latest run failed, the web UI marks the task with a **Last run failed**
+warning. If that run failed before it created a session, the failure also
+appears in the Inbox. See [Failed runs](/docs/interact/web-ui#failed-runs).
+Clients can read the same feed from `GET /v1/scheduled-tasks/inbox`. It returns
+the latest session-less failure for each of your tasks, checks up to `limit`
+tasks per page (default 50, max 100), and pages with the `after` cursor taken
+from `next_cursor`.
 
 ### The unattended-run note
 
@@ -237,3 +396,31 @@ A few scheduling guarantees:
   [removes a member](/docs/collaborate/auth#removing-a-member), all of that
   user's tasks are marked deleted. A username that is later re-registered does
   not see or inherit the old account's tasks.
+
+## Continuing in the same session
+
+By default, every firing starts a new session (`session_mode: "new"`). With
+`session_mode: "continue"`, every firing sends its prompt into one session,
+which is saved as the task's `session_id`. The agent then keeps the context of
+earlier runs. If you leave `session_id` unset, the first firing creates the
+session and saves it on the task. In the web UI dialog, pick **Continue in the
+same session** under **Session**. The option appears when the server advertises
+`scheduled_task_session_modes` in `/v1/info`.
+
+If the continued session can't take the prompt, the run fails with one of the
+error codes below. Omnigent never silently starts a replacement session for one
+of these:
+
+| Situation | Run | `error_code` |
+| --- | --- | --- |
+| The session is archived | `failed` | `continued_session_archived` |
+| The owner no longer owns the session | `failed` | `continued_session_forbidden` |
+| The automation has a budget, and the session already has a cost cap it did not set (for example, another automation's) | `failed` | `continued_session_budget_conflict` |
+
+**A deleted session is replaced.** If the continued session was deleted, the
+run doesn't fail. The next firing (or **Run now**) starts a new session, saves
+it as the task's `session_id`, and later firings continue in it. If two firings
+find the deleted session at the same time, the first one to save its new
+session wins, and the other continues in that session. For a `managed_sandbox`
+task, the task's sandbox is provisioned again under the same host id if no
+earlier session on it is known.

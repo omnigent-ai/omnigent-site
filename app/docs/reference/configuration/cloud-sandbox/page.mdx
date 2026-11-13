@@ -26,14 +26,57 @@ sandbox:
   server_url: https://your-server.example.com
 ```
 
-| Field         | Required | Description                                                                                                           |
-| ------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
-| `provider`    | Yes      | Provider id: `databricks`, `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `openshell`, `boxlite`, or `microsandbox`. |
-| `server_url`  | Yes      | Omnigent server URL reachable from the sandbox.                                                                       |
-| `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).                  |
-| `git_clone`   | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).                             |
+| Field                | Required | Description                                                                                                                             |
+| -------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `provider`           | Yes      | Provider id: `databricks`, `modal`, `daytona`, `islo`, `blaxel`, `gensee`, `openshell`, `boxlite`, `microsandbox`, or `lambda_microvm`. |
+| `server_url`         | Yes      | Omnigent server URL reachable from the sandbox.                                                                                         |
+| `host_config`        | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).                                    |
+| `git_clone`          | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).                                               |
+| `default_profile_id` | No       | Profile used when a new session names none. See [Default sandbox profile](#default-sandbox-profile).                                    |
+| `token_ttl_s`        | No       | Host token validity window in seconds. See [Host token expiry](#host-token-expiry).                                                     |
 
 Provider-specific blocks are optional. Omit one to use that provider's defaults.
+
+A managed launch waits 120 seconds by default for the sandboxed host to
+register. If a cold first image pull takes longer, set
+`OMNIGENT_MANAGED_HOST_ONLINE_TIMEOUT_S` in the server environment. It takes an
+integer number of seconds and applies to every managed provider.
+
+## Host token expiry
+
+Each sandbox authenticates back to the server with a server-minted, per-launch
+host token. Set `token_ttl_s` to control how long that token stays valid, in
+seconds:
+
+```yaml
+sandbox:
+  server_url: https://your-server.example.com
+  token_ttl_s: 86400 # shared default: 1 day
+  providers:
+    - provider: daytona
+    - provider: kubernetes
+      token_ttl_s: 604800 # override: 7 days
+```
+
+- Omitted or `null` keeps the provider default: seven days for most providers,
+  25 hours for Modal, and derived from the sandbox lifetime for Blaxel, E2B,
+  CoreWeave, and Lambda MicroVMs.
+- Values must be integers from `300` to `31536000` (5 minutes to 365 days). Any
+  other value stops server startup.
+- With a single `provider`, put `token_ttl_s` next to it. In a `providers` list,
+  an entry can override the shared value, or set `null` to restore its provider
+  default.
+
+Allow enough time for sandbox startup and repository setup before the host's
+first connection. Restart the server after editing the setting. It applies to
+newly issued tokens and future renewals. Lowering it does not shorten an expiry
+that an existing token already has.
+
+Connected hosts renew the same token halfway through the window, on their next
+heartbeat. Expiry is measured from the last renewal, so a disconnected host
+stops receiving renewals, and an expired token cannot open a new connection. A
+relaunch mints a fresh token. This setting does not change sandbox lifetime or
+the credentials users sign in with inside a sandbox.
 
 ## Git clone options
 
@@ -126,6 +169,52 @@ later reads: a first historical `git show` or `git blame` can fetch more data
 and take longer. Sparse checkout, submodule recursion, and LFS behavior are
 unchanged.
 
+## Default sandbox profile
+
+Some providers manage their own sandbox profiles: the provider decides which
+configurations and revisions exist and who may use them. When such a provider
+is enabled, every new managed session must pick a profile. Callers that don't
+pick one are rejected, such as older API clients and scheduled tasks that
+launch fresh sandboxes. To give these callers a profile automatically, set
+`default_profile_id`:
+
+```yaml
+sandbox:
+  provider: customer
+  server_url: https://your-server.example.com
+  default_profile_id: standard-build
+```
+
+With a `sandbox.providers` list, set `default_profile_id` inside the entry
+for the provider that owns the profile. A top-level `sandbox.default_profile_id`
+next to a `providers` list fails server startup. Embedding deployments set
+`default_profile_id` on `ManagedSandboxConfig`.
+
+- The value must be a profile id: lowercase letters, digits, `_`, or `-`, at
+  most 64 characters, starting with a letter or digit. Anything else fails
+  server startup.
+- The provider must manage profiles. Setting the key for any other provider
+  fails server startup.
+- The default is authorized the same way as a profile the user picks. A user who
+  cannot use it is rejected. The accepted revision is saved on the session, so
+  waking or replacing the sandbox later keeps that revision instead of moving to
+  a newer one.
+- It applies only to new sessions. Existing sessions without a profile keep
+  their current behavior.
+- Leave it unset if every caller must choose a profile.
+
+`GET /v1/sandbox-profiles` returns the configured defaults in
+`default_profile_ids`, a map from provider to profile id. When nothing else is
+chosen, the web composer and fork dialog preselect this profile, including when
+it isn't on the first page of results. An explicit choice always wins. A fork to
+the same provider still starts on its source session's profile.
+
+If a provider stops managing profiles, its sessions keep working as sessions
+without a profile. The saved profile is kept, so if the provider starts
+managing profiles again, a session still on the same host gets it back. A
+session that moved to a new host in the meantime has no profile on that host,
+and it can't wake until it is detached from that host.
+
 ## Databricks
 
 [Databricks Sandbox](https://docs.databricks.com/aws/en/compute/serverless/sandbox)
@@ -137,7 +226,7 @@ for the workspace.
 ```yaml
 sandbox:
   provider: databricks
-  server_url: https://your-server.example.com # public URL the sandbox host dials back to
+  server_url: https://your-server.example.com # public URL the sandbox host connects back to
   databricks:
     workspace_host: https://<workspace>.cloud.databricks.com # required: the workspace Sandboxes run in
     inactivity_timeout_s: 3600 # optional idle stop
@@ -256,8 +345,10 @@ sandbox:
   combined, such as `1h30m`.
 
 `ttl` is the sandbox's maximum age from creation, not an idle timeout. Blaxel
-deletes the sandbox at that age even while its session is active. The launch
-token lasts for `ttl + 1h`; provider command output is capped at 4 MiB.
+deletes the sandbox at that age even while its session is active. The default
+host token window is `ttl + 1h`;
+[`token_ttl_s`](#host-token-expiry) overrides it independently. Provider
+command output is capped at 4 MiB.
 
 The default image combines the Omnigent host runtime with Blaxel's required
 `sandbox-api`. Pin a published tag with `image` when deployments must remain
@@ -431,11 +522,97 @@ launcher directly. An explicit `sandbox.gensee.endpoint` takes precedence in the
 server-managed configuration.
 
 The Gensee API token stays in the server and authorizes lifecycle requests. Each
-sandbox receives a separate server-minted Omnigent host token (valid for seven
-days) through Gensee's short-lived secret store; it is not included in the
+sandbox receives a separate server-minted Omnigent host token (a seven-day
+validity window by default, renewed while connected; see
+[Host token expiry](#host-token-expiry)) through Gensee's short-lived secret store; it is not included in the
 durable operation request. By default no model or Git credentials are injected —
 list only variables every sandbox on the server may receive in `env`, or leave
 it empty and let each user sign in from their own sandbox terminal.
+
+## AWS Lambda MicroVMs
+
+[AWS Lambda MicroVMs](https://aws.amazon.com/about-aws/whats-new/2026/06/aws-lambda-microvms/)
+runs each managed host in a Firecracker-isolated, snapshot-resumable microVM in
+your own AWS account. It is a **managed-host provider only**. The server starts a
+microVM when a managed session is created and terminates it when the session is
+deleted. There is no `omnigent sandbox` CLI flow for this provider.
+
+Install the extra on the server. It pulls in boto3 and botocore `1.43.35` or
+newer, the minimum version with the `lambda-microvms` service model:
+
+```bash
+pip install 'omnigent[lambda-microvm]'
+```
+
+The server reads AWS credentials from the standard boto3 chain (profile,
+environment, or instance role). Those credentials must be allowed to call the
+`lambda-microvms` API and to pass the execution role. Pick a region where Lambda
+MicroVMs is available; the [AWS announcement](https://aws.amazon.com/about-aws/whats-new/2026/06/aws-lambda-microvms/)
+is the starting point for the current list.
+
+```yaml
+sandbox:
+  provider: lambda_microvm
+  server_url: https://your-server.example.com # public URL the host connects back to
+  lambda_microvm:
+    region: us-east-1
+    image_identifier: arn:aws:lambda:us-east-1:<acct>:microvm-image:omnigent-host
+    image_version: "1.0" # optional; default: latest
+    execution_role_arn: arn:aws:iam::<acct>:role/omnigent-microvm-exec
+    env: [ANTHROPIC_API_KEY, GIT_TOKEN] # server env var names copied into the microVM
+```
+
+`image_identifier` and `execution_role_arn` can be set in the config or in their environment variables. The config value wins when both are set.
+
+| Setting                     | Environment variable                         | Default              | Purpose                                                                                                                                                                                                                                         |
+| --------------------------- | -------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `region`                    | `OMNIGENT_LAMBDA_MICROVM_REGION`             | ambient boto3 region | AWS region the microVMs run in.                                                                                                                                                                                                                 |
+| `image_identifier`          | `OMNIGENT_LAMBDA_MICROVM_IMAGE_IDENTIFIER`   | required             | ARN of the prebuilt MicroVM image.                                                                                                                                                                                                              |
+| `image_version`             | `OMNIGENT_LAMBDA_MICROVM_IMAGE_VERSION`      | latest               | MicroVM image version, for example `"1.0"`.                                                                                                                                                                                                     |
+| `execution_role_arn`        | `OMNIGENT_LAMBDA_MICROVM_EXECUTION_ROLE_ARN` | required             | IAM role the running microVM assumes.                                                                                                                                                                                                           |
+| `env`                       | `OMNIGENT_LAMBDA_MICROVM_SANDBOX_ENV`        | none                 | Names of server environment variables whose values are copied into each microVM. The environment variable takes a comma-separated list.                                                                                                         |
+| `egress_network_connectors` | `OMNIGENT_LAMBDA_MICROVM_EGRESS_CONNECTORS`  | public egress        | Egress network-connector ARNs to attach. They route the host's outbound traffic, including its connection back to the server, through your VPC, so the server can use a private address. The environment variable takes a comma-separated list. |
+
+Lambda MicroVMs boot from a prebuilt **MicroVM image**, not a registry
+reference, so build it with `aws lambda-microvms create-microvm-image` before
+the first launch; the [deploy README](https://github.com/omnigent-ai/omnigent/blob/main/deploy/aws-lambda-microvm/README.md)
+has the build steps and the IAM role requirements for both roles; trust policies are in the AWS docs.
+
+### Credentials
+
+As with Daytona and Boxlite, `env` lists variable **names**; the server copies
+their values at launch, and an unset name fails the launch. Names Omnigent sets
+itself (`OMNIGENT_HOST_ID`, `OMNIGENT_HOST_NAME`, `OMNIGENT_HOST_TOKEN`,
+`OMNIGENT_SERVER`, `IS_SANDBOX`) are rejected.
+
+Lambda caps the launch payload, which carries the passed-through credentials and
+`host_config`, at 4,096 characters, so deliver large secrets through the
+execution role or a secrets store.
+
+### Lifecycle
+
+- **Lifetime.** A microVM lives at most 8 hours by default. To request a shorter
+  lifetime, set `OMNIGENT_LAMBDA_MICROVM_MAX_LIFETIME_S` on the server to a value
+  from `60` to `28800` seconds. The launch token lasts one hour longer than the
+  microVM.
+- **Idle suspend.** By default the idle window equals the lifetime, so Omnigent
+  never suspends a microVM between turns on its own. Lambda counts only inbound
+  traffic as activity and the host's tunnel is outbound, so a shorter window can
+  freeze an agent that is still working. To opt in, set
+  `OMNIGENT_LAMBDA_MICROVM_MAX_IDLE_S` to a whole number of seconds from `60` up
+  to the lifetime. The timer runs from launch or the last resume, whatever the
+  agent is doing.
+- **Resume.** The next message to a suspended session resumes the same microVM.
+  The snapshot keeps the running `omnigent host` and its launch token, so
+  Omnigent reconnects that host instead of starting a new one.
+- **Host supervision.** A crashed host restarts in place. A host that exited
+  with the fatal status (a rejected credential or a version mismatch) stays down.
+- **Repositories.** The image's start script clones `OMNIGENT_REPO_URL` when the
+  microVM starts. The launcher does not declare multi-repository support, so the
+  framework passes it at most one repository.
+- **Snapshot uniqueness.** A resumed microVM restores its memory state, so
+  reseed random-number generators and rotate in-memory secrets in any processes
+  you run there. See the AWS snapshot guidance.
 
 ## Native harness bridge servers
 

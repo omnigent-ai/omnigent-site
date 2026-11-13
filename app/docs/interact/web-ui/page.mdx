@@ -1433,8 +1433,35 @@ hold its state. Each run it:
    next run.
 6. Ends its reply with a new `Checked through:` time.
 
-Workers use the automation's agent, model, and effort, but the agent's
-default permission mode. Each worker's first message starts with your
+**Polling and matching session settings.** A trigger has two separate sets of
+settings: the **polling session** (the kept manager session that checks for
+new matches) and the **matching sessions** it starts for each item. The two
+are independent, so the frequent polling checks can run on a lighter, cheaper
+model than the sessions that do the work.
+
+- **When creating a trigger**, the agent, model, effort, and permissions
+  pickers beside **Run on** set the polling session. **Advanced settings**
+  adds a **Matching sessions** group (**Task session** when every match goes
+  to one task session) with its own **Model**,
+  **Effort**, and **Permissions**. These copy the polling settings until you
+  change them; choosing another agent or **Run on** target resets them.
+- **When editing a trigger**, **Advanced settings** shows a **Polling
+  session** group (the poller's model, effort, and permissions) above the
+  **Matching sessions** group. The polling group stays locked while the
+  current polling session is reused. To change it, check **Start a new
+  session on the next run**; the next run then starts a new polling session
+  with those settings. Changing matching-session settings never replaces the
+  polling session, and existing sessions keep their settings.
+
+**Permissions** for matching sessions offers the selected harness's modes that
+keep approval. When matching sessions would otherwise run in the polling
+session's mode, it also offers **Same as polling session**. Choosing
+**Default** saves the harness's default mode, so later changes to the polling
+session don't reach it. For Claude and Devin, whose default mode appears in
+the list (**Manual** and **Normal**), the separate **Default** entry is no
+longer offered once another mode is picked.
+
+Each worker's first message starts with your
 instructions and then gives the item's text fenced as untrusted data. That
 lowers prompt-injection risk but is not a security boundary: anyone who can
 write in the watched source can try to steer the sessions, which run with your

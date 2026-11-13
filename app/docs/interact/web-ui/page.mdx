@@ -175,6 +175,24 @@ Where it lands depends on the session you ran it from:
 This is the same destination as `⌘⌥N` and the command palette's new-session
 action, with the current project carried over.
 
+### Nested agents
+
+Open a session's header `⋯` menu and choose **Add nested agent** to start
+another agent alongside it, either on the same compute or on separate compute.
+Nested agents and the session they came from form a **session family**, which
+is grouped under one row in the sidebar. Use the row's chevron to **Collapse
+session family** or **Expand session family**. Agents can also create
+private worker sessions, and those are grouped into the same family.
+
+- A family holds at most 100 retained members, archived members included.
+- People you share a session with see its family members as flat rows.
+
+Nested agents are on by default. An operator can turn off new nested creation
+and same-sandbox fork selection with `OMNIGENT_FEATURES=-sibling_sessions` (see
+[Release features](/docs/deploy/overview#release-features)), then reload the UI.
+Existing families stay visible. A saved **Add nested agent** link opened while
+the feature is off, or against an older server, shows an unavailable message.
+
 ### Worktree branches
 
 In the new-chat composer, name a branch to run the agent in its own git worktree.

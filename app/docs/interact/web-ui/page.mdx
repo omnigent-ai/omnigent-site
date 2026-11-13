@@ -656,6 +656,35 @@ reads the on-disk file directly (no upload). This button shows only for native
 coding-agent sessions, since those harnesses run in the workspace and resolve
 the referenced file themselves.
 
+## Open chat commands in a shell
+
+When the agent replies with a fenced shell code block (tagged `bash`, `sh`,
+`zsh`, `fish`, or `shell`), a play button labeled **Open in a new shell**
+appears in the block's header, next to the copy button. Clicking it starts a
+fresh shell for the session and pastes the block's exact contents at the
+prompt **without pressing Enter**, so you can review or edit the command before
+you run it.
+
+- **Where it opens.** On desktop the new shell opens as a tab in the
+  Workspace rail; on mobile it opens in the shells panel. Every click starts
+  a new shell; it never reuses one that's already open.
+- **Which shell.** If the block's language matches one of the agent's
+  declared terminals (for example, a `zsh` block and a `zsh` terminal), that
+  shell is used. Otherwise the agent's default shell is used.
+- **Multiline commands** are sent as a single bracketed paste, so the lines
+  don't run one at a time. Omnigent waits up to 5 seconds for the shell to
+  accept a bracketed paste. If the shell isn't ready by then, nothing is sent
+  and an error toast appears. A single-line command is pasted as soon as the
+  shell connects.
+- **Rejected input.** A block that contains terminal control characters is
+  never pasted. Nothing is sent if the shell disconnects first.
+
+The button appears only if you have owner access to the session and its
+agent declares at least one `bash`, `sh`, `zsh`, `fish`, or `shell` terminal.
+It isn't shown in the multi-session grid view. It's disabled while the message
+is still streaming, while the code block isn't closed yet, when the block is
+empty, or when a shell can't be launched right now.
+
 ## GitHub
 
 Coding-agent sessions have a **Pull Requests** tab in the right workspace rail. It

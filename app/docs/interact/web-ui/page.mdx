@@ -77,6 +77,30 @@ picker shows on this browser — no account or host state is touched — and fai
 open: when no host is connected or readiness information is unavailable, nothing
 is hidden.
 
+### Choose which entries appear in agent pickers
+
+To declutter the agent pickers, hide individual harnesses and agents you don't
+use. Open **Settings › Appearance › Show in agent pickers**. A summary line
+reports what the pickers show, such as **Showing all 17.** or
+**Showing 15 of 17. Hidden: Debby and Codex.**
+
+- **Edit** opens a checklist grouped into **Harnesses** and **Agents**. Type to
+  filter it, then select an entry to hide it or show it again.
+- **Show all** clears every hidden entry.
+
+Hidden entries are left out of the New Chat picker, the New automation picker,
+and the project-default picker. Sessions you've already started aren't
+affected, and the entry currently selected in a picker always stays visible.
+Changes apply right away to open pickers, including ones in other tabs. If you
+hide every entry a picker can offer, it shows **Every entry is hidden.** and
+points you back to this setting.
+
+This is a per-device browser preference, included in settings export and
+import. It doesn't depend on
+[Hide unconfigured harnesses](#hide-unconfigured-harnesses), which removes only
+harnesses that can't launch on the selected host. This setting removes the
+entries you choose.
+
 ### Projects
 
 Organize related sessions into a named `Project`. Each project is a collapsible
@@ -88,7 +112,7 @@ agent, and settings you like.
 Create a project from the sidebar at any time, including an empty one with no
 sessions yet, then move sessions into it as the work takes shape.
 
-You can file a session into a project from three places:
+You can file a session into a project from these places:
 
 - Start a new session already filed there: each project folder in the sidebar
   has a shortcut that opens the new-chat composer with the session assigned to
@@ -101,6 +125,8 @@ You can file a session into a project from three places:
 - Move an existing session: open the session's `⋯` menu and choose
   `Move session`, then search your projects, create a new one, or remove the
   session from its project.
+- File every run of a [scheduled task](#scheduled-tasks) into a project with
+  the task dialog's **Project** field.
 
 Removing a session from a project moves the session back to `Sessions` section, and deleting a project archives all its sessions.
 
@@ -151,6 +177,26 @@ you leave unset falls back to your usual settings, and a default that no longer
 applies (an offline host, an uninstalled agent) is skipped rather than blocking
 the session. Leave the settings empty and the project stays a pure organizing
 tool.
+
+The composer also remembers how you started the **last session in each
+project**: the agent and harness pick (including Smart Routing), the launch
+options it ran with (such as model and effort), the host or sandbox, and the
+working directory. The next new session in that project pre-fills from that
+last start, layered over the project's stored defaults, so you can keep working
+the way you just did without saving anything. This memory is kept per project
+in your browser, so it doesn't follow you to another browser or device.
+
+- An option you change in the composer during the visit still wins.
+- If the last start's agent no longer exists, the composer falls back to the
+  project's stored default agent.
+- Once the project's stored settings change after that start, the last start is
+  ignored and the stored defaults apply again.
+
+When a last start is remembered, `Project settings` opens with its fields
+filled in from it and a note reading `Filled in from the last session you
+started in <project name>.` Saving the dialog makes those values the project's stored
+defaults and clears the remembered last start, even if you didn't change
+anything.
 
 #### New session with `/new`
 
@@ -245,8 +291,10 @@ A project's stored **Default model** (see
 remembered per-harness pick while the composer sits on the project's default
 agent, so a project can pin its own launch model. It only applies when the
 stored model is still a valid choice for that harness; a retired or unknown id
-falls back to your remembered pick. An explicit model you pick in the composer
-always wins for that session.
+falls back to your remembered pick. When the project's last session started on
+the same harness, the options it launched with (model, effort, and so on)
+pre-fill instead. An explicit model you pick in the composer always wins for
+that session.
 
 ### Change reasoning effort mid-session
 
@@ -272,8 +320,9 @@ or start a new session.
 
 This is the in-session dial, distinct from the effort choice in the new-chat
 composer. It appears only on top-level sessions (a sub-agent child takes no
-input of its own, so it gets no dial) and only for harnesses that declare an
-effort ladder — `antigravity` declares none, so its sessions show no dial.
+input of its own, so it gets no dial; side chats have their own picker — see
+[Model and effort in a side chat](#model-and-effort-in-a-side-chat)) and only
+for harnesses that declare an effort ladder — `antigravity` declares none, so its sessions show no dial.
 Native TUI sessions (`claude-native`, `codex-native`, …) keep their own effort
 controls.
 
@@ -357,6 +406,39 @@ workspace-write --ask-for-approval on-request -c approvals_reviewer="user"`).
 
 Your choice is remembered and seeds the next new session, the same way the model
 picker is remembered.
+
+### Start Codex in Plan mode
+
+You can start a Codex (`codex-native`) session in Codex's own Plan mode before
+you send the first prompt. On the new-session composer, select a Codex agent,
+open the **+** menu, and choose **Plan** (**Enter Plan mode**). A **Plan mode**
+badge appears in the composer tray. Choose the row again (**Exit Plan mode**)
+to turn it off. Switching to a different agent also clears it.
+
+The session is created with its `omnigent.codex_native.collaboration_mode`
+label set to `plan`. The runner switches the Codex thread into Plan mode before
+any web turn reaches it, and does so again when the thread resumes. Codex keeps
+its built-in Plan prompt, and your agent's instructions still apply. To switch
+modes after the session starts, use the composer's Plan toggle.
+
+The **Plan** row is disabled in these cases:
+
+- **Smart Routing** is selected.
+- The agent is an unsaved custom agent. Its tooltip reads _Turn Plan mode on
+  after this custom agent's session starts_.
+- The server has turned off the `codex_plan_at_launch` release feature. This
+  feature is on by default, and `OMNIGENT_FEATURES=-codex_plan_at_launch`
+  turns it off (see
+  [Release features](/docs/deploy/overview#release-features)). The tooltip
+  reads _This server does not support starting Codex in Plan mode_.
+
+The selected host must also support starting Codex in Plan mode. If a connected
+host runs an older omnigent that doesn't, creating the session fails with a
+conflict: _This host is too old to start a Codex session in Plan mode._ Update
+omnigent on the host and reconnect it, or turn Plan mode off, then try again.
+If the runner can't switch the thread into Plan mode, it doesn't run the queued
+message. It shows **Plan mode could not start** and asks you to restart the
+session and send the message again.
 
 ### Choose MCP services before launch
 
@@ -520,6 +602,10 @@ if one is already up rather than double-registering the machine.
 Open the printed URL (by default **http://localhost:6767**) and drive the agent
 entirely from the browser; no further terminal interaction needed. Stop the
 daemon later with the `omni host stop` command it prints.
+
+To open the UI in the [desktop app](/docs/interact/desktop#open-the-host-ui-from-the-cli)
+instead of a browser, add `--open-in-desktop` (or set
+`OMNIGENT_HOST_OPEN_IN_DESKTOP=1`).
 
 Sign-in still happens in the foreground, before the spawn: pointing
 `--background` at an authenticated remote server (for example
@@ -809,6 +895,34 @@ on-disk file directly (no upload). This button shows only for native
 coding-agent sessions, since those harnesses run in the workspace and resolve
 the referenced file themselves.
 
+### Open in VS Code or Cursor
+
+The Files panel header and the file viewer toolbar have an outlined **Open**
+split button. Click **Open** to open the current folder (from the Files panel)
+or file (from the viewer) in your preferred editor. Use the chevron
+(`Choose app to open in`) to pick **VS Code** or **Cursor**. Omnigent remembers
+the editor you picked last on this device and uses it for both buttons. When the
+file viewer toolbar is too narrow, its other actions collapse into the `⋯` menu
+but **Open** stays visible.
+
+The button works in the browser and the [desktop app](/docs/interact/desktop).
+The mobile apps hide it. Your browser or the desktop app may ask for permission
+the first time it opens the editor's link.
+
+- **Local files**: the desktop app opens the path directly when the session's
+  host is the machine it runs on. The menu also includes your file manager's
+  reveal action (for example `Open in Finder` for a folder or `Show in Finder`
+  for a file).
+- **Remote hosts**: for some managed sandbox hosts, the editor can open the
+  path over Remote SSH. Install the editor and its Remote SSH support on the
+  machine where you click the button, and make sure the host's SSH alias exists
+  in your local SSH config. The host must be online, and remote links support
+  POSIX paths only.
+
+Omnigent hides the remote options when it can't infer an SSH alias for the
+host, including for custom SSH aliases and offline hosts. The browser can't
+check whether the editor or the SSH alias is installed on your machine.
+
 ## Open chat commands in a shell
 
 When the agent replies with a fenced shell code block (tagged `bash`, `sh`,
@@ -840,11 +954,24 @@ empty, or when a shell can't be launched right now.
 
 ## GitHub
 
+For unattended reviews triggered by PR events, see
+[GitHub Actions](/docs/programmatic/github-actions). This panel tracks PRs during
+interactive sessions; it does not configure CI.
+
 Coding-agent sessions have a **Pull Requests** tab in the right workspace rail. It
 tracks the pull requests associated with the session and shows the selected
 one's summary (reviewers, CI checks, and the PR description), its conversation
-comments and commit history, and a stacked diff with a file-tree navigator. Nothing is pushed or
-mutated — recording an association never touches the remote PR.
+comments and commit history, and a stacked diff with a file-tree navigator.
+Recording an association never touches the remote PR; only an explicit action,
+such as posting a [review reply or new conversation](#review-conversations),
+writes to GitHub.
+
+For GitHub PRs you can also act from the tab: edit the title and description,
+add or remove labels, request or withdraw reviewers, post comments, and merge
+or disable auto-merge. These actions need edit access to the session and run as
+the host's active `gh` account, or the account saved for that repository (in
+a sandbox, the sandbox's GitHub identity).
+GitLab merge requests and Azure DevOps pull requests stay read-only.
 
 ### Tracked pull requests
 
@@ -858,16 +985,48 @@ how it was found:
   it.
 - **attached** — you linked it manually (see below).
 - **inferred** — matched from the current branch when the session has no
-  recorded PR yet; shown as `(from branch)` in the selector.
+  recorded PR yet; shown as `(from branch)` in the list.
 
 Associations are stored on the host, independent of the current checkout, so
-they stay with the session even as its branch or worktree changes.
+they stay with the session even as its branch or worktree changes. Servers that
+store session pull requests also keep a copy of each session's linked PRs, so
+the tab still works while the host is offline (see
+[When the host is offline](#when-the-host-is-offline)).
 
-When a session tracks more than one PR, a selector at the top of the tab
-switches between them; each entry reads `owner/repo #number` (prefixed with the
-host for GitHub Enterprise). The details, changed files, and diff below are
-always the selected PR's, fetched from GitHub — including fork PRs and renamed
-files — so they match the PR's "Files changed" exactly.
+When a session tracks PRs, the tab opens on a list of them. Each row reads
+`owner/repo #number` (prefixed with the host for GitHub Enterprise) followed by
+the PR title, with an icon colored by state (open, merged, or closed) and a
+compact status on the right:
+
+- An open PR shows its passed, pending, and failed check counts (hover a count
+  for the checks behind it), `Draft`, `No checks`, or `Incomplete checks` when
+  some checks couldn't be loaded.
+- A closed or merged PR shows its status instead of checks.
+- When an open, non-draft PR is ready to merge and you can edit the session, the
+  row shows a **Merge** button. It asks you to confirm and pick a merge method
+  before merging.
+
+Open rows refresh about every 30 seconds while the tab is visible. Closed and
+merged rows stop refreshing, but **Refresh** still reloads them.
+
+Each row's **⋯** menu can **Unlink PR**, **Open in GitHub** (the provider's
+name), or **Copy PR link**. Click a row to open its details. **All pull
+requests (N)** at the top of the details takes you back to the list. The
+details, changed files, and diff are always the selected PR's, fetched from
+GitHub (fork PRs and renamed files included), so they match the PR's "Files
+changed" exactly.
+
+On a phone the tab opens in a drawer. **Refresh** and **Link a PR** sit next to
+**Close** in the drawer header, and in a PR's details the header title turns
+into the **All pull requests** back button.
+
+While the session's host is offline (or its sandbox is asleep), the list still
+shows each PR's stored title and status. Each row shows **Host offline** or
+**Sandbox asleep** instead of checks and **Merge**. Hover or focus that notice
+to see the last sync time and how to reconnect. Clicking a row opens the stored
+summary, and the row menu still opens, copies, or unlinks the PR. Linking a new
+PR needs the host online. Live checks and merge controls come back once the host
+reconnects.
 
 When a file diff is computed from the local checkout instead, Omnigent diffs
 `HEAD` against the merge base with the base branch. In a shallow or
@@ -905,18 +1064,90 @@ exact time.
 If part of the commit or force-push history is unavailable, the tab shows
 `Some commit and push history is unavailable.` with a link to the pull request.
 
+### Review conversations
+
+For GitHub pull requests, the **Changes** tab shows published inline review
+conversations beside the code they discuss, on old- and new-side lines in both
+diff layouts. Top-level PR comments stay in the **Comments** tab.
+
+- **Reading.** Multiline conversations are labeled with their line range, and a
+  line can hold several separate conversations. **Resolved** conversations start
+  collapsed; **Outdated** ones are marked. Use **Previous/Next unresolved
+  conversation** in the diff toolbar to jump between open threads. Conversations
+  that can't be placed on the current diff (outdated, hidden context,
+  file-level, or no diff available) are listed under **Earlier conversations and
+  unavailable diffs**, shown with their original code context — never attached
+  to an unrelated current line.
+- **Suggestions.** A fenced `suggestion` block renders as a **Suggested change**:
+  the referenced lines as removals and the replacement as additions, with line
+  numbers and syntax highlighting. Outdated threads use the saved snippet,
+  labeled **Original context**. Suggestions are display-only — applying them
+  isn't supported.
+- **Replying.** Focus an expanded conversation's **Write a reply…** input to open
+  the Markdown composer (with **Write**/**Preview** tabs); **Cancel** collapses
+  it but keeps the draft. **Reply** publishes immediately as the host's GitHub
+  account shown under the composer — there is no pending draft review.
+- **Starting a conversation.** Select a line number and click the gutter **+**
+  or **Comment on selected lines**. Drag across line numbers or Shift-click to
+  select a range; the range must be on one side and within one diff hunk. A
+  new conversation is posted immediately as a single-comment review on the
+  displayed commit and never appends to an existing thread, even on a line
+  that already has one. If the PR's head or base commit changes before you
+  post, the draft is kept but you must reselect its lines.
+
+Threads load separately from the rest of the PR (the first 25 conversations,
+with up to 20 comments each) and refresh every 10 seconds while **Changes** is
+visible; other tabs and the closed panel stop polling. **Load more
+conversations** and **Load more replies** fetch older history on demand. Reply
+and new-conversation drafts survive tab and layout switches within the app, but
+not a browser reload. Reading threads requires the same file-sharing permission
+as the diff; posting requires edit permission on the session. Resolving or
+reopening conversations isn't supported yet.
+
 ### Link or unlink a PR
 
 Use the **+** (`Link a PR`) button to attach a pull request by URL — paste a
 `https://github.com/owner/repo/pull/123` link (GitHub Enterprise hosts work
-too). The linked PR becomes an `attached` association and is selected. The
-**trash** (`Unlink PR`) button removes the selected association; an unlinked PR
-stays out of the list until you link it again, even if the agent keeps touching
-it. When a session tracks no PRs yet, the tab's empty state offers the same
+too). The linked PR becomes an `attached` association and is selected. To
+remove an association, choose `Unlink PR` from the row's **⋯** menu, or use the
+**trash** (`Unlink PR`) button in the header while viewing that PR's details.
+An unlinked PR stays out of the list until you link it again, even if the agent
+keeps touching it. When a session tracks no PRs yet, the tab's empty state offers the same
 `Link a PR` action.
 
 The composer status line mirrors this: it shows `#123` for a single tracked PR
 or `N PRs` when several are tracked, and clicking it opens the **Pull Requests** tab.
+
+An open draft PR shows a **Draft** status badge next to its title.
+
+### When the host is offline
+
+If the server stores session pull requests, the **Pull Requests** tab keeps
+working when the session's runner and host are offline, or its sandbox is
+asleep. The selector lists the session's linked PRs as the server stored them,
+and the selected PR shows its title, link, and status (**Open**, **Draft**,
+**Merged**, or **Closed**). Below that, the tab shows a **Last sync time** and
+asks you to reconnect the session's host. For a sleeping sandbox, it asks you
+to send a message to start the sandbox instead. Reviewers, checks, comments,
+and the diff stay on the host, so they load once it's back.
+
+While the host is offline:
+
+- **Link a PR** is disabled (`Link a PR (needs the host online)`), because
+  linking verifies the PR with the host's provider account.
+- **Unlink PR** still works. The server records the unlink.
+- If the server hasn't imported the session's PRs from its host yet, the tab
+  says the PRs haven't synced to the server yet instead of showing an empty
+  list.
+
+The session's sidebar tooltip and its [Canvas](#canvas) card read the same
+stored PR, so the PR number, status, and link stay visible while the host is
+offline. When the stored status is more than five minutes old, their tooltips
+add its age, for example `#123 · Open (as of 2h ago)` in the sidebar. Sessions the server hasn't
+imported yet appear once it imports them.
+
+Against older servers that don't store session pull requests, the tab works as
+it did before: it needs the host online, and unlinking goes through the host.
 
 ### GitLab merge requests
 
@@ -1081,11 +1312,23 @@ not update a process that is already running.
 
 ## Message queue and steering
 
-Type a follow-up while the agent is still working and it's held in a client-side
-queue instead of interrupting the turn. Queued messages appear in a docked strip
-above the composer, and drain automatically — one at a time, in order — as soon as
-the session goes idle.
+By default, a follow-up you send while the agent is still working is steered:
+it's sent right away instead of waiting for the turn to finish. Where the
+harness supports live injection, the message lands in the running turn;
+otherwise it's folded in at the next turn boundary. Sending the follow-up
+doesn't stop the agent.
 
+To queue follow-ups instead, open **Settings → General** and switch off
+**Always steer**. With it off, a follow-up typed mid-turn is held in a
+client-side queue. Queued messages appear in a docked strip above the composer,
+and drain automatically — one at a time, in order — as soon as the session goes
+idle. The setting also applies to side chats. It's stored in your browser, so
+set it on each browser or device you use.
+
+Messages that are already queued keep their order: if you turn **Always steer**
+back on while messages are queued, new follow-ups still wait behind them.
+
+{/* TODO(doc-drafter): screenshot may be stale — GIF shows follow-ups queuing, which now requires switching off Always steer (on by default) */}
 ![Steering and queuing a message](/images/docs/steer-and-queue-msg.gif)
 
 Each queued row has inline actions:
@@ -1094,6 +1337,36 @@ Each queued row has inline actions:
   flush.
 - **Edit** — pull the message back into the composer to revise it.
 - **Delete** — drop the message from the queue.
+
+## Inbox
+
+Open **Inbox** in the sidebar to catch up on your agents without opening each
+session. The **All**, **Unread**, and **Awaiting response** tabs filter what's
+listed: pending approval requests you can answer in place, and sessions with
+agent output you haven't seen yet. Each card expands in place.
+
+An expanded unread card previews the session's latest reply. If the preview is
+cut short, hover over it or focus it to see the whole reply in a card, rendered
+with the same markdown formatting as Chat. **Mark as read** clears the row, and
+**Open session** clears it and takes you to the conversation.
+
+### Reply from the Inbox
+
+If you have edit access to a session, its expanded unread card includes a
+**Reply…** box. Type a follow-up and click **Send** to post it to the session
+as a user message, just as if you'd typed it in Chat. The box uses the same
+send shortcut as the chat composer (Enter or Mod+Enter, depending on your
+setting), and Shift+Enter or Alt/Option+Enter adds a newline.
+
+Once the reply is sent, the card shows **Reply sent. The agent's answer will
+show up here.** When the agent answers, the row lights up as unread again and
+shows the new reply. Replying also counts as reading the session.
+
+**Send** stays disabled until the card's latest reply has loaded. If it can't
+load, open the session to reply instead. When a send fails, your draft stays in
+the box so you can try again. That includes a reply a policy blocked, or one
+sent while the session's host was offline. Wait for the host to reconnect, then
+send again.
 
 ## Side chats
 
@@ -1126,6 +1399,33 @@ Follow-ups go to the side chat, not the main conversation, and any approval
 request the agent raises there is answered there too. The side chat starts
 visually empty — the history it inherited from the parent is hidden — but the
 agent has the parent conversation's full context.
+
+### Model and effort in a side chat
+
+The side-chat composer has its own model/effort pill beside the microphone, in
+both the desktop Workspace panel and the mobile side-chat drawer. Open it, open
+the harness configuration row, and pick from the **Models** and **Effort**
+sections. The choices follow the same catalog and harness capability rules as
+the main composer; if the session hasn't reported its own model list yet, the
+picker uses the host's catalog. A harness that advertises no model or effort
+choices shows no pill.
+
+- **Before the first message** (an unsent tab from the `+` tray, the Workspace
+  menu, or **Ask in side chat**), your pick is kept with the tab's draft —
+  switching tabs and coming back keeps it — and is applied when the side chat is
+  created. If creating the side chat fails, the draft and the pick are kept so
+  you can retry.
+- **After the first message**, a pick is saved on the side chat's session and
+  applies to its next turn. Sending waits until the save finishes. If the save
+  fails, an error appears in the menu and your typed message is kept, so you can
+  retry the change or send with the previous selection.
+
+Changes apply only to that side chat; the parent session's model and effort
+stay as they were. Changing only the model keeps the current effort when the
+new model supports it and clears an explicit effort it doesn't. On Claude Code,
+the pill shows the model the runner reports, so a refused change leaves it on
+the model actually in use. Viewers and closed side chats can't change these
+settings, and native Codex (`codex-native`) side chats don't offer the picker.
 
 ### Slash commands in a side chat
 
@@ -1195,6 +1495,34 @@ Switching to another conversation shows that conversation's own side-chat tabs.
 Close a tab with its `✕` (or a middle-click) to stop the side chat's runner and
 drop the tab. A tab you close stays closed on that device after a reload, while
 your other devices keep theirs.
+
+### Open sub-agents in the Workspace panel
+
+By default, clicking a sub-agent opens its own page and replaces the parent
+chat. To keep the parent on screen instead, open **Settings → General →
+Sessions** and switch on **Open sub-agents in the Workspace panel**. It's off by
+default and stored in your browser, so it applies only on this device.
+
+With the setting on, a plain click on a sub-agent — its link in the transcript,
+the composer's sub-agent indicator, a row in the [**Agents**](#pin-workspace-tabs)
+tab, or a node in the agents graph — opens it as a tab in the right
+**Workspace** rail, in the same strip as side-chat tabs, and reveals the rail if
+it's hidden. Sub-agent tabs are marked with a bot icon and show the sub-agent's
+full conversation, with a composer so you can chat with it there. Things that
+still open full screen:
+
+- A modified click (`⌘`/`Ctrl`, `Shift`, or `Alt`) or a non-left click, which
+  follows the link as usual.
+- Ancestors of the current session — only children open in the rail.
+- Any click on a phone-sized screen.
+- The tab's **Open full screen** link, which opens the sub-agent's own page on
+  its **Agents** tab.
+
+A sub-agent tab is read-only wherever its full-screen chat would be — for
+example a Claude Code sub-agent or a closed sub-agent, or when you don't have
+edit access — and it shows no composer until the sub-agent's session has
+loaded. Unlike a side-chat tab, closing a sub-agent tab only hides it; the
+sub-agent keeps running.
 
 Side chats are distinct from Claude Code's `/btw` overlay (below), which answers
 a one-off question inline without creating a session.
@@ -1274,6 +1602,14 @@ Run an agent on a recurring schedule instead of starting each session by hand. A
 scheduled task is a saved prompt plus a recurrence rule: it fires automatically,
 runs the chosen agent, and keeps firing until you delete it.
 
+Open **Automations** from the sidebar. The page has two tabs:
+
+- **Your automations** — your existing tasks, with search and an
+  All / Active / Paused filter. Switching tabs keeps your search and filter.
+- **Templates** — a gallery of ready-made automations you can customize. The
+  tab can be linked directly at `/tasks?view=templates`; the older
+  `/tasks/templates` URL redirects there.
+
 To create one manually, click **New automation** on the Automations page. The
 dialog opens with **Instructions** focused. The fields appear in this order:
 
@@ -1344,6 +1680,25 @@ from a session's menu in the sidebar or session header. The dialog shows the
 session under **Starts from**, and the prompt becomes optional **Additional
 instructions**. Each run starts from a copy of the session's history as of when
 you save. See [Starting each run from a session](/docs/build/scheduled-tasks#starting-each-run-from-a-session).
+
+### Starting from a template
+
+The gallery offers **Jira tickets**, **Slack messages**, and **GitHub issues**
+templates. Each card shows what the template watches for, that it **Checks every
+hour**, and what access it needs (for example, _Requires a Jira MCP server._).
+Choosing a card opens the creation dialog with that integration's trigger
+settings filled in and ready to customize. Nothing is saved until you submit the
+dialog. These templates poll hourly; they don't receive webhooks from the
+service.
+
+When you have no automations yet, **Your automations** also shows a **Start
+from a template** preview of the same cards below the empty-state message.
+
+The templates keep one session across runs and start a worker session for each
+match, so they need a server with session continuity and session orchestration
+enabled. On a server without those, the Templates tab says templates aren't
+available, the empty-state preview is hidden, and you can still create an
+automation from scratch.
 
 ### Failed runs
 
@@ -1570,6 +1925,56 @@ With the switch off:
 Matches are delivered with peer session messaging. It is on by default, through
 the `peer_session_messaging` release feature and the **Message other sessions**
 switch under **Settings > Sharing**.
+
+**Which items count.** Each run looks for items created since the previous
+run that meet every condition by the time it checks, so a label added half an
+hour after creation still counts. To allow for slow search indexing, the
+search window starts 5 minutes before the previous run's window ended. Items
+created earlier never count, even if they are edited or start matching later.
+
+**How a run works.** The kept session acts as a manager, and its own replies
+hold its state. Each run it:
+
+1. Reads where it left off from the `Checked through:` line of its most recent
+   reply, plus any `Delivery pending:` and `Link-back pending:` lines, and
+   retries pending link-backs.
+2. Searches the service with its own Jira, Slack, or GitHub tools for items
+   created since then, oldest first, through every page of results.
+3. Skips items it already handled: ones named in its earlier replies, or with
+   a worker titled after them among the sessions it created (archived workers
+   included).
+4. Starts one worker per remaining item with `sys_session_create`, **at most
+   10 per run**. On a connected host the workers run beside the manager and
+   share its workspace, so each is told to make its own git worktree before
+   changing files; a `managed_sandbox` automation starts each worker in a new
+   sandbox. A refused or unclear create stops starting sessions for that run,
+   and an unclear one is never retried automatically.
+5. Posts each session link back, if enabled. A failed post is retried on the
+   next run.
+6. Ends its reply with a new `Checked through:` time.
+
+Workers use the automation's agent, model, and effort, but the agent's
+default permission mode. Each worker's first message starts with your
+instructions and then gives the item's text fenced as untrusted data. That
+lowers prompt-injection risk but is not a security boundary: anyone who can
+write in the watched source can try to steer the sessions, which run with your
+tools, and link-back posts with your account.
+
+Keep in mind:
+
+- The trigger chips appear only when the server supports continuing one
+  session across runs and has session orchestration on
+  (`features.session_orchestration` in `/v1/info`).
+- Link-back uses the manager's own tools unattended. Claude Code's auto mode
+  can block an external write such as `gh issue comment` unless its permission
+  settings allow that command.
+- Editing a saved trigger automation edits the rendered prompt as plain text.
+  Changing its host, model, or effort afterwards doesn't update the worker
+  settings written into the prompt.
+- Starting a new manager session, or switching the session mode, loses the
+  manager's state, so its first run may start sessions again for items created
+  in the last hour.
+- Deleting a worker doesn't make its item start a new session later.
 
 ## Collaboration
 

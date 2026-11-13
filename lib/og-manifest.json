@@ -246,7 +246,7 @@
   },
   "/quickstart/install": {
     "title": "Install",
-    "description": "Install the Omnigent CLI with the installer script, uv, pip, or Homebrew, or download the desktop app.",
+    "description": "Install the Omnigent CLI with the installer script, or download the desktop app.",
     "eyebrow": "Quickstart"
   },
   "/quickstart/policies": {

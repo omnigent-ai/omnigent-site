@@ -361,6 +361,32 @@ If the runner can't switch the thread into Plan mode, it doesn't run the queued
 message. It shows **Plan mode could not start** and asks you to restart the
 session and send the message again.
 
+### Open the session goal with `/goal`
+
+In a started session that has a **Goal** control (Codex `codex-native` chats
+and [Polly sessions in goal mode](/docs/use/builtin-agents/polly#goal-mode)),
+you can open the Goal dialog from the composer instead of the **+** menu:
+
+- Type bare `/goal` and press `Enter`, or
+- Type `/go` and pick **/goal** (**View or set the goal for this session**)
+  from the slash menu's **Commands** list.
+
+Either opens the same dialog as **+ → Goal**. It shows the session's current
+goal or an empty state if none is set, and is read-only in view-only shared
+sessions. The web UI handles bare `/goal` itself, so nothing is sent to the
+agent and the composer is cleared.
+
+`/goal <objective>` with text after it is not intercepted. It's sent as a
+normal message, the same as before.
+
+`/goal` only appears in sessions that offer the Goal control. The new-session
+composer and side-chat composers don't show it. In a session without the
+control, `/goal` behaves as it otherwise would: it runs a skill named `goal` if
+the agent has one, or goes to the agent as text. In a session with the control,
+the built-in command takes the `/goal` slot, so a skill named `goal` is no
+longer listed under `/`. On `codex-native`, skills use the `$` prefix, so a
+`goal` skill still shows as `$goal`.
+
 ### Choose MCP services before launch
 
 On a server whose administrator publishes an MCP registry, the new-chat composer

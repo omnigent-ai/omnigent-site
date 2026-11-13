@@ -43,6 +43,35 @@ Most coding agents can run in one of two modes:
   mirrors it back. You get the exact native experience, wrapped with Omnigent's
   collaboration and policy layer. These ids end in `-native`.
 
+### Native TUI harnesses need tmux
+
+Native TUI harnesses run in tmux on the host, so the host needs **tmux 3.3 or
+newer**. When tmux is missing, older than 3.3, or doesn't report a version
+Omnigent can read, a native harness whose CLI is otherwise installed and signed
+in shows **needs tmux** in the new-chat picker and in **Settings → Harnesses**.
+Problems with installing, updating, or signing in to the CLI show first; the
+tmux badge appears only once the CLI itself is ready. New sessions can't start
+on that harness, and [Smart Routing](/docs/build/routing) doesn't pick it,
+until tmux is fixed.
+
+To fix it:
+
+1. Open **Set up tmux** on the harness in **Settings → Harnesses**, or use the
+   setup action in the new-chat picker.
+2. Install or upgrade tmux on the host. On macOS, run `brew install tmux` (or
+   `brew upgrade tmux` if an older version is installed). On Linux, use your
+   package manager. Check that `tmux -V` works in a terminal.
+3. Press **Check again**. If you don't, the host picks up tmux the next time it
+   refreshes harness readiness, about a minute later.
+
+The desktop app keeps the `PATH` it started with. If tmux was installed into a
+directory that wasn't on that `PATH`, quit and reopen the Omnigent app. For a
+host started from the CLI, restart it from a shell where `tmux -V` works.
+
+If you sign in or save a credential for a native harness on a host without a
+usable tmux, the credential is saved and the setup dialog moves straight to the
+tmux step.
+
 ## Harnesses
 
 | Harness | IDs and aliases | Direct execution | Native TUI | Support | Repository |

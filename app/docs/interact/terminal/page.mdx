@@ -133,8 +133,10 @@ session_title_instructions: |
 <div className="note">
 
 **Deployed servers.** On a shared server, an operator sets the same
-`session_title_instructions` key in the YAML passed to `omni server --config`;
-it then applies to every session on that server. Invalid values (non-string, or
+`session_title_instructions` key in the server config (the YAML passed to
+`omni server --config`, or `OMNIGENT_CONFIG` / `<data_dir>/config.yaml` without
+it). It then applies to every session on that server and takes precedence over
+your `~/.omnigent/config.yaml` value. Invalid values (non-string, or
 longer than 4,000 characters) are ignored and fall back to the default title
 prompt.
 

@@ -23,6 +23,12 @@ from the [REST API](/reference).
 | User            | `~/.omnigent/config.yaml` or `omni config set --global KEY=VALUE` | Defaults shared across projects and settings owned by the local server.                                                              |
 | Deployed server | `omni server --config /path/to/config.yaml`                       | Server-wide settings for every user and session on that deployment.                                                                  |
 
+When you start `omni server` without `--config` (`-c`), it still reads a
+server config file. It uses the file named by the `OMNIGENT_CONFIG` environment
+variable, or `<data_dir>/config.yaml` (`/data/config.yaml` in the Docker
+stack). Server-scoped keys in that file, such as `branding:`, apply the same way
+they would through `--config`. Changes take effect on the next server start.
+
 Run `omni config list` to inspect the effective user and project configuration.
 Use `omni config unset KEY` or `omni config unset --global KEY` to remove a
 value from the corresponding scope.
@@ -70,13 +76,21 @@ omni config set --global \
 
 This setting belongs to the server, not an agent's portable instructions. It
 must use the global scope for a local server. On a deployed server, set the same
-key in the YAML passed to `omni server --config`:
+key in the server config: the YAML passed to `omni server --config`, or, without
+`--config`, the file named by `OMNIGENT_CONFIG` or `<data_dir>/config.yaml`:
 
 ```yaml
 session_title_instructions: |
   Prefix pull request titles with the PR number.
   Use a short snake_case name for other work.
 ```
+
+When the server starts without `--config`, a `session_title_instructions` key in
+the server config takes precedence over the value in `~/.omnigent/config.yaml`.
+The user value is used only when the server config doesn't contain the key.
+Setting the key to `null` in the server config turns off the user-config
+fallback, so no additional instructions are applied. With `--config`, only the
+file passed to `--config` is used.
 
 The generator receives the current date as `YYYY-MM-DD` along with the first
 message. Default generated titles are limited to 100 characters; output beyond

@@ -1235,6 +1235,13 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 - **Workspace (optional)** — shown only once a connected host is pinned. Pick a
   directory to pin it; leave it unset to default to the host's home directory. A
   workspace can't be set without a host, and doesn't apply to sandbox runs.
+- **Project** — the [project](#projects) the task's runs are filed into. New
+  tasks default to **Omnigent Automation**. Omnigent creates that project when
+  you save, or reuses it if it already exists. Canceling the dialog creates
+  nothing. Pick another project from the menu, or use its **Remove from …** item to
+  save the task with **No project**. Run sessions and their workers inherit the
+  task's project, so automated work stays together in the sidebar. Editing an
+  existing task keeps its saved project.
 
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.

@@ -633,6 +633,28 @@ falling back to ambient credentials.
   remove that saved provider too — changing the environment alone does not
   replace it.
 
+### MCP servers
+
+Each agy session (`omni agy` and web-started sessions) runs with its own
+isolated agy Gemini directory, so Omnigent never writes to your real
+`~/.gemini`. That directory gets a
+session-scoped `config/mcp_config.json` containing the Omnigent MCP relay (the
+`omnigent` server) **plus every server in the `mcpServers` object of your own
+`~/.gemini/config/mcp_config.json`**. MCP servers you've already configured
+for agy are available inside Omnigent sessions without extra setup.
+
+- Your file is read again each time Omnigent writes a session's config, and
+  Omnigent never modifies it. Edits you make take effect on the next launch,
+  including `omni agy --resume`.
+- On a name collision the relay wins: a server of your own named `omnigent` is
+  dropped from the session config.
+- If the file doesn't exist, the session gets only the relay. If it can't be
+  read, isn't valid JSON, or `mcpServers` isn't an object, the session also
+  gets only the relay, and Omnigent logs a warning that it is
+  *seeding only the Omnigent relay*.
+- Server `env` blocks are copied exactly as written, so the session copy can
+  hold credentials. Omnigent writes it readable by its owner only (`0600`).
+
 ### Permission prompts
 
 Antigravity permission prompts appear in Chat and **Inbox**. You can approve
@@ -707,6 +729,36 @@ exists nowhere leaves this tier alone (the launch falls through to Codex login),
 and a malformed selector — a missing value, a repeated `--profile`, or an
 invalid profile name — is reported by launch-arg validation when the session
 starts rather than during routing.
+
+### Async questions
+
+When Codex asks questions with `request_user_input_async` (in Default mode),
+it keeps working while it waits for your answer. This is the same as the queued
+questions in the Codex TUI (shift+← in the terminal). Omnigent shows a card for
+each question in Chat and **Inbox**. Each card lists the question's options and
+a free-text **Other** row. These cards don't pause the turn, so the composer
+stays usable and the working indicator stays on.
+
+- **Answering.** Answer a card and Omnigent sends your answer as an ordinary
+  user message, in the same reply format the TUI picker uses. The answer steers
+  Codex's current turn. In the transcript the answer appears as it does in the
+  TUI: `↪ Re: <question>` above the answer. Answers picked in the TUI picker
+  look the same.
+- **Closing.** A card closes in any of these cases:
+  - its question is answered, either on the card or in the TUI picker
+  - any other user message is sent, from the web or the terminal
+  - you press **Cancel**
+  - the turn ends
+
+  Cancel only dismisses the card: Codex keeps working, like skipping a question
+  in the TUI. Cancel doesn't clear the question in the terminal.
+- **Failures.** If the answer can't be sent, a notice in the chat asks you to
+  answer the question again in the terminal. An open question isn't restored
+  after the Codex forwarder reconnects.
+
+Cards need a server whose `GET /v1/info` reports
+`codex_nonblocking_decline: true`. Older servers stop Codex when you decline a
+card, so against them Omnigent shows no card and you answer in the terminal.
 
 ## Pi
 

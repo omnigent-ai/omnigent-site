@@ -268,6 +268,8 @@ metadata like `169.254.169.254`). Set
 `egress_rules` covers HTTP(S) only. To let a sandboxed `git` reach a repository over
 SSH without handing it the private key, use [`git_ssh`](#git-over-ssh) — it isolates
 the sandbox network the same way `egress_rules` does, and the two can be combined.
+For a raw TCP stream to one exact host and port (a database, a non-Git SSH server),
+use [`tcp_egress`](#named-tcp-egress), which cannot be combined with `egress_rules`.
 
 ### Environment
 
@@ -417,6 +419,74 @@ incompatible with `allow_sandbox_override: true` on a terminal, since an overrid
 
 </div>
 
+### Named TCP egress
+
+`tcp_egress` lets a sandbox open an opaque TCP stream to **one named, exact host and
+port** without general network access. The trusted parent resolves DNS on each
+connection, checks every returned address against the route's policy, and dials a
+pinned address; the sandbox cannot choose the IP or port it reaches. The route
+supplies **no credentials** and does not verify the server's identity — configure
+TLS or host-key verification in the client.
+
+```
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    type: auto                      # resolves to linux_bwrap or darwin_seatbelt
+    allow_network: false
+    tcp_egress:
+      - name: analytics_db
+        host: db.internal.example
+        port: 5432
+        allowed_cidrs: [10.42.0.0/16]
+      - name: git_host
+        host: github.com
+        port: 22
+terminals:
+  shell:
+    command: bash
+    os_env: inherit
+```
+
+Inside the sandbox, a client that can use a stdin/stdout proxy connects with
+`omnigent-egress-connect <name>`, from `sys_os_shell` or an inherited sandboxed
+terminal. For example, with the `git_host` route above, OpenSSH can use
+`ssh -o 'ProxyCommand=omnigent-egress-connect git_host' git@github.com`, given a
+separately available SSH credential and its own pinned host key. A plain
+`psql -h db.internal.example` can't use the connector directly. Connecting to an
+ungranted name fails with `TCP egress route is not allowed`.
+
+- **Address policy.** Without `allowed_cidrs`, every resolved address must be public;
+  a public DNS name that resolves to a private address is denied. To reach a private
+  service, list the smallest relevant CIDR in `allowed_cidrs` — every A/AAAA answer
+  must then fall inside it, so a mixed public/private answer is denied unless every
+  address is allowed. The chosen IP is pinned for the dial, so a later DNS change
+  can't redirect an established connection.
+- **Always blocked.** Loopback, link-local, multicast, reserved, cloud metadata, and
+  cloud control addresses are denied even with a CIDR grant, as `host` literals and
+  inside `allowed_cidrs`.
+- **No HTTP overlap.** `tcp_egress` cannot be combined with `egress_rules` in the same
+  sandbox — a different DNS name could reach the same HTTP endpoint and bypass method
+  and path restrictions. Routes on ports `80` and `443` are rejected. `git_ssh`
+  bindings can coexist with `tcp_egress`.
+- **Stream limits.** Up to eight concurrent streams per sandbox. Each stream has a
+  30-minute lifetime, a five-minute idle limit, and a 2 GiB total-transfer limit; a
+  peer that stops reading for ten seconds also closes it. `omnigent-egress-connect`
+  exits nonzero if the broker closes the stream early.
+
+<div className="note">
+
+`tcp_egress` requires `linux_bwrap` or `darwin_seatbelt`; other backends and native
+Codex workers reject the setting rather than silently dropping the route. Like
+`git_ssh`, it is incompatible with `allow_sandbox_override: true` on a terminal.
+Upgrade the server, host, and session runner together: the server rejects a session
+before launch if the connected runtimes don't advertise the `tcp_egress` capability,
+including routes in sub-agents and terminal environments. Keep `allow_network: false`
+explicit so an older build that ignores `tcp_egress` still denies direct networking.
+
+</div>
+
 ## Sharing a policy
 
 Declare the sandbox once and reuse it with a YAML anchor:
@@ -508,6 +578,7 @@ Omnigent errors instead of quietly running unsandboxed. The only opt-out is
 | `egress_allow_private_destinations` | bool                 | `false`          | Allow connections to private/metadata IPs                                                                                                                                                          |
 | `credential_proxy`                  | block[]              | none             | Secretless auth entries; requires `egress_rules`                                                                                                                                                   |
 | `git_ssh`                           | block[]              | none             | Repository-scoped [Git-over-SSH](#git-over-ssh) bindings brokered by the parent; requires `linux_bwrap` or `darwin_seatbelt`                                                                       |
+| `tcp_egress`                        | block[]              | none             | [Named TCP routes](#named-tcp-egress) to exact host/port pairs; requires `linux_bwrap` or `darwin_seatbelt`; cannot be combined with `egress_rules`                                               |
 
 ### `os_env.sandbox.git_ssh[]`
 
@@ -525,3 +596,15 @@ with the same `host`, `port`, `username`, and `repository` are rejected as dupli
 | `known_hosts_file` | string   | required  | Absolute path to a file with one exact host key entry for `host`; `~` is not expanded                          |
 | `allowed_cidrs`    | string[] | `[]`      | Address ranges the resolved host must fall in. Empty allows only public addresses.                             |
 | `allow_loopback`   | bool     | `false`   | Permit a loopback destination. Requires a loopback IP literal `host` and exactly its `/32` in `allowed_cidrs`. |
+
+### `os_env.sandbox.tcp_egress[]`
+
+Each entry grants one named TCP destination. The list must be non-empty, and only the
+fields below are accepted.
+
+| Field           | Type     | Default  | Description                                                                                                                         |
+| --------------- | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `name`          | string   | required | Unique route name passed to `omnigent-egress-connect`. Lowercase ASCII: a letter, then up to 63 letters, digits, `_`, or `-`.       |
+| `host`          | string   | required | Exact ASCII DNS name or IP address. Blocked addresses (loopback, link-local, metadata, …) are rejected.                             |
+| `port`          | int      | required | Destination port (1–65535). `80` and `443` are rejected.                                                                            |
+| `allowed_cidrs` | string[] | `[]`     | Address ranges every resolved address must fall in. Empty allows only public addresses. An IP-literal `host` must fall in the range. |

@@ -177,8 +177,9 @@ Where it lands depends on the session you ran it from:
   open a new session in this project. Please try again.** Running `/new` again
   retries the lookup rather than reusing a stale project name.
 
-This is the same destination as `⌘⌥N` and the command palette's new-session
-action, with the current project carried over.
+This is the same destination as the [new-session shortcut](#other-global-shortcuts)
+(`⌘⇧O`) and the command palette's new-session action, with the current project
+carried over.
 
 ### Nested agents
 
@@ -452,7 +453,7 @@ only that modifier fires it:
   composer and terminal.
 - On **Windows/Linux** the shortcuts use **Ctrl**, and only Ctrl triggers them.
 
-Exceptions: `Ctrl+Shift+M` (model picker), `Ctrl+Shift+L` (focus chat input), and `Ctrl+Tab` (desktop recent sessions) use Control on every platform.
+Exceptions: `Ctrl+Shift+M` (model picker), `Ctrl+Shift+L` (focus chat input), ``Ctrl+` `` (new shell), and `Ctrl+Tab` (desktop recent sessions) use Control on every platform.
 
 What you see in the shortcuts overlay is what fires: the overlay shows ⌘ on
 macOS and Ctrl elsewhere.
@@ -522,27 +523,33 @@ composer, the editor, or a terminal is unaffected.
 | Toggle the left (Conversations) sidebar      | `⌘⌥[` (`Ctrl+Alt+[`)                           |
 | Focus or close the right (Workspace) sidebar | `⌘⌥]` (`Ctrl+Alt+]`)                           |
 | Select a Workspace tab                       | `⌘⌥]` then `1`–`4` (`Ctrl+Alt+]` then `1`–`4`) |
-| Open a new browser tab (desktop app only)    | `⌘⌥B` (`Ctrl+Alt+B`)                           |
-| Open a new shell                             | `⌘⌥T` (`Ctrl+Alt+T`)                           |
+| Open a new browser tab (desktop app only)    | `⌘T` (`Ctrl+T`)                                |
+| Open a new shell                             | ``⌃` `` (``Ctrl+` `` on every platform)        |
 | Toggle voice dictation                       | `⌘⌥V` (`Ctrl+Alt+V`)                           |
 | Approve a pending request                    | `⌘↵` (`Ctrl+Enter`)                            |
 | Show the shortcuts overlay                   | `⌘/` (`Ctrl+/`)                                |
 
-`⌘⌥N` opens a clean, focused new-session composer from any page — the same
-destination as the command palette's new-session action. Inside a conversation,
-typing [`/new`](#new-session-with-new) in the composer does the same while
-keeping the new session in the current project. `⌘⌥,` jumps straight
 `⌘⇧O` (`Ctrl+Shift+O` on Windows/Linux) opens a clean, focused new-session
 composer from any page — the same destination as the command palette's
-new-session action. It fires even while the composer is focused, and any unsent
-draft in the session you left is kept. The chord matches the `O` character your
+new-session action. Inside a conversation, typing
+[`/new`](#new-session-with-new) in the composer does the same while keeping the
+new session in the current project. It fires even while the composer is
+focused, and any unsent draft in the session you left is kept. The chord matches the `O` character your
 keyboard layout types, so it follows the key labeled O on non-QWERTY layouts.
-The [desktop app](/docs/interact/desktop#keyboard-shortcuts) keeps `⌘⌥N`
-(`Ctrl+Alt+N`) for this action instead. When the web UI is embedded in another
+The [desktop app](/docs/interact/desktop#keyboard-shortcuts) uses `⌘N`
+(`Ctrl+N`) for this action instead. When the web UI is embedded in another
 page, the shortcut only fires while focus is inside the Omnigent app, so the
-host page keeps its own keys. `⌘⌥,` jumps straight to **Settings** from anywhere in the app. `⌘⌥B` is available only in the
+host page keeps its own keys. `⌘⌥,` jumps straight to **Settings** from anywhere in the app. `⌘T` (the
+desktop menu's **New Browser Tab**) is available only in the
 [desktop app](/docs/interact/desktop#keyboard-shortcuts), where the embedded
-browser lives; the shortcuts overlay lists it only there.
+browser lives; the shortcuts overlay and the Workspace rail's **+ → Browser**
+row list it only there.
+
+``⌃` `` (``Ctrl+` ``) opens a new shell of your remembered default type in the
+Workspace rail — the keyboard path for the rail's **+** menu. It uses Control on every
+platform and also works while a terminal has focus. It does nothing while the
+host is offline, the session can't be reached, or a shell is still being
+created.
 
 `Ctrl+Shift+M` is the keyboard equivalent of typing `/model` in the composer: it opens
 the model picker without leaving the keyboard. It works both in an existing

@@ -1002,6 +1002,47 @@ To create one manually, open the **New scheduled task** dialog and fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+### Failed runs
+
+When a task's latest run failed, its card on the **Automations** page shows a
+red warning icon beside the name (tooltip: **Last run failed**). The warning
+appears on paused tasks too, and it stays until a later run replaces the
+failed one.
+
+A failed run that never started a session (for example, because no connected
+host was online when the task fired) also appears in the **Inbox** as an
+**Automation failed** item. These items appear under **All** and **Unread**,
+but not under **Awaiting response**. Each item shows the task name, when the
+run failed, and the failure reason. Expand it to choose:
+
+- **Open automation** — go to the task.
+- **Mark as read** — dismiss this failure from the Inbox. This does not rerun
+  the task, change its run history, or clear the warning on its card. A later
+  failed run can appear again.
+
+Some things to know about the failure feed:
+
+- **One item per task.** The Inbox shows only a task's latest run, so it isn't a
+  record of every past failure. A newer run replaces the previous item.
+- **Session-linked failures aren't duplicated.** If a failed run already created
+  a session, the failure stays on that session's own Inbox entry, and no
+  separate automation item is added.
+- **Older tasks are checked page by page.** The Inbox checks your tasks 50 at a
+  time, newest-created first. When older tasks haven't been checked yet, the
+  sidebar Inbox badge shows a **+** after the count, and **Check more
+  automations** at the bottom of the Inbox checks the next page. A page can
+  contain no failures and still have more pages after it.
+- **Read state is stored in your browser.** Dismissals are saved per server and
+  user in this browser, and they persist across reloads. The browser keeps the
+  most recent 1,000 dismissals, so very old dismissed failures can come back.
+  Other browsers and devices keep their own read state.
+- **Refresh timing.** Opening the Inbox refreshes the feed. Otherwise the
+  sidebar count refreshes every five minutes.
+
+The failure feed needs a server that reports the `scheduled_task_inbox`
+capability. Against older servers, the Inbox works as before, without
+automation items.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

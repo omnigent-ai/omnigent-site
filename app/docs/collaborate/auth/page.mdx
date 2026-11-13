@@ -381,8 +381,10 @@ OMNIGENT_PUBLIC_SHARING=off omni server start
 Public access is enabled unless the value is explicitly falsy
 (`0` / `false` / `no` / `off`); unset or unrecognized fails open to enabled. It
 is also editable at runtime from **Settings > Sharing**. When disabled, the
-Share dialog hides its **Public access** toggle and the server rejects new
-public grants; sessions already shared publicly stay public until revoked.
+server rejects new public grants and the Share dialog hides its **General
+access** selector. Sessions already shared publicly stay public until revoked:
+on those sessions the selector stays visible, but only **No access** can be
+chosen.
 
 #### Default visibility for new sessions
 

@@ -1085,11 +1085,20 @@ sidebar's session list — it surfaces only as a rail tab.
 
 ### Side-chat tabs
 
-Side-chat tabs are stored in your browser, like the rail's file and browser
-tabs: they survive reloads and restarts on this device but don't follow you to
-another device. Switching to another conversation shows that conversation's own
-side-chat tabs. Close a tab with its `✕` (or a middle-click) to stop the side
-chat's runner and drop the tab.
+Side-chat tabs survive reloads and restarts, and they follow you to your other
+devices. When you open the same parent conversation on another device, its saved
+side chats appear on their own in the Workspace rail's tab strip (or the mobile
+**Side chats** drawer). There's nothing to browse or pick. Discovery loads up to
+20 side chats and doesn't change your active panel or tab. Only the session's
+owner can start side chats, and only the owner sees them on other devices.
+Side chats created before server discovery was added stay local to the browser
+where they were created.
+
+Which tab is selected, and which tabs are closed, is tracked per device.
+Switching to another conversation shows that conversation's own side-chat tabs.
+Close a tab with its `✕` (or a middle-click) to stop the side chat's runner and
+drop the tab. A tab you close stays closed on that device after a reload, while
+your other devices keep theirs.
 
 Side chats are distinct from Claude Code's `/btw` overlay (below), which answers
 a one-off question inline without creating a session.

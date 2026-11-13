@@ -39,6 +39,11 @@ a new top-level session; turn it off to keep the default session name and
 rename sessions yourself. This is a per-user preference stored on the server, so
 it follows your account across browsers and devices.
 
+To set your own title format, open **Settings → General → Sessions**, enter
+guidance under **Title instructions**, and click **Save**. These apply on top
+of the server's instructions; see
+[Personal title instructions](/docs/reference/configuration#personal-title-instructions).
+
 ### Export a session
 
 Save a conversation as a local file without leaving the browser: open the
@@ -55,6 +60,45 @@ a file exported from the web UI round-trips through `omnigent session import`.
 Long conversations are exported in full — the UI pages through the whole
 history before saving. If the export can't be built, an **Export failed** toast
 appears and nothing is downloaded.
+
+### Rewind to an earlier prompt with `/rewind`
+
+In `claude-sdk` and Claude Code native (`claude-native`) sessions, `/rewind`
+lets you go back to an earlier prompt, edit it, and continue from there. Type
+`/rewind` and press `Enter`, or pick **/rewind** from the slash menu. A
+searchable list of the session's prompts opens, newest first. In a long session,
+choose **Load older prompts** to page further back; the option stays available
+while you search.
+
+Picking a prompt opens a **new session** that holds only the history from
+before that prompt. Rewinding to the first prompt keeps no history. The new
+session:
+
+- runs on the same host, workspace, and runner, and keeps the original's title,
+  labels, model, effort, and launch arguments. If the runner is offline, the
+  session is bound to the host and the runner relaunches there on your next
+  message.
+- opens with the chosen prompt back in the composer, attachments included, so
+  you can edit it before sending. If an attachment can't be restored (for
+  example, the file is missing), a warning asks you to attach it again. The new
+  session still works.
+
+The original session keeps its full history and ends with a notice linking to
+the new one. Anyone viewing it follows you to the new session. In Claude Code
+native sessions, the original session's terminal pane is not rewound: it keeps
+the full conversation, and the new session's Claude pane resumes from a
+transcript rebuilt from the kept history. Unlike `/clear`, your terminal doesn't
+move to the new session.
+
+**Warning:** `/rewind` rewinds the conversation only. Files in the workspace
+are **not** rolled back.
+
+`/rewind` is refused while a turn is running, and in sub-agent and side-chat
+sessions. The error appears under the composer. The command appears only when
+the server supports it (`GET /v1/info` reports `session_rewind: true`).
+Otherwise a typed `/rewind` is sent to the agent as text, or runs a custom
+command with that name if one exists. Clients can call the same operation
+directly with `POST /v1/sessions/{session_id}/rewind` and an `item_id`.
 
 ### Hide unconfigured harnesses
 

@@ -255,6 +255,34 @@ control and, in built-in accounts mode only, `Change password`. Both `Reset`
 and `Change password` sign the account out everywhere else — see
 [Changing or resetting a password](#changing-or-resetting-a-password).
 
+### Turning off admin view
+
+Admins normally have owner-level access to every session on the server. To work
+with only your normal session access, for example to see what a regular user
+sees, turn off **Settings > General > Administration > Admin view**. The page
+reloads in non-admin mode.
+
+The switch only applies to the current browser. It is stored in the
+`omnigent_admin_view` cookie (`off` while admin view is off, kept for a year),
+and the server checks it on every HTTP request and WebSocket connection. While
+it is off:
+
+- Session access comes only from your own sessions and the grants others have
+  given you. Other users' sessions return 403 or 404, and a read grant stays
+  read-only.
+- Admin-only routes return `403`. That includes members, invites, password
+  resets, removals, sharing settings, default policies, and extension
+  diagnostics. The **Members**, **Policies**, and **Sharing** sections show you
+  as a non-admin.
+- Your account keeps its admin role. The switch stays visible, so you can turn
+  admin view back on at any time. Requests without the cookie, from another
+  browser or a CLI or API client, still have full admin access.
+
+The switch appears only on servers that require sign-in and track session
+permissions. Those servers report `admin_view: true` from `GET /v1/info`.
+Single-user local servers do not show it. If the browser blocks cookies, the
+switch shows an error and admin view stays unchanged.
+
 ### Removing a member
 
 In built-in accounts mode, `Remove` (`DELETE /auth/users/{id}`) revokes

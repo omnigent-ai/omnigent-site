@@ -102,8 +102,9 @@ omni config set --global \
 
 The isolated title generator receives the current date (as `YYYY-MM-DD`) and
 then applies your requirements to the first user message. Generated titles
-longer than 60 characters are rejected, leaving the first-message fallback title
-in place.
+longer than 100 characters are rejected, leaving the first-message fallback title
+in place. With custom requirements the limit is 200 characters, and longer output
+is truncated with an ellipsis.
 
 Your requirements also apply to later agent-initiated renames through the
 `sys_session_rename` tool, not just the first-message title. When custom
@@ -136,7 +137,8 @@ session_title_instructions: |
 `session_title_instructions` key in the YAML passed to `omni server --config`;
 it then applies to every session on that server. Invalid values (non-string, or
 longer than 4,000 characters) are ignored and fall back to the default title
-prompt.
+prompt. Users can add their own requirements on top; see
+[Personal title instructions](/docs/reference/configuration#personal-title-instructions).
 
 </div>
 

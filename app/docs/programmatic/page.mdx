@@ -919,6 +919,48 @@ For agents with named sub-agents, reusing the same `agent` and `title` continues
 that child conversation; a different title starts a separate one. Child sessions
 appear in the Web UI, where you can follow their progress.
 
+### Let an agent organize sessions and projects
+
+An agent can tidy your sidebar for you: find sessions, file them into
+[projects](/docs/interact/web-ui#projects), rename, pin, or archive them, and
+rename projects. These tools act only on sessions you own, and they make the
+same changes as the sidebar's row and project menus. An open sidebar updates
+live.
+
+<div style={{ overflowX: "auto" }}>
+
+| Tool                 | What it does                                                                                                                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sys_project_list`   | List your projects and your sessions with each one's project. Filter by `project` (`""` for unfiled), `search` (title or transcript text, case-insensitive), `pinned`, or `include_archived`.                       |
+| `sys_session_update` | Update one session; pass only the fields to change. `project` files it by name (a missing project is created; `""` unfiles it), `title` renames it, `pinned` pins or unpins it, `archived` archives or restores it. |
+| `sys_project_update` | Rename a project (`project` is its current name, `name` the new one) or set its emoji `icon` (`""` removes it). Its sessions stay in it.                                                                            |
+
+</div>
+
+For example:
+
+```text
+Find my sessions that mention "billing migration", file them into a project
+called "Billing", pin the newest one, and give the project a 💳 icon.
+```
+
+A few things to know:
+
+- Filing, renaming, and pinning only change how a session is listed, so running
+  sessions, including the calling one, keep working.
+- Archiving a session stops its runner and unpins it, ending any running turn.
+  An agent cannot archive its own session or a session it runs under.
+- Sub-agent sessions follow their parent, and sessions in a family share their
+  representative's project; the tool names the session to update instead.
+- Agents cannot delete projects. When renaming a project, any session that could
+  not be moved is reported back in `sessions_not_moved`.
+- A session shared with you but owned by someone else is refused. If the
+  calling session is shared with edit access, it cannot create, rename, or file
+  into projects, or rename, pin, or archive sessions; listing still works, and
+  a read-only share leaves every tool available.
+- Set `tool_groups.projects: false` in the agent configuration to remove all
+  three tools.
+
 ### Use bundled skills for multi-agent workflows
 
 Skills are reusable instructions that guide how an agent uses its tools.

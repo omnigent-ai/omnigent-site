@@ -1,0 +1,67 @@
+{/* Auto-generated from the GitHub Release for v0.22.0. Edit the GitHub Release, not this file. */}
+
+# v0.22.0
+
+_Released 2026-11-13_ · 4 min read · Omnigent maintainers
+
+Omnigent 0.22.0 is a major release focused on giving your agents more ways to start work and making it easier for you to keep up with them, from starting agent runs automatically on outside events to reviewing, steering, and organizing what they produce. Automations can now be triggered by Schedule, Jira, Slack, GitHub, Linear, or PagerDuty. The desktop app gets a native menu and a full set of keyboard shortcuts, and the pull request Changes tab becomes a proper review tool. The composer adds `@` tagging. Sub-agents now nest in the sidebar, and a new AWS Lambda MicroVMs sandbox provider lets your sessions run, and fork, wherever you need them.
+
+## 1. Automation Triggers for Schedule, Jira, Slack, GitHub, Linear, and PagerDuty
+
+A lot of agent work starts with something happening somewhere else: a new ticket, a Slack message, an issue, an incident page, or a time of day. Automations can now be triggered by any of these. The available triggers are Schedule, Jira, Slack, GitHub, Linear, and PagerDuty, so the agent picks up the work when the event happens and you don't have to start each run yourself.
+
+You pick the trigger right in the "New automation" form, and you can start a new automation from any session. This makes it easy to take a workflow you just worked through by hand and turn it into one that runs on its own.
+
+_Learn more in the [Trigger templates](/docs/interact/web-ui#trigger-templates)._
+
+## 2. Native Desktop Menu and Keyboard Shortcuts
+
+If you spend your day moving between sessions, tabs, and workspaces, reaching for the mouse for every action slows you down. The desktop app now has a native menu and a full set of keyboard shortcuts for the actions you use most.
+
+From the keyboard you can open new terminal and browser tabs and pin, archive, or fork sessions. You can also toggle the sidebars, switch between workspace tabs, reopen tabs you closed, and go back and forward. There's also an optional global shortcut that brings Omnigent to the front from anywhere on your machine, so your agents are one keystroke away.
+
+_Learn more in the [Keyboard shortcuts](/docs/interact/desktop#keyboard-shortcuts)._
+
+## 3. Pull Request Changes Tab Review Tools
+
+Reviewing a large agent-written pull request is hard when all you have is one long diff. The pull request Changes tab now has the tools you need to review in a focused, step-by-step way.
+
+You can filter the list of changed files to find what you're looking for, and press Cmd/Ctrl+F to search for text inside the diff. As you go, you can mark files as viewed and track your progress through the change. You can also browse each commit's diff separately and follow how the change was built.
+
+_Learn more in the [Tracked pull requests](/docs/interact/web-ui#tracked-pull-requests)._
+
+## 4. `@` Mentions and Message Editing in the Composer
+
+Giving an agent the right context shouldn't mean copying and pasting session names or file paths. Type `@` in the composer to tag sessions, sub-agents, and files directly in your message.
+
+If you sent something too early, you can edit a sent message back into the composer and revise it instead of retyping it. Agent replies can also show screenshots saved in the workspace, so you can see what the agent saw without opening the file separately.
+
+_Learn more in [Mentioning sessions and files](/docs/interact/web-ui#mentioning-sessions-and-files)._
+
+## 5. Nested Agents in the Sidebar
+
+When one agent starts several others, a flat session list fills up fast and it's hard to tell which session belongs to which. With nested agents, the left sidebar now groups related sessions together.
+
+Agents spawned through the omnigent MCP, or created on the same managed sandbox, appear nested in the sidebar. You can see at a glance how your work is organized and jump straight to the sub-agent you need.
+
+## 6. AWS Lambda MicroVMs Sandbox Provider
+
+Omnigent adds a new sandbox provider, AWS Lambda MicroVMs, which gives you another option for running agent sessions in isolated cloud environments. If your network requires it, sandbox traffic can now go through upstream HTTP proxies.
+
+Sessions are also easier to move. Sandbox and managed sessions can fork to any host or sandbox provider, so you can take a conversation and continue it in whichever environment fits the next step.
+
+_Learn more in the [Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host)._
+
+Full Changelog: [https\://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md](https://github.com/omnigent-ai/omnigent/blob/main/CHANGELOG.md)
+
+## What's Next
+
+Install or upgrade Omnigent:
+
+```bash
+curl -fsSL https://omnigent.ai/install.sh | sh
+```
+
+- Star the project and file issues on [GitHub](https://github.com/omnigent-ai/omnigent).
+- Join the conversation on our [Discord](https://discord.gg/omnigent).
+- Browse the [docs](https://omnigent.ai/docs) to go deeper.

@@ -357,6 +357,94 @@ CLI ignores `SSL_CERT_FILE` on macOS, so `darwin_seatbelt` is rejected.
 
 </div>
 
+#### Codex model gateway
+
+A sandboxed `codex` executor can reach an HTTPS model gateway through the same
+proxy, so Codex never holds the gateway token. To set this up, set
+`executor.config.broker_gateway: true`. Then bind the gateway host with an
+`https_bearer` entry whose `env` is `OMNIGENT_CODEX_GATEWAY_TOKEN`, and allow the
+gateway's exact Responses route in `egress_rules`. The runner swaps the provider's
+auth command for a fixed command that prints only the placeholder. The trusted
+parent reads the protected `source` and renews the token. Codex gets a private
+home with no host auth or provider configuration, and only the agent bundle's
+skills.
+
+```
+executor:
+  model: gpt-daybreak-blue-latest
+  auth:
+    type: provider
+    name: locked-model
+  config:
+    harness: codex
+    broker_gateway: true
+    web_search: false
+    disable_native_tools: true
+os_env:
+  type: caller_process
+  sandbox:
+    type: darwin_seatbelt # or linux_bwrap
+    egress_rules:
+      - "POST model.example.com/cyber/v1/responses"
+    credential_proxy:
+      - type: https_bearer
+        target: model.example.com
+        env: OMNIGENT_CODEX_GATEWAY_TOKEN
+        source:
+          unix_socket: /private/model-token.sock
+          refresh_interval_seconds: 300
+```
+
+Configure the provider in the host's `~/.omnigent/config.yaml`:
+
+```
+providers:
+  locked-model:
+    kind: gateway
+    openai:
+      base_url: https://model.example.com/cyber/v1
+      wire_api: responses
+      auth_command: "false" # required by the provider schema; locked mode replaces it
+      models:
+        default: gpt-daybreak-blue-latest
+```
+
+The profile won't launch unless all of the following hold:
+
+- `broker_gateway` is the boolean `true`. A `credential_proxy` entry that injects
+  `OMNIGENT_CODEX_GATEWAY_TOKEN` without it is rejected.
+- `web_search: false` and `disable_native_tools: true` are set, so Codex's shell
+  and file operations go through Omnigent tools and policies.
+- The provider's `base_url` is `https://` on port 443, with no credentials, query,
+  or fragment.
+- There is exactly one matching `https_bearer` entry for the gateway host, with
+  `env: OMNIGENT_CODEX_GATEWAY_TOKEN` and a renewable `file` or `unix_socket`
+  source (`refresh_interval_seconds` set).
+- There is exactly one egress rule for the gateway host: `POST` on
+  `<base_url path>/responses`.
+- The sandbox `type` is `linux_bwrap` or `darwin_seatbelt`.
+
+Gateway profiles without `broker_gateway` keep their existing authentication.
+
+<div className="note">
+
+Omnigent doesn't start the token issuer. A separate trusted issuer must serve
+`GET /token` and refresh the bearer. The socket path must be absolute and outside
+the sandbox's read/write grants. Keep the issuer's code, dependencies,
+configuration, and credential storage outside sandbox write grants as well. The
+bearer is attached only to placeholder-bearing HTTPS requests on port 443, in both
+the Codex relay and the OS-tool proxy. Bare or plaintext HTTP requests get no
+bearer.
+
+Older runners ignore `broker_gateway` and fall back to legacy authentication.
+Upgrade every runner that can launch the profile before you enable it. Keep
+`auth_command: "false"` exactly as shown: an older runner, or any other use of
+this provider, then fails authentication instead of running a real token
+command. That setting doesn't protect an older runner by itself, so test a real
+turn and a resumed turn on an upgraded runner before you roll out.
+
+</div>
+
 ### Git over SSH
 
 `git_ssh` grants a sandboxed `git` access to **one repository and one SSH operation

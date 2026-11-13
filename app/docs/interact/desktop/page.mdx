@@ -38,7 +38,7 @@ showing how many sessions are waiting, and multiple independent windows.
 
 - **OS notifications.** Get notified when an agent finishes, asks for input, or a runner disconnects. Notifications show the first few lines of the agent's message and only fire for sessions you're not actively viewing.
 - **Dock badge.** See at a glance how many sessions need your attention, without switching to the app.
-- **Multiple windows.** Open additional windows with `Cmd+N` to watch multiple sessions or servers side by side.
+- **Multiple windows.** Open additional windows with `⌘⇧N` (`Ctrl+Shift+N`), **File → New Window**, to watch multiple sessions or servers side by side.
 - **Recent-session switcher.** Hold `Ctrl` and press `Tab` to flip between your five most recent sessions — see [Keyboard shortcuts](#keyboard-shortcuts).
 - **One-click host reconnect.** When a session's host is this machine and it has gone offline, the app restarts the host for you instead of asking you to run a command in a terminal.
 
@@ -193,9 +193,20 @@ doesn't rewrite those headers.
 ## Keyboard shortcuts
 
 The desktop app supports every
-[web UI shortcut](/docs/interact/web-ui#keyboard-shortcuts) and adds two of
-its own. Both appear in the in-app shortcuts overlay (`⌘/` / `Ctrl+/`) only
-when you're running the desktop app.
+[web UI shortcut](/docs/interact/web-ui#keyboard-shortcuts) and adds some of
+its own. The recent-session switcher and the new-browser-tab shortcut appear in
+the in-app shortcuts overlay (`⌘/` / `Ctrl+/`) only when you're running the
+desktop app. Close and Close Window are in the **File** menu.
+
+### Go back and forward
+
+`⌘[` / `⌘]` (`Ctrl+[` / `Ctrl+]` on Windows/Linux) and the **Go** menu's **Back**
+and **Forward** items step back and forward through the pages you've visited in
+the app. Trackpad swipes (macOS) and the mouse back and forward buttons do the
+same. The sidebar's [**Back** and **Forward** buttons](/docs/interact/web-ui#back-and-forward)
+also work.
+
+Back stops at the first page you opened in the app.
 
 ### Switch recent sessions
 
@@ -228,6 +239,26 @@ command have no browser-tab shortcut; use **+ → Browser** instead.
 Starting a new session is `⌘N` (`Ctrl+N`). This differs from the browser web UI, which uses `⌘⇧O`
 (`Ctrl+Shift+O`); the shortcuts overlay and the sidebar's **New session**
 button show the chord for whichever app you're in.
+
+### Close a tab
+
+`⌘W` (`Ctrl+W` on Windows/Linux), the **File → Close** menu item, closes the
+selected tab in the Workspace rail. The shortcut closes a tab only when focus is
+in the Workspace rail or in the embedded Browser page. With focus elsewhere in the
+conversation, `⌘W` leaves the conversation.
+
+- **File tabs** ask you to confirm before discarding unsaved edits.
+- **Side-chat tabs** close only that side chat. The parent and sibling chats keep
+  running.
+
+If the rail has focus and no closable tab is selected, `⌘W` hides the rail when
+the layout supports hiding. Otherwise it leaves the conversation.
+
+On the new-session page, `⌘W` asks for confirmation and then closes the window.
+On other pages outside a conversation, it goes to the new-session page, after the
+unsaved-file check.
+
+`⌘⇧W` (`Ctrl+Shift+W`), **File → Close Window**, closes the window.
 
 ## Voice dictation
 
@@ -333,6 +364,15 @@ Each window connects to one server. To work with multiple servers at the same ti
 2. Enter the URL of the second server
 
 Notifications and badge counts are combined across all connected servers.
+
+To switch the current window to another server, click your profile at the
+bottom of the sidebar. Below **Settings**, the profile menu lists servers
+**Provided by your organization** (see
+[Preset server URLs via MDM](#preset-server-urls-via-mdm-macos)) and your
+**Recents**, with a check next to the current one. Pick a server to switch the
+window to it, or choose **Connect to new server…** to return to the setup page.
+When the app manages your sign-in to the current server, the menu also offers
+**Sign out of `<host>`**.
 
 {/* eslint-disable-next-line @next/next/no-img-element */}
 

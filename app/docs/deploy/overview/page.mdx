@@ -193,7 +193,7 @@ Deploy the Omnigent server to a Kubernetes cluster with the kustomize manifests
 in `deploy/kubernetes/` in the repo. The `overlays/sandbox-runners/` overlay
 additionally turns on the **`kubernetes`** managed sandbox provider
 (`sandbox.provider: kubernetes`): a `host_type: managed` session spawns a
-dedicated runner Pod that runs `omnigent host` and dials back to the server.
+dedicated runner Pod that runs `omnigent host` and connects back to the server.
 
 That provider imports a Kubernetes client the base server image omits, so the
 overlay pulls the official `ghcr.io/omnigent-ai/omnigent-server-kubernetes`
@@ -242,11 +242,16 @@ that is **on** by default. It allows nested agent creation and same-sandbox
 fork selection. Set `OMNIGENT_FEATURES=-sibling_sessions` to turn off new
 nested creation. Existing session families stay readable while it's off.
 
-Runner features are resolved by each runner instead of the server:
+These features are on by default:
+[`custom_agents_settings_ui`](/docs/use/custom-agents#edit-an-agent-in-the-web-ui),
+`sidebar_grouping_ui`, `claude_osc_status`, and `peer_session_messaging`. Turn one
+off with `-feature_name`. Runner features are resolved by each runner, either
+instead of the server or in addition to it:
 
-| Feature             | Default | Applies to    | Effect                                                                                                                                                                                                             |
-| ------------------- | ------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `claude_osc_status` | On      | Host / runner | `claude-native` sessions take their working, blocked, and idle status from Claude Code's OSC 7501 terminal reports, falling back to Claude's session status file and then pane activity. Not listed in `/v1/info`. |
+| Feature                  | Default | Applies to               | Effect                                                                                                                                                                                                             |
+| ------------------------ | ------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `claude_osc_status`      | On      | Host / runner            | `claude-native` sessions take their working, blocked, and idle status from Claude Code's OSC 7501 terminal reports, falling back to Claude's session status file and then pane activity. Not listed in `/v1/info`. |
+| `peer_session_messaging` | On      | Server and host / runner | Lets agents use `sys_session_message` to message sessions that aren't their children. Both the server and the runner must leave it on. Not listed in `/v1/info`.                                                   |
 
 The OSC path needs Claude Code 2.1.295 or later. Older CLIs use the fallback.
 Setting `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` also suppresses these status

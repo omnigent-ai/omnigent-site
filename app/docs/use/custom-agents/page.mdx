@@ -47,9 +47,11 @@ you own, and only when the server advertises configuration editing
 (`agent_config_edit: true` in `/v1/info`); on an older server the summary says
 to update the server instead. Server-provided agents are read-only.
 
-The Settings page itself is a gated release feature: an operator enables it
-deployment-wide by including `custom_agents_settings_ui` in the server's
-release features (`OMNIGENT_FEATURES=custom_agents_settings_ui`).
+The **Custom agents** section of Settings is controlled by the
+`custom_agents_settings_ui` [release feature](/docs/deploy/overview#release-features),
+which is on by default. It appears only when the server also advertises agent
+installation (`agent_install` in `/v1/info`). To hide it across a deployment, an
+operator disables the feature (`OMNIGENT_FEATURES=-custom_agents_settings_ui`).
 
 The **Edit** dialog loads the agent's current configuration and lets you change:
 

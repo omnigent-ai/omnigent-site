@@ -32,6 +32,7 @@ sandbox:
 | `server_url`  | Yes      | Omnigent server URL reachable from the sandbox.                                                                       |
 | `host_config` | No       | Omnigent configuration installed inside each sandbox. See [Host configuration](#host-configuration).                  |
 | `git_clone`   | No       | Clone policy for fresh repository checkouts. See [Git clone options](#git-clone-options).                             |
+| `stop_on_archive` | No   | Boolean, default `false`. Stops (but doesn't delete) a session's sandbox when the session is archived, on providers that can resume a stopped sandbox. Set it per provider; a top-level value is the default for every `providers:` entry. See [Stop sandboxes of archived sessions](/docs/deploy/cloud-sandbox-host#stop-sandboxes-of-archived-sessions-optional). |
 
 Provider-specific blocks are optional. Omit one to use that provider's defaults.
 

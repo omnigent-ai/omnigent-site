@@ -232,6 +232,37 @@ so the in-sandbox browser login is skipped automatically.
 Stopping `connect` leaves the sandbox running. Delete it with the provider's
 CLI or console when you no longer need it.
 
+### Stop sandboxes of archived sessions (optional)
+
+Archiving a session stops its runner but by default leaves its managed sandbox
+running. Set `stop_on_archive: true` to also stop the sandbox once the runner
+is stopped:
+
+```
+sandbox:
+  provider: modal
+  server_url: https://your-server.example.com
+  stop_on_archive: true # optional; default: false
+```
+
+- **Stopped, not deleted.** If you unarchive the session and send a message,
+  the same sandbox resumes.
+- **Per provider.** In a `providers:` list, a value set next to `providers` is
+  the default for every entry, and each entry can override it.
+- **Resumable providers only.** The setting applies only to providers that can
+  resume a stopped sandbox (the `resume_stopped` capability) and implement
+  `stop()`. If a provider's `stop()` raises `SandboxCapabilityError`, the
+  setting has no effect and the server logs that at debug level.
+- **Only unshared sandboxes.** A sandbox is stopped only when no other session
+  uses it. If another session is on the same host, or the session has a side
+  chat or sub-agent, the sandbox keeps running even when those are archived
+  too. A scheduled task run's sandbox is never stopped.
+
+Deleting the session still terminates the sandbox. If the
+[reaper](#reap-stale-sandboxes-optional) is enabled, it also terminates a
+stopped sandbox once its host passes the offline limit. In both cases the next
+message starts a fresh sandbox.
+
 ### Reap stale sandboxes (optional)
 
 By default a managed sandbox lives until its session is deleted (or the

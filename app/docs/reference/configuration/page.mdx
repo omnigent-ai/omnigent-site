@@ -96,6 +96,23 @@ and agent renames. An empty value removes the additional guidance. A non-string
 value or a string longer than 4,000 characters is ignored and the default title
 prompt is used.
 
+### Personal title instructions
+
+Each user can also save their own title requirements in the web UI under
+**Settings → General → Sessions → Title instructions** (up to 4,000
+characters). The server stores them per user and applies them to automatic
+titles and agent renames of sessions that user owns. They're read when each
+title is generated, so no server restart is needed.
+
+When both are set, the server's `session_title_instructions` come first,
+followed by the user's instructions, which win where the two conflict. Leaving
+the field blank, or clicking **Clear**, removes only the personal instructions;
+titles then use the server setting, or the default prompt if there is none.
+If a user's saved instructions can't be read, titles fall back to the server
+setting alone.
+
+The same value is available through the [REST API](/reference).
+
 ## Web UI base path
 
 | Setting | Value                                                                                |

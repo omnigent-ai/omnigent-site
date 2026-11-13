@@ -397,6 +397,22 @@ The reaper can reuse one launcher per workspace and provider. Override
 requires workspace-scoped credentials. Termination must still succeed when the
 sandbox has already disappeared.
 
+With a provider's [`stop_on_archive`](/docs/deploy/cloud-sandbox-host#stop-sandboxes-of-archived-sessions-optional)
+setting on, archiving a session calls `stop(sandbox_id)` on its sandbox if no
+other session uses it (no other session on the host, and no side chat or
+sub-agent of the session). After the session is unarchived, its next message
+wakes the sandbox through `resume()`. Only providers that declare
+`resume_stopped` are stopped. `stop()` must treat an already stopped sandbox as
+success. If it raises `SandboxCapabilityError`, the sandbox keeps running.
+
+Before stopping, the server calls `stop_when_archived(*, owner, configured)`.
+`owner` is the host owner (the session creator) and `configured` is the
+provider's `stop_on_archive` setting. By default the method returns
+`configured`. Override it to decide per owner when a session is archived, for
+example from a feature flag, so you can turn the behavior on or off without
+restarting the server. It runs in a worker thread after the archive request has
+returned. If it raises an exception, the sandbox keeps running.
+
 ### Adding CLI bootstrap
 
 CLI support requires an `ExecModelHostLauncher` subclass with

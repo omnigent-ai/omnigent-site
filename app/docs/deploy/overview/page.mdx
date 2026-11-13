@@ -137,6 +137,11 @@ user-configured ACP agents. To run a picker that offers only your agents, set an
 empty allowlist and add your own specs as
 [extra built-in agents](#extra-built-in-agents).
 
+To limit only what New Chat offers, and to pick its default agent, use
+[New Chat picker curation](/docs/reference/configuration#new-chat-picker-curation)
+instead. That setting is display only: the API and other pickers still reach
+every agent, while this variable limits which packaged agents the server offers.
+
 Trimming hides agents but never deletes them. A packaged agent seeded by an earlier
 boot keeps its database row, so existing sessions bound to it keep working and keep
 their history. Only the new-session picker leaves it out. The native CLI harness

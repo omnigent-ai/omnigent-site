@@ -360,6 +360,42 @@ The **MCPs** control appears, and the catalog is requested, only when the server
 advertises the `mcp` connection capability; on other servers the composer shows
 no picker.
 
+### Check MCP connections with `/mcp`
+
+Type `/mcp` in the composer to list the session's MCP servers and whether each
+one is connected.
+
+In a `claude-sdk` session whose agent is running, each row also shows the
+connection that agent holds in this session, as **In this session:** followed
+by one of:
+
+- **Connected**
+- **Failed** — followed by the error the harness reported, when there is one.
+- **Needs sign-in**
+- **Connecting…** — the panel refreshes until the connection settles.
+- **Disabled**
+- **Not loaded** — the agent reported its connections but didn't include this
+  server.
+
+The panel also lists servers that only the Claude CLI loaded, even though
+Omnigent doesn't manage them. Before the session's first turn the panel shows
+**Live connection status appears once this session's agent is running; send a
+message to start it.** If the agent can't be asked, the panel shows **Couldn't
+read this session's live MCP connections** with the reason.
+
+A **Failed** or **Needs sign-in** row offers **Reconnect** once the server's
+account needs no sign-in (rows that do need sign-in ask you to sign in first).
+Reconnect retries that one server inside the running agent without starting a
+new session. The button reads **Reconnecting…** while it runs, and only one
+server reconnects at a time. The row then shows the refreshed state, or
+**Reconnect failed:** with the agent's reason. Read-only viewers of a shared
+session see the live state but not **Reconnect**.
+
+Live status is available only for `claude-sdk` sessions; other harnesses show
+the server list without it. The panel's **Go to Settings** link opens the
+harness settings for the session's host and keeps that host selected, even when
+it is a sandbox host that the host picker otherwise hides.
+
 ### Shared sessions
 
 On a multi-user server the sidebar splits your session list across two tabs:

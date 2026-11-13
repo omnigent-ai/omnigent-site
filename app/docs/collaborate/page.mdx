@@ -105,6 +105,8 @@ actions bypass the agent entirely and stay with the session owner:
 | Send messages and drive the agent                        |      |  ✓   |   ✓   |
 | Browse and edit files inside the workspace               |  \*  |  ✓   |   ✓   |
 | See and answer pending prompts (approvals, questions)    |      |  ✓   |   ✓   |
+| Download or fork the session's agent bundle              |  ‡   |  ✓   |   ✓   |
+| Start new sessions with the session's agent              |      |  ✓   |   ✓   |
 | Change a native session's permission mode or launch args |      |      |   ✓   |
 | Transfer a live terminal to another session              |      |      |  ✓†   |
 | Browse absolute paths on the host filesystem             |      |      |   ✓   |
@@ -114,6 +116,9 @@ actions bypass the agent entirely and stay with the session owner:
 described above.
 
 † The caller must own both sessions and the host the terminal runs on.
+
+‡ Read collaborators get a redacted copy of the agent; see
+[Read shares get a redacted agent bundle](#redacted-agent-bundle).
 
 The permission or approval mode of a native coding-agent session (for example
 Claude Code's permission mode or Codex's approval preset), and its terminal
@@ -142,6 +147,33 @@ Pending prompts are answerable by anyone who can drive the agent (**Edit**),
 whether from the web UI's approval bar or the REST elicitation endpoints. A
 **Read** share can neither see nor answer them.
 
+<h3 id="redacted-agent-bundle">Read shares get a redacted agent bundle</h3>
+
+An agent bundle can carry its author's credentials, so only collaborators with
+**Edit** (or the owner) receive it verbatim. When a **Read** collaborator
+downloads the session's agent (`GET /v1/sessions/{session_id}/agent/contents`,
+or the `sys_agent_download` tool), the server returns a minimal redacted bundle
+instead. It holds a single `config.yaml` that keeps only the agent's name, its
+executor type, and, for `omnigent` executors, the harness. No other source
+files or configuration are included, so the redacted bundle can't reproduce
+the source agent's private setup.
+
+The response reports which copy you got:
+
+- The REST endpoint sets the `X-Agent-Bundle-Redacted` header to `true` or
+  `false`.
+- `sys_agent_download` returns a `redacted` boolean alongside `path`,
+  `agent_name`, `agent_version`, and `bytes_written`.
+
+Metadata reads such as `sys_agent_get` still work with **Read** access.
+
+Starting a new session with another user's session-scoped agent (for example
+an `agent_id` returned by `sys_agent_get` or `sys_agent_list`, passed to
+`sys_session_create` or `POST /v1/sessions`) requires **Edit** on a session that
+uses that agent. **Read** is not enough, because the new session would share
+the agent's mutable row. The server checks the owning session and any other
+session that shares the agent, such as a fork.
+
 <h3 id="owner-only-agent-changes">Only the owner can change the agent</h3>
 
 Co-driving lets a teammate send messages, but it does not let them reconfigure
@@ -150,7 +182,9 @@ servers**, and replacing the session's agent bundle (`PUT
 /v1/sessions/{session_id}/agent`), require **owner** access to the session —
 **Edit** is not enough. On top of session ownership, the caller must also own
 the agent bound to the session (or be a workspace admin). Both checks are
-enforced by the server, so this applies to API clients as well as the UI.
+enforced by the server, so this applies to API clients as well as the UI. If
+the agent belongs to a different session (for example, a session-scoped agent
+shared into this one), the caller also needs **Edit** on that owning session.
 
 In the web UI, open the session's actions menu and choose **Agent info** to see
 the bound agent's tools and policies. Everyone with access to the session sees
@@ -203,6 +237,11 @@ omni run --fork <session_id>
 
 Forking copies the full conversation history up to the fork point. From there, each session
 diverges independently.
+
+If you have only **Read** access to the source session and keep its agent, the fork runs on its own
+[redacted copy](#redacted-agent-bundle) of the agent. That copy keeps the agent's
+name, executor type, and harness, but none of the source agent's other
+configuration or files. With **Edit** access, the fork keeps the full agent.
 
 ### Fork onto a cloud sandbox
 

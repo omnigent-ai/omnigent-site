@@ -324,13 +324,28 @@ options in the dropdown depend on the selected harness:
 - **Claude Code** (`claude-native`) offers its permission modes (for example
   **Accept edits** or **Bypass permissions**). The pick rides along as
   `--permission-mode`.
-- **Codex** (`codex-native`) offers its approval presets — **Default**,
-  **Full access**, and **Read only** — plus the most-permissive
-  **Bypass approvals & sandbox** option. Full access launches Codex with
-  `--sandbox danger-full-access --ask-for-approval never`; the bypass option
-  maps to Codex's `--dangerously-bypass-approvals-and-sandbox` stance and is
-  create-time only (a running Codex session switches approvals through its own
-  `/permissions` popup, which has no bypass row).
+- **Codex** (`codex-native`) offers its approval presets when you start a
+  session:
+  - **Default** sends no permission flags, so Codex uses its own built-in
+    default or your Codex config.
+  - **Ask for approval** reads, edits, and runs in the workspace, and asks you
+    before reaching the internet or editing outside it (`--sandbox
+workspace-write --ask-for-approval on-request -c approvals_reviewer="user"`).
+  - **Approve for me** uses the same sandbox but hands escalations to Codex's
+    automatic reviewer, so it asks only for actions it detects as potentially
+    unsafe (`-c approvals_reviewer="auto_review"`).
+  - **Full Access** edits any file and accesses the internet without approval
+    (`--sandbox danger-full-access --ask-for-approval never`).
+  - **Read Only** reads files only and needs approval to edit files or access
+    the internet (`--sandbox read-only --ask-for-approval on-request`).
+  - **Bypass approvals & sandbox** is the most permissive option. It maps to
+    Codex's `--dangerously-bypass-approvals-and-sandbox` stance.
+
+  A running Codex session's dropdown offers only **Ask for approval**,
+  **Approve for me**, and **Full Access**. These match the names in Codex's
+  `/permissions` popup, so the running session shows the preset you created it
+  with.
+
 - **Cursor** (`cursor-native`) offers its execution mode, such as **Plan**.
 - **Antigravity** (`antigravity-native`) offers **Ask every time** or
   **Skip permissions**. Skip permissions is a dangerous bypass that runs the
@@ -432,15 +447,59 @@ the server list without it. The panel's **Go to Settings** link opens the
 harness settings for the session's host and keeps that host selected, even when
 it is a sandbox host that the host picker otherwise hides.
 
-### Shared sessions
+### Sidebar filter menu
 
-On a multi-user server the sidebar splits your session list across two tabs:
+The funnel button on the `Projects` header opens the sidebar's filter menu. The
+menu has four submenus:
 
-- **My sessions** — the sessions you own. This tab keeps the full sidebar
-  structure: the `Pinned` section, `Project` folders, and the `Sessions`
-  list.
-- **Shared with me** — a flat list of sessions other people have
-  [shared with you](/docs/collaborate).
+- **Grouping**: **Default**, **Status**, **Harness**, **Created**, or **Updated**.
+  **Default** keeps the `Pinned`, `Projects`, `Shared with me`, and `Sessions`
+  sections. The other groupings replace `Projects`, `Shared with me`, and
+  `Sessions` with titled groups.
+  - **Status** sorts sessions into **Needs attention**, **Unread**, **Working**,
+    **Draft**, and **Done**.
+  - **Harness** groups sessions under each harness name. Sessions with no harness
+    go under **Unknown harness**.
+- **Display**: **All sessions**, **My sessions**, **Shared with me**, or
+  **Archived sessions**. On a multi-user server, sessions other people have
+  [shared with you](/docs/collaborate) appear in the `Shared with me` section.
+  The **Shared with me** filter hides `Projects`.
+- **Ordering**: **Updated**, **Created**, or **Custom**. To switch to **Custom**,
+  drag a session onto another row, or use **Move up** and **Move down** in the
+  row's menu. On touch screens, long-press a row to open its menu.
+- **Show**: the metadata on each row: **Harness**, **Updated**, **Environment**,
+  **Repo**, and **Branch**.
+
+**Select sessions** lets you select several rows at once.
+
+These options are a [release feature](/docs/deploy/overview#release-features),
+`sidebar_grouping_ui`, which is on by default. To restore the previous sidebar,
+set `-sidebar_grouping_ui` in `OMNIGENT_FEATURES`. The flag is scheduled for
+removal in 0.23.0.
+
+### Profile menu and Settings
+
+The bottom of the sidebar shows your name (**Local user** on a local server) and
+the server you're connected to. Click it to open the profile menu:
+
+- **Settings** — opens Settings. The row shows the `⌘⌥,` (`Ctrl+Alt+,`) shortcut
+  in a browser and `⌘,` (`Ctrl+,`) in the desktop app.
+- **Server** — in a browser, the server this window is connected to. In the
+  [desktop app](/docs/interact/desktop#work-with-multiple-servers), the menu lists
+  your servers and lets you switch between them.
+- **Sign out** — appears only when `/v1/info` reports a `login_url`, which means
+  the server has a sign-in page.
+
+The settings button next to the profile opens Settings. In Settings, the same
+button is labeled **Home**.
+
+### Back and Forward
+
+The sidebar header has **Back** and **Forward** buttons. They appear once the app
+has in-app history. Each one is disabled when there is no page in its direction.
+Hovering a button shows its chord: `⌘[` / `⌘]` (`Ctrl+[` / `Ctrl+]`). The buttons
+are hidden on small screens. In the [desktop app](/docs/interact/desktop#go-back-and-forward),
+the same chords work.
 
 ### Browser-first mode
 
@@ -473,7 +532,8 @@ terminal to prompt on.
 The web UI ships a set of global keyboard shortcuts. Press `⌘/` (`Ctrl+/` on
 Windows/Linux) at any time to open the in-app shortcuts overlay, which lists the
 current bindings for your platform. Many controls also show their shortcut
-inline: hover the sidebar's collapse, **Search**, or **Settings** button or a
+inline: hover the sidebar's collapse, **Back**, **Forward**, **Search**, or
+**Settings** button or a
 Workspace tab, or open the Workspace rail's **+** menu, and the keycaps appear
 in the tooltip or menu row.
 
@@ -493,20 +553,24 @@ Exceptions: `Ctrl+Shift+M` (model picker), `Ctrl+Shift+L` (focus chat input), ``
 What you see in the shortcuts overlay is what fires: the overlay shows ⌘ on
 macOS and Ctrl elsewhere.
 
-### Switch sessions
+### Go back and forward
 
-Move between sidebar sessions without leaving the composer:
+Step back and forward through the pages you've visited in the app, as in a
+browser:
 
-- **Previous session** — `⌘[` (`Ctrl+[`)
-- **Next session** — `⌘]` (`Ctrl+]`)
+- **Go back** — `⌘[` (`Ctrl+[`)
+- **Go forward** — `⌘]` (`Ctrl+]`)
 
-The selection wraps at the ends of the list. The bracket chords carry no
-text-editing meaning, so they fire even while the composer is focused; inside a
-terminal or the code editor — which bind `⌘[` / `⌘]` themselves (indent/outdent,
-or forwarding to the PTY) — the shortcut yields to that surface.
+Back stops at the first page you opened in the app. When the web UI is embedded
+in another page, Back stops at the page the app opened on.
 
+The bracket chords fire even while the composer is focused. Inside a terminal,
+the code editor, or the command palette, the shortcut goes to that surface
+instead.
+
+To switch to a specific session, use the [session picker](#find-a-session-by-name).
 In the [desktop app](/docs/interact/desktop#keyboard-shortcuts), `Ctrl+Tab`
-additionally opens a switcher over your five most recent sessions.
+switches between your five most recent sessions.
 
 ### Find a session by name
 
@@ -736,11 +800,12 @@ what was added, modified, or removed.
 ### Attach a selection to the agent
 
 In a coding-agent session, select lines in the code viewer or a diff and an
-`Attach to agent` button appears next to `Add comment`. Clicking it drops the
-selected line span into the composer as a chip (shown as `@path:start-end`),
-so you can ask the agent about an exact range without copy-pasting it into chat.
-The chip is delivered to the agent at send time as a path reference — the agent
-reads the on-disk file directly (no upload). This button shows only for native
+`Attach to agent` button appears next to `Add comment`. Clicking it adds the
+selected line span to the end of your draft as an `@path:start-end` token (see
+[Mentioning sessions and files](#mentioning-sessions-and-files)), so you can ask
+the agent about an exact range without copy-pasting it into chat. The token is
+delivered to the agent at send time as a path reference — the agent reads the
+on-disk file directly (no upload). This button shows only for native
 coding-agent sessions, since those harnesses run in the workspace and resolve
 the referenced file themselves.
 
@@ -778,7 +843,7 @@ empty, or when a shell can't be launched right now.
 Coding-agent sessions have a **Pull Requests** tab in the right workspace rail. It
 tracks the pull requests associated with the session and shows the selected
 one's summary (reviewers, CI checks, and the PR description), its conversation
-comments, and a stacked diff with a file-tree navigator. Nothing is pushed or
+comments and commit history, and a stacked diff with a file-tree navigator. Nothing is pushed or
 mutated — recording an association never touches the remote PR.
 
 ### Tracked pull requests
@@ -827,31 +892,18 @@ GitHub refuses the reviewer fields for the active token (or the host's `gh` is
 too old to know them), Omnigent re-fetches the PR without them: the Reviewers
 section is simply omitted and the summary, checks, and comments still load.
 
+### Comments tab
+
 In the **Comments** tab, each author's avatar initial gets a distinct color
 within the thread so you can follow who said what at a glance.
 
-### Browse commits
+For GitHub pull requests, the tab also shows the PR's commits and force pushes,
+sorted by time among the comments. A commit row reads "committed" after the
+author. A force-push row reads "force-pushed". Hover a relative time to see the
+exact time.
 
-On GitHub pull requests, the **Changes** tab's toolbar starts with a
-**Changes | Commits** switch. It appears once the changed-files list is pinned
-to the PR's head commit. **Commits** lists the PR's commits oldest first, each
-with its title, short sha, author, and date. **Search commits** narrows the
-list by sha, title, or author, ignoring case. A PR with more than 250 commits
-shows `History limited to 250 commits`.
-
-Select a commit to see only that commit's patch, with the same file list, diff,
-and find bar as **Changes**. **Previous commit** and **Next commit** step
-through the history, and **Back to commits** returns to the list. A commit view
-has no **Viewed** checkboxes or **Hide viewed**, no review conversations or
-drafts, and no context expansion. **Open in** opens files at the commit's sha.
-Switching back to **Changes** leaves your viewed marks as they were.
-
-The commit list is tied to the head the Changes list loaded. A newer push only
-shows up after the Changes list reloads. GitHub truncates the diff of a commit
-that touches more than 300 files, and no warning is shown. GitLab and Azure
-DevOps pull requests show **Changes** only. If the Omnigent server is too old
-to serve commits, the switch disappears for that PR and the toast
-`Commits need an updated Omnigent server.` appears.
+If part of the commit or force-push history is unavailable, the tab shows
+`Some commit and push history is unavailable.` with a link to the pull request.
 
 ### Link or unlink a PR
 
@@ -909,14 +961,19 @@ suggests running `glab auth login --hostname <host>` (GitLab) or
 a GitHub SSH alias, it suggests `git config --local omnigent.gitprovider github`
 in the checkout.
 
-## Mentioning workspace files
+## Mentioning sessions and files
 
-In a coding-agent session, type `@` in the composer to browse and attach
-workspace files and folders. Attached paths appear as chips above the input and
-can be removed individually; the agent reads each one directly from disk at send
-time.
+Type `@` in a composer to tag a session, a subagent, or a file. When you send the
+message, each tag is replaced by a marker the agent can read: `[Attached: <path>]`
+for a file, or `[Session: "<title>" id=<id> subagent=yes|no]` for a session.
 
-![Tagging workspace files](/images/docs/tag_workspace_files.gif)
+### Messages from other sessions
+
+When another session sends a message with `sys_session_message`, the delivered
+text starts with a `[Message from session <id>]` line. Chat hides that line in
+the user bubble and shows `From @<sender>` as a session pill. Click the pill to
+open the sender. The agent still receives the prefix. If you can't read the
+sender session, the bubble says **From another session**.
 
 ## Appearance settings
 
@@ -1060,6 +1117,10 @@ Start one from any of these places:
 - Select text in a reply and choose **Ask in side chat** — the quoted selection
   and your question are sent to the side chat instead of the main conversation.
 
+Only the session's owner can start side chats. On a
+[shared session](/docs/collaborate/auth), the server rejects a side chat from
+anyone else with **Only the session's owner can start a side chat**.
+
 Inside the tab you get a scoped composer (attachments and dictation included).
 Follow-ups go to the side chat, not the main conversation, and any approval
 request the agent raises there is answered there too. The side chat starts
@@ -1159,7 +1220,7 @@ routed straight into the fork and leaves no bubble in the main transcript.
 
 Side chats are **ephemeral**: nothing is written to disk, so a side chat is not
 resumable after a runner restart. If a `/side` request can't be opened, the
-session posts a visible notice so the question is never silently dropped.
+session posts a visible notice so the question is never silently dropped. Only the text you type counts as a `/side` command.
 
 You can also start a side chat from selected text. Select part of a message and
 choose **Ask in side chat**: the selection is added as a quote card, and when
@@ -1213,46 +1274,76 @@ Run an agent on a recurring schedule instead of starting each session by hand. A
 scheduled task is a saved prompt plus a recurrence rule: it fires automatically,
 runs the chosen agent, and keeps firing until you delete it.
 
-To create one manually, open the **New scheduled task** dialog and fill in:
+To create one manually, click **New automation** on the Automations page. The
+dialog opens with **Instructions** focused. The fields appear in this order:
 
-- **Name** — a label for the task (for example, `Nightly triage`).
-- **Prompt** — the instruction the agent receives on every run.
-- **Runs with** — the agent or harness to run. Scheduled tasks use that agent's
-  default model, effort, and permission settings; there are no per-task model or
-  effort overrides in this dialog.
-- **Frequency** — one of four presets: **Hourly**, **Daily**, **Weekdays**, or
-  **Weekly**. Hourly fires once an hour and asks only for the **minute** of the
-  hour; Daily and Weekdays ask for a **time**; Weekly adds a weekday
-  multi-select (**On days**). Times are chosen in 15-minute steps. The schedule
-  is evaluated in your browser's local timezone.
-  When the `automations_v2` [release feature](/docs/deploy/overview#release-features) is on and
-  the server supports sub-hour schedules, **Custom schedule** also offers a
-  **Minutes** unit. It runs every 10 minutes or more when the task uses a
-  connected host, or a sandbox that continues in the same session. A sandbox
-  that starts a new session each run needs at least 60 minutes, and the dialog
-  won't save a shorter interval. Without sub-hour support, the editor keeps the
-  60-minute minimum and leaves existing minute-based schedules unchanged. See
-  [Recurrence rules](/docs/build/scheduled-tasks#recurrence-rules).
-- **Host (optional)** — pin the task to a specific connected host, or leave it
-  set to **Resolve at fire time** to run on your connected host whenever the
-  task fires. When the server has [managed sandboxes](/docs/deploy/cloud-sandbox-host)
-  configured, the picker also offers **New Sandbox** (labelled with the
-  provider's name, e.g. **Modal Sandbox**): each run then provisions a fresh
-  sandbox instead of using a connected host, and the sandbox's shutdown follows
-  the server's sandbox configuration. Existing sandbox hosts can't be pinned.
-- **Workspace (optional)** — shown only once a connected host is pinned. Pick a
-  directory to pin it; leave it unset to default to the host's home directory. A
-  workspace can't be set without a host, and doesn't apply to sandbox runs.
-- **Project** — the [project](#projects) the task's runs are filed into. New
-  tasks default to **Omnigent Automation**. Omnigent creates that project when
-  you save, or reuses it if it already exists. Canceling the dialog creates
-  nothing. Pick another project from the menu, or use its **Remove from …** item to
-  save the task with **No project**. Run sessions and their workers inherit the
-  task's project, so automated work stays together in the sidebar. Editing an
-  existing task keeps its saved project.
+- **Name** — a label for the automation (for example, `Nightly triage`).
+- **Trigger type** — appears when you create an automation, unless it starts
+  from a session. It starts on **Schedule**. The integration choices are
+  described under [Trigger type](#trigger-type).
+- **Repeat** — how often the automation runs. Choose **Interval**, **Every
+  hour**, **Every day**, **Every weekday**, **Every week**, or **Custom
+  schedule**.
+  - **Interval** — the number of minutes between runs.
+    The shortest interval depends on the server, the **Run on** target, and the
+    session mode. On servers that support sub-hour schedules, a connected host
+    (in either session mode) or a sandbox that continues one session can run
+    every 10 minutes. A sandbox that starts a new session on each run needs at
+    least 60 minutes. A shorter value blocks saving.
+  - **Every hour** — the minute of the hour that each run starts at.
+  - **Every day**, **Every weekday**, and **Every week** — a time of day and the
+    timezone the schedule is evaluated in.
+  - **Custom schedule** — shows more fields in place: **Repeats**, **Every**,
+    **Month**, and **Start time**. **Repeats** offers **Hourly**, **Daily**,
+    **Weekly**, **Monthly**, and **Yearly**, and **Minutely** on servers with
+    sub-hour support.
+- **Ends** — **Never**, **On date**, or **After** a number of occurrences.
+- **Instructions** — what the agent does on every run. When the automation
+  comes from a template that has a system prompt, this field is labelled **Your
+  prompt**, and the system prompt appears in its own field.
+- **Run on** — where the automation runs. Offline hosts are marked **(offline)**.
+  For a new automation on a server with a managed sandbox provider, **Run on**
+  starts on the sandbox option. Otherwise it starts on your first online
+  connected host. Editing keeps the saved target. The sandbox option provisions a
+  new sandbox for each run. Existing sandbox hosts can't be pinned. See
+  [managed sandboxes](/docs/deploy/cloud-sandbox-host).
+- **Agent** — the agent or harness to run. Future runs use the new agent. Past
+  runs keep the agent they ran with.
+- **Start each run in a new session** — a switch. When it is on, each run starts
+  a new session. When it is off, later runs continue in the same session and keep
+  its context. When you edit an automation that continues one session, you can
+  choose **Start a new session on the next run**.
+- **Advanced** — less common settings. The section starts collapsed. If a setting
+  inside it is invalid, the section opens, or the dialog shows **Expand Advanced
+  to fix settings before saving.** Its settings are:
+  - **Workspace (optional)** — for a connected host. Pick a directory to pin it,
+    or leave it unset to use the host's home directory.
+    - **Random worktree** — shown when the workspace is a Git repository. Off by
+      default. When it is on, each new session gets a fresh, randomly named git
+      worktree cut from the repository's current `HEAD`. A task that continues a
+      session reuses that session's worktree. Turn it off when you edit the
+      automation to run in the selected directory again.
+  - **Repository (optional)** — for a sandbox target, in place of the workspace.
+    Pick a repository to clone into each run's sandbox, or leave it on **Provider
+    default**. When you edit, choosing **Provider default** clears a saved
+    repository. Switching between a connected host and a sandbox replaces the workspace or
+    repository value with the new target's value.
+  - **Project (optional)** — pick a project, or leave it on **No project**. New
+    automations default to **Omnigent Automation**.
+  - **Model**, **Effort**, and **Permission mode** — shown when the selected
+    harness supports them. Each one starts at **Default**, which keeps the
+    agent's configuration. For a new automation, Permission mode starts at `auto`
+    for Claude Code and at `approve-for-me` for Codex. Other harnesses start at
+    Default. See [Per-harness settings](#per-harness-settings).
 
-The **Create task** button stays disabled until Name, Prompt, a valid schedule,
-and an agent are all set.
+Click **Create** (or **Save changes** when you edit) to save the automation.
+Escape closes the open agent, project, or folder menu.
+
+To rerun an existing conversation on a schedule, choose **Create automation**
+from a session's menu in the sidebar or session header. The dialog shows the
+session under **Starts from**, and the prompt becomes optional **Additional
+instructions**. Each run starts from a copy of the session's history as of when
+you save. See [Starting each run from a session](/docs/build/scheduled-tasks#starting-each-run-from-a-session).
 
 ### Failed runs
 
@@ -1294,6 +1385,191 @@ Some things to know about the failure feed:
 The failure feed needs a server that reports the `scheduled_task_inbox`
 capability. Against older servers, the Inbox works as before, without
 automation items.
+
+### Trigger type
+
+When you create an automation, the **Trigger type** field sets what starts it.
+It starts on **Schedule**. Choose **Jira**, **Slack**, **GitHub**, **Linear**, or
+**PagerDuty** to make the automation an integration trigger that acts on matching
+items. An integration trigger shows an event, a scope, optional conditions, and
+the instructions each session receives, in place of the schedule fields.
+
+Switching types keeps a separate draft for each type. The first switch carries
+over the instructions you typed and a custom name. Switching back to a type
+brings back its fields. Drafts last until the dialog closes.
+
+If the server doesn't support integration triggers, those options are greyed out
+and the dialog says **Integration triggers aren't available on this server.**
+**Schedule** always works.
+
+When you edit a scheduled automation, there is no Trigger type field. When you
+edit an integration trigger, the field lists the integrations. Switching it
+replaces the trigger source on save.
+
+### Per-harness settings
+
+The dialog shows only the settings the selected harness supports. Model and
+Effort come from the catalog of the selected target: the pinned connected host,
+or the sandbox provider for **New Sandbox**. While a pinned host is offline, the
+dialog shows **Connect your host to load models.** Permission mode lists the
+harness's create-time choices, the same ones the new-chat permissions dropdown
+offers. The saved values are listed under
+[Permission modes](/docs/build/scheduled-tasks#permission-modes).
+
+Modes that skip approval, such as **Bypass permissions** or **Don't ask**,
+appear only when the server advertises `scheduled_task_approval_skipping_modes`.
+Automations run unattended, so a permission mode that asks for approval can pause
+a run until someone responds.
+
+### Worker settings for trigger templates
+
+The Jira, Slack, GitHub, Linear, and PagerDuty templates create an automation
+with a polling session. For each matching item, the polling session starts one
+**worker** session. The prompt contains a `sys_session_create` call that starts
+the worker. Its harness, model, and effort are written into that call. New
+templates use the automation's own agent, model, and effort for workers.
+
+When you edit a saved trigger automation, the dialog shows these controls:
+
+- **Harness for matching sessions** — the agent that new workers run with.
+- **Model** and **Effort** — the worker's model and reasoning effort. **Default**
+  uses the selected harness's configuration.
+
+These controls change the worker settings in that call.
+
+If you changed the prompt so the call can't be recognized, the dialog shows
+**Edit worker instructions** instead. It opens the system prompt, or the full
+Prompt when the two can't be separated, so you can edit the call as text.
+
+### Trigger templates
+
+Trigger templates watch a service and start one session for each newly created
+item that matches. They are offered as **Jira tickets**, **Slack messages**,
+**GitHub**, **Linear issues**, and **PagerDuty incidents** under **Suggested
+Automations**, and as **Trigger type** options in the **New automation** dialog.
+
+Instead of a free-form prompt, the form builds a trigger sentence. It has an
+event, a scope, optional **Add condition** rows (all must match), and a _then_
+row. The _then_ row either posts the session link back to the service or only
+starts the session. You also write the instructions each new session receives,
+up to 2,000 characters. Each run starts at most 10 sessions; remaining matches
+wait for the next run. Posts the sessions make include a `Sent with Omnigent`
+line.
+
+Trigger templates poll. They don't receive webhooks. With automations v2, the
+server decides when a trigger polls. It checks every 2 minutes while the polling
+session is busy, and never past the saved schedule's next occurrence. Where the
+server cannot check the session, such as with custom dispatch hooks, the saved
+interval applies. New templates use the configured interval, 10 minutes by
+default, when automations v2 is enabled and either the server supports sub-hour
+schedules or the interval is 60 minutes or more. Otherwise they poll hourly.
+The operator sets the interval with
+[`automation_trigger_poll_minutes`](/docs/reference/configuration#automation-trigger-polling).
+
+Saving creates an ordinary automation that keeps one session as its manager and
+checks for matches on the polling interval. Use **Preview prompt** to read the
+generated prompt, or **Edit as prompt** to edit it as plain text.
+
+The Jira, GitHub, and Linear templates have these events and scopes:
+
+- **Jira tickets** — the **Ticket created** and **Assignee changed** events. The
+  scope is a project key.
+- **GitHub** — the **Issue opened**, **Pull request opened**, **Issue or pull
+  request opened**, and **Review requested** events. The scope is `owner/repo`.
+- **Linear issues** — the **Issue created** event. The scope is a team key, such
+  as `ENG`.
+
+Each template has its own condition fields, such as label, status, priority, and
+assignee.
+
+The agent needs the service's tools where the task runs: a Jira, Slack, or
+Linear MCP server, or the GitHub CLI or a GitHub MCP server for GitHub. Link-back
+comments post with your account.
+
+#### Slack
+
+An automation can watch Slack and start a session for each matching message. Set
+the trigger type to **Slack**, or pick the **Slack messages** template, and then
+choose an event:
+
+- **Message posted in a channel** — top-level messages in the listed channels.
+- **Direct message received** — messages the listed people send you in your
+  one-to-one DM with each of them.
+- **Group DM message received** — top-level messages in the one group DM whose
+  members are exactly you and the listed people.
+
+Channel scopes take a `#` prefix, and person scopes take an `@` prefix. A leading
+`#` or `@` that you paste is removed, so `#eng-support` becomes `eng-support`.
+A person can be listed by handle, display name, or email. A name that matches no
+one, or more than one person, counts as no match, and the agent says so in its
+reply.
+
+A group DM needs at least two people besides you. With fewer, the dialog shows
+_List at least two people. For one person, choose Direct message received._ and
+the task can't be created. A group DM that includes anyone else doesn't match.
+
+**Direct message received** hides the **Author** condition, because the sender is
+already the scope. Other conditions, such as text filters, still apply.
+
+DM triggers need a Slack MCP server that can read direct messages or group DMs.
+If the agent's Slack tools can't read them, the agent says so in its reply.
+
+#### PagerDuty
+
+**PagerDuty incidents** use these fields:
+
+- **Event** — fixed to **Incident triggered**.
+- **Scope** — a PagerDuty service name or ID. **equals** matches one service.
+  **contains** matches services whose name includes the text. **in** matches any
+  service in a comma-separated list. A name that matches no service, or more than
+  one, counts as no match.
+- **Conditions** — **Urgency**, **Priority**, **Status**, or **Assignee** (equals
+  or doesn't equal), or **Title** (contains or doesn't contain). An Assignee of
+  `me` is the automation's owner.
+
+Each new session is titled `PagerDuty #<incident number>`.
+
+The agent needs a PagerDuty MCP server where the task runs. Anyone who can
+trigger an incident on a watched service can affect the sessions it starts.
+
+#### Change events
+
+Most events fire when an item is created. Items created before the automation's
+first search window are not picked up.
+
+Two events fire when an existing item changes:
+
+- **GitHub — Review requested from _reviewer_.** The reviewer is `me`, a
+  username, or `org/team`, and is required. Link-back is off by default for this
+  event. A link-back choice you set yourself stays when you switch events.
+- **Jira — Assignee changed to _assignee_.** The assignee is `me`, an email, or
+  `unassigned`. Leave it empty to match any assignee. The automation searches for
+  tickets whose assignee changed to that person.
+
+Both change events record a `Watching since:` time on their first run. They don't
+search before that time, so changes made before the automation existed don't
+count.
+
+#### One task session for every trigger match
+
+An integration trigger checks for new matching items on its schedule. By default,
+it starts a new session for each match. To send every match to **one task
+session** instead, turn off **Start a new session for each match** under
+**Advanced** when you create the trigger.
+
+With the switch off:
+
+- The polling session starts the task session on the first match. The task
+  session is titled with the automation's name, cut to 200 characters.
+- Later matches arrive in the task session as messages from the polling session.
+- The instructions field is labelled **Instructions for the task session**. The
+  Advanced summary shows **One task session**, and the cadence line reads
+  "Matching items go to the task session automatically."
+- If you archive the task session, the next match starts a new one.
+
+Matches are delivered with peer session messaging. It is on by default, through
+the `peer_session_messaging` release feature and the **Message other sessions**
+switch under **Settings > Sharing**.
 
 ## Collaboration
 

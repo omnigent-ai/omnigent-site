@@ -194,6 +194,34 @@ Request-phase [custom policies](/docs/policies/custom#reference-policyevent)
 receive the filename and content type of these attachments with an empty `text`
 value; their contents are not scanned as text.
 
+## Automation trigger polling
+
+| Setting | Value                                          |
+| ------- | ---------------------------------------------- |
+| Key     | `automation_trigger_poll_minutes`              |
+| Scope   | Server config (`omni server --config`)         |
+| Type    | Integer, whole minutes from `10` through `240` |
+| Default | `10`                                           |
+
+Sets how often new [trigger-template automations](/docs/interact/web-ui#trigger-templates)
+(the Jira, Slack, GitHub, Linear, and PagerDuty templates) check for new matching items.
+Trigger templates poll; they don't receive webhooks. To poll
+every 30 minutes, set this in the server YAML and restart the server:
+
+```yaml
+automation_trigger_poll_minutes: 30
+```
+
+A value that is not an integer from 10 through 240, including a boolean, stops
+the server from starting. The server advertises the effective value as
+`automation_trigger_poll_minutes` in `/v1/info`.
+
+The setting applies only to trigger templates created after the restart.
+Existing automations keep their saved schedules and prompts. New templates use
+this interval only when automations v2 is enabled. If automations v2 is off, or
+the server doesn't support sub-hour schedules and the value is under 60, new
+templates poll hourly.
+
 ## Managed sandboxes
 
 - [Kubernetes sandbox configuration](/docs/reference/configuration/kubernetes)

@@ -846,6 +846,33 @@ files per session, or deny specific extensions — see [Attachment
 limits](/docs/reference/configuration#attachment-limits). Images, PDFs, and
 text/code files keep their existing separate limits.
 
+## Images in agent replies
+
+When an agent's reply embeds an image saved in the session workspace using
+Markdown image syntax, the Web UI shows the image inline in the chat:
+
+```markdown
+![Login page after the fix](/absolute/workspace/path/screenshots/login.png)
+```
+
+Click the image to open it in the zoomable viewer. Omnigent adds guidance to
+every agent's instructions telling it to embed existing workspace screenshots
+this way, using the file's real path, unless your instructions say otherwise.
+
+- **Workspace files only.** The image is read with the displayed session's
+  permissions and stays confined to the workspace root, symlinks included.
+  Remote image URLs and files outside the workspace are not displayed.
+- **Raster formats.** `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.avif`, and
+  `.bmp` files up to 10 MB are rendered.
+- **Fallback.** A missing, unsupported, oversized, or unreadable image shows as
+  a chip with the filename instead. You also get the chip when the server is
+  too old to enforce the workspace-only read.
+
+Native harnesses (for example Claude Code and Codex) load this guidance when
+the session starts. After upgrading, start a new session, or restart or
+cold-resume an existing one, to pick it up. Reopening the Terminal view does
+not update a process that is already running.
+
 ## Message queue and steering
 
 Type a follow-up while the agent is still working and it's held in a client-side

@@ -146,15 +146,44 @@ The schedule is an [RFC 5545](https://icalendar.org/) `RRULE` string, evaluated
 in the task's `timezone`. Examples:
 
 ```
+FREQ=MINUTELY;INTERVAL=10                            # every 10 minutes (see below)
+FREQ=HOURLY                                          # every hour
 FREQ=DAILY;BYHOUR=9;BYMINUTE=0                       # daily at 9am
 FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0 # weekday mornings
 ```
 
 Rules are validated when you create or update a task. A rule is rejected (HTTP
 400) if it has bad syntax, never fires, fires only once, or fires more often
-than the minimum interval. **A task must fire at least twice and no more often
-than once per hour** — the minimum gap between any two consecutive fires is 60
-minutes.
+than the minimum interval. **A task must fire at least twice**, and the minimum
+gap between consecutive fires depends on where the task runs and its session
+mode:
+
+| Execution target | Session mode | Minimum interval |
+| --- | --- | --- |
+| `connected_host` | either (`new` or `continue`) | 10 minutes |
+| `managed_sandbox` | `continue` (keep using the existing session) | 10 minutes |
+| `managed_sandbox` | `new` (fresh sandbox session each run) | 1 hour |
+
+Use `FREQ=MINUTELY;INTERVAL=10` for a ten-minute schedule. The shorter minimum
+is allowed because connected hosts and continued sessions don't provision a new
+sandbox on every fire.
+
+The validator checks consecutive occurrences from a fixed UTC anchor, sampling
+until it reaches an occurrence at least 25 hours after the first or has sampled
+2,000 occurrences. Irregular recurrence sets can contain shorter gaps later, so
+passing validation does not guarantee the minimum for every future firing.
+
+An update that changes `rrule`, `execution_target`, or the session mode
+revalidates the schedule against the resulting combination. For example,
+switching a ten-minute sandbox task from `continue` to `new` is rejected until
+the interval is at least an hour. If another change to the task's schedule,
+session mode, or execution target lands while your update is being validated,
+the update fails with HTTP 409 and nothing is applied. Reload the task and try
+again.
+
+Servers that accept sub-hour schedules report `scheduled_task_subhour: true` in
+`GET /v1/info`. Clients connected to an older server that omits the field keep
+the hourly minimum.
 
 ## Pausing, updating, and deleting
 

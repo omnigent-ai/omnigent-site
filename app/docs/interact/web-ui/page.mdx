@@ -107,6 +107,25 @@ agent, and settings you like.
 Create a project from the sidebar at any time, including an empty one with no
 sessions yet, then move sessions into it as the work takes shape.
 
+#### Creating a project from a repository
+
+The **New project** dialog has a **Run on** picker for a connected host or a
+sandbox provider, and a **Folder / Repository** choice:
+
+- **Folder** (host only) — the project keeps an optional working directory.
+- **Repository** on a host — enter a repository URL and an optional branch. The
+  host clones it into a new folder (**Clone into**, default `~/<repo>`) before
+  the project is saved. The dialog stays locked until the clone and save finish.
+  Hosts that don't support cloning show a prompt to update.
+- **Repository** on a sandbox provider — only the repository option is offered.
+  The project saves the repository for new sessions; nothing is cloned until a
+  session starts.
+
+This is the `project_repository_creation`
+[release feature](/docs/deploy/overview#release-features), on by default. Set
+`OMNIGENT_FEATURES=-project_repository_creation` to keep the folder-only dialog.
+Servers that don't advertise the feature also show the folder-only dialog.
+
 You can file a session into a project from these places:
 
 - Start a new session already filed there: each project folder in the sidebar

@@ -1053,7 +1053,9 @@ Each queued row has inline actions:
 Open **Inbox** in the sidebar to catch up on your agents without opening each
 session. The **All**, **Unread**, and **Awaiting response** tabs filter what's
 listed: pending approval requests you can answer in place, and sessions with
-agent output you haven't seen yet. Each card expands in place.
+agent output you haven't seen yet. When [Omni Advisor](#omni-advisor-suggestions)
+is on, an **Omni Advisor** tab lists its suggestions. Each card expands in
+place.
 
 An expanded unread card previews the session's latest reply. If the preview is
 cut short, hover over it or focus it to see the whole reply in a card, rendered
@@ -1077,6 +1079,43 @@ load, open the session to reply instead. When a send fails, your draft stays in
 the box so you can try again. That includes a reply a policy blocked, or one
 sent while the session's host was offline. Wait for the host to reconnect, then
 send again.
+
+### Omni Advisor suggestions
+
+Where the server offers it, **Omni Advisor** reads your recent sessions on a
+schedule and posts follow-ups, related information, and reminders to your
+Inbox. Its cards are labeled **Omni Advisor · Suggested follow-up**,
+**Omni Advisor · For your information**, or **Omni Advisor · Reminder**. They
+appear in the **All** and **Unread** tabs and in a separate **Omni Advisor**
+tab that lists only its suggestions. They don't appear in **Awaiting
+response**.
+
+Expanding an unread suggestion marks it as read. The expanded card shows the
+suggestion's full text and, when the agent included them, a chart and a
+**Source** list. Session links in the list open the session in the web UI.
+Other links open in a new tab.
+
+Each suggestion has these actions:
+
+- **Action buttons** — buttons the agent defines for the suggestion. Clicking
+  one opens a new session with the action's prompt filled into the composer.
+  You can edit the prompt before you click **Send**, and nothing runs until you
+  do.
+- **Dismiss** — closes the suggestion and records why: **Already done**,
+  **Useful, no action needed**, **Not relevant**, **Incorrect**, or
+  **Not now**.
+
+Taking an action or dismissing a suggestion removes it from the Inbox. Unread
+suggestions also count toward the Inbox badge in the sidebar. The server stops
+counting at its limit, and the badge then shows a trailing **+** (for example,
+**100+**).
+
+To turn Omni Advisor off for yourself, open **Settings → General** and switch
+off **Omni Advisor**. While it's off, the Inbox hides its suggestions and the
+**Omni Advisor** tab. Admins can turn it off for everyone under **Settings →
+Admin → General → Omni Advisor**. While it's off there, each user's switch is
+locked off, with a note that an admin turned it off. Turning the workspace
+setting back on restores each user's own choice.
 
 ## Side chats
 

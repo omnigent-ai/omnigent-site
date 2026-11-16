@@ -1365,6 +1365,44 @@ dialog, then fill in:
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
 and an agent are all set.
 
+### MCP services for an automation
+
+On a server with an MCP registry, an automation can start every run with
+server-configured MCP services, the same catalog as
+[Choose MCP services before launch](#choose-mcp-services-before-launch). Open
+**Advanced settings** in the creation dialog and use the **MCP services** row
+(the plug icon). It opens the same service list and sign-in flow as the new-chat
+composer. The row reads **No MCPs** or `MCPs · N`.
+
+- **Starts empty.** A new automation starts with no services selected. It does
+  not pick up the composer's remembered selection, and picking or switching a
+  trigger template never changes the selection.
+- **Sign in first.** No one is around to sign in when a run starts, so every
+  selected service must already be connected. **Create task** stays disabled,
+  and **Advanced settings** opens with a message, while a selected service
+  needs sign-in (**Sign in to each selected MCP service, or turn it off.**) or
+  the catalog can't load (**Could not load MCP services. Retry, or turn them
+  off.**).
+- **Removed services are dropped.** A saved service that the catalog no longer
+  offers is left out when you save the automation.
+- **Continued sessions keep theirs.** When an edit keeps a task's existing
+  continued session, the row is locked and reads **Session's MCPs**, because
+  that session keeps its own services.
+
+With a trigger template, if the catalog has a service for the watched source
+(Jira, Slack, or GitHub), the builder replaces the **MCP required** warning:
+
+- **Uses _service_ MCP** appears when that service is selected. Every run, and
+  each session it starts, uses it.
+- Otherwise an amber **Add _service_ MCP** button appears. It signs you in if
+  needed and then selects the service. For a service that uses a pasted token,
+  it opens **Settings → MCP** in a new tab instead. A Databricks-hosted service
+  opens the **MCP services** menu to ask for its workspace.
+
+The row appears only when the server advertises both `scheduled_task_mcp_services`
+in `/v1/info` and the `mcp` connection capability. The selection is saved on
+the task as `mcp_services`.
+
 ### Trigger templates
 
 The **Jira tickets**, **Slack messages**, and **GitHub issues** chips under
@@ -1451,6 +1489,9 @@ Keep in mind:
 - Editing a saved trigger automation edits the rendered prompt as plain text.
   Changing its host, model, or effort afterwards doesn't update the worker
   settings written into the prompt.
+- Instead of giving the agent Jira, Slack, or GitHub tools some other way, you
+  can add the server's MCP service for that source. See
+  [MCP services for an automation](#mcp-services-for-an-automation).
 - Starting a new manager session, or switching the session mode, loses the
   manager's state, so its first run may start sessions again for items created
   in the last hour.

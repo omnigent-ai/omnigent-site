@@ -1397,8 +1397,15 @@ builder, for example _Ticket created in project equals `ES`, and Label equals
 - **then** — post the session link back (comment on the ticket or issue, or
   reply in the Slack thread), or **Only start the session**.
 - **Instructions for each session** — what every started session should do.
-  Capped at 2,000 characters so each session's first message (which must stay
-  under 8,000) has room for the item.
+  Capped at 16,000 characters so each session's first message (which must stay
+  under 32,000) has room for the item. The 16,000-character cap needs both a
+  current Omnigent server and a **Host** pinned to a connected host running
+  current Omnigent. Older servers and hosts refuse messages over 8,000
+  characters, so otherwise the cap stays at 2,000 and the form says what to
+  update. Tasks set to **New Sandbox** also keep the 2,000-character cap,
+  because the sandbox image can be older than the server. Editing a trigger
+  saved with the larger cap keeps it while the task stays on the same host or
+  sandbox, even if that host is offline.
 
 The rows compile to JQL or a GitHub search inside a generated prompt. Open
 **Preview prompt** to read it, or **Edit as prompt** to switch back to the

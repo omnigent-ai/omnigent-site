@@ -116,6 +116,150 @@ names and Shadow DOM, so the usual flow is: `browser_navigate`, then `browser_sn
 to see what's on the page, then `browser_click` / `browser_type` using the refs it
 returned.
 
+In current desktop apps, a snapshot's first line says which part of the page is
+on screen (for example `viewport: 0–900 of 10430px`). Lines marked `[above]`,
+`[below]`, `[left]`, or `[right]` are off screen in that direction. A very long
+tree is cut down to keep what's on screen and ends with `… N more`. Older apps
+return the plain tree.
+
+In a desktop app that has the advanced browser tools (see below),
+`browser_click` and `browser_type` send real input:
+
+- `browser_click` clicks with real mouse input at the element's center, so it
+  fails if something covers the element. Close the dialog or menu over it
+  first. Native dropdowns and date, time, or color inputs can't be clicked. Set
+  them with `browser_type` instead.
+- `browser_type` replaces the contents of a text field, textarea, or editable
+  area, including rich-text editors, using real text input. Date, time, color,
+  and range inputs get their value set directly (for example `"2026-03-04"`
+  for a date). A native `<select>` gets the option whose value or label matches
+  `text`. It doesn't press Enter.
+
+### Advanced browser tools
+
+With **Settings → General → Browser → Advanced browser tools for agents**
+turned on, agents get more browser tools in addition to the five above:
+
+<table>
+  <thead>
+    <tr>
+      <th>Tool</th>
+      <th>What it does</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>browser_go_back</code> / <code>browser_go_forward</code>
+      </td>
+      <td>
+        Moves back or forward one page in the current tab's history, waits for
+        the page to load, and returns its URL and title. Fails when there's no
+        previous or next page.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_reload</code>
+      </td>
+      <td>
+        Reloads the current tab. Refs from earlier snapshots stop working
+        afterwards.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_tabs</code>
+      </td>
+      <td>
+        Manages the session's browser tabs, including tabs you opened.{" "}
+        <code>action</code> is <code>list</code>, <code>new</code> (optionally
+        at <code>url</code>), <code>select</code>, or <code>close</code> (with{" "}
+        <code>tab_id</code>). The other <code>browser_*</code> tools act on the
+        agent's current tab.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_hover</code>
+      </td>
+      <td>
+        Moves the mouse over an element to trigger hover menus, tooltips, and
+        hover styles.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_drag</code>
+      </td>
+      <td>
+        Drags an element (<code>start_ref</code> / <code>start_selector</code>)
+        and drops it on another (<code>end_ref</code> /{" "}
+        <code>end_selector</code>) using real mouse input. Works for HTML
+        drag-and-drop and for pointer-based sortable lists, sliders, and
+        canvases.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_scroll</code>
+      </td>
+      <td>
+        Scrolls the page, or the scrollable container around an element, in a{" "}
+        <code>direction</code> (<code>up</code>, <code>down</code>,{" "}
+        <code>left</code>, <code>right</code>) by an optional pixel{" "}
+        <code>amount</code>. Returns the new scroll position and whether the
+        end was reached.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_press_key</code>
+      </td>
+      <td>
+        Presses a key or key combination with real keyboard input, such as{" "}
+        <code>Enter</code>, <code>Escape</code>, <code>Shift+Tab</code>, or{" "}
+        <code>Control+a</code>. If you pass a <code>ref</code> or{" "}
+        <code>selector</code>, it focuses that element first.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_select_option</code>
+      </td>
+      <td>
+        Chooses options in a native <code>&lt;select&gt;</code> by value or
+        visible label (1–100 <code>values</code>; pass several for a
+        multi-select).
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>browser_check</code>
+      </td>
+      <td>
+        Sets a checkbox, radio button, or switch (native or ARIA) to checked
+        (the default) or unchecked. It clicks only when the state needs to
+        change. A radio button can't be unchecked.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+The setting also adds a `button` option to `browser_click` (`left`, `right`, or
+`middle`) and a `double_click` option.
+
+The setting is on by default and saved per device. It only appears where the
+embedded browser is available. In a desktop app that's too old for these
+tools, the switch is disabled and asks you to update the app. A session picks
+up the setting when it's created, so changing it affects new sessions.
+Turning it off also blocks the advanced actions in existing sessions on this
+device. Sessions created outside the desktop app (for example in the web UI
+or from the CLI) get only the five standard tools.
+
+If a browser tab's page is open in another Omnigent desktop window, the empty
+pane says so: switch to that window to see it.
+
 Because the browser runs inside the desktop window, these tools require the Omnigent
 desktop app to be running with the session open. If no desktop window is subscribed,
 the action fails cleanly with `browser action timed out — is the session open in the

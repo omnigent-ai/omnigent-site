@@ -1456,6 +1456,55 @@ Keep in mind:
   in the last hour.
 - Deleting a worker doesn't make its item start a new session later.
 
+### Sharing an automation
+
+The owner of an automation can share it with other users and groups so they
+can follow its runs. Choose **Share** on the automation's detail page (left of
+**Edit** in the header), or from its card's **⋯** menu or right-click menu on
+**Your automations**. The **Share this automation** dialog works like the
+[session share dialog](/docs/collaborate), with these differences:
+
+- **Read** is the only level. There is no level picker, no **General access**,
+  and no **Copy link** or **Open in mobile app**.
+- Grantees get the sessions, not the automation. Each run's session is shared
+  with everyone on the list at Read access. People you share with don't see the
+  automation itself, its sharing, or its **Share** action.
+- If the server refuses a grant or a removal, its message appears under the
+  form. For example, you can't share with yourself or with `__public__`. If a
+  removal fails, try removing the person again.
+
+How the list applies depends on the automation's session mode
+(`session_mode`):
+
+- **A new session for each run** (`new`) — each run's new session is shared with the
+  list. Removing someone stops sharing future runs with them; sessions from
+  earlier runs stay shared.
+- **One continued session** (`continue`) — while the automation is shared with anyone, its
+  session's shares are replaced with the automation's list on each run and
+  whenever the automation's sharing changes. That replacement includes people
+  added to the session by hand, even at Edit or Manage. The session owner and
+  General access are kept.
+
+When a shared continue-session automation created a session on its first run,
+that session's **Share** dialog shows **Sharing is managed by an automation**,
+naming the automation. You can still edit the session's sharing there, but the
+automation's list replaces your changes on its next run. Click the
+automation's name to open its share dialog. A session you picked for the
+automation (with `session_id`) follows the automation's list too, but doesn't
+show this warning.
+
+Keep in mind:
+
+- **Share** appears only for automations you own, on a multi-user server that
+  advertises `scheduled_task_sharing` in `/v1/info`. When sharing is turned off
+  on the server, **Share** is shown but disabled.
+- With automation pages turned off (`automations_v2`), the server refuses new
+  grants and doesn't offer **Share**. Existing grants still apply to runs, and
+  the managed-session warning still appears.
+- Agents can't list or change an automation's sharing. They also can't move a
+  shared automation's runs to another session, host, workspace, or execution
+  target.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

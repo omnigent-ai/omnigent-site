@@ -82,7 +82,18 @@ When passing a URI directly, prefer the explicit `cockroachdb+psycopg://` scheme
 
 ### Compatibility
 
-Omnigent requires CockroachDB **v23.2.28 or newer**.
+Omnigent requires CockroachDB **v23.2.28 or newer**. We recommend CockroachDB
+**v25.2.10**.
+
+<div className="note">
+
+**Deprecated:** CockroachDB releases before v25.2 are deprecated, and support
+will be removed in Omnigent **v0.24.0**. Until then, v23.2.28 and newer remain
+supported, and Omnigent logs a deprecation warning at startup when connected to
+a release before v25.2. Upgrade to CockroachDB v25.2 or newer (v25.2.10
+recommended) before upgrading to Omnigent v0.24.0.
+
+</div>
 
 CockroachDB v23.2 provides `READ COMMITTED` as an opt-in preview. Enable it on
 the cluster before starting Omnigent:

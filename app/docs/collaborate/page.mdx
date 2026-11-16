@@ -79,6 +79,15 @@ again returns view-only viewers to conversation-only access.
 The opt-in never widens absolute-path browsing on the host filesystem — that
 stays owner-only regardless of this setting.
 
+### Sessions shared by an automation
+
+You can also share an [automation](/docs/interact/web-ui#sharing-an-automation)
+at Read access, so that each run's session is shared with your list. If an
+automation continues one session, it controls that session's sharing. The
+session's **Share** dialog then says **Sharing is managed by an automation**.
+On each run, the automation replaces any shares you add or remove there with its
+own list. It keeps the owner and General access.
+
 <h3 id="code-execution-risk">Co-driving grants code execution on the host</h3>
 
 Only share **Edit** with people you trust to run arbitrary code on your machine.

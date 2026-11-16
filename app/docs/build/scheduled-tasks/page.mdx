@@ -140,7 +140,8 @@ The `state` field accepts `active` or `paused`:
 - Pass `state=active` to resume it.
 
 To remove a task permanently, use `sys_scheduled_task_delete` — deletion is not
-done through `update`.
+done through `update`. Deleting a task also removes the task's own sharing
+grants. Sessions from its earlier runs keep the grants they already have.
 
 ## Where a task runs
 
@@ -193,7 +194,9 @@ When a task is due, Omnigent:
    ownership of the new session so the run is visible. If the task has a
    project, the session is filed into it. If that project has been deleted
    since the task was saved, the session is left unfiled (the run does not
-   fail) and the project is cleared from the task.
+   fail) and the project is cleared from the task. If the task is shared with
+   other users, the new session is then shared with them before the prompt is
+   sent (see [Sharing runs](#sharing-runs)).
 4. Launches the runner — on the resolved host, or in a freshly provisioned
    sandbox — and dispatches the prompt so the agent actually runs. The message
    it sends is the prompt followed by the
@@ -224,6 +227,32 @@ to your prompt yourself.
 The note is guidance to the agent, not a permission setting. A tool call that
 still requires approval under the session's policies waits for the approval
 timeout as before.
+
+### Sharing runs
+
+When a task has been shared with other users, its runs are shared with them
+too. Each run reads the task's current grantee list:
+
+- **A run that creates a session** shares it at **Read** with every grantee
+  who has no access to it yet. Each grantee is told about the session, so it
+  shows up under **Shared with me** from the run's first turn. A grantee who
+  already holds access keeps their existing level; the run never lowers it.
+- **A task that continues one session** brings that session's sharing in line
+  with the task's grantees on every run, before the prompt goes in. Missing
+  grantees get Read, and any other grant is revoked, except Owner grants, the
+  task owner's grant, and public access. A task nobody has been given access to
+  leaves its session's sharing alone. Revoked users get no notification; the
+  session drops out of their list the next time it refreshes.
+- **Earlier run sessions are not updated.** Adding or removing a grantee affects
+  later runs only. A session from an earlier run keeps whatever grants it had.
+
+Run sharing follows the server's
+[sharing policy](/docs/collaborate/auth#session-sharing), checked on each run.
+If the policy refuses the grant (for example, sharing is `off`), the run goes
+ahead unshared. Under `restricted_read_only`, a run session is not shared if its
+working directory is a home or root directory, or if the working directory is
+unknown. Managed-sandbox runs are exempt from the unknown-directory rule. A
+failure to share is logged and never fails the run.
 
 A few scheduling guarantees:
 

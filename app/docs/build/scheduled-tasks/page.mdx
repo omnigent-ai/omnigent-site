@@ -237,3 +237,32 @@ A few scheduling guarantees:
   [removes a member](/docs/collaborate/auth#removing-a-member), all of that
   user's tasks are marked deleted. A username that is later re-registered does
   not see or inherit the old account's tasks.
+
+## Disabling automations
+
+Automations are on by default. To turn them off for a whole deployment, append
+`-automations` to the server's
+[`OMNIGENT_FEATURES`](/docs/deploy/overview#release-features) and restart every
+server replica:
+
+```
+OMNIGENT_FEATURES=-automations
+```
+
+With the feature off:
+
+- The web UI hides **Automations** navigation, and the `/tasks` pages show
+  _not found_. Reload the web app after the restart.
+- Agents no longer get the `sys_scheduled_task_*` tools.
+- Every `/v1/scheduled-tasks` route returns `404`, and `GET /v1/info` reports
+  `automations_enabled: false`.
+- No scheduler starts, so saved tasks don't fire.
+
+Saved tasks and their run history are kept. Remove `-automations` and restart
+to resume scheduling. Agent sessions that are already running aren't
+cancelled.
+
+`-automations_v2` doesn't disable automations; it only selects the legacy
+scheduler. If you embed the server, `create_app(automations=...)` can also
+control access per caller, but existing schedules keep running under that
+gate. The deployment-wide `-automations` switch takes precedence over it.

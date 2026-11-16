@@ -848,7 +848,9 @@ Before you call these endpoints:
 - Use your own user credentials, such as a session cookie or a CLI login bearer
   token. Machine client-credentials tokens can't access `/v1/scheduled-tasks`.
 - Check that `GET /v1/info` returns `automations_enabled: true`. If it doesn't,
-  every `/v1/scheduled-tasks` route returns `404`.
+  every `/v1/scheduled-tasks` route returns `404`. For example, an operator
+  may have [disabled automations](/docs/build/scheduled-tasks#disabling-automations)
+  with `OMNIGENT_FEATURES=-automations`.
 
 ```bash
 SERVER_URL="http://127.0.0.1:6767"

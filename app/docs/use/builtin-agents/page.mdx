@@ -13,6 +13,8 @@ export const metadata = pageMeta(
 
 Omnigent ships with multi-agent orchestrators that combine different AI agents
 in a single workflow. Both are ready to run out of the box, with more coming.
+Omnigent also includes Omni Advisor, a scheduled agent that posts suggestions to
+your Inbox.
 
 ## [Polly](/docs/use/builtin-agents/polly)
 
@@ -25,6 +27,13 @@ default agent `omni run` launches when a Claude credential is configured.
 
 Multi-model brainstorming partner. Sends every question to both Claude and GPT,
 with a `/debate` skill for multi-round critique. Run `omni debby`.
+
+## [Omni Advisor](/docs/use/builtin-agents/omni-advisor)
+
+Scheduled proactive agent. When an admin turns it on, it reads your recent
+sessions on weekday mornings and posts a few follow-ups, related information,
+and reminders to your Inbox. It runs only on its schedule and never changes
+code.
 
 ---
 

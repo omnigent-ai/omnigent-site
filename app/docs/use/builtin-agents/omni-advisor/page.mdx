@@ -1,0 +1,116 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Omni Advisor",
+  "Omni Advisor is a built-in agent that runs on a schedule, reads your recent sessions, and posts follow-ups, related information, and reminders to your Inbox.",
+  {
+    eyebrow: "Use Cases",
+    path: "/docs/use/builtin-agents/omni-advisor",
+  },
+);
+
+# Omni Advisor
+
+<p className="lede-block">
+  A proactive agent that runs on a schedule. Omni Advisor reads your recent
+  sessions and posts a few follow-ups, related information, and reminders to
+  your Inbox. It never changes code.
+</p>
+
+Omni Advisor is off unless your deployment offers it and an admin turns it on.
+You can't pick it in the agent picker or start a session with it. It runs only
+from its own schedule.
+
+## How it works
+
+Each user who has Omni Advisor on gets one scheduled run of the built-in
+`proactive` agent. The run:
+
+- **Fires on weekday mornings**: Monday to Friday at 08:00 in your timezone.
+  The web UI sends your browser's timezone when you start a session. Without
+  one, the schedule uses UTC.
+- **Runs in a fresh managed sandbox** each time, with a cost cap of $2.00 per
+  run.
+- **Is hidden** from your Scheduled Tasks and Automations lists, and its
+  failures don't appear in the automations inbox.
+
+Your schedule is created the first time you start a session after Omni Advisor
+is turned on for you. Until then, there's nothing to run.
+
+On each run the agent:
+
+1. Reads what it already posted to your Inbox in the last 30 days and how you
+   closed each item. That way it doesn't repeat itself and it learns which
+   kinds of items you find useful.
+2. Reads your recent sessions. Where `gh` and `git` are available, it can also
+   read pull requests and repository state.
+3. Posts at most three items to your Inbox, each one a **follow-up**, **info**,
+   or **reminder**. An item lists its sources and can include up to three
+   action buttons. Each button opens a new session with a prepared prompt for
+   you to review and send. If nothing is worth your attention, it posts
+   nothing.
+
+The agent is read-only. Its policies deny file writes and edits, block pushes,
+and deny risky shell commands instead of asking for approval, because nobody is
+watching a scheduled run.
+
+## Turning it on
+
+Omni Advisor needs all of the following:
+
+- **The deployment offers it.** It's gated behind the `proactive_agent` release
+  feature (see [Release features](/docs/deploy/overview#release-features)).
+- **Managed sandboxes.** Runs launch in a managed sandbox, so a server that
+  can't launch one never creates a schedule. See
+  [Cloud Sandbox Host](/docs/deploy/cloud-sandbox-host).
+- **The workspace setting is on.** An admin turns it on under **Settings →
+  General** in the admin settings.
+- **Your own setting is on.** Each user can turn Omni Advisor off for
+  themselves in Settings.
+
+The settings are checked again before every run. Turning either one off stops
+future runs without deleting anything.
+
+## Admin controls
+
+Under the workspace toggle, admins get two extra controls in the **Omni
+Advisor** settings group.
+
+### Prompt
+
+The prompt replaces Omni Advisor's built-in instructions for every user in the
+workspace, starting with each user's next run. Edit it and click **Save
+prompt**. The text next to the buttons says whether the agent is using a custom
+prompt or the built-in one. A custom prompt can be up to 16,000 bytes of UTF-8.
+
+**Restore default** removes the custom prompt. The agent then follows the
+built-in prompt again, which can change from release to release.
+
+### Run now
+
+**Run now** starts runs right away instead of waiting for the schedule. Enter
+user ids separated by commas or spaces, or `*` for everyone who has Omni
+Advisor on. One request can name up to 100 users, and `*` starts at most 500
+runs.
+
+When the runs start, a summary reports how many started and which users were
+skipped, and why:
+
+| Reason                | Meaning                                                         |
+| --------------------- | --------------------------------------------------------------- |
+| no task yet           | The user hasn't started a session since Omni Advisor was enabled |
+| turned off            | The workspace setting or the user's own setting is off          |
+| already running       | A run for that user is already in progress                      |
+| scheduler unavailable | The server's scheduler can't start the run                      |
+
+The same controls are available over the REST API. Admins only, and every
+route returns 404 when the deployment doesn't offer the agent:
+
+| Route                                | Purpose                                                                                       |
+| ------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `GET /v1/proactive-agent/prompt`     | Returns `prompt`, `default_prompt`, and `overridden`                                          |
+| `PUT /v1/proactive-agent/prompt`     | Body `{"prompt": "..."}` sets a custom prompt, and `{"prompt": null}` restores the default    |
+| `POST /v1/proactive-agent/runs`      | Body `{"users": ["alice@example.com"]}` or `{"users": ["*"]}`. Returns `started`, `skipped`, and `truncated` |
+
+The name `proactive` is reserved for this agent. An extra built-in agent with
+that name is skipped at startup.

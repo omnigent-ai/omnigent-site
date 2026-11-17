@@ -35,6 +35,10 @@ const SECTIONS = [
         pages: [
           { href: "/docs/use/builtin-agents/polly", label: "Polly" },
           { href: "/docs/use/builtin-agents/debby", label: "Debby" },
+          {
+            href: "/docs/use/builtin-agents/omni-advisor",
+            label: "Omni Advisor",
+          },
         ],
       },
       {

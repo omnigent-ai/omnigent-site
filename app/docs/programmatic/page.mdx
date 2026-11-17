@@ -1147,17 +1147,48 @@ automation ID from `GET /v1/scheduled-tasks`.
 
 <div style={{ overflowX: "auto" }}>
 
-| Method   | Path                            | What you can do                               |
-| -------- | ------------------------------- | --------------------------------------------- |
-| `POST`   | `/v1/scheduled-tasks`           | Create an automation                          |
-| `GET`    | `/v1/scheduled-tasks`           | List your automations                         |
-| `GET`    | `/v1/scheduled-tasks/{id}`      | Read one automation                           |
-| `PATCH`  | `/v1/scheduled-tasks/{id}`      | Update fields, or pause and resume            |
-| `DELETE` | `/v1/scheduled-tasks/{id}`      | Delete an automation and its run history      |
-| `POST`   | `/v1/scheduled-tasks/{id}/run`  | Start a run now without changing the schedule |
-| `GET`    | `/v1/scheduled-tasks/{id}/runs` | Read run history, newest first                |
+| Method   | Path                            | What you can do                                       |
+| -------- | ------------------------------- | ----------------------------------------------------- |
+| `POST`   | `/v1/scheduled-tasks`           | Create an automation                                  |
+| `GET`    | `/v1/scheduled-tasks`           | List your automations                                 |
+| `GET`    | `/v1/scheduled-tasks/shared`    | List automations shared with you, a page at a time    |
+| `GET`    | `/v1/scheduled-tasks/{id}`      | Read one automation you own or that's shared with you |
+| `PATCH`  | `/v1/scheduled-tasks/{id}`      | Update fields, or pause and resume                    |
+| `DELETE` | `/v1/scheduled-tasks/{id}`      | Delete an automation and its run history              |
+| `POST`   | `/v1/scheduled-tasks/{id}/run`  | Start a run now without changing the schedule         |
+| `GET`    | `/v1/scheduled-tasks/{id}/runs` | Read run history, newest first                        |
 
 </div>
+
+### Automations shared with you
+
+People an automation is shared with can read it, but only its owner can
+change it. `PATCH`, `DELETE`, `/run`, and the permissions routes return the
+same 404 to anyone else that they return for a missing automation.
+
+- `GET /v1/scheduled-tasks/{id}` answers a recipient the same way it answers
+  the owner. Every task response includes `viewer_role`: `owner`, or `viewer`
+  for someone it's shared with. It also includes `owner_display_name`, which is
+  the owner's name for a viewer and `null` for the owner.
+- `GET /v1/scheduled-tasks/{id}/runs` lists every run for a recipient with its
+  times, `status`, `error_code`, and `conversation_id`, but none of the run
+  session's data. `error_detail`, the `conversation_*` and `viewer_*` fields,
+  and `session_cost_usd` are `null`, and `conversation_pending_approvals` is
+  `0`. `/run-steps` returns no runs for a recipient.
+- `GET /v1/scheduled-tasks/shared` lists the automations shared with you,
+  either directly or through a group. Each automation appears once, ordered by
+  ID, as `{"scheduled_tasks": [...], "next_cursor": ...}`. Page with `limit`
+  (1–100, default 50) and `after` (a previous page's `next_cursor`). Deleted
+  automations, reminders, and your own automations are left out, so a page can
+  be short, or even empty while `next_cursor` is set. The list is empty for
+  the local user and on servers that can't share automations. Requests from
+  agent tools get 403.
+
+`/v1/info` reports `scheduled_task_shared_with_me: true` where the shared list
+is served. That requires `automations_v2` and a permission store that keeps
+automation grants. Older servers that report `scheduled_task_sharing` without
+it lack the route. Agent tools never read through a recipient, so
+`sys_scheduled_task_*` stays scoped to the owner.
 
 See the [API Reference](/reference) for request and response schemas and for
 other endpoints.

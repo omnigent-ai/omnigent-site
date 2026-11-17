@@ -424,6 +424,10 @@ On a multi-user server the sidebar splits your session list across two tabs:
 - **Shared with me** — a flat list of sessions other people have
   [shared with you](/docs/collaborate).
 
+Run sessions from an automation someone shared with you are listed in your
+**Omnigent Automation** folder in the All sessions and My sessions views. See
+[Automations shared with you](#automations-shared-with-you).
+
 ### Browser-first mode
 
 If you prefer to work in the browser rather than the terminal UI, one command
@@ -1299,10 +1303,13 @@ Run an agent on a recurring schedule instead of starting each session by hand. A
 scheduled task is a saved prompt plus a recurrence rule: it fires automatically,
 runs the chosen agent, and keeps firing until you delete it.
 
-Open **Automations** from the sidebar. The page has two tabs:
+Open **Automations** from the sidebar. The page has these tabs:
 
 - **Your automations** — your existing tasks, with search and an
   All / Active / Paused filter. Switching tabs keeps your search and filter.
+- **Shared with me** — automations other people have shared with you. See
+  [Automations shared with you](#automations-shared-with-you). Shown only on a
+  multi-user server that supports it.
 - **Templates** — a gallery of ready-made automations you can customize. The
   tab can be linked directly at `/tasks?view=templates`; the older
   `/tasks/templates` URL redirects there.
@@ -1455,6 +1462,43 @@ Keep in mind:
   manager's state, so its first run may start sessions again for items created
   in the last hour.
 - Deleting a worker doesn't make its item start a new session later.
+
+### Automations shared with you
+
+On a multi-user server, an automation's owner can share it with users and
+groups at Read access. Each run's session is then shared with them too. If
+someone shares an automation with you, directly or through a group, you can
+read it but not change it.
+
+- **Shared with me tab** — open **Automations → Shared with me**, or go to
+  `/tasks?view=shared`. Cards look like the ones for your own automations, with
+  the same search and Active / Paused filter. Each card's subline starts with
+  **Shared by** and the owner's name. The list loads 50 at a time with **Show
+  more**. If nothing is shared with you, it reads _No automations are shared
+  with you yet_.
+- **Read-only page** — select a card to open the automation. **Run now**,
+  **Edit**, **Share**, **Pause** / **Resume**, and **Delete** are still shown in
+  the page header and in the card's **⋯** and right-click menus, but they're
+  disabled. Each one has a tooltip such as _Only the automation's owner can
+  edit it._ The owner's name appears under the title.
+- **Run history** — every run is listed with its time, outcome, and error
+  code. Session cost, error details, approvals, and plan steps aren't shown.
+  To see a run's details, open its session. That works only if the session is
+  shared with you; runs from before you were added, for example, are listed
+  but their sessions won't open.
+- **Sidebar folder** — in the sidebar's **All sessions** and **My sessions**
+  views, shared run sessions sit in your **Omnigent Automation** folder instead
+  of under **Shared with me**. This includes sessions started from a run's
+  session tree, wherever the owner filed them. A fork of a run's session
+  doesn't count and stays under **Shared with me**. If you don't have a project
+  with that name, the sidebar shows a placeholder folder with the same name.
+  The placeholder has no project menu or **New session** button, and you can't
+  drop sessions into it. Your first automation of your own creates the real
+  project. You can't move shared runs into a project.
+
+Only the owner can edit, run, pause, delete, or share an automation. Agent tools
+(`sys_scheduled_task_*`) never act on automations shared with you. If the owner
+removes you, the automation leaves your list and its page shows not found.
 
 ## Collaboration
 

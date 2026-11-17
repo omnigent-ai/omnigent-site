@@ -28,8 +28,12 @@ Omnigent server's `/v1/scheduled-tasks` REST endpoints.
 | `sys_scheduled_task_delete` | Delete a task so it no longer fires. |
 
 Tasks are scoped to the calling user (or the single `local` user when auth is
-disabled). You only see and manage your own tasks; a task owned by someone else
-is not enumerable.
+disabled). These tools only see and manage your own tasks; a task owned by
+someone else is not enumerable. That holds even for automations other people
+have shared with you: you can read those in the
+[web UI](/docs/interact/web-ui#automations-shared-with-you) or through the
+[REST API](/docs/programmatic#automations-shared-with-you), but agent tools
+never read through a recipient.
 
 ## Approval for create and update
 

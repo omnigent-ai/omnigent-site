@@ -708,6 +708,40 @@ and a malformed selector — a missing value, a repeated `--profile`, or an
 invalid profile name — is reported by launch-arg validation when the session
 starts rather than during routing.
 
+### Turn off Codex's built-in tools
+
+With `harness: codex`, two `executor.config` switches in your agent YAML turn
+off Codex's own tools:
+
+- `web_search: false` turns off Codex's built-in web search.
+- `disable_native_tools: true` turns off Codex's native shell tools, so shell
+  commands go through Omnigent tools and [policies](/docs/policies/overview).
+
+```yaml
+spec_version: 1
+name: codex-worker
+executor:
+  type: omnigent
+  config:
+    harness: codex
+    web_search: false
+    disable_native_tools: true
+```
+
+The switches take effect on every Codex route: ChatGPT login, API-key
+providers, and brokered gateways. Values must be YAML booleans. A quoted
+string such as `"false"` or a number such as `1` is rejected with
+`executor.config.<key> must be a boolean`. If you leave a switch out or set it
+to `null`, it stays unset.
+
+The switches can only turn tools off. `web_search: true` and
+`disable_native_tools: false` won't turn tools back on if the runner's operator
+has turned them off. Locked profiles still require `web_search: false` and
+`disable_native_tools: true`, and `broker_gateway` doesn't accept `null`.
+
+Upgrade your runners before you rely on these switches on ordinary routes,
+because older runners ignore them on those routes.
+
 ## Pi
 
 The native Pi harness (`pi`, alias `pi-native`) runs the Pi CLI against the

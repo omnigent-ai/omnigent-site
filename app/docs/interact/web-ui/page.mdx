@@ -1078,6 +1078,33 @@ the box so you can try again. That includes a reply a policy blocked, or one
 sent while the session's host was offline. Wait for the host to reconnect, then
 send again.
 
+### Items your agents post
+
+Agents can also leave items in your Inbox for you to read after the
+conversation ends: a follow-up, a piece of information, or a reminder. Each
+card is labeled with its kind and shows **Posted from** with a link to the
+session that posted it (and the session's agent when the sidebar has it
+loaded).
+
+Agents post with the built-in `sys_user_inbox_post` tool and check what you
+already have with `sys_user_inbox_list`, so they skip duplicates. Unless an
+agent's instructions say otherwise, it posts only when you asked to be reminded
+or notified later, or when it finds something you must act on after the session
+ends and would otherwise miss — not to report progress or a finished task.
+
+Every agent gets these tools by default. To remove them from an agent, turn off
+the `user_inbox` tool group in its config:
+
+```yaml
+tool_groups:
+  user_inbox: false # sys_user_inbox_post / sys_user_inbox_list
+```
+
+Deployments can turn agent-posted items off for everyone with the `user_inbox`
+[release feature](/docs/deploy/overview#release-features)
+(`OMNIGENT_FEATURES=-user_inbox`). Sessions then don't get the tools, whatever
+their config says.
+
 ## Side chats
 
 A side chat lets you ask the agent something off to the side of a conversation

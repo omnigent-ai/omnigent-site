@@ -335,6 +335,7 @@ terminal, then connect again.
 
 ## Get started
 
+{/* TODO(doc-drafter): screenshot may be stale — macOS now defaults to the redesigned (V2) setup flow for all users */}
 {/* eslint-disable-next-line @next/next/no-img-element */}
 
 <img
@@ -357,6 +358,32 @@ terminal, then connect again.
 
 The app remembers your server URL for future launches. To change it later, go to
 **Server > Change Server**.
+
+### Join a server without the CLI (macOS)
+
+On macOS, the app opens with the redesigned setup flow by default, for both new
+and existing profiles. Windows and Linux keep the setup screen shown above. A
+saved server still reconnects on launch, and if you switch setup versions on
+the setup page, the app remembers your choice.
+
+If you're a new user and the `omnigent` CLI isn't installed, joining a server
+from the **Join your team** list asks **How do you want to join?** So does
+joining one of your organization's
+[preset servers](#preset-server-urls-via-mdm-macos) that has no runner to set
+up:
+
+- **Just join** (the default): opens the server without installing anything.
+- **Install CLI first**: installs the CLI, signs you in, connects this laptop as
+  a host, and then opens the server.
+
+If the install or the host connection fails, you can **Retry**, go **Back**, or
+**Continue anyway** to open the server without a host. Where the app can't
+install the CLI itself (Windows and Linux), it shows manual install steps
+instead.
+
+You don't get this choice if you're a returning user, if the CLI is already
+installed, if you're joining your local install, or if the server brings its own
+host CLI.
 
 ## Work with multiple servers
 

@@ -1396,6 +1396,17 @@ builder, for example _Ticket created in project equals `ES`, and Label equals
 
 - **then** — post the session link back (comment on the ticket or issue, or
   reply in the Slack thread), or **Only start the session**.
+
+  For Slack, the option reads **Reply in the thread with the session link when
+  work starts**. Each worker posts the link itself rather than the manager: as
+  soon as it starts, it replies once in the message's thread with
+  `⏳ Omnigent is working on it...`, a `Track progress: Omni Session` link to
+  its own session, and a `Sent with Omnigent` line. It then replies in the same
+  thread with each useful result or blocker; later replies carry only what is
+  new since its previous reply, without the session link. With the option
+  unchecked, the worker skips the start reply and the link and only posts
+  results or blockers. Saved prompts aren't rewritten, so existing Slack
+  automations keep their earlier behavior.
 - **Instructions for each session** — what every started session should do.
   Capped at 2,000 characters so each session's first message (which must stay
   under 8,000) has room for the item.
@@ -1429,7 +1440,8 @@ hold its state. Each run it:
    changing files; a `managed_sandbox` automation starts each worker in a new
    sandbox. A refused or unclear create stops starting sessions for that run,
    and an unclear one is never retried automatically.
-5. Posts each session link back, if enabled. A failed post is retried on the
+5. Posts each session link back, if enabled (Jira and GitHub only; Slack
+   workers post their own link in the thread). A failed post is retried on the
    next run.
 6. Ends its reply with a new `Checked through:` time.
 

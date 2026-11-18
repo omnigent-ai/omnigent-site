@@ -73,6 +73,55 @@ stripped automatically. When set, Omnigent forwards it to the bundled Copilot
 CLI as the `COPILOT_GH_HOST` environment variable and fetches your `gh` token
 for that host. With no host configured, Copilot uses its default `github.com`.
 
+## Cursor
+
+The `cursor` harness runs Cursor through the Cursor SDK (`cursor-sdk`, installed
+through Omnigent's Cursor extra) and needs a Cursor API key. This section covers the SDK harness, not the
+native `cursor-native` TUI harness.
+
+### Native tool policies
+
+On **Linux and macOS**, every Cursor native tool call (shell, file edits, and
+so on) is checked before it runs. Omnigent registers a Cursor `preToolUse` hook
+that sends the call to the harness, which evaluates your
+[contextual policies](/docs/policies/overview) for the `PHASE_TOOL_CALL` phase:
+
+- A policy that doesn't allow the call blocks the tool, and Cursor gets the
+  policy's reason.
+- When the policy allows the call, it runs right away in the `auto` and
+  `bypassPermissions` permission modes. In any other mode, Omnigent shows a web
+  approval card and waits for your answer.
+- The check fails closed. A missing policy evaluator, a malformed request, a
+  closed session, or any transport error denies the tool.
+
+Omnigent's own tools bridged into Cursor are already checked when they are
+dispatched, so the hook skips them.
+
+The hook and Cursor's state live in a private directory under your home
+(`~/.omnigent-cursor-*`), not in the workspace, and Omnigent removes that
+directory when the session closes. Cursor's sandbox is always enabled, so its
+native tools can't modify the hook, and Omnigent rejects policy requests from
+sandboxed processes. The SDK bridge starts with a clean environment: only
+`HOME` (the private directory), `PATH=/usr/local/bin:/usr/bin:/bin`, and
+`LANG` are set.
+
+The session fails to start unless all of the following hold:
+
+- Your home directory is owned by you, is not group- or world-writable, and is
+  not inside the workspace.
+- The workspace doesn't contain the Python interpreter running Omnigent, any
+  directory on its import path, Omnigent's hook script, or the Cursor SDK
+  bridge binary.
+- `/usr/bin/env` exists.
+- The agent doesn't use `sys_terminal_*` tools.
+- If the agent uses `sys_os_*` tools, its OS environment has an active sandbox
+  whose writable paths don't include your home directory or the Python
+  installation the hook runs from.
+
+On **other platforms**, Cursor doesn't isolate the filesystem. There, Omnigent
+writes the hook into the workspace and also cancels the run when it sees a
+denied native tool call.
+
 ## Grok Build
 
 Grok Build (xAI's `grok` CLI) ships as a builtin harness with the id `grok`

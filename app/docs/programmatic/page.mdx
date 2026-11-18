@@ -142,6 +142,20 @@ Common options:
 
 </div>
 
+With `-p`, the CLI waits up to 30 minutes for the session to finish, including
+first-turn recovery and any additional asynchronous turns, such as an
+orchestrator's sub-agents reporting back. To change this wait budget for one
+invocation, set `OMNIGENT_HEADLESS_TIMEOUT_S` to a positive, finite number of
+seconds:
+
+```bash
+OMNIGENT_HEADLESS_TIMEOUT_S=3600 omni run ./my-agent/ -p "Do the big refactor"
+```
+
+An invalid value, such as `0`, a negative number, or `inf`, fails before the
+prompt is sent. The variable affects only headless `-p` runs. Process or job
+deadlines, such as a CI step timeout, still apply.
+
 These examples use an agent YAML or directory through `omni run`; native
 terminal harnesses have their own CLI behavior. To run tools on another
 machine or in a cloud sandbox, use the REST API's host options.

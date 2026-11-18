@@ -116,6 +116,11 @@ Omnigent server is required.** Common options:
 | `--system-prompt` | Supply agent instructions.                              |
 | `--no-session`    | Use a disposable local session; requires an agent path. |
 
+By default, `-p` waits up to 30 minutes for the session to finish, including
+additional asynchronous turns. For longer tasks, set `OMNIGENT_HEADLESS_TIMEOUT_S`
+on the step to a positive number of seconds. Keep it within the job's
+`timeout-minutes`, which still applies.
+
 See [Programmatic Usage](/docs/programmatic) for saved sessions and follow-up tasks.
 
 ## Connect inputs and outputs

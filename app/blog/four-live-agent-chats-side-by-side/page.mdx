@@ -1,0 +1,50 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Watch and steer up to four live agent chats side by side",
+  "Drag sessions from the sidebar into a conversation to build a grid of up to four live chats. Each cell has its own transcript and composer, so you can queue, steer, and switch modes without leaving the grid.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/four-live-agent-chats-side-by-side",
+  },
+);
+
+export const meta = {
+  title: "Watch and steer up to four live agent chats side by side",
+  date: "2026-11-18",
+  category: "Web UI",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="four-live-agent-chats-side-by-side" />
+
+If you run several agents at once in the desktop web UI, you can now keep up to
+four of their live chats on screen together and talk to each one from where it
+sits.
+
+Until now, checking on a second agent meant clicking away from the first and
+losing sight of it. A session grid puts each chat in its own cell with its own
+transcript and composer. You can see which agent is still working, answer the
+one that is waiting on you, and redirect another, all from one view. Every cell
+shows its session's host, permission mode, and agent. Shift+Tab in a cell's
+composer steps that session's permission mode, and if you can edit the session
+you can move it to another host from the cell's host menu. A message you send
+while an agent is busy waits in that cell's queue until the turn ends, or you
+can steer it into the running turn. Drafts and queued messages belong to the
+session, so they are still there when you open it full screen. This works with
+any agent you run in Omnigent.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: drag two sidebar sessions onto an open chat to build a four-cell grid, then queue a follow-up in one busy cell and steer it while the other agents keep streaming */}
+
+Grids are on by default on desktop. Open a session, then drag another session
+from the sidebar over it. Hover **Split left**, **Split right**, **Split top**,
+or **Split bottom** to preview the layout, and drop. Split a remaining pane
+again to reach three or four chats. You can also right-click a sidebar row and
+choose **Open in grid**. Grids are saved in this browser, and you can rename
+one to find it again from the sidebar. See the
+[Web UI guide](/docs/interact/web-ui) for more on working with sessions.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

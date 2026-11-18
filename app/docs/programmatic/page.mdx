@@ -981,7 +981,7 @@ for the minimum interval. These optional fields control each run:
 | `session_mode`, `session_id`         | `new` (default) starts a new session for each run. `continue` sends every run's prompt into one session, so the agent keeps the context from earlier runs.         |
 | `model_override`, `reasoning_effort` | Override the agent's model or reasoning effort for each run.                                                                                                       |
 | `permission_mode`                    | The native harness's permission mode, such as Claude Code's `acceptEdits`. A mode that asks for approval can leave an unattended run waiting.                      |
-| `max_cost_usd`                       | A cost cap for each run. Once the run's recorded cost reaches the cap, its later requests and tool calls are blocked.                                              |
+| `max_cost_usd`                       | A cost cap for each run. Once the run's recorded cost reaches the cap, its later requests and tool calls are blocked. In an update, `null` removes the cap.        |
 | `project_id`                         | File each run's session into one of your [projects](/docs/interact/web-ui#projects).                                                                               |
 
 </div>

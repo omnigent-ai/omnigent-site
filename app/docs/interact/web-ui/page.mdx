@@ -1361,9 +1361,20 @@ dialog, then fill in:
 - **Workspace (optional)** — shown only once a connected host is pinned. Pick a
   directory to pin it; leave it unset to default to the host's home directory. A
   workspace can't be set without a host, and doesn't apply to sandbox runs.
+- **Cost limit per run (USD) (optional)** — cap what each run can spend. Each
+  run gets a fresh budget, including when it continues an existing session:
+  the session's recorded spend at the start of the run plus this amount.
+  Reaching that threshold blocks further model requests and tool calls, but a
+  response already in progress can overshoot it. Leave it blank (**No limit**)
+  for no automation cost limit. When editing a task, clearing the field
+  removes the saved limit; changes apply to future runs. The value must be a
+  number greater than zero — otherwise the dialog shows _Enter a cost limit
+  greater than zero, or leave it blank._ and can't be submitted. See
+  [Cost limit per run](/docs/build/scheduled-tasks#cost-limit-per-run).
 
 The **Create task** button stays disabled until Name, Prompt, a valid schedule,
-and an agent are all set.
+and an agent are all set, and any cost limit is valid. A task's detail page
+shows its **Cost limit per run**, or **No limit** when none is set.
 
 ### Trigger templates
 

@@ -284,7 +284,11 @@ add `-feature_name` and redeploy the same image.
 
 Most release features (such as `usage_page`, `harness_install`, and
 [`canvas`](/docs/interact/web-ui#canvas), and
-[`sandbox_profiles`](/docs/deploy/sandbox-profiles)) are off by default. Runner features
+[`sandbox_profiles`](/docs/deploy/sandbox-profiles)) are off by default. Some are
+on by default and can be turned off with `-name`. For example,
+`-workspace_content_search` hides the web UI's
+[Content search](/docs/interact/web-ui#content-search) until that flag is
+removed in 0.25.0. Runner features
 are resolved by each runner instead of the server:
 
 | Feature             | Default | Applies to    | Effect                                                                                                                                                                                                             |

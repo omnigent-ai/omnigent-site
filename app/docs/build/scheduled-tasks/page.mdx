@@ -82,6 +82,9 @@ rules.
   `high`. Omit for the agent default (the spec's
   [`executor.reasoning_effort`](/docs/build/models#reasoning-effort), or the
   harness default when the spec sets none).
+- **`max_cost_usd`** (optional) — a per-run cost limit in USD. See
+  [Cost limit per run](#cost-limit-per-run). Omit it for no
+  automation-specific cap.
 - **`project_name`** (optional) — file every fired session into a
   [project](/docs/interact/web-ui#projects), by name. The tool uses your
   existing project with exactly that name, or creates one if you have none.
@@ -121,8 +124,12 @@ minutes.
 
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
 untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
-`model_override`, `reasoning_effort`, `workspace`, `host_id`,
+`model_override`, `reasoning_effort`, `max_cost_usd`, `workspace`, `host_id`,
 `execution_target`, `state`, and the project (`project_name` or `project_id`).
+
+Omit `max_cost_usd` to keep the current cost limit, pass a number to set or
+change it, or pass `max_cost_usd=null` to remove it. Changes apply to future
+runs.
 
 Setting a project moves **future** runs into it; `project_id=null` stops filing
 them into a project. Sessions from earlier runs stay where they are.
@@ -141,6 +148,21 @@ The `state` field accepts `active` or `paused`:
 
 To remove a task permanently, use `sys_scheduled_task_delete` — deletion is not
 done through `update`.
+
+## Cost limit per run
+
+`max_cost_usd` caps what each run of a task can spend. Every run gets a fresh
+budget, including a run that continues an existing session: the threshold is
+the session's recorded spend when the run starts plus `max_cost_usd`. Once
+that threshold is reached, further model requests and tool calls in the run
+are blocked, so the task may be left incomplete. A response already in
+progress can overshoot the limit.
+
+The tool descriptions tell agents to set, change, or remove a cost limit only
+when you explicitly ask for it, rather than inventing a budget. To add one,
+say so in your request — for example, _"…with a cost limit of $2 per run"_.
+You can also set it from the **Cost limit per run (USD)** field in the
+[web UI](/docs/interact/web-ui#creating-an-automation-from-scratch).
 
 ## Where a task runs
 

@@ -1,0 +1,50 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Move a running session from your laptop onto a cloud sandbox without losing context",
+  "Switch host can now move a session from one of your machines onto a new cloud sandbox. The conversation comes along, and the agent picks up where it left off.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/move-session-laptop-to-sandbox",
+  },
+);
+
+export const meta = {
+  title:
+    "Move a running session from your laptop onto a cloud sandbox without losing context",
+  date: "2026-11-18",
+  category: "Cross-device",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="move-session-laptop-to-sandbox" />
+
+If you start a session on your laptop and later want it to keep going after you
+close the lid, you can now move it onto a new cloud sandbox and carry on the
+same conversation there.
+
+Until now, Switch host could only move a session between your own machines, so
+getting a running conversation onto cloud compute meant leaving it behind. Now
+Switch host offers a new sandbox next to your machines. Omnigent stops the session on your laptop, launches the
+sandbox, and the agent continues there with its full transcript. This also
+helps when your laptop has gone offline. The reconnect dialog's Switch host
+opens the same picker, so you can recover the session onto a new sandbox.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: a session mid-task on a laptop host, open the host menu, choose Switch host…, pick a new sandbox, enter a repo URL and branch, watch the launch progress, then send a follow-up that the agent answers from the sandbox. */}
+
+To move a session, open the composer's host menu and choose **Switch host…**.
+When your server has managed sandboxes set up, the picker lists a new sandbox
+for each provider above your machines. Pick one and optionally enter a
+repository URL and branch to clone as the session's working directory. Then
+choose **Switch host**. The session shows the sandbox's launch progress, and
+any message you send while it provisions waits and is delivered once the
+sandbox is ready. The conversation moves with the session but local files do
+not, so point it at the repository you want the agent to work in. If the
+launch is refused, the dialog stays open and offers your old host again. To set
+up sandbox providers on your server, see the
+[Cloud Sandbox Host guide](/docs/deploy/cloud-sandbox-host).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

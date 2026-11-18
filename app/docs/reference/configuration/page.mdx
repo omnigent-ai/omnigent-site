@@ -222,6 +222,99 @@ this interval only when automations v2 is enabled. If automations v2 is off, or
 the server doesn't support sub-hour schedules and the value is under 60, new
 templates poll hourly.
 
+## Automatic session recovery
+
+| Setting | Value                                                 |
+| ------- | ----------------------------------------------------- |
+| Key     | `host.recover_interrupted_sessions`                   |
+| Scope   | The host machine's `~/.omnigent/config.yaml`          |
+| Type    | Boolean                                               |
+| Default | `false` (interrupted sessions are continued manually) |
+
+When a host restarts while an agent turn is running, the session normally stops
+with a disconnect error until you send another message. A host that opts in
+lets the server continue the interrupted task automatically, in the same chat
+and without another message:
+
+```yaml
+host:
+  recover_interrupted_sessions: true
+```
+
+Restart the host process to apply the setting. While connected, an opted-in
+host asks the server every 30 seconds to recover its interrupted sessions. Only
+the literal value `true` opts in. Omitting the key, setting it to `false`, or
+running an older host keeps manual continuation. The setting works on ordinary
+machines as well as [cloud sandbox hosts](/docs/deploy/cloud-sandbox-host), but
+the host must reconnect under the same host identity. For managed sandboxes,
+roll it out to every host through the provider's
+[`host_config`](/docs/reference/configuration/cloud-sandbox#host-configuration):
+
+```yaml
+sandbox:
+  provider: kubernetes
+  host_config:
+    host:
+      recover_interrupted_sessions: true
+```
+
+The host must come back with its workspace, credentials, and harness state
+restored. Leave recovery disabled if those files may still be restoring after
+the host registers. The server never provisions or wakes compute to recover a
+session, and it refuses recovery when the session's workspace directory is
+missing.
+
+What gets continued:
+
+- Only root sessions whose unfinished turn the server recorded are eligible.
+  A session that merely shows a past running status or disconnect error stays
+  manual.
+- A completed turn, **Stop**, a pending approval or other human-input wait, a
+  newer message, archiving or closing the session, or a changed host binding
+  prevents continuation. Sessions whose runner is still alive are skipped.
+- Each interrupted task gets at most three launch attempts within 24 hours.
+  Retries back off, and the budget survives a server restart. A new user
+  message starts a fresh budget.
+- The agent receives a hidden prompt tagged `[System: session resumed]`. The
+  transcript doesn't show it as a user message.
+- If the retry budget runs out, or the server can't confirm the continuation
+  was delivered, it stops instead of replaying work that may have finished.
+  The session then shows **Automatic resume failed. Please send a new message
+  to continue.**
+
+Recovery isn't exactly-once. A tool call that was in flight when the host
+restarted may already have taken effect. The default prompt tells the agent to
+continue the task and check the outcome of any interrupted operation before it
+repeats it.
+
+### Recovery prompt
+
+| Setting | Value                                                                 |
+| ------- | --------------------------------------------------------------------- |
+| Key     | `recovery_prompt`                                                     |
+| Scope   | Server config (`omni server --config`)                                |
+| Type    | Non-blank string, up to 8,000 characters                              |
+| Default | Built-in prompt to continue the task and check interrupted operations |
+
+Replaces the instructions sent to the agent when a session is resumed. The
+server still adds the `[System: session resumed]` marker:
+
+```yaml
+recovery_prompt: |
+  Your previous run was interrupted. Re-check the working tree and test status,
+  then continue the task.
+```
+
+A managed sandbox provider can override this for its own hosts with
+`host_config.host.recovery_prompt`. The same limits apply to both settings, and
+the server rejects an invalid value at startup. Neither hosts nor end users can
+supply these instructions.
+
+The stock `omni server`, Docker, and Databricks App entrypoints allow hosts to
+opt in. A server embedded by calling `create_app` directly must also pass
+`host_session_recovery=True`, or a callable that returns `True`. Without it,
+recovery stays off.
+
 ## Managed sandboxes
 
 - [Kubernetes sandbox configuration](/docs/reference/configuration/kubernetes)

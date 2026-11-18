@@ -686,3 +686,9 @@ untouched.
 Do not put secrets in `host_config`. Use `api_key_ref: env:VAR`; the variable
 is resolved inside the sandbox from its provider-specific credential source.
 Inline `api_key` values are rejected. The server validates the block at startup.
+
+To have the provider's hosts continue interrupted turns automatically after a
+host restart, set `host_config.host.recover_interrupted_sessions: true`.
+`host_config.host.recovery_prompt` overrides the server's recovery prompt for
+those hosts. See
+[Automatic session recovery](/docs/reference/configuration#automatic-session-recovery).

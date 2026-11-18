@@ -1,0 +1,64 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Plan multi-step work once, then rerun it as a workflow from chat or on a schedule",
+  "Type /workflow and a goal, and the agent turns it into a plan of steps you can follow live. Save a plan that worked as a workflow, then run it again from the composer, by name in chat, or from an automation.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/plan-once-rerun-as-workflow",
+  },
+);
+
+export const meta = {
+  title:
+    "Plan multi-step work once, then rerun it as a workflow from chat or on a schedule",
+  date: "2026-11-18",
+  category: "Orchestration",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="plan-once-rerun-as-workflow" />
+
+If you keep asking agents to do the same multi-step job, like triaging flaky
+tests or getting a stack of PRs ready to merge, you can now plan it once and
+run it again whenever you need it. Type `/workflow` and a goal, and the agent
+turns it into a plan you can watch step by step.
+
+Until now, every repeat meant explaining the procedure again and hoping the
+agent took the same path. A workflow keeps the steps that worked. The session's
+Tasks tab shows each step as it starts, finishes or waits on you, and questions
+the agent can't answer itself land in your Inbox. Steps that run in parallel, or
+that are workflows of their own, each get a nested session you can follow and
+message. This works with any agent you run in Omnigent.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: run /workflow on a real task, watch the Tasks tab fill in, save the plan as a workflow, then open it on the Workflows page with its step graph and list of runs */}
+
+Workflows are off by default for now. Turn them on by adding `workflows` to the
+server's release features and restarting it:
+
+```bash
+export OMNIGENT_FEATURES=workflows
+omnigent server
+```
+
+Then start a run from the composer:
+
+```
+/workflow Triage this week's flaky tests, fix each one in its own PR, and post a summary.
+```
+
+When a run goes well, open the **⋯** menu next to the plan's name in the Tasks
+tab and choose **Save as workflow…**. Next time, pick it from the composer or ask
+for it by name in chat ("run my triage workflow"). To run it on a schedule or a
+trigger, choose it in New automation's **Workflow (optional)** field. Each run
+gets its own session, so runs never pile into one transcript. The **Workflows**
+page lists everything you have saved. Each workflow's page shows its steps as a
+graph, the sessions that ran it and the automations that start it, and you can
+clone a workflow there to make a variant. See
+[release features](/docs/deploy/overview#release-features) for enabling it and
+[Scheduled Tasks](/docs/build/scheduled-tasks) for automations.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

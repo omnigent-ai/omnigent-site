@@ -1456,6 +1456,33 @@ Keep in mind:
   in the last hour.
 - Deleting a worker doesn't make its item start a new session later.
 
+### Pull requests in run history
+
+In an automation's run history, a run that created or worked on pull requests
+shows a summary on its first line, after the run's time. It reads like
+`PR #212 merged` for one pull request, or `PRs: 2 merged, 1 closed` for several.
+Click it to see the list. Each entry shows its state (**Open**, **Draft**,
+**Merged**, **Closed without merging**, or **Status unknown**) and links to the
+pull request in a new tab. Hovering an entry shows whether the run opened it
+or only worked on it. A state older than five minutes shows how old it is.
+
+The list comes from the pull requests the server has stored for the run's
+session, so it still shows when the host is offline. Open or unknown states
+older than five minutes are refreshed from the host in the background, and the
+page checks again every minute while one is pending. The page also keeps
+checking for five minutes after a run finishes, because the run's last report
+can arrive late.
+
+A run lists only the pull requests found while its own turn was running. Once
+you write to the session yourself, in the web UI or by typing in a native
+terminal, pull requests found after that point don't belong to any run until
+the next run starts. Pull requests the session inferred from its branch are
+left out, unless that is the run's only pull request.
+
+The summary appears only on servers that advertise
+`scheduled_task_run_pull_requests` in `/v1/info`. People an automation is
+shared with don't see it, because pull requests are part of the run's session.
+
 ## Collaboration
 
 Share your session with teammates for real-time co-driving. Multiple people see the same

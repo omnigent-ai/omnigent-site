@@ -544,6 +544,7 @@ composer, the editor, or a terminal is unaffected.
 | Toggle the left (Conversations) sidebar      | `⌘⌥[` (`Ctrl+Alt+[`)                           |
 | Focus or close the right (Workspace) sidebar | `⌘⌥]` (`Ctrl+Alt+]`)                           |
 | Select a Workspace tab                       | `⌘⌥]` then `1`–`4` (`Ctrl+Alt+]` then `1`–`4`) |
+| Search workspace file contents               | `⌘⇧F` (`Ctrl+Shift+F`)                         |
 | Open a new browser tab (desktop app only)    | `⌘⌥B` (`Ctrl+Alt+B`)                           |
 | Open a new shell                             | `⌘⌥T` (`Ctrl+Alt+T`)                           |
 | Toggle voice dictation                       | `⌘⌥V` (`Ctrl+Alt+V`)                           |
@@ -689,6 +690,44 @@ This is a per-device UI preference stored in your browser. If a chosen default
 tab isn't available in a given session (for example, GitHub only appears in
 coding-agent sessions, and Files/Changes need an on-disk workspace), the rail
 falls back to the first available tab.
+
+## Content search
+
+Search the text of files in a session's workspace, then open a match at its
+line. **Files** still handles finding files by name; **Content search** searches
+what's inside them.
+
+Open it in any of these ways:
+
+- Select the **Content search** (magnifying-glass) tab in the **Workspace**
+  rail, or choose **Select panel → Content search**.
+- Press `⌘⇧F` (`Ctrl+Shift+F` on Windows/Linux). It opens the rail if needed,
+  selects **Content search**, and focuses the input, including from the editor
+  or a terminal.
+- On mobile, open the session's **Conversation actions** menu and choose
+  **Content search**. It opens as a full-screen drawer, and a result's back
+  button returns you to the drawer.
+
+Type a query and press Enter or **Search**. Queries are literal by default;
+options let you match case, match a **Whole word**, or use a ripgrep regular
+expression. Click **Filter files** (the funnel button) to add **Include** and
+**Exclude** globs. Comma-separated patterns and brace alternatives work (for
+example `src/**, *.{ts,tsx}`), and excludes take precedence. Each conversation
+keeps its query, options, and results until the page reloads; submit again to
+refresh them.
+
+The search runs on the session's runner over the workspace on disk, so it
+needs a connected runner with `rg` (ripgrep) on its `PATH`. Unsaved editor
+changes aren't searched. Binary files, `.git`, and symlinks are skipped, and
+ignore rules apply unless an explicit **Include** glob overrides them. A search
+returns at most 500 matching lines and stops after 15 seconds; partial results
+are labeled. Workspace file-sharing permissions apply, so a shared conversation
+alone doesn't grant access to its file contents.
+
+Content search is on by default. To hide the tab, mobile drawer, and shortcut,
+set `OMNIGENT_FEATURES=-workspace_content_search` on the server (see
+[Release features](/docs/deploy/overview#release-features)). The flag is
+expected to be removed in 0.25.0.
 
 ## File editor
 

@@ -580,6 +580,34 @@ Jump straight to a pinned session with the command modifier plus a digit
 ⌘/Ctrl+digit is reserved for native tab-switching — the binding adds Alt
 (`⌘⌥1`…, `Ctrl+Alt+1`…); the installed desktop app uses the plain `⌘1`… chord.
 
+## Session grids
+
+On desktop, you can view up to four live conversations side by side in a
+session grid. Open a session, then drag another session from the sidebar over
+the conversation. Hover **Split left**, **Split right**, **Split top**, or
+**Split bottom** to preview the layout, then drop. To reach three or four panes,
+split a remaining full-width or full-height pane again. Panes fit in up to two
+rows and two columns. You can also choose **Open in grid** from a sidebar row's
+menu or right-click menu, then pick the pane and direction.
+
+Each pane is an independent chat with its own transcript and composer.
+Terminal-capable sessions have a Chat/Terminal switch in each cell header, and
+`⌘⌥\` (`Ctrl+Alt+\` on Windows/Linux) switches only the active cell. One shared Workspace panel follows
+the active cell. Close a pane to expand its neighbor; closing down to one pane
+returns to the ordinary session view.
+
+Grids live at `/grid/<id>` and are saved only in this browser, scoped to the
+server and your user. Reopen a saved grid from **Grids** in the sidebar, or with
+its `/grid/<id>` URL in the same desktop browser. Deleting a grid from the
+sidebar forgets only the grid and leaves its sessions untouched. Grids are not
+available on mobile.
+
+Session grids are **on by default**, controlled by the
+`grid_sessions_display_ui` release feature. To hide grids, append
+`-grid_sessions_display_ui` to the server's `OMNIGENT_FEATURES` (see
+[Release features](/docs/deploy/overview#release-features)). The flag, and with
+it the option to turn grids off, is scheduled for removal in 0.25.0.
+
 ## Canvas
 
 The Canvas page gives you a spatial view of your work: instead of the linear

@@ -201,6 +201,16 @@ When a task is due, Omnigent:
 5. Records the run — stamping the task's last-run time and the run's
    conversation id.
 
+The pull requests each run created or worked on are listed by
+`GET /v1/scheduled-tasks/{id}/run-pull-requests`. It pages like `/runs`
+(`limit` 1–50, default 20, and `after`) and returns only runs that have pull
+requests, each as `{"run_id", "pull_requests": [...]}` with created ones first,
+plus a top-level `refresh_pending` flag that is set while the server refreshes
+stale states in the background. Its data comes from what the server has stored, so it
+works while hosts are offline. Servers that serve it report
+`scheduled_task_run_pull_requests: true` in `/v1/info`. The web UI shows the
+result as a [summary on each run](/docs/interact/web-ui#pull-requests-in-run-history).
+
 ### The unattended-run note
 
 No one is watching a scheduled run, so a question or a permission request

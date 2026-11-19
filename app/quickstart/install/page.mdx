@@ -105,6 +105,16 @@ changing anything.
 same options, so either spelling works. The alias is not listed in
 `omnigent --help` to avoid a duplicate entry.
 
+For a `uv tool` install, `omni upgrade` reinstalls dependencies as copies
+(`uv tool upgrade --reinstall --link-mode copy omnigent`) rather than hard
+links into uv's cache. The install script and `update_nightly.sh` do the same.
+If a sandboxed session fails to start with a `mutable hard-link alias` error,
+which can happen with installs made by older releases, run:
+
+```
+uv tool upgrade --reinstall --link-mode copy omnigent
+```
+
 ## Nightly builds
 
 Nightly builds are datestamped prereleases (`vX.Y.Z.devYYYYMMDD`) cut from the

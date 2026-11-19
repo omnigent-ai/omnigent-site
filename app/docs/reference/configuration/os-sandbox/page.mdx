@@ -554,12 +554,119 @@ os_env:
     allow_network: false
 ```
 
+## Claude Code (`claude-sdk`) containment
+
+With `harness: claude-sdk` and an active sandbox, the sandbox contains the
+**entire Claude CLI** and everything it spawns: native Bash, inline skill shell
+expansion (``!`command` ``), hooks, and plugin subprocesses such as plugin stdio
+MCP servers. System-installed and SDK-bundled Claude CLIs use the same launcher.
+This outer boundary is separate from Claude's own Bash sandbox.
+
+```
+executor:
+  harness: claude-sdk
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    type: auto
+    write_paths: ["."]
+    allow_network: false
+```
+
+- **Backends.** Containment requires `linux_bwrap` or `darwin_seatbelt`.
+  `windows_jobobject` doesn't isolate the filesystem or network, so sandboxed
+  Claude SDK launches reject it.
+- **Fails closed.** If the sandbox can't be resolved or launched, the session
+  doesn't start. Setting `OMNIGENT_CLAUDE_SDK_NO_SANDBOX` while a sandbox is
+  requested is a startup error. Use `sandbox.type: none` to opt out.
+- **No sandbox requested.** If you omit `os_env` or set `sandbox.type: none`,
+  skills, hooks, and local MCP commands run uncontained.
+- **Bash policy gate.** Bash is available inside the contained CLI so skills can
+  run their shell commands. Every native Bash call passes an Omnigent
+  `PreToolUse` policy gate, even when Claude's permission mode approves tools
+  automatically. Claude's own permission rules still apply.
+
+### Automatic model access
+
+You don't need an `egress_rules` entry for the model. The trusted parent works
+out the model host and gateway prefix from the selected provider, and it relays
+inference for the CLI, sandboxed session terminals, and `sys_os_*` shells. This
+works even with `allow_network: false`. The sandbox only ever sees a
+session placeholder. Real model tokens and auth commands stay in the parent.
+
+- The relay attaches the credential only to HTTPS `POST` requests to the
+  provider's `/v1/messages` and `/v1/messages/count_tokens` routes (optionally
+  with exactly `?beta=true`). `egress_rules` can't widen this. Redirects,
+  account APIs, and other model-host paths don't get the credential.
+- Anything running in the sandbox can make inference requests through the
+  placeholder, so skills get the session's inference capability.
+- In a sandboxed Claude SDK session, you can run the Claude CLI from a terminal
+  (one you open or one launched by `sys_terminal_launch`) without entering a
+  credential.
+- Supported credentials are API-key providers, explicit Anthropic bearer/OAuth
+  tokens, and host Claude OAuth credentials. Host OAuth credentials are reread
+  from the credentials file or the macOS Keychain; if they expire, sign in
+  again. Databricks profile credentials are refreshed in the parent.
+- Databricks profile authentication needs the trusted Python profile-token
+  helper on the parent's `PATH`. A profile configured only through the
+  Databricks CLI can't start a sandboxed Claude worker.
+- These fail closed: arbitrary shell auth helpers, HTTP or nonstandard-port
+  model endpoints, and Bedrock/Vertex/Foundry transports.
+
+This integration only applies to `claude-sdk`. It doesn't change `claude-native`
+launches or how other harnesses authenticate to models.
+
+### Network and filesystem
+
+- **No direct networking.** Contained launches never get direct network
+  access, even if the policy sets `allow_network: true`. For other HTTP(S)
+  access, add `egress_rules`. Those requests don't get the model credential.
+- **Private home.** The CLI, sandboxed session terminals, and `sys_os_*` shells
+  each use private HOME, config, and scratch directories. That means
+  home-relative Git, package-manager, and shell configuration may be missing.
+  Host Claude state, credential files, and plugins aren't imported, and on
+  macOS Keychain access is denied. If a filesystem grant conflicts with this,
+  startup fails.
+- **Skills.** Bundled skills stay available. Only the skills and their
+  supporting files are copied into a separate plugin directory. Keep the
+  original agent bundle, including its `config.yaml` and MCP configuration,
+  outside the sandbox workspace and its read/write grants. Startup rejects
+  layouts that conflict with this.
+- **Trusted runtime.** Omnigent's Python interpreter, runtime libraries, and
+  framework installation must stay outside sandbox-writable paths. An editable
+  install inside a writable workspace can be rejected. Startup also fails on
+  user-owned hard links to trusted runtime files and on unsupported executable
+  `.pth` startup lines (for example `import _virtualenv`). Install dependencies
+  as copies, in a standard virtual environment.
+- **Managed Claude policy.** Managed Claude policy still applies. Managed
+  configuration that contains model credentials or `apiKeyHelper` is rejected
+  before the CLI can read it, so keep model credentials in the parent's
+  provider configuration. The check covers settings-only directories, settings
+  drop-ins, and macOS device and per-user MDM preference plists.
+
+<div className="note">
+
+On Linux, the default Claude CLI wrapper checks the installed Python runtime
+for mutable hard-link aliases even when `os_env` is omitted, and a failure can
+stop startup. If an older `uv tool` install fails with a `mutable hard-link
+alias` error, reinstall its dependencies as copies:
+
+```
+uv tool upgrade --reinstall --link-mode copy omnigent
+```
+
+</div>
+
 ## What is and isn't sandboxed
 
 The OS sandbox applies to `sys_os_*` tool calls and terminals that reference the
-policy. It does **not** apply to:
+policy. With `claude-sdk`, it also contains the Claude CLI and its descendants
+(see [Claude Code containment](#claude-code-claude-sdk-containment)). It does
+**not** apply to:
 
-- **MCP servers.** The runner spawns MCP subprocesses outside the sandbox. Constrain an MCP server at its own configuration site.
+- **MCP servers.** The runner spawns MCP subprocesses outside the sandbox. Constrain an MCP server at its own configuration site. (Plugin stdio MCP servers launched by a contained `claude-sdk` CLI are the exception; remote MCP servers run elsewhere.)
+- **In-process Python tools.** Registered in-process tools run in the parent process.
 - **The Omnigent supervisor process.** It runs the model loop and dispatches tools. Only the commands it issues through OS tools run inside the sandbox.
 
 If you ask for a sandbox (explicitly or via the default) and it can't be provided,

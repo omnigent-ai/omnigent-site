@@ -664,6 +664,17 @@ Omnigent session.
 
 ## Claude Code
 
+### Sandboxed `claude-sdk` sessions
+
+When a `claude-sdk` agent sets an active `os_env` sandbox, the whole Claude
+CLI runs inside it, together with its Bash calls, inline skill commands, hooks,
+and plugin subprocesses. Model access is relayed automatically, so you don't
+need a model egress rule and the CLI never receives the real credential.
+Sandboxed terminals in the session can also run Claude inference without a
+credential. See
+[Claude Code containment](/docs/reference/configuration/os-sandbox#claude-code-claude-sdk-containment)
+for requirements and limits.
+
 ### Enterprise `managed-mcp.json`
 
 An organization can pin Claude Code's MCP servers with an enterprise

@@ -8,8 +8,6 @@ Omnigent 0.23.0 is a major release focused on making it easier to run, watch, an
 
 ## 1. More flexible Automations
 
-![TODO: add a demo screenshot or GIF for "More flexible Automations"](TODO)
-
 Automations that run unattended should only touch the tools you meant them to, and they shouldn't cost much while they wait for something to happen. You can now choose which MCP services each automation run can use, so a scheduled job only gets the integrations it needs. When a trigger is polling for new work, it can use a cheaper model than the sessions it starts. You pay for the expensive model only when there is real work to do.
 
 Automations are also easier to share. You can share an automation with others as read-only, and anything shared with you appears in a "Shared with me" tab. Automation instructions can now be up to 16,000 characters long, so you have room for detailed, multi-step instructions.
@@ -18,23 +16,17 @@ _Learn more in the [Scheduled tasks](/docs/interact/web-ui#scheduled-tasks)._
 
 ## 2. Session grids and workspace content search
 
-![TODO: add a demo screenshot or GIF for "Session grids and workspace content search"](TODO)
-
 When several agents are working in parallel, switching between tabs to check on each one gets old quickly. Session grids are now on by default. Drag sessions from the sidebar into a conversation to watch up to four live chats side by side.
 
 Workspace content search is also on by default. Press Cmd/Ctrl+Shift+F to search across the contents of your workspace without leaving the app.
 
 ## 3. `/rewind` for Claude SDK and Claude Code chats
 
-![TODO: add a demo screenshot or GIF for "/rewind for Claude SDK and Claude Code chats"](TODO)
-
 Sometimes you only see the better way to ask once the agent is a few turns down the wrong path. In Claude SDK and Claude Code native chats, type `/rewind` to go back to an earlier prompt, edit it, and resend it. You don't have to start a new conversation.
 
 The Claude SDK composer also supports `@` references to workspace files, so you can point the agent at the exact file you mean while you type.
 
 ## 4. Inline review comments and stacked-PR diffs
-
-![TODO: add a demo screenshot or GIF for "Inline review comments and stacked-PR diffs"](TODO)
 
 Reviewing your agent's pull requests now fits better into the conversation. Leave local inline review comments on the diff and send them to your agent as chat context. The agent gets your feedback right next to the code it refers to, and you don't have to copy it into the chat yourself.
 

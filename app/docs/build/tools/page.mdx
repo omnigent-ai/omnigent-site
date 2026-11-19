@@ -315,6 +315,11 @@ before any of their code is imported. An uploaded bundle cannot declare:
 - `type: function` policies whose `handler` is not a
   [registered policy handler](/docs/policies/custom#2-register-on-the-server).
 - Absolute working directories, or working directories that escape the workspace.
+- Absolute, `~`, or `..` entries in `os_env.sandbox` `read_paths`, `write_paths`,
+  or `write_files`. A host that needs to expose paths outside the workspace lists
+  them under
+  [`runner.sandbox_grants`](/docs/reference/configuration/os-sandbox#host-sandbox-grants)
+  in its own `config.yaml`.
 
 These checks also apply to terminals and nested agents in the bundle. They run
 on multi-user servers and, starting in 0.19.0, on local single-user servers

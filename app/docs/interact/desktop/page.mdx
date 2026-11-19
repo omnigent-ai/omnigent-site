@@ -149,6 +149,58 @@ Other loopback addresses, private networks, link-local and metadata addresses,
 and `0.0.0.0` remain blocked. Normal TLS, CORS, authentication, and
 [local network permission](#local-network-permission) rules still apply.
 
+### Annotate and Draw
+
+The Browser tab's toolbar has two design tools for showing the agent what to
+change on a page: **Annotate an element** and **Draw on the page**. They work
+only while a page is loaded and visible. Press <kbd>Esc</kbd> or the bar's
+**×** to close a tool. Navigating to another page also closes it ("The page
+changed, so the tool closed.").
+
+- **Annotate.** Hover to outline an element and click to pick it. Type what
+  should change in the **What should change?** field, then press <kbd>Enter</kbd>
+  or **Send to agent** (<kbd>Shift</kbd>+<kbd>Enter</kbd> adds a new line). The
+  request includes the element's details and a screenshot of the element. If
+  the screenshot can't be taken, the request is sent without it and the notice
+  tells you so.
+- **Draw.** Mark up the page with **Pen**, **Rectangle**, **Arrow**, or
+  **Text**. Each shape tool keeps its own color, and **Undo** removes the last
+  mark. For text, click where it should go, type, and press <kbd>Enter</kbd> to
+  place it (<kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Enter</kbd> places it and sends).
+  Optionally add a note in **Add a note for the agent**, then press Send or
+  <kbd>Enter</kbd> in the note. The agent gets a screenshot of the page with
+  your marks and your note. With no note, the request reads "Make the changes I
+  marked on the attached screenshot." The message names only the page's origin,
+  not its path or query string.
+
+Requests show in the chat as a compact card. They don't use the composer's
+queue or the **Always steer** setting. Instead, each one waits in its own
+**Design requests** list above the session's composer (or the side chat's
+composer) and sends once the session is idle. A session sends one request at
+a time and waits for that turn to end before sending the next, so a second
+request doesn't steer the first one's turn. A notice in the Browser tab says
+**Sent to agent.** when a request goes through. A request belongs to its
+session, so it stays listed even if you close the Browser tab.
+
+Each row shows its state (**Sending…** or **Waiting for the agent**) and has
+**Remove** (except while it's sending). A request that fails shows why and
+offers **Retry**:
+
+- **Host offline.** Retry once the session's host is back.
+- **Account changed.** Requests are tied to the account that made them. If a
+  different account is signed in, the request isn't sent. Sign back in as the
+  original account to Retry, or Remove it.
+- **App reloaded or server didn't answer.** Unsent requests are saved in the
+  browser and come back after a reload, but they don't resend on their own.
+  The request may have reached the agent already, so check the chat before you
+  Retry.
+- **Blocked by a policy.** The request isn't sent, and you can only Remove it.
+
+Older desktop builds without these tools have a **Design mode** toggle
+instead: turn it on, click an element, and type your instruction in the
+floating popup. Those instructions follow the composer's queue and the
+**Always steer** setting.
+
 ### Open chat links in the in-app browser
 
 Web links in chat open in your default browser unless you change that. To open

@@ -1700,6 +1700,35 @@ enabled. On a server without those, the Templates tab says templates aren't
 available, the empty-state preview is hidden, and you can still create an
 automation from scratch.
 
+### Cloning an automation
+
+To copy an automation you own, open its **⋯** menu on the **Automations** page,
+or right-click its card, and choose **Clone**. Omnigent creates a new automation
+named after the original with ` (copy)` appended, with the same settings and
+schedule, and opens the copy's page. The automation's own page has no **Clone**
+action.
+
+- **New ID, no history.** The copy has its own ID and none of the original's
+  runs.
+- **Same schedule days.** The copy keeps the original's schedule phase, so an
+  every-other-day automation's copy runs on the same days. Its first run is the
+  next occurrence after you clone it.
+- **Both can run.** A copy of a paused automation is paused too. Otherwise the
+  original and the copy both run until you pause or delete one. The toast after
+  cloning says which case applies, for example **Automation cloned. Pause or
+  delete the original so they don't both run.**
+- **Continued sessions.** The copy of an automation that continues one session
+  starts its own session on its first run instead of sending to the original's.
+- **Failures.** If the server refuses the clone (for example, because the
+  automation's agent or host can no longer be used), a toast shows the reason
+  and nothing is created.
+
+On an automation shared with you, **Clone** shows disabled with the tooltip
+**Only the automation's owner can clone it.** Cloning needs a server that
+advertises `scheduled_task_clone` in `/v1/info`, which requires automations v2;
+on other servers the menu has no **Clone**. See
+[Cloning a task](/docs/build/scheduled-tasks#cloning-a-task) for the API.
+
 ### Failed runs
 
 When a task's latest run failed, its card on the **Automations** page shows a

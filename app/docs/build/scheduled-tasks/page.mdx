@@ -231,6 +231,40 @@ The `state` field accepts `active` or `paused`:
 To remove a task permanently, use `sys_scheduled_task_delete` — deletion is not
 done through `update`.
 
+## Cloning a task
+
+`POST /v1/scheduled-tasks/{id}/clone` creates a new automation with the
+original's settings and schedule and returns it the same way a create does. In
+the web UI, choose **Clone** from an automation's menu on the Automations page
+(see [Cloning an automation](/docs/interact/web-ui#cloning-an-automation)).
+There is no built-in agent tool for cloning.
+
+- The copy is named `<name> (copy)`, with the original name shortened so the
+  result fits in 256 characters.
+- It gets a new ID and none of the original's runs.
+- It keeps the original's `created_at`, which anchors an interval schedule's
+  phase and its `COUNT`. An every-other-day automation's copy therefore runs on
+  the same days, and the creation-ordered list shows the copy as old as the
+  original. Its first run is the next occurrence after the clone.
+- A copy of a paused automation is created paused. Otherwise both automations
+  run until you pause or delete one.
+- A `continue` automation's copy starts its own session on its first run rather
+  than sending to the original's session. An automation that
+  [starts each run from a session](#starting-each-run-from-a-session) gets its
+  own copy of the original's session copy.
+- The create checks still apply, so a clone fails if, for example, the agent or
+  host is no longer usable. If the original's project was deleted, the copy
+  starts unfiled.
+
+Only the owner may clone an automation, and reminders can't be cloned. The
+optional request body `{"host_id": ...}` names the original's host so the
+request reaches that host's replica on a sharded server. Any other `host_id` is
+rejected with HTTP 400.
+
+Cloning needs automations v2. Servers that serve the route report
+`scheduled_task_clone: true` in `GET /v1/info`; on other servers the route
+returns HTTP 400.
+
 ## Where a task runs
 
 `execution_target` picks the machine each firing runs on.

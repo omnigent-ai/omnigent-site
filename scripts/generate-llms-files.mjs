@@ -193,6 +193,7 @@ export async function buildLlmsFiles() {
     releases.push({
       ...page,
       kind: "release",
+      description: release.description,
       date: release.date,
       version: release.version,
     });

@@ -61,6 +61,41 @@ Long conversations are exported in full — the UI pages through the whole
 history before saving. If the export can't be built, an **Export failed** toast
 appears and nothing is downloaded.
 
+### Mute a session
+
+To stop a session from asking for your attention, open its menu in the sidebar
+(the `⋯` button, or right-click the row) or its card menu on the project Kanban
+board, and choose **Mute**. In the sidebar, the muted session's title dims. When
+the session is idle, its row shows a muted bell; status indicators for a running
+agent and unsent drafts still show in that spot instead.
+
+A muted session:
+
+- sends no browser or desktop notifications
+- shows no unread dot in the sidebar, the Kanban board, or [Canvas](#canvas)
+- doesn't count toward the app badge
+- stays out of the **Unread** status group, the Kanban **Unread** lane, and the
+  [Inbox](#inbox)'s **Unread** list
+
+You can still mark a muted session as read, but not as unread. Its menus hide
+**Mark as unread**, a bulk **Mark as unread** skips it, the `⌘⌥U`
+(`Ctrl+Alt+U`) unread shortcut shows **Unmute the session to mark it as
+unread.** instead, and its Kanban card can't be dragged into **Unread**.
+Approval requests and questions from a muted session still appear under
+**Awaiting response**.
+
+When a muted session belongs to a [scheduled task](#scheduled-tasks), its failed
+output stays out of **Unread** too. The failure still shows on the automation's
+card and in its run history. A failed run that never created a session still gets
+its own Inbox card.
+
+Muting only affects you. Collaborators on a [shared session](/docs/collaborate)
+keep their notifications and unread state, and a fork of a muted session starts
+unmuted. Choose **Unmute** from the same menu to undo it.
+
+**Mute** appears only when the server reports `session_mute` in `/v1/info`.
+Older servers don't offer it.
+
 ### Hide unconfigured harnesses
 
 By default the new-chat picker lists every harness and badges the ones that
@@ -1344,6 +1379,8 @@ Open **Inbox** in the sidebar to catch up on your agents without opening each
 session. The **All**, **Unread**, and **Awaiting response** tabs filter what's
 listed: pending approval requests you can answer in place, and sessions with
 agent output you haven't seen yet. Each card expands in place.
+[Muted sessions](#mute-a-session) don't appear under **Unread**, but their
+approval requests still appear under **Awaiting response**.
 
 An expanded unread card previews the session's latest reply. If the preview is
 cut short, hover over it or focus it to see the whole reply in a card, rendered

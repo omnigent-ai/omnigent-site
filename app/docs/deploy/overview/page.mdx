@@ -153,6 +153,30 @@ following `last_id` while `has_more` is true.
 
 </div>
 
+### Hiding cost in the session view
+
+Set `OMNIGENT_HIDE_COST=1` to hide USD cost from the session view when neither
+the model catalog nor the harness reports authoritative prices for your
+deployment. Sessions then appear as unpriced in the agent-info popover and the
+per-model breakdown. Token counts are still shown.
+
+```bash
+# .env
+OMNIGENT_HIDE_COST=1
+```
+
+It is unset by default, which shows cost. Docker Compose passes the value from
+`.env` through to the server.
+
+The setting only changes what the session view displays:
+
+- Cost-budget [policies](/docs/policies/builtin) still enforce against the
+  recorded cost.
+- The `omnigent usage` / `/v1/usage` spend report is unchanged.
+- The session snapshot and `session.usage` events leave out
+  `total_cost_usd` and carry `cost_hidden: true`. Clients then clear any cost
+  they had cached.
+
 ### Cloud platforms
 
 Deploy the server to a cloud platform with managed infrastructure.

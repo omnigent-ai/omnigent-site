@@ -8,6 +8,8 @@ Omnigent 0.23.0 is a major release focused on making it easier to run, watch, an
 
 ## 1. More flexible Automations
 
+![Choosing the MCP services an automation's runs start with](https://github.com/user-attachments/assets/1e59454e-38da-483f-91d6-79d68f6e1a0b)
+
 Automations that run unattended should only touch the tools you meant them to, and they shouldn't cost much while they wait for something to happen. You can now choose which MCP services each automation run can use, so a scheduled job only gets the integrations it needs. When a trigger is polling for new work, it can use a cheaper model than the sessions it starts. You pay for the expensive model only when there is real work to do.
 
 Automations are also easier to share. You can share an automation with others as read-only, and anything shared with you appears in a "Shared with me" tab. Automation instructions can now be up to 16,000 characters long, so you have room for detailed, multi-step instructions.
@@ -22,9 +24,21 @@ Workspace content search is also on by default. Press Cmd/Ctrl+Shift+F to search
 
 ## 3. `/rewind` for Claude SDK and Claude Code chats
 
+<video
+  src="https://github.com/user-attachments/assets/55a09030-7e53-46c4-bbd1-391a24b5e196"
+  controls
+  muted
+  playsInline
+  preload="metadata"
+  aria-label="Using /rewind to go back to an earlier prompt, edit it, and resend it"
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
 Sometimes you only see the better way to ask once the agent is a few turns down the wrong path. In Claude SDK and Claude Code native chats, type `/rewind` to go back to an earlier prompt, edit it, and resend it. You don't have to start a new conversation.
 
 The Claude SDK composer also supports `@` references to workspace files, so you can point the agent at the exact file you mean while you type.
+
+![Mentioning a workspace file with @ in a Claude SDK chat](https://github.com/user-attachments/assets/e9f8c625-3c5e-4850-854e-872a2dc3e53e)
 
 ## 4. Inline review comments and stacked-PR diffs
 

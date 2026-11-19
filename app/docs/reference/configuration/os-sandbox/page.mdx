@@ -554,6 +554,38 @@ os_env:
     allow_network: false
 ```
 
+## Host sandbox grants
+
+[Uploaded agent bundles](/docs/build/tools#uploaded-agents) can't declare
+absolute, `~`, or `..` entries in `read_paths`, `write_paths`, or `write_files`.
+If agents on a host need to reach paths outside the workspace, the host operator
+lists those paths in the host's own `config.yaml` instead
+(`$OMNIGENT_CONFIG_HOME/config.yaml`, default `~/.omnigent/config.yaml`):
+
+```
+runner:
+  sandbox_grants:
+    read_paths: [/srv/example/repo/.git]
+    write_paths: [/srv/example/cache]
+```
+
+When the runner loads an agent bundle, it appends these paths to every
+`os_env.sandbox` block the bundle declares: the agent's own, its terminals', and
+those of nested agents. Environments without a `sandbox` block stay
+unsandboxed. Paths a sandbox already grants are not added again.
+
+- `read_paths` and `write_paths` are the only supported keys. Each must be a list
+  of absolute path strings. `~` and relative paths are rejected. On Windows, a
+  path must start with a drive letter (`C:\...`) or a UNC share (`\\host\share\...`).
+- Host `write_paths` are persistent grants. Object entries such as
+  `{path: ..., copy_on_write: true}` are rejected.
+- If the agent's config already grants the same directory, the agent's grant and its
+  mode (for example `copy_on_write: true`) take precedence. A host write grant
+  *inside* a copy-on-write root is rejected as an overlap, like any persistent
+  write path there.
+- An invalid `runner.sandbox_grants` value makes the runner raise an error that
+  names the offending field when it loads the agent.
+
 ## What is and isn't sandboxed
 
 The OS sandbox applies to `sys_os_*` tool calls and terminals that reference the

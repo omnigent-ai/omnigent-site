@@ -122,9 +122,10 @@ You can file a session into a project from these places:
   **/new** in the slash menu's **Commands** list works too). This opens a blank
   new-session composer filed into the same project as the session you're in.
   See [`/new`](#new-session-with-new) below.
-- Move an existing session: open the session's `⋯` menu and choose
-  `Move session`, then search your projects, create a new one, or remove the
-  session from its project.
+- Move an existing session: open the session's `⋯` menu (or right-click its
+  sidebar row) and choose `Move session` → **Projects** (`Add to project` for
+  a session that isn't filed and can't join a nest), then search your
+  projects, create a new one, or remove the session from its project.
 - File every run of a [scheduled task](#scheduled-tasks) into a project with
   the task dialog's **Project** field.
 
@@ -239,10 +240,29 @@ private worker sessions, and those are grouped into the same family.
 - A family holds at most 100 retained members, archived members included.
 - People you share a session with see its family members as flat rows.
 
+#### Moving sessions into and out of a nest
+
+You can also move an existing session you own into a nest, or take one out:
+
+- **Menu:** open the session's sidebar `⋯` menu (or right-click the row), choose
+  `Move session` → **Nests**, then pick a destination. **Search nests** filters
+  by a nest's or member's title. Choose **Remove from nest** to detach just that
+  session; the rest of the family stays together.
+- **Drag:** drop a session onto the center of a nest's row to join it. To remove
+  a nested session, drag it into the session list above or below the nest, or
+  onto the floating **Remove from nest** target over the sidebar footer.
+
+Only active, independent sessions can move: archived sessions, sub-agent
+sessions, and side chats can't. Both the moved session and the destination nest
+must be yours. A session that joins a nest takes on the nest's project and pin
+placement; one removed from a nest becomes a standalone session again.
+Other rows keep their pin and custom ordering.
+
 Nested agents are on by default. An operator can turn off new nested creation
 and same-sandbox fork selection with `OMNIGENT_FEATURES=-sibling_sessions` (see
 [Release features](/docs/deploy/overview#release-features)), then reload the UI.
-Existing families stay visible. A saved **Add nested agent** link opened while
+Existing families stay visible, and sessions can still be removed from a nest,
+but moving a session into a nest is unavailable. A saved **Add nested agent** link opened while
 the feature is off, or against an older server, shows an unavailable message.
 
 ### Worktree branches

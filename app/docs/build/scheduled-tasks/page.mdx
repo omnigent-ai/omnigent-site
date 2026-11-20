@@ -84,7 +84,9 @@ rules.
     optionally suffixed with `#<branch>`. Omit it to use the sandbox provider's
     default.
 - **`timezone`** (optional) — the IANA timezone the rule is evaluated in, e.g.
-  `America/Los_Angeles`. Defaults to `UTC`.
+  `America/Los_Angeles`. A named timezone always wins. Omit it (or pass `null`)
+  to use your [recorded browser timezone](#default-timezone), falling back to
+  `UTC`.
 - **`model_override`** (optional) — a per-run model override. Omit for the
   agent default.
 - **`reasoning_effort`** (optional) — a per-run reasoning-effort hint, e.g.
@@ -109,6 +111,23 @@ Project filing needs a server that advertises `scheduled_task_projects` in
 project) is created; retry without those fields.
 
 Once created, the task fires automatically on its schedule until you delete it.
+
+### Default timezone
+
+Each time the web app loads (including in the desktop, mobile, and embedded
+shells), it records the browser's IANA timezone as your automation default.
+When `sys_scheduled_task_create` leaves `timezone` unset, the runner asks the
+server to use that recorded zone, so "every day at 9am" means 9am where you
+are rather than 9am UTC.
+
+- The runner requests the recorded zone only when the server advertises
+  `scheduled_task_default_timezone: true` in `GET /v1/info`. Against an older
+  server, or if that check fails, the task keeps the `UTC` default.
+- If no zone has been recorded yet (for example, you have only used the CLI or
+  the API), the task uses `UTC`. A task created before the web app finishes
+  reporting can also get `UTC`.
+- With several browsers, the most recently recorded zone wins.
+- Recording a zone never changes the timezone of existing tasks.
 
 To start one session per new Jira ticket, Slack message, or GitHub issue, use a
 [trigger template](/docs/interact/web-ui#trigger-templates) in the web UI. It

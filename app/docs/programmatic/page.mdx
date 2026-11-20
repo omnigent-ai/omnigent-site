@@ -1009,9 +1009,25 @@ curl --fail-with-body -X DELETE "$SERVER_URL/v1/scheduled-tasks/$TASK_ID"
 </div>
 
 The create request requires `name`, `prompt`, `rrule`, and `agent_id`. The
-schedule is an RFC 5545 recurrence rule, evaluated in `timezone` (`UTC` by
-default). See [Recurrence rules](/docs/build/scheduled-tasks#recurrence-rules)
-for the minimum interval. These optional fields control each run:
+schedule is an RFC 5545 recurrence rule, evaluated in `timezone`. If you omit
+`timezone`, it is `UTC`. Sending `"timezone": null` uses the owner's recorded
+browser timezone, and falls back to `UTC` if none is recorded. See
+[Default timezone](/docs/build/scheduled-tasks#default-timezone). See
+[Recurrence rules](/docs/build/scheduled-tasks#recurrence-rules) for the minimum
+interval.
+
+To record a default timezone yourself, send an IANA name to
+`PUT /v1/scheduled-tasks/default-timezone`. The web app sends this request
+each time it loads. An invalid name returns `400`. A server whose store can't
+save timezone preferences returns `501`, and the default stays `UTC`:
+
+```bash
+curl --fail-with-body -X PUT "$SERVER_URL/v1/scheduled-tasks/default-timezone" \
+  -H 'Content-Type: application/json' \
+  -d '{"timezone": "America/Chicago"}'
+```
+
+These optional fields control each run:
 
 <div style={{ overflowX: "auto" }}>
 

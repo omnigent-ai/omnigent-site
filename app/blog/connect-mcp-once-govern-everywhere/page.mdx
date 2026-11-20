@@ -1,0 +1,53 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Connect your MCP accounts once and share their tools with every host and sandbox, under one policy",
+  "Sign in to an approved MCP service once in Settings, then turn its tools on for any session on your laptop, a remote host, or a fresh sandbox. The server keeps the credentials and checks every call against your session policies.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/connect-mcp-once-govern-everywhere",
+  },
+);
+
+export const meta = {
+  title:
+    "Connect your MCP accounts once and share their tools with every host and sandbox, under one policy",
+  date: "2026-10-20",
+  category: "Governance",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="connect-mcp-once-govern-everywhere" />
+
+If your agents move between your laptop, remote hosts, and sandboxes, you can
+now connect an MCP account like your issue tracker or Databricks workspace one
+time and use its tools on any of them.
+
+Until now, every new machine or sandbox meant setting up the same MCP servers
+and signing in again. Now an administrator lists the approved services and the
+tools each one may expose. You sign in once in **Settings → MCP**, and the
+Omnigent server keeps and refreshes your credentials. Sessions only get a
+reference to the service, so tokens never reach the machine the agent runs on.
+Every tool call goes through the server and the same session policies as the
+rest of your agent's work. Tools the administrator left off the list never show
+up, and calls to them are rejected. If you replace a sandbox, start a session
+on the new one, turn the same service back on, and it works without signing in
+again.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: on New session, open MCPs in the workspace bar, turn on an unconnected tracker service, approve the sign-in popup, launch on a sandbox, and expand the tool calls to show the real account and ticket results. */}
+
+To try it, open **New session** and click **MCPs** in the workspace bar above
+the composer. Turn on the services you want in **Tools for this session**. If a
+service isn't connected yet, a sign-in popup opens and the service turns on once
+you approve it. Then pick a host or a new sandbox, an agent, and your first
+message, and launch. The first turn can already use the tools. Turning a service
+off only removes it from that session, and your account stays connected. The
+composer also remembers your picks for the next new session in this browser.
+You can also add services to an existing session from **Agent tools and
+policies** and then restart it to load them. To set up the registry, follow the
+[MCP registry walkthrough](https://github.com/omnigent-ai/omnigent/blob/main/examples/mcp-registry/README.md).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

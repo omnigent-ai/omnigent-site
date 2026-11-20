@@ -172,6 +172,10 @@ FREQ=DAILY;BYHOUR=9;BYMINUTE=0                       # daily at 9am
 FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0 # weekday mornings
 ```
 
+In the Web UI, switch the schedule picker to **RRULE** to type a rule directly.
+There, set the end under **Ends** instead of with `COUNT` or `UNTIL`. See
+[Scheduled tasks in the Web UI](/docs/interact/web-ui#scheduled-tasks).
+
 Rules are validated when you create or update a task. A rule is rejected (HTTP
 400) if it has bad syntax, never fires, fires only once, or fires more often
 than the minimum interval. **A task must fire at least twice**, and the minimum

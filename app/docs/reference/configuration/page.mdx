@@ -149,9 +149,13 @@ Uploads of ZIP archives, Office documents, and SQLite databases are admitted by
 filename extension and stored without extraction; the harness reads a local copy
 outside the working checkout (see [Attach archives, Office documents, and
 databases](/docs/interact/web-ui#attach-archives-office-documents-and-databases)).
-These formats require Claude Code (`claude-native`) or Codex (`codex-native`) and
-an execution host/runner that supports their delivery and restoration. The
-upload, copy, and fork routes apply the following limits to them:
+These formats require an updated execution host/runner and a supported native
+coding agent: Claude Code, Codex, Pi, Cursor, Kiro, Goose, Antigravity, Qwen
+Code, Kimi, Hermes, or Devin. OpenCode and API/SDK harnesses don't support them.
+Forking a session whose history contains these files requires Claude Code or
+Codex (see [harness
+requirement](/docs/interact/web-ui#attach-archives-office-documents-and-databases)).
+The upload, copy, and fork routes apply the following limits to them:
 
 | Key                                       | Default               | Scope                                                  |
 | ----------------------------------------- | --------------------- | ------------------------------------------------------ |

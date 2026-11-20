@@ -216,8 +216,9 @@ filter which events you care about:
 Return `None` for event types you don't handle.
 
 For `request` events, text/code attachments (e.g. a CSV) carry their decoded
-content in `text`. Archives, Office documents, and databases (`.zip`, `.docx`,
-`.xlsx`, `.pptx`, `.db`, `.sqlite`, `.sqlite3`) are listed with their
+content in `text`. Archives, Office documents, databases, and MP4 videos
+(`.zip`, `.docx`, `.xlsx`, `.pptx`, `.db`, `.sqlite`, `.sqlite3`, `.mp4`) are
+listed with their
 `filename` and `content_type` but an empty `text`, so a policy can act on their
 names and types without their contents being scanned as text.
 

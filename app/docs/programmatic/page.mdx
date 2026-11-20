@@ -1104,6 +1104,7 @@ need to write an API client to use them.
 | `sys_session_get_info`    | Check a session's status, agent, and workspace.                                                            |
 | `sys_session_get_history` | Read a session's recent messages and tool results.                                                         |
 | `sys_session_close`       | Close a finished child session while retaining its history.                                                |
+| `sys_session_link_pr`     | Link a pull request to a session, or remove the link, so it shows in the session's PR panel.               |
 
 </div>
 
@@ -1147,6 +1148,41 @@ with a message of 1–8000 characters. Admins can turn this off with
 **Settings > Sharing**. Deployments can turn it off with the
 `peer_session_messaging` [release feature](/docs/deploy/overview#release-features).
 `sys_session_send` to child sessions keeps working either way.
+
+### Start a session on a connected host
+
+An agent can also start a session on one of your connected hosts, such as a
+review session in a fresh git worktree of a local repository. On top of its
+usual arguments, `sys_session_create` accepts:
+
+- `placement: "host"` with a `host_id` for a connected host you own. To find a
+  host ID, look in a session's `sys_session_get_info` response.
+- `workspace`, the absolute path of the source repository on that host.
+- An optional `git: {branch_name, base_branch}`. The session starts in a new
+  worktree on that branch.
+- `project_id` to file the session into one of your existing projects.
+
+For example:
+
+```json
+{
+  "agent_id": "<agent_id from sys_agent_list>",
+  "title": "Review example",
+  "placement": "host",
+  "host_id": "<host_id>",
+  "workspace": "/path/to/repo",
+  "git": { "branch_name": "review-example", "base_branch": "main" },
+  "project_id": "<project_id>"
+}
+```
+
+If you leave out these fields, the session is placed the usual way (as a child,
+on the same host, or in a managed sandbox). Source privacy, host ownership,
+workspace validation, and destination policy checks still apply. Linking a PR
+with `sys_session_link_pr` also requires edit access to the target session.
+
+These options are on by default. Deployments can turn them off with the
+`scripted_sessions` [release feature](/docs/deploy/overview#release-features).
 
 ## Let an agent organize sessions and projects
 

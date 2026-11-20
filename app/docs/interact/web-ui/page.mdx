@@ -1271,11 +1271,26 @@ browser reports, so a `.docx` that the browser labels as a ZIP still attaches
 correctly. Anything outside the supported set (audio, video, unrecognised
 binaries) is rejected with an inline error.
 
-**Harness requirement.** These files need a harness that can open local files:
-Claude Code (`claude-native`) or Codex (`codex-native`), running on an
-up-to-date host/runner. On other harnesses the upload is rejected; the server
-suggests attaching images, PDF, or text/code files instead, or switching to
-Claude Code or Codex.
+**Harness requirement.** These files need a native coding agent that can open
+local files, running on an up-to-date host/runner. Supported agents:
+
+- Claude Code (`claude-native`)
+- Codex (`codex-native`)
+- Pi (`pi-native`)
+- Cursor (`cursor-native`)
+- Kiro (`kiro-native`)
+- Goose (`goose-native`)
+- Antigravity (`antigravity-native`)
+- Qwen Code (`qwen-native`)
+- Kimi (`kimi-native`)
+- Hermes (`hermes-native`)
+- Devin (`devin-native`)
+
+OpenCode (`opencode-native`) and API/SDK harnesses don't support these
+attachments. If you upload one there, the server rejects it with a 415 error and
+suggests attaching images, PDF, or text/code files instead, or switching to a
+supported native coding agent. Forking a session whose history contains these
+files requires Claude Code or Codex.
 
 **Size limits.** The web composer caps each of these files at 50 MiB. Server
 operators can lower the per-file limit, cap the number and combined size of such

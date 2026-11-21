@@ -132,9 +132,11 @@ window stay in the same pane.
 
 `localhost` and its subdomains always name the desktop machine, but the page
 still receives the subdomain in its `Host` header, so dev servers and reverse
-proxies that route on the hostname work as expected. Sessions on remote or
-unknown hosts can only open public pages; use a public preview URL or your
-regular browser for those.
+proxies that route on the hostname work as expected. Sessions on hosts you
+reach over SSH can open localhost pages after you allow it — see
+[Preview from hosts reached over SSH](#preview-from-hosts-reached-over-ssh).
+Sessions on other remote or unknown hosts can only open public pages; use a
+public preview URL or your regular browser for those.
 
 A few limits apply to `*.localhost`:
 
@@ -148,6 +150,51 @@ A few limits apply to `*.localhost`:
 Other loopback addresses, private networks, link-local and metadata addresses,
 and `0.0.0.0` remain blocked. Normal TLS, CORS, authentication, and
 [local network permission](#local-network-permission) rules still apply.
+
+### Preview from hosts reached over SSH
+
+On macOS and Linux, a session whose host runs on a machine you reach over SSH
+can also open localhost pages in the embedded browser, once you allow it.
+`localhost` still names this computer, so forward the app's port from the
+remote machine first, for example:
+
+```bash
+ssh -N -L 127.0.0.1:5173:127.0.0.1:5173 <destination>
+```
+
+The first time such a session opens a localhost page — from the address bar, a
+link, or the agent's browser tools — the app asks **Let sessions on
+"`<destination>`" open localhost pages?**, naming the SSH destination the
+server reports for that host:
+
+- **Allow** opens the page. Sessions on that host, and their agents, can then
+  open `localhost`, `127.0.0.1`, and `*.localhost` pages for the rest of this
+  app run.
+- **Not now** keeps that host's localhost pages blocked, without asking again,
+  until you restart Omnigent.
+
+If you already connected the machine with
+[Connect a host over SSH](#connect-a-host-over-ssh), the app uses that
+destination directly. For a destination it hasn't seen, the dialog explains
+that it will check the host first: after you click **Allow**, the app runs
+`omnigent host status --server <server-url> --json` on the machine over SSH,
+using your SSH config and keys. The check passes only if exactly one online
+host there has the session's host ID and is connected to this server. It never
+installs software, starts a host, or signs in. If the check fails, previews
+from that host stay blocked until you restart Omnigent.
+
+Things to know:
+
+- Your answer lasts only for the current app run, and only while the host's
+  recorded SSH destination is unchanged. If the destination changes, you're
+  asked again.
+- Allowing grants access to all of this computer's permitted loopback ports,
+  not just the one you forwarded. The app doesn't set up the forwarding or
+  verify what's listening on the local port, so allow only destinations you
+  recognize.
+- The `*.localhost` and blocked-address rules above still apply.
+- Agent screenshots, snapshots, clicks, and typing recheck the session's host.
+  Moving the session to a different host revokes the old page's access.
 
 ### Open chat links in the in-app browser
 

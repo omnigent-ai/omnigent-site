@@ -276,6 +276,38 @@ don't need a research run. For the full config reference (polling, agent
 instances, extract templates, and where to get an API key), see
 [Nimble's Omnigent connector docs](https://docs.nimbleway.com/integrations/connectors/omnigent).
 
+### Session file tools
+
+Every agent can share files with the user through the session's file store
+(`/v1/sessions/{id}/resources/files`). These tools are on by default and are
+not declared under `tools.builtins`:
+
+| Tool | What it does |
+| --- | --- |
+| `sys_upload_file` | Stores a file from the session workspace so the user can download it. Takes a relative path, such as `output/chart.png`. Paths outside the session workspace are rejected. |
+| `sys_list_files` | Lists the session's files with their ID, filename, size, and creation time. |
+| `sys_download_file` | Reads a stored file by its `file_id` and returns its content as text. Use it for text files, because binary content is not returned intact. |
+
+The tools don't need `os_env`: an agent without one can still upload from its
+session workspace. Native harnesses get them through the Omnigent tool relay.
+To remove all three, turn off the `files` tool group:
+
+```
+tool_groups:
+  files: false
+```
+
+#### Migrating from `upload_file`, `list_files`, and `download_file`
+
+The `upload_file`, `list_files`, and `download_file` builtins were removed and
+replaced by the `sys_` tools above. If a spec still lists any of them under
+`tools.builtins`, the agent gets none of the three file tools and a warning is
+logged, because a policy written for the old names would not match the new
+ones. Setting `tool_groups.files: true` alongside a removed name is an error.
+
+To migrate, delete those `tools.builtins` entries, then rename any policy
+selectors that name them (for example, `upload_file` becomes `sys_upload_file`).
+
 ## Python function tools
 
 Expose any Python callable as a tool. The function is referenced by its fully qualified

@@ -1,0 +1,52 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Turn new Jira tickets, Slack messages and GitHub issues into agent sessions automatically",
+  "Pick a Jira, Slack, or GitHub template on the Automations page, describe what to match and what to do, and every hourly run starts one agent session for each new ticket, message, or issue.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/automations-jira-slack-github-triggers",
+  },
+);
+
+export const meta = {
+  title:
+    "Turn new Jira tickets, Slack messages and GitHub issues into agent sessions automatically",
+  date: "2026-11-05",
+  category: "Automations",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="automations-jira-slack-github-triggers" />
+
+If your team files bugs in Jira, asks questions in Slack, or opens GitHub
+issues, you can now have Omnigent pick up each new one and start an agent
+session for it on its own. Nobody has to copy a ticket into a chat first.
+
+You describe the trigger in a short sentence, such as "Ticket created in
+project equals ES, and Label equals bug, then Comment the session link on the
+ticket", and add the instructions each session should follow ("Investigate
+the ticket and propose a fix"). Every hour, the automation looks for new
+matches and starts one session per ticket, message, or issue, on a host you
+pick or in a fresh sandbox. Each session knows no one is watching, so it works
+toward the goal instead of stopping to ask questions. If you turn on link-back,
+the session link is posted on the original item, and anything the agent posts
+ends with a "Sent with Omnigent" line so your teammates can tell where it came
+from.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: open Automations, switch to the Templates tab, pick GitHub issues, fill in the repo and a "Label equals bug" condition, save, then show the sessions started for new issues and the session-link comment on one issue. */}
+
+To set one up, open **Automations** from the sidebar and switch to the
+**Templates** tab. Pick **Jira tickets**, **Slack messages**, or **GitHub
+issues**, fill in the project, channel, or repository, add any conditions, and
+save. The agent needs a way to reach the service where the automation runs: a
+Jira or Slack MCP server, or for GitHub the GitHub CLI or a GitHub MCP server.
+The form warns you if that is missing. Open **Preview prompt** to read exactly
+what the agent will be told, or **Edit as prompt** to fine-tune it as text. For
+how automations run, see the
+[scheduled tasks guide](/docs/build/scheduled-tasks).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

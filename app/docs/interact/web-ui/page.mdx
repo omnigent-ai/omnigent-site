@@ -772,6 +772,61 @@ see [Release features](/docs/deploy/overview#release-features)).
 Once enabled, a **Canvas** entry appears in the sidebar navigation and the page
 is served at `/canvas`.
 
+## Saved workflows
+
+A saved workflow is a named plan you can run again: running it starts a session
+with the workflow's steps as that session's plan. The **Workflows** page
+(`/workflows`, linked from the sidebar) lists your workflows, with a search and a
+**New workflow** button. Each one can be run, cloned, or deleted.
+
+Workflows are **off by default**. An operator enables them deployment-wide by
+including `workflows` in the server's release features
+(`OMNIGENT_FEATURES=workflows`; see
+[Release features](/docs/deploy/overview#release-features)).
+
+### Share a workflow
+
+On a multi-user server, the owner of a workflow can share it with people and
+groups. Open the workflow and click **Share workflow** to open **Share this
+workflow**, then add each person or group by user ID. Workflow shares are
+always **Read** access, and a workflow can never be made public.
+
+People you share a workflow with:
+
+- See it under **Shared with you** on their **Workflows** page and in the
+  workflow picker when starting a chat, marked **Shared by** _owner_.
+- Can view it, **Run** it, and **Clone** it into a copy of their own. Edit,
+  share, and delete are disabled with a note that only the workflow's owner can
+  take those actions.
+- Run it in their own session, so runs stay private. A workflow's runs list
+  shows each person only the runs in sessions they can read. Removing someone's
+  access doesn't affect the runs they already have.
+
+When a workflow is deleted, its shares are removed too. If the owner's account is
+deleted, the workflow stops being shared right away.
+
+The server's [sharing policy](/docs/collaborate/auth#session-sharing) applies:
+when sharing is off, nothing new can be shared. A workflow saved before sharing
+was available can't be shared. Its **Share workflow** button is disabled with
+"This workflow was saved before sharing was available. Clone it, then share the
+copy."
+
+Only the owner can view or change who a workflow is shared with. Agents can't:
+an agent may load a shared workflow by ID, for example so a run can read its
+description, but `sys_workflow_list` and lookups by name only cover the caller's
+own workflows.
+
+Over the API, the owner manages shares at `/v1/workflows/{id}/permissions`:
+`GET` lists the grants, `PUT` with `user_id` and `level` adds one, and
+`DELETE /v1/workflows/{id}/permissions/{user_id}` removes one.
+`GET /v1/workflows/shared` lists the workflows others have shared with the
+caller, ordered by ID and paged with `limit` (1–100, default 50) and `after`
+(the previous page's `next_cursor`). A page can be short, or even empty, while
+`next_cursor` is still set. Each workflow reports a `viewer_role` of `owner` or
+`viewer`, and a viewer also gets `owner_display_name`. `shareable: false` marks a
+workflow whose shares the server can't store. `GET /v1/info` reports
+`workflow_sharing: true` on servers that support workflow sharing.
+
 ## Install as an app
 
 The web UI is an installable [Progressive Web App (PWA)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps).

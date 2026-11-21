@@ -290,6 +290,15 @@ that is **on** by default. It allows nested agent creation and same-sandbox
 fork selection. Set `OMNIGENT_FEATURES=-sibling_sessions` to turn off new
 nested creation. Existing session families stay readable while it's off.
 
+[`scripted_sessions`](/docs/programmatic#start-a-session-on-a-connected-host)
+is also a server feature that is **on** by default. It lets
+`sys_session_create` place a session on a connected host the caller owns, with
+an absolute `workspace`, an optional git worktree, and a `project_id`. It also
+enables `sys_session_link_pr`. Set `OMNIGENT_FEATURES=-scripted_sessions` to
+refuse these requests. The feature isn't listed under `features` in
+`GET /v1/info`; instead, the `scripted_sessions` capability there reports
+whether it's on.
+
 These features are on by default:
 [`custom_agents_settings_ui`](/docs/use/custom-agents#edit-an-agent-in-the-web-ui),
 `sidebar_grouping_ui`, `claude_osc_status`, and `peer_session_messaging`. Turn one

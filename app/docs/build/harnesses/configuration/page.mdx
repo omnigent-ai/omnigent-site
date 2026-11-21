@@ -270,9 +270,16 @@ The harness requires **OpenCode 2.0.18 or a later 2.0.x patch**
 (`>=2.0.18,<2.1.0`), published on npm as `@opencode/cli`. Newer minors are
 refused until they are validated, and OpenCode 1.x (the `opencode-ai` package)
 is no longer supported. A host with an unsupported version reports the harness
-as **outdated** until you upgrade it. Set
-`OMNIGENT_OPENCODE_SKIP_VERSION_CHECK=1` to bypass the version gate at your own
-risk.
+as **outdated** until you upgrade it.
+
+To run an OpenCode you can't change, such as a newer release your organization
+manages, set `OMNIGENT_OPENCODE_SKIP_VERSION_CHECK=1` (any non-empty value) in
+the environment of the host and runner. The host then reports any installed
+OpenCode as ready, setup doesn't offer to reinstall the pinned release, and
+`opencode serve` launches without the version check. A warning names the
+installed version and the supported range. This is at your own risk: releases
+outside the range, including 3.x, haven't been validated. A missing CLI is
+still reported as missing.
 
 ```
 npm rm -g opencode-ai            # only if OpenCode 1.x is installed
@@ -423,7 +430,9 @@ Known limits:
 
 ### Troubleshooting
 
-- **Harness is outdated** — install `@opencode/cli@2.0.32` as shown above.
+- **Harness is outdated** — install `@opencode/cli@2.0.32` as shown above. If
+  you must keep a different version, set `OMNIGENT_OPENCODE_SKIP_VERSION_CHECK=1`
+  (see [Supported version](#supported-version)).
 - **Auth-shaped turn error** — the model's provider needs a sign-in. Run
   `opencode auth login` on the host, or pick a free `opencode/…` model.
 - **Diagnostics** — set `OMNIGENT_HARNESS_STDERR_ENABLED=1` before starting the

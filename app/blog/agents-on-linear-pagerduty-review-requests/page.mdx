@@ -1,0 +1,56 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Start an agent session automatically for every new Linear issue, PagerDuty incident or review request",
+  "Automations can now watch Linear teams, PagerDuty services and your GitHub review queue, and start an agent session for each new item that matches your conditions.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/agents-on-linear-pagerduty-review-requests",
+  },
+);
+
+export const meta = {
+  title:
+    "Start an agent session automatically for every new Linear issue, PagerDuty incident or review request",
+  date: "2026-11-12",
+  category: "Automations",
+  author: "omnigent",
+  heroArt: "/images/blog/agents-on-linear-pagerduty-review-requests.png",
+};
+
+<BlogPostHeader slug="agents-on-linear-pagerduty-review-requests" />
+
+If your team tracks work in Linear, gets paged through PagerDuty, or reviews a
+steady stream of pull requests, you can now have an agent pick up each new item
+shortly after it shows up. Point an automation at a Linear team, a PagerDuty
+service or your GitHub review queue, and Omnigent starts a session for every
+issue, incident or review request that matches.
+
+Before, someone had to notice the new ticket, open a session, paste in the
+context and explain the task. Now the automation does that part. Each match gets
+its own session with your instructions and the item's details, so a triggered
+incident already has an agent taking a first look when you open it. You can
+choose to have the session link posted back on the Linear issue or as a PagerDuty
+incident note, so whoever is watching the item can jump straight to the agent's
+work.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: create a PagerDuty trigger with Urgency equals high, then show a new incident arriving and its session appearing in the sidebar with the link posted as an incident note. */}
+
+To set one up, open **Automations**, click **New automation** and pick
+**Linear**, **PagerDuty** or **GitHub** under **Trigger type**. The form reads
+like a sentence. Choose what to watch (a Linear team key, a PagerDuty service
+name, or for GitHub the **Review requested from** event with `me` or a team),
+then add conditions such as Label, Status or Urgency, and write the instructions
+each session should follow. Re-requests count too, so a pull request you are
+asked to look at again gets a fresh session. If you would rather have one agent
+triage everything, turn off **Start a new session for each match** under
+**Advanced** and every match goes to a single task session instead.
+
+The agent needs access to the service where the automation runs: a Linear or
+PagerDuty MCP server, or the GitHub CLI or a GitHub MCP server. For every
+condition and option, see
+[trigger templates in the Web UI guide](/docs/interact/web-ui#trigger-templates).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

@@ -1,0 +1,54 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Have one agent hand work off to new worker sessions and track who started each one",
+  "An agent in your private session can now start its own worker sessions on the same host or in a fresh managed sandbox, send work to your other sessions, and read their results. Each worker shows which session created it.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/agents-delegate-to-worker-sessions",
+  },
+);
+
+export const meta = {
+  title:
+    "Have one agent hand work off to new worker sessions and track who started each one",
+  date: "2026-11-05",
+  category: "Orchestration",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="agents-delegate-to-worker-sessions" />
+
+If you split big jobs across several agents, one agent can now act as the
+manager. It starts worker sessions, hands each one a piece of the job, and
+checks back on their results while you watch from a single place.
+
+Until now you had to open each extra session yourself and carry context between
+them by hand. Now an agent in a private session can start independent workers,
+either on its own host or in a new managed sandbox. It can also send work to
+other sessions you own and read their status and history. Each worker is a
+regular top-level session with its own permissions and lifecycle, and its
+header shows "Created by" with a link back to the manager. That way you can
+always trace where a piece of work came from. If you can't access the manager,
+the header just says "Created by another session" and shows nothing else.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: ask a manager agent to start two workers on the same host, open one worker and show the "Created by" link in its header, click it back to the manager, then have the manager read the worker's result. */}
+
+This is on by default for sessions you keep private, so you don't need to set
+anything up. Ask your agent in plain language, for example:
+
+```text
+Start two worker sessions on this host. Have one review the test coverage and
+the other update the changelog. Check on both and summarize what they found.
+```
+
+The manager can also list its sessions later and pick out the workers it
+started, even after a restart. Once you share a manager, it can no longer start
+workers or message your other sessions, and operators can turn the feature off
+server-wide. For the session tools an agent uses to do this, see
+[Let an agent manage other sessions](/docs/programmatic#let-an-agent-manage-other-sessions).
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

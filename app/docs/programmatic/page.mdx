@@ -728,6 +728,71 @@ The tool accepts `user_id`, `level` (`"read"`, `"edit"`, or `"manage"`), and an
 optional `session_id` that defaults to the calling session. The caller's
 permissions and server sharing settings still apply.
 
+## Share a saved workflow
+
+A saved workflow is a named plan that its owner can run. It is private to the
+owner until they share it. On a shared server, the owner can share a workflow
+with users and groups through its permissions API. This works much like
+[sharing a session](#share-a-session), but with fewer options:
+
+- **Read only, never public.** `level` must be **1**. The server rejects other
+  levels, `__public__`, and the workflow's own owner.
+- **Owner only.** Only the workflow's owner can list, add, or remove its
+  grants. Anyone else gets `404`. Agents can't call these routes and get `403`.
+- **What recipients can do.** People the workflow is shared with, directly or
+  through a group, can view, run, and copy it. Only the owner can change,
+  share, or delete it.
+- **Runs stay private.** Each run happens in the runner's own session. A
+  workflow's runs list shows each caller only the runs in sessions they can
+  read.
+
+Before you share, check that `GET /v1/info` returns `workflow_sharing: true`.
+The server's [sharing mode](/docs/collaborate/auth#session-sharing) applies.
+When sharing is `off`, nothing new can be shared. Because a workflow has no
+working directory, `restricted_read_only` still allows read grants.
+
+```bash
+WORKFLOW_ID="<workflow-id>"
+
+# Share with a user or group; the grantee's account is created if it doesn't exist yet
+curl --fail-with-body -X PUT "$SERVER_URL/v1/workflows/$WORKFLOW_ID/permissions" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"user_id": "<user-id>", "level": 1}'
+
+# List grants (the owner isn't listed); page with limit (1–1000, default 100) and after
+curl --fail-with-body "$SERVER_URL/v1/workflows/$WORKFLOW_ID/permissions" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" | jq
+
+# Stop sharing; returns 204 even if they had no grant
+curl --fail-with-body -X DELETE \
+  "$SERVER_URL/v1/workflows/$WORKFLOW_ID/permissions/<user-id>" \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+```
+
+Each grant in the list has `user_id`, `workflow_id`, `level`, and
+`display_name`. To get the next page of grants, pass `next_cursor` as `after`.
+
+A recipient lists the workflows that other people shared with them with
+`GET /v1/workflows/shared`. Results are ordered by ID and paged with `limit`
+(1–100, default 50) and `after`, which takes the previous page's
+`next_cursor`. A page can be short, or even empty, while `next_cursor` is
+still set, so keep paging until `next_cursor` is `null`.
+`GET /v1/workflows/{id}` also returns a workflow that is shared with you. Its
+`viewer_role` is `owner` or `viewer`, and a viewer also gets the owner's
+`owner_display_name`.
+
+A few more rules apply:
+
+- **Agents.** A run of a shared workflow can load the workflow by ID, so the
+  agent can read its description. Lookups by name and `sys_workflow_list`
+  return only the caller's own workflows. Agents can't call
+  `GET /v1/workflows/shared`.
+- **Older workflows.** A workflow saved before sharing was available reports
+  `shareable: false` and can't be shared. Clone it, then share the copy.
+- **Deletion.** Deleting a workflow also removes its grants. If an owner's
+  account is deleted, their workflows stop being shared right away.
+
 ## Edit an installed agent's configuration
 
 Agents you install on a server keep their `config.yaml` bundle server-side.
@@ -1233,8 +1298,8 @@ agent's `skills/` directory or the project's `.agents/skills/` directory.
 
 ## API endpoints reference
 
-These tables summarize the main endpoints for agents, sessions, and
-automations.
+These tables summarize the main endpoints for agents, sessions, automations,
+and workflow sharing.
 
 The server exposes these agent, host, and project endpoints. Replace `{id}`
 with an agent ID from `GET /v1/agents`.
@@ -1291,6 +1356,21 @@ automation ID from `GET /v1/scheduled-tasks`.
 | `DELETE` | `/v1/scheduled-tasks/{id}`      | Delete an automation and its run history      |
 | `POST`   | `/v1/scheduled-tasks/{id}/run`  | Start a run now without changing the schedule |
 | `GET`    | `/v1/scheduled-tasks/{id}/runs` | Read run history, newest first                |
+
+</div>
+
+The server exposes these workflow sharing endpoints. Replace `{id}` with a
+workflow ID. See [Share a saved workflow](#share-a-saved-workflow).
+
+<div style={{ overflowX: "auto" }}>
+
+| Method   | Path                                       | What you can do                                     |
+| -------- | ------------------------------------------ | --------------------------------------------------- |
+| `GET`    | `/v1/workflows/shared`                     | List workflows other people shared with you         |
+| `GET`    | `/v1/workflows/{id}`                       | Read a workflow you own or that is shared with you  |
+| `PUT`    | `/v1/workflows/{id}/permissions`           | Share your workflow with a user or group (read)     |
+| `GET`    | `/v1/workflows/{id}/permissions`           | List your workflow's grants                         |
+| `DELETE` | `/v1/workflows/{id}/permissions/{user_id}` | Stop sharing your workflow with a user or group     |
 
 </div>
 

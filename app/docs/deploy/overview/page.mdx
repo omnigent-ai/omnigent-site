@@ -286,9 +286,11 @@ Most release features (such as `usage_page`, `harness_install`, and
 [`canvas`](/docs/interact/web-ui#canvas), and
 [`sandbox_profiles`](/docs/deploy/sandbox-profiles)) are off by default.
 [`sibling_sessions`](/docs/interact/web-ui#nested-agents) is a server feature
-that is **on** by default. It allows nested agent creation and same-sandbox
-fork selection. Set `OMNIGENT_FEATURES=-sibling_sessions` to turn off new
-nested creation. Existing session families stay readable while it's off.
+that is **on** by default. It allows nested agent creation, moving existing
+sessions into a nest, and same-sandbox fork selection. Set
+`OMNIGENT_FEATURES=-sibling_sessions` to turn off new nested creation and
+moves into a nest. Existing session families stay readable, and sessions can
+still be removed from a nest, while it's off.
 
 These features are on by default:
 [`custom_agents_settings_ui`](/docs/use/custom-agents#edit-an-agent-in-the-web-ui),

@@ -1,0 +1,50 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "@-mention your other sessions and sub-agents so one agent can read or message them",
+  "Type @ in the composer to tag another session, one of this session's sub-agents, or a workspace file right in your sentence, so the agent you are talking to can read that work or send it a message.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/at-mention-sessions-and-subagents",
+  },
+);
+
+export const meta = {
+  title:
+    "@-mention your other sessions and sub-agents so one agent can read or message them",
+  date: "2026-11-12",
+  category: "Multi-agent",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="at-mention-sessions-and-subagents" />
+
+If you run several agents at once, you can now point one of them at another's
+work by typing `@` in the composer. Tag a session or a sub-agent in the middle
+of your sentence, and the agent you are talking to knows exactly which one you
+mean.
+
+Until now, getting one agent to build on another meant copying session names,
+pasting transcripts, or describing which chat you had in mind. Now you can write
+"Compare your fix with @Fix flaky CI and tell @docs-writer what changed." The
+agent can read the tagged session's history and send it a message, so your
+sessions work together like a team you coordinate from one place.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: type @ mid-sentence, open Sessions, pick a sub-agent and another session as inline pills, send, then click a session pill in the sent message to open that session and see the "From @sender" pill on the delivered message. */}
+
+Type `@` anywhere in a message and open the Sessions row. It lists this
+session's sub-agents, then your other sessions. You can also keep typing to
+search session titles. Each pick becomes a pill in your sentence, and Backspace
+removes it whole. In a coding-agent session, the same menu also tags workspace
+files and folders. After you send, click a session pill in the message to jump
+to that session. When an agent messages another session, the receiving chat
+shows "From @sender" so you can see where it came from and open it in one click.
+The `@` menu also works in the new-session composer, where you can tag other
+sessions (sub-agents are not listed there yet). See the
+[Web UI guide](/docs/interact/web-ui#mentioning-workspace-files) for how
+mentions work in the composer.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

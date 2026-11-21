@@ -227,9 +227,13 @@ hermes model    # choose the model Hermes runs
 
 Unlike the generic ACP agents, a `/model` pick **is** honored for Hermes: the
 model you declare in YAML or switch to mid-session threads through to the
-harness (via `HARNESS_HERMES_MODEL`). The sandbox and workspace a session
-selects are threaded through as well, so a sandbox chosen in the web session
-dialog actually confines the Hermes run.
+harness (via `HARNESS_HERMES_MODEL`). The workspace a session selects is
+threaded through as well. The Hermes adapter can't install OS process
+confinement, so it refuses to start when the agent's `os_env` requests a
+sandbox, including an `os_env` that relies on the platform default. Set
+`sandbox.type: none` only when you intend unrestricted execution, or pick a
+sandbox-capable harness (see
+[Harness worker containment](/docs/reference/configuration/os-sandbox#harness-worker-containment)).
 
 ## Kimi Code
 

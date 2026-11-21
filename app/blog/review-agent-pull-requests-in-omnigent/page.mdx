@@ -1,0 +1,54 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Review your agents' pull requests file by file without leaving Omnigent",
+  "The Pull Requests Changes tab now lets you mark files as viewed, filter and search the diff, open files at the reviewed revision, and step through a PR's commits, right beside the agent's conversation.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/review-agent-pull-requests-in-omnigent",
+  },
+);
+
+export const meta = {
+  title:
+    "Review your agents' pull requests file by file without leaving Omnigent",
+  date: "2026-11-12",
+  category: "Code review",
+  author: "omnigent",
+  heroArt: "",
+};
+
+<BlogPostHeader slug="review-agent-pull-requests-in-omnigent" />
+
+If your agents open pull requests that touch dozens of files, you can now work
+through the whole diff in Omnigent and keep track of what you have already read.
+
+A large agent PR is hard to review in one sitting. You lose your place, and when
+the agent pushes a fix you can't tell which files you need to look at again. The
+**Changes** tab now tracks that for you. Tick **Viewed** on a file and it
+collapses, and a progress row shows how far along you are (for example
+`12 / 30 files viewed`). Turn on **Hide viewed** to see only what's left. Your
+marks are saved in your browser, so they're still there after a reload. When the
+agent pushes new commits, files whose changes are untouched stay marked. Files it
+changed lose their mark, show **Changed since viewed**, and open again for you.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: on an agent's multi-file PR, mark two files Viewed and watch the progress row update, use Cmd/Ctrl+F to find a symbol in the diff, then switch to Commits and step through a commit with Next commit. */}
+
+Other tools in the tab help you find your way around. **Filter changed files**
+narrows the list by path. Cmd/Ctrl+F searches the fetched diff and opens
+collapsed files to show each match. Each file header can copy the file's path
+or open the file on your Git provider at the revision you are reviewing. On
+GitHub pull requests, switch the toolbar to **Commits** to see the PR's history
+oldest first. Search it by sha, title, or author, open any commit's diff, and
+move through them with **Previous commit** and **Next commit**.
+
+To try it, open a coding-agent session that has a pull request, expand
+**Workspace** in the rail, choose **Pull Requests**, and open **Changes**. On
+desktop you can also click the PR link in the composer. On a phone, open the
+session actions menu and choose **Pull Requests**. The
+[Web UI guide](/docs/interact/web-ui#github) covers how the tab finds a
+session's pull requests.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

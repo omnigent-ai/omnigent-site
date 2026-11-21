@@ -190,6 +190,16 @@ rates is priced with your configured values rather than the vendor's. Pricing is
 attached to the provider family (`anthropic` or `openai`) that the session's
 harness uses.
 
+A Claude id with Claude Code's `[1m]` 1M-context marker (for example
+`claude-sonnet-4-5[1m]`) is priced as its base model. The catalog publishes no
+long-context premium, so none is applied. When a new variant isn't in the
+catalog, Omnigent falls back to the model family's pricing only within the same
+version: `claude-sonnet-4-<date>` doesn't pick up `claude-sonnet-4-5` rates.
+
+If your deployment can't price sessions accurately, a server operator can hide
+USD cost in the session view with
+[`OMNIGENT_HIDE_COST`](/docs/deploy/overview#hiding-cost-in-the-session-view).
+
 <div className="note">
 
 **Note:** Custom pricing is resolved from the default provider for the

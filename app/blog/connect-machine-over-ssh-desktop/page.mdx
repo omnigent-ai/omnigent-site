@@ -1,0 +1,51 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Connect any machine you can SSH into from the desktop app, no terminal needed",
+  "In the desktop app, type an SSH destination under Connect a host. The app signs the machine in, installs Omnigent there if it is missing, starts the host, and selects it for your session.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/connect-machine-over-ssh-desktop",
+  },
+);
+
+export const meta = {
+  title:
+    "Connect any machine you can SSH into from the desktop app, no terminal needed",
+  date: "2026-11-05",
+  category: "Cross-device",
+  author: "omnigent",
+  heroArt: "/images/blog/connect-machine-over-ssh-desktop.png",
+};
+
+<BlogPostHeader slug="connect-machine-over-ssh-desktop" />
+
+If you run agents on a dev box, a cloud VM, or a workstation under your desk,
+you can now add that machine as a host straight from the Omnigent desktop app.
+Type the name you already use with `ssh` and the app does the rest.
+
+Until now, adding a remote machine meant opening a terminal, logging in to it,
+running `omnigent login`, and finding a way to finish the browser sign-in from
+a machine with no browser. The desktop app now handles all of that over your
+existing SSH setup. It uses your normal SSH config, so it doesn't change it.
+Host key checks, key passphrases, and passwords appear in the app's own window.
+If Omnigent isn't installed on the machine yet, the app offers to install it.
+Sign-in finishes in your laptop's browser. Then the host starts in the
+background on the remote machine and shows up selected, ready for your next
+session. If you close the window partway through sign-in, nothing is left
+running on the machine.
+
+{/* DEMO REQUIRED: 15–30s recording or light/dark screenshot pair, realistic data. No sanitized mockups. Suggested: open a new session's host menu, choose Connect new host, type a real SSH host such as devbox, accept the host key, finish sign-in in the browser, and land back with devbox selected as the host. */}
+
+To try it, start a new session in the desktop app, open the host menu, and
+choose **Connect new host**. In the SSH field under the `omni host` command,
+enter a host from your SSH config, a host name, or `user@host`, then connect.
+The same field is in the clone dialog when no host is online. The window you
+connect from has to be signed in to a server the remote machine can reach, so
+a `localhost` server won't work. SSH connect is available on macOS and Linux
+for now. See the [Desktop App guide](/docs/interact/desktop) for installing
+the app and connecting to a server.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

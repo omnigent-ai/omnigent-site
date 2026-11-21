@@ -1101,7 +1101,7 @@ need to write an API client to use them.
 | `sys_session_send`        | Send a follow-up to a child session, or start a named sub-agent declared by the parent agent.              |
 | `sys_session_message`     | Send a message to another session owned by the same user that is not a child of this one.                  |
 | `sys_session_list`        | Find child sessions and other sessions you can access. Pass `include_archived` to also list archived ones. |
-| `sys_session_get_info`    | Check a session's status, agent, and workspace.                                                            |
+| `sys_session_get_info`    | Check a session's status, agent, workspace, and current permission mode.                                   |
 | `sys_session_get_history` | Read a session's recent messages and tool results.                                                         |
 | `sys_session_close`       | Close a finished child session while retaining its history.                                                |
 
@@ -1131,6 +1131,23 @@ The returned `conversation_id` identifies the child. To continue its work, ask:
 ```text
 Ask the "Review tests" child session to prioritize its findings by risk.
 ```
+
+`sys_session_create` also takes an optional `permission_mode`, in the new
+session's harness vocabulary (for example Claude Code `auto` or Codex
+`approve-for-me`); modes that skip approval, such as `bypassPermissions` or
+`full-access`, are refused. Without one, a session that runs the same harness
+as the session creating it starts in the creator's current permission mode, so
+nested agents can work as unattended as their parent. A creator's mode that
+skips approval carries over only when the new session runs on the creator's own
+host. A session on a different harness starts in its agent's default.
+Sessions an [automation](/docs/build/scheduled-tasks#permission-modes) run
+starts get the automation's mode first.
+
+`sys_session_get_info` reports the session's `permission_mode` in the same
+vocabulary `sys_session_create` takes, including a switch made while the session
+runs. It is `null` when the harness has no permission modes or the mode can't
+be determined. `GET /v1/sessions/{session_id}` returns the same
+`permission_mode` field.
 
 `sys_session_send` can write only to the calling session's direct children.
 For agents with named sub-agents, reusing the same `agent` and `title` continues

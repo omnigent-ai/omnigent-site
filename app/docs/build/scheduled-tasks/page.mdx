@@ -131,6 +131,12 @@ Codex's own default, which asks before escalations and Omnigent tool calls.
 Runs are unattended, so a mode that prompts can leave a run waiting for approval.
 Pick a mode that runs on its own only when its permission level suits the task.
 
+Sessions a run starts with `sys_session_create` and no `permission_mode` of
+their own use the task's mode when their harness supports it. Otherwise they
+start in the mode of the session that started them when it runs the same
+harness (a mode that skips approval carries over only on that session's host),
+and in their agent's default when it doesn't.
+
 ### Modes that skip approval
 
 These modes decide every tool call without asking anyone:

@@ -895,6 +895,43 @@ on-disk file directly (no upload). This button shows only for native
 coding-agent sessions, since those harnesses run in the workspace and resolve
 the referenced file themselves.
 
+### Preview CSV and TSV files as a table
+
+`.csv` and `.tsv` files open in the file viewer as a read-only table instead of
+highlighted text. This applies wherever a file opens: the Files panel, a file
+link in an agent's reply, a tool row's path, or a `?file=` URL. Use the
+Preview/Source toggle to switch to the raw text and back. **Download** still
+fetches the whole file.
+
+- **Summary**: a line above the table shows the row count, the column count,
+  and the encoding when it isn't UTF-8. Each column is labeled `number`, `date`,
+  or `text` based on its non-empty cells, and number columns align right.
+- **Delimiters**: `.tsv` files split on tabs. For `.csv` files the viewer
+  detects comma, semicolon, tab, or pipe delimiters, so semicolon-separated
+  exports work too.
+- **Sort**: click a column header to sort ascending, then descending, then
+  back to file order. Numbers and dates sort by value, text sorts naturally,
+  and empty cells always go last.
+- **Filter**: each column has a **Filter** box that keeps rows whose cell
+  contains the text, case-insensitively. The summary shows how many rows match.
+- **Copy**: click a cell to select it, then use **Copy cell** or **Copy row**.
+  A row is copied tab-separated.
+- **Navigate**: columns are resizable and the header stays visible while you
+  scroll. Arrow keys and Home/End move between cells. Cmd/Ctrl+F finds text in
+  the table.
+
+The preview keeps at most the first 1,000 rows, 500 columns, and 200,000 cells,
+so a wide file keeps fewer rows. When rows or columns are left out, a note
+reads "Showing the first N of M rows" (or columns). The server sends at most
+the first 10 MiB of a file. Past that limit the count reads "At least N rows"
+and the viewer shows its truncated-file banner. Sorting and filtering apply
+only to the rows the preview kept, not the whole file.
+
+Files that aren't valid UTF-8 are decoded in the browser: UTF-16 when the file
+starts with a byte-order mark, otherwise UTF-8, otherwise Windows-1252. Source
+view still shows the binary-file notice for these files. Excel (`.xlsx`) and
+Parquet files are not previewed as tables.
+
 ### Open in VS Code or Cursor
 
 The Files panel header and the file viewer toolbar have an outlined **Open**

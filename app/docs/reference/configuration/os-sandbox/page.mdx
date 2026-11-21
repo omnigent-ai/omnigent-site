@@ -33,8 +33,9 @@ The OS sandbox applies to the built-in OS tools (`sys_os_read`, `sys_os_write`,
 `dnf install bubblewrap`). macOS: `sandbox-exec` ships with stock macOS. If you ask for a
 sandbox and the backend isn't available, Omnigent errors rather than running unsandboxed.
 Windows: job objects provide process-tree cleanup for OS-tool helpers; they don't
-restrict filesystem or network access. For full sandboxing on Windows, run Omnigent
-under WSL or use a [cloud sandbox host](/docs/deploy/cloud-sandbox-host).
+restrict filesystem or network access, so harness workers reject them (see
+[Harness worker containment](#harness-worker-containment)). For full sandboxing on
+Windows, run Omnigent under WSL or use a [cloud sandbox host](/docs/deploy/cloud-sandbox-host).
 
 </div>
 
@@ -304,6 +305,13 @@ credential on the way out, swapping a synthetic placeholder for the real value. 
 requires `egress_rules` and a hardened, network-isolating backend (`linux_bwrap` or
 `darwin_seatbelt`).
 
+These entries apply to sandboxed framework tools. A harness worker accepts
+`credential_proxy` only with Codex's [brokered gateway configuration](#codex-model-gateway)
+or Claude SDK's owned worker environment and credential broker; other harness
+adapters, nonbrokered Codex, and direct Claude CLI preparation without an owned
+worker environment reject it. See
+[Harness worker containment](#harness-worker-containment).
+
 Each entry has a `type`. The host-keyed types — `https_bearer`, `https_basic`,
 `git_https`, and `gh_basic` — bind a credential to a `target`/`targets` host and
 resolve the secret from a `source`.
@@ -320,7 +328,7 @@ sandbox:
 
 #### Databricks CLI
 
-The `databricks_cli` type proxies the [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/).
+The `databricks_cli` type is for framework tools, not harness workers. It proxies the [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/).
 Unlike the host-keyed types, it is **profile-keyed**: list the `profiles` to proxy
 (and an optional `default`). Only the listed profiles are materialized into the
 sandbox — as a placeholder `.databrickscfg` whose tokens are synthetic `oa_cred_*`
@@ -424,7 +432,9 @@ The profile won't launch unless all of the following hold:
   `<base_url path>/responses`.
 - The sandbox `type` is `linux_bwrap` or `darwin_seatbelt`.
 
-Gateway profiles without `broker_gateway` keep their existing authentication.
+Gateway profiles without `broker_gateway` keep their existing authentication only
+when `credential_proxy` is absent; configuring `credential_proxy` on a
+nonbrokered Codex worker prevents launch.
 
 <div className="note">
 
@@ -554,6 +564,87 @@ os_env:
     allow_network: false
 ```
 
+## Harness worker containment
+
+When a custom agent sets `os_env`, the harness adapter that runs its worker either
+enforces the policy or refuses to start. It never runs the worker unconfined. An
+`os_env` block without `sandbox.type` requests the platform default, so it
+requests confinement too.
+
+| Harness adapters                              | Worker confinement                                   |
+| --------------------------------------------- | ---------------------------------------------------- |
+| ACP, Claude SDK, Codex, Goose, Kimi, Pi, Qwen | Supported on `linux_bwrap` and `darwin_seatbelt`     |
+| Copilot, Cursor, Hermes, Antigravity          | Not supported. Requests for confinement are refused. |
+
+- **Linux or macOS only.** Harness adapters reject `windows_jobobject`, including
+  when it's the Windows default, because it can't enforce filesystem and network
+  boundaries.
+- **Adapters without confinement.** Copilot, Cursor, Hermes, and Antigravity
+  reject any `os_env` that doesn't set `sandbox.type: none`. Pick a
+  sandbox-capable harness when you need confinement, and use an explicit
+  `sandbox.type: none` only when you intend unrestricted execution.
+- **`web_fetch` researcher.** The framework-created `web_fetch` researcher uses
+  its parent's harness. When the parent has no `os_env`, the researcher requests
+  the platform-default sandbox. On Copilot, Cursor, Hermes, and Antigravity it
+  therefore refuses to start.
+- **`sandbox.type: none` with network limits.** `none` can't enforce
+  `allow_network: false`, `egress_rules`, or `credential_proxy`, so those
+  combinations are rejected.
+- **No unsandboxed fallback.** If the sandbox can't be prepared on the host,
+  the worker doesn't start.
+
+### Supported options
+
+On the sandbox-capable adapters:
+
+- `os_env.type` must be `caller_process`. `os_env.fork`, `os_env.start_in_scratch`,
+  and `sandbox.git_ssh` are rejected.
+- Worker `egress_rules` are supported by Codex and Claude SDK only.
+- Worker `credential_proxy` requires Codex's
+  [brokered gateway configuration](#codex-model-gateway) (`broker_gateway: true`
+  and its gateway binding) or Claude SDK's owned worker environment and
+  credential broker.
+- `allow_network: false` denies direct external connections from the worker.
+  Supported brokered inference, such as Claude SDK's
+  [model broker](#automatic-model-access), stays available without direct
+  provider connections.
+- Workers can't enforce worker-wide `tcp_egress`, and there is no supported
+  workaround yet. If the restriction has to cover the worker itself, treat the
+  configuration as unsupported.
+
+`sys_os_shell` shares the agent's primary `os_env`, so it doesn't replace worker
+containment. For HTTP or TCP egress that only a terminal needs, and that doesn't
+need credentials, put `egress_rules` or `tcp_egress` in that terminal's own
+`os_env`. Terminal launches ignore `credential_proxy` and don't inject its
+credentials. Terminal-local rules don't replace the primary worker's egress
+boundary, so keep the worker's required confinement.
+
+### Working directory
+
+- A relative `os_env.cwd` doesn't override the workspace the runner selected for
+  the session.
+- Claude SDK also resolves a named relative directory such as `./project`
+  against the runner base when that base is still the selected workspace. `.`
+  keeps using the selected workspace. Other adapters always keep the selected
+  workspace.
+- An absolute `os_env.cwd` must contain the selected session workspace. A
+  conflicting absolute path refuses launch.
+
+### Policy changes and refusals
+
+If a later turn supplies a changed OS policy, the runtime replaces the retained
+worker before that turn runs, so the new policy reaches a fresh process.
+Launch-policy overrides such as `enforce_sandbox` are reapplied before the spawn
+environment is derived, including after an agent revision changes.
+
+A refused policy is reported in the session. Fix the unsupported option, for
+example by removing `os_env.fork: true`, and retry in the same session. Don't
+remove confinement just to get past a refusal.
+
+Sandbox launchers grant read access to the installed `omnigent` Python package.
+For an editable install, that includes the package's source directory even when
+it's outside the interpreter's installation roots.
+
 ## Claude Code (`claude-sdk`) containment
 
 With `harness: claude-sdk` and an active sandbox, the sandbox contains the
@@ -662,7 +753,9 @@ uv tool upgrade --reinstall --link-mode copy omnigent
 
 The OS sandbox applies to `sys_os_*` tool calls and terminals that reference the
 policy. With `claude-sdk`, it also contains the Claude CLI and its descendants
-(see [Claude Code containment](#claude-code-claude-sdk-containment)). It does
+(see [Claude Code containment](#claude-code-claude-sdk-containment)), and other
+sandbox-capable harness workers are confined as described in
+[Harness worker containment](#harness-worker-containment). It does
 **not** apply to:
 
 - **MCP servers.** The runner spawns MCP subprocesses outside the sandbox. Constrain an MCP server at its own configuration site. (Plugin stdio MCP servers launched by a contained `claude-sdk` CLI are the exception; remote MCP servers run elsewhere.)

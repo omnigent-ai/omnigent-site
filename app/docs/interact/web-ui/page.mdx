@@ -1633,6 +1633,30 @@ dialog opens with **Instructions** focused. The fields appear in this order:
     **Month**, and **Start time**. **Repeats** offers **Hourly**, **Daily**,
     **Weekly**, **Monthly**, and **Yearly**, and **Minutely** on servers with
     sub-hour support.
+  - **Visual** / **RRULE** — a toggle at the top of the schedule picker.
+    **Visual** shows the choices above. **RRULE** replaces them with an
+    **RRULE string** field where you write the schedule as one
+    [RFC 5545 recurrence rule](/docs/build/scheduled-tasks#recurrence-rules),
+    with the **Timezone** picker below it. The field starts with the current
+    schedule's rule. Use it for schedules the visual controls can't express,
+    such as hourly from 9 AM to 5 PM on weekdays:
+    `FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9,10,11,12,13,14,15,16,17;BYMINUTE=0`.
+    - Case, surrounding spaces, and a leading `RRULE:` don't matter. A new
+      rule is saved in upper case without the prefix.
+    - Write a single line. Set the timezone with the picker instead of
+      `DTSTART;TZID`, and set the end under **Ends** instead of with `COUNT` or
+      `UNTIL`.
+    - The form checks only the rule's shape: `NAME=VALUE` pairs separated by
+      semicolons, each name used once, supported field names, and a `FREQ`.
+      When you save, the server checks whether the rule runs and how often,
+      and reports why it can't run.
+    - Below the field, a plain-language summary of the rule appears when one
+      describes it exactly. Otherwise the field shows a hint.
+    - Switching back to **Visual** shows the rule in the visual controls when
+      they can express it. Otherwise, the form returns to the visual schedule
+      you had before you switched.
+    - The **RRULE** tab is disabled on servers that don't support custom
+      schedules.
 - **Ends** — **Never**, **On date**, or **After** a number of occurrences.
 - **Instructions** — what the agent does on every run. When the automation
   comes from a template that has a system prompt, this field is labelled **Your
@@ -1674,6 +1698,14 @@ dialog opens with **Instructions** focused. The fields appear in this order:
 
 Click **Create** (or **Save changes** when you edit) to save the automation.
 Escape closes the open agent, project, or folder menu.
+
+When you edit an automation whose saved rule the visual controls can't show,
+such as one an agent wrote, the schedule opens on **RRULE**. A `COUNT` or
+`UNTIL` in the rule appears under **Ends**. If you save without changing the
+schedule, the stored rule is kept exactly as written, so the next run isn't
+rescheduled. Automation summaries show such rules as written instead of in
+plain language. A rule with `COUNT=1` (a single run) still can't be edited in
+the form.
 
 To rerun an existing conversation on a schedule, choose **Create automation**
 from a session's menu in the sidebar or session header. The dialog shows the

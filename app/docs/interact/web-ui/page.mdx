@@ -1953,10 +1953,12 @@ hold its state. Each run it:
    next run.
 6. Ends its reply with a new `Checked through:` time.
 
-Workers use the automation's agent, model, and effort, but the agent's
-default permission mode. Each worker's first message starts with your
-instructions and then gives the item's text fenced as untrusted data. That
-lowers prompt-injection risk but is not a security boundary: anyone who can
+Workers use the automation's agent, model, and effort. A worker started without
+a permission mode runs in the automation's permission mode when its harness
+supports it. Otherwise it starts in the polling session's mode when it runs the
+same harness, and in its agent's default when it doesn't. Each worker's first
+message starts with your instructions and then gives the item's text fenced as
+untrusted data. That lowers prompt-injection risk but is not a security boundary: anyone who can
 write in the watched source can try to steer the sessions, which run with your
 tools, and link-back posts with your account.
 

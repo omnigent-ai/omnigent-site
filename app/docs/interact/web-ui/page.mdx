@@ -923,6 +923,38 @@ Omnigent hides the remote options when it can't infer an SSH alias for the
 host, including for custom SSH aliases and offline hosts. The browser can't
 check whether the editor or the SSH alias is installed on your machine.
 
+### Data files as tables
+
+CSV (`.csv`), TSV (`.tsv`), Excel (`.xlsx`), and Parquet (`.parquet`) files
+open in the file viewer as a read-only table. This works from the Files panel
+(Explore or Changes), from a file link in an agent's reply, and from the path
+on a Read, Write, or Edit tool row. The table shows a summary and each
+column's inferred type. You can sort, filter each column, resize columns, use
+find, move between cells with the keyboard, and copy a cell or a row
+(tab-separated). **Download** always fetches the whole file.
+
+- **CSV and TSV**: the **Source** toggle switches to the raw text and back.
+- **Excel**: a workbook shows one tab per visible sheet. Hidden sheets are
+  skipped, and the arrow keys move between tabs. Dates show as ISO dates or
+  times, booleans as `TRUE`/`FALSE`, and formulas as their saved result. If
+  the file has no saved result, the formula text shows instead.
+- **Parquet**: the file is read in your browser, and the row count comes from
+  the file's footer. Only Snappy-compressed and uncompressed files can be
+  read. A file that uses another codec (for example ZSTD, the Polars default)
+  shows a message naming the codec, with a link to download it.
+- Excel and Parquet files always open as a table. They have no Source toggle,
+  diff, or line view, even when the file changed or the link points at a line.
+
+The preview keeps at most the first 1,000 rows and 500 columns, and caps the
+total cell count and text size, so a wide file shows fewer rows. A note tells
+you when rows, columns, or text were cut. Sorting and filtering apply only to
+the rows the preview kept. The server sends at most the first 10 MiB of a
+file. Past that limit, a CSV or TSV row count reads "At least N rows". An
+Excel or Parquet file over the limit can't be previewed, because the reader
+needs the end of the file, so the viewer offers Download instead. Older
+binary `.xls` workbooks and password-protected workbooks aren't supported and
+show a message.
+
 ## Open chat commands in a shell
 
 When the agent replies with a fenced shell code block (tagged `bash`, `sh`,

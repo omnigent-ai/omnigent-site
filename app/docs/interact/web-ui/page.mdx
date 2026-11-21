@@ -440,6 +440,20 @@ If the runner can't switch the thread into Plan mode, it doesn't run the queued
 message. It shows **Plan mode could not start** and asks you to restart the
 session and send the message again.
 
+### Set a goal in a Claude Code session
+
+In a Claude Code (`claude-native`) session, open the composer's **+** menu and
+choose **Goal**, or type `/goal <condition>` (also listed in the slash menu).
+For example: `/goal all tests pass`. Either way, Omnigent sends Claude Code's
+own built-in `/goal <condition>` command to the session, so Claude Code keeps
+working toward that condition.
+
+The transcript shows the `/goal` invocation as a **Command** entry, the same way
+it shows `/clear`, `/compact`, `/effort`, and `/model`. Claude Code tracks the
+goal itself, so the composer shows no goal indicator. Progress appears as
+ordinary agent work in the conversation. For Polly's Goal mode, see
+[Polly → Goal mode](/docs/use/builtin-agents/polly#goal-mode).
+
 ### Choose MCP services before launch
 
 On a server whose administrator publishes an MCP registry, the new-chat composer

@@ -695,6 +695,51 @@ you've unpinned are skipped so the numbers stay contiguous. Hover a tab to see i
 The digits only act while the tab strip is focused, so typing numbers in the
 composer, the editor, or a terminal is unaffected.
 
+### Split shell panes
+
+A session's shells can be split into side-by-side or stacked panes. While a
+pane of that split, or the session's chat pane, has the keyboard, these keys
+act on the focused pane:
+
+| Action                          | Shortcut                                   |
+| ------------------------------- | ------------------------------------------ |
+| Split Right                     | `⌘D` (macOS only)                          |
+| Split Down                      | `⌘⇧D` (macOS only)                         |
+| Move focus to the pane beside   | `⌘⌥←` / `⌘⌥→` / `⌘⌥↑` / `⌘⌥↓` (macOS only) |
+| Move Divider Left/Right/Up/Down | `⌘⌃←` / `⌘⌃→` / `⌘⌃↑` / `⌘⌃↓` (macOS only) |
+| Equalize pane sizes             | `⌘⌃=` (macOS only)                         |
+| Maximize or restore the pane    | `⌘⇧↵` (`Ctrl+Shift+Enter`)                 |
+
+The split, focus, divider, and equalize keys are bound on macOS only. On
+Windows and Linux, `Ctrl+D` and `Ctrl+arrow` keys go to the shell, so use the
+command palette (`Ctrl+K`) for those actions there. A pane key is taken
+even when it can't act right now, so it never reaches the shell. Holding a
+divider key keeps moving the divider, but holding a split key opens only one
+pane. With a single unsplit pane, `⌘⇧↵` goes to the terminal.
+
+When the chat pane has the keyboard, only the split, focus, and maximize keys
+act on it. Chords the composer uses itself stay with the composer. For example,
+`⌘⇧↵` steers the queue when `⌘↵` is set to send. Pane keys don't fire inside
+dialogs or menus.
+
+The command palette (`⌘K`) lists the same actions under a **Panes** heading for
+the split's focused pane. It also lists **Swap with Pane Left/Right/Up/Down**,
+**Close Pane**, **Show Pane Toolbar**, and **Move Pane…**. Actions that don't
+apply right now are hidden or grayed out with the reason, such as
+**Wait for the new pane to open.** while a new shell is starting. The palette
+lists commands for the split whose panes last had the keyboard.
+
+**Close Pane** asks for confirmation before it ends the pane's shell, just as
+closing a shell's tab does. After the pane closes, the pane next to it gets the
+keyboard. If the shell doesn't end, it stays open as its own tab outside the
+split.
+
+If a new pane's shell doesn't start, the pane keeps its place in the split and
+shows **Couldn't start the shell.** with the reason. **Try Again** starts the
+same kind of shell in that pane. It's disabled while another shell in the
+session is starting. **Close Pane** removes the pane right away, without
+confirmation, because no shell is running there.
+
 ### Other global shortcuts
 
 | Action                                       | Shortcut                                       |

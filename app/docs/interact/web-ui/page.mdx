@@ -151,6 +151,35 @@ and choose **Sort projects by**:
   available to switch back to.
 - **Manual order** — restores the order you last arranged.
 
+#### Mute a project
+
+To silence a whole project, open the project folder's `⋯` menu (or right-click
+its header), or the menu on the project's home page, and choose
+**Mute project**. Every one of your sessions filed in the project is then
+treated as muted. This includes sessions you add later and workers those
+sessions start. A muted session:
+
+- Sends no browser or desktop notifications and adds nothing to the app badge.
+- Shows no unread dot in the sidebar, the project Kanban board, or the Canvas.
+- Stays out of the **Unread** status group, the Kanban **Unread** lane, and the
+  Inbox's **Unread** tab. Its approvals and questions still appear under
+  **Awaiting response**.
+
+While the project is muted, its folder header shows a muted bell. Each member
+session's own menu shows **Muted with project** (disabled), because only the
+project can lift a mute that comes from the project. To undo it, choose
+**Unmute project** from the same project menu.
+
+The mute covers only sessions filed in the project. A session outside it, such
+as one coordinating the project's work, still notifies. Sessions that other
+users own aren't muted by your project mute, even if they're filed in the same
+project.
+
+The mute is saved on the project as `config.muted: true`, so it applies in every
+browser you use. **Mute project** appears only on servers that report
+`project_mute` in `/v1/info`. A folder that exists only as a label, with no
+first-class project behind it, can't be muted.
+
 #### Project settings and defaults
 
 When the sessions in a project tend to run the same way, a project can store its

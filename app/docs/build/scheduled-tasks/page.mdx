@@ -66,7 +66,8 @@ rules.
 `sys_scheduled_task_create` takes these fields:
 
 - **`name`** (required) — a human-readable task name, e.g. `nightly triage`.
-- **`prompt`** (required) — the instruction dispatched to the agent on each firing.
+- **`prompt`** (required unless `workflow_id` is set) — the instruction
+  dispatched to the agent on each firing.
 - **`rrule`** (required) — the recurrence rule (see [Recurrence rules](#recurrence-rules)).
 - **`agent_id`** (required) — the agent to run, e.g. `ag_abc123` (from
   `sys_agent_list` or `sys_agent_get`).
@@ -102,6 +103,13 @@ rules.
   project by id. It must be one of your own projects; another user's project is
   rejected as not found. Set `project_name` or `project_id`, not both. Omit
   both to leave fired sessions unfiled.
+- **`workflow_id`** (optional) — run one of your saved workflows on the
+  schedule instead of a prompt, by its ID from `sys_workflow_list`. Leave out
+  `prompt`; the server writes it. See
+  [Running a saved workflow](#running-a-saved-workflow).
+- **`workflow_details`** (optional, only with `workflow_id`) — this run's
+  specifics, sent after the request to run the workflow, e.g.
+  `Only the upload tests`.
 
 Project filing needs a server that advertises `scheduled_task_projects` in
 `/v1/info`. On an older server, a create or update call that sets
@@ -210,8 +218,9 @@ the hourly minimum.
 `sys_scheduled_task_update` changes only the fields you pass; the rest are left
 untouched. You can update `name`, `prompt`, `rrule`, `timezone`,
 `model_override`, `reasoning_effort`, `permission_mode`, `workspace`,
-`host_id`, `execution_target`, `state`, and the project (`project_name` or
-`project_id`).
+`host_id`, `execution_target`, `state`, the project (`project_name` or
+`project_id`), and the saved workflow (`workflow_id` and `workflow_details`,
+see [Running a saved workflow](#running-a-saved-workflow)).
 
 Setting a project moves **future** runs into it; `project_id=null` stops filing
 them into a project. Sessions from earlier runs stay where they are.
@@ -230,6 +239,61 @@ The `state` field accepts `active` or `paused`:
 
 To remove a task permanently, use `sys_scheduled_task_delete` — deletion is not
 done through `update`.
+
+## Running a saved workflow
+
+A task can run one of your saved workflows on its schedule. Each run starts a
+new session as a run of that workflow, with the workflow's saved steps as the
+session's plan, and the workflow's page lists the run.
+
+On a server that advertises `scheduled_task_workflow_id` in `/v1/info`, send
+the workflow's ID as `workflow_id` (and optionally the run's specifics as
+`workflow_details`) to `sys_scheduled_task_create` or
+`POST /v1/scheduled-tasks`, and leave out `prompt`. The task stores the
+workflow, and the server writes the prompt that runs it:
+
+```
+/workflow Run the saved workflow "<name>" (ID <id>).
+
+<workflow_details, if any>
+```
+
+For a native Codex agent the prompt starts with `$workflow` instead of
+`/workflow`. Task responses return `workflow_id` and `workflow_details`
+alongside the stored `prompt`.
+
+Rules:
+
+- **The workflow must be runnable by you.** Create and update refuse a workflow
+  its owner can't run. If it is deleted or no longer shared with you later, the
+  next run fails with `workflow_missing` and the task is paused.
+- **`prompt` and `workflow_id` don't mix.** A create that sends both is
+  rejected, as is one that sends `workflow_details` without `workflow_id`.
+- **Each run needs a new session.** `session_mode` must stay `new`; create and
+  update refuse `session_mode: "continue"` while the task has a workflow.
+- **The server owns the prompt.** While a workflow is attached, an update can't
+  reword the prompt around it. Change the run's specifics with
+  `workflow_details` (`null` clears them), or point the task at another
+  workflow with a new `workflow_id`. To stop running the workflow, send
+  `workflow_id: null` together with a new `prompt` that runs no workflow.
+  The agent tool resends the stored prompt unchanged on update, which is
+  allowed.
+- **Changing the agent can rewrite the prompt.** Switching to an agent whose
+  harness invokes the workflow skill differently (for example, to or from
+  native Codex) rewrites the prompt to match.
+- **Concurrent edits conflict.** If the task's prompt or workflow changes while
+  your update is being applied, the update fails with HTTP 409. Reload the task
+  and try again.
+
+A client can still send the prompt above itself, in exactly that form; the task
+then stores the workflow it names. On a server that doesn't advertise
+`scheduled_task_workflow_id`, the agent tools refuse `workflow_id` and
+`workflow_details` before anything is created and say to send that prompt
+instead.
+
+The approval prompt for `sys_scheduled_task_create` and
+`sys_scheduled_task_update` lists the requested `workflow_id` and shows
+`workflow_details` in full alongside the prompt.
 
 ## Where a task runs
 

@@ -17,7 +17,8 @@ agent sessions, send them work, and return to the same conversations for
 follow-up tasks. You can also open saved sessions in the Web UI to review
 their progress and results.
 
-- **CLI:** Run a task from the command line and receive the agent's response.
+- **CLI:** Run a task from the command line and receive the agent's response,
+  or start a session with `omni session create` and exit right away.
 - **Python SDK:** Send messages and manage sessions from Python.
 - **REST API:** Create sessions, read their history, and manage their lifecycle
   over HTTP.
@@ -143,8 +144,53 @@ Common options:
 </div>
 
 These examples use an agent YAML or directory through `omni run`; native
-terminal harnesses have their own CLI behavior. To run tools on another
-machine or in a cloud sandbox, use the Python SDK's or REST API's host options.
+terminal harnesses have their own CLI behavior. To run tools in a cloud
+sandbox, use the Python SDK's or REST API's host options.
+
+**Start a session and exit.** Use `omni session create` when a script needs
+to start sessions, such as workers in a pool, without waiting for them to
+reply. It creates the session as your signed-in user, the same as starting
+one in the Web UI, so the server's host, workspace, and permission-mode checks
+still apply. It queues the first message, prints the session ID to stdout,
+and exits:
+
+```bash
+omni session create --agent claude --title "Fix flaky test" -m "Fix tests/test_x.py"
+```
+
+By default, the session runs on this machine's host, which starts if it isn't
+already running, and works in the current directory. To capture the ID, read
+the task from stdin:
+
+```bash
+SESSION_ID=$(omni session create --agent claude --permission-mode auto --message-file - < task.md)
+```
+
+<div style={{ overflowX: "auto" }}>
+
+| Option                                     | When to use it                                                                                                                                                           |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--agent "<name>"`                         | Run a native agent, named as `omni <agent>` names it, such as `claude` or `codex`.                                                                                       |
+| `--agent-id "<agent_id>"`                  | Run a registered agent by ID instead. Pass either `--agent` or `--agent-id`, not both.                                                                                   |
+| `-m "<text>"` / `--message "<text>"`       | Queue the first message. Optional; without it, the session is created with no message.                                                                                  |
+| `--message-file <file>`                    | Read the first message from a file, or from stdin with `-`. Can't be combined with `--message`.                                                                          |
+| `--title "<title>"`                        | Set the session title.                                                                                                                                                   |
+| `--project-id "<project_id>"`              | File the session in a project. The project's saved agent and workspace apply unless you pass `--agent`/`--agent-id` or `--workspace`, so `--agent` is optional here.     |
+| `--workspace "<dir>"`                      | Set the directory the session works in. Defaults to the project's saved workspace, otherwise the current directory.                                                      |
+| `--host-id "<host_id>"`                    | Run on another connected host you own instead of this machine. Requires `--workspace` with an absolute path on that host, and a server from `--server` or your config.  |
+| `--model "<model>"`                        | Set the session's model, such as `claude-sonnet-4-6`.                                                                                                                    |
+| `--reasoning-effort "<effort>"`            | Set the reasoning effort, such as `high`.                                                                                                                                |
+| `--permission-mode "<mode>"`               | Set the permission mode in the agent's own terms, such as `auto` for Claude. Modes that skip approval are refused.                                                       |
+| `--server "<server-url>"`                  | Create the session on this server. Defaults to the configured server, or a local one.                                                                                    |
+| `--json`                                   | Print `session_id`, the session `url`, and `message_queued` as JSON instead of the bare ID.                                                                              |
+
+</div>
+
+If the server creates the session but refuses the first message, or a policy
+denies it, the command still prints the session ID (with `message_queued:
+false` under `--json`) and exits with a non-zero status, so your script can
+clean up the session. Open the session in the Web UI, or resume it with the
+agent's terminal command such as `omni claude --resume`, to follow its work.
 
   </div>
   <div>
@@ -1083,7 +1129,8 @@ delete them with the same endpoints and tools. The templates check for new
 items on a schedule; they don't receive webhooks. To react to events that the
 templates don't cover, receive the event in your own service, then start a
 session and send it the work with `POST /v1/sessions` and
-`POST /v1/sessions/{id}/events`.
+`POST /v1/sessions/{id}/events`, or with a single
+[`omni session create`](#start-a-session) command.
 
 ## Let an agent manage other sessions
 

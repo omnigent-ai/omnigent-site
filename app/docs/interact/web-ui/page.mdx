@@ -245,6 +245,27 @@ and same-sandbox fork selection with `OMNIGENT_FEATURES=-sibling_sessions` (see
 Existing families stay visible. A saved **Add nested agent** link opened while
 the feature is off, or against an older server, shows an unavailable message.
 
+### Open a session in a new window
+
+To pop a session out into its own window, open its header `⋯` menu, or a
+sidebar row's `⋯` or right-click menu, and choose **Open in new window**.
+
+- **In a browser**, the session opens in a 960×820 popup. If your browser blocks
+  it, a toast asks you to allow pop-ups for the site. The popup stays in the
+  browser even if you've set conversations to open in the desktop app.
+- **In the [desktop app](/docs/interact/desktop)**, the session opens in another
+  app window connected to the same server, not in your system browser. This
+  window doesn't overwrite the main window's saved size and position.
+
+The new window keeps the desktop layout and starts with the sidebar collapsed.
+Use the sidebar toggle to reopen it. If the session is already popped out,
+choosing **Open in new window** again brings its window to the front instead of
+opening a second one.
+
+The option isn't offered on mobile viewports, in the iOS and Android apps, when
+the UI is embedded in another page, or in desktop app builds released before
+this feature.
+
 ### Worktree branches
 
 In the new-chat composer, name a branch to run the agent in its own git worktree.

@@ -848,6 +848,74 @@ and a malformed selector — a missing value, a repeated `--profile`, or an
 invalid profile name — is reported by launch-arg validation when the session
 starts rather than during routing.
 
+## Claude Code and Codex memory
+
+Claude Code and Codex can each keep their own notes about you and your projects
+on the machine. When a native session (`claude-native` or `codex-native`) has
+Omnigent memory, Omnigent turns the harness's own memory off so the agent keeps
+one set of memories. Omnigent memory counts as on when the agent has the memory
+tool group and the server confirms memory is enabled. If the server can't be
+reached, the harness keeps its own memory, so a session never loses both.
+
+| Harness | How its own memory is turned off |
+| --- | --- |
+| Claude Code | Launches with `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`. A value already set in the runner's environment is kept. |
+| Codex | Launches with the config override `features.memories=false`, so Codex neither loads its notes nor writes new ones. Codex's memory is off unless you enabled it, so most launches don't change. |
+
+The harness's existing notes stay on disk. They just aren't loaded in those
+sessions.
+
+### Import the notes into Omnigent memory
+
+When the harness has notes on the machine, Omnigent offers to import them the
+first time a session turns its memory off. In its first reply, the agent asks
+once whether to import them with the `import-memory` skill. If you decline, it
+doesn't ask again.
+
+- **Where Omnigent looks.** Claude Code's notes are the `.md` files under
+  `<config dir>/projects/*/memory/`, apart from the `MEMORY.md` index. The config
+  dir is `$CLAUDE_CONFIG_DIR` when set, otherwise `~/.claude`. Codex's notes are
+  `MEMORY.md` and `memory_summary.md` in `<Codex home>/memories/`. The Codex home
+  is `$CODEX_HOME` when set, otherwise `~/.codex`. To decide whether to offer,
+  Omnigent only counts these files and never reads them.
+- **Once per machine.** The offer is made once per Claude Code config dir or
+  Codex home. Omnigent keeps a marker for each in its data directory, under
+  `memory-import-offers/`. If a Claude Code launch fails before the session
+  starts, the marker is removed and a later launch makes the offer.
+- **Top-level sessions only.** Sub-agents, workers, and side chats never make
+  the offer, because their replies go to the parent session and not to you.
+- **Wrapped launches.** If a
+  [startup command override](#override-the-harness-binary-and-launch-args) unsets
+  or changes `CLAUDE_CODE_DISABLE_AUTO_MEMORY`, Claude Code's auto memory stays on
+  and no offer is made.
+
+You can also ask the agent to import the notes at any time. `import-memory` is a
+skill that Omnigent ships to every agent with the memory tool group when the
+server has memory enabled. The server lists it only for hosts running an
+Omnigent version that includes it. An agent's own skill named `import-memory`
+takes precedence over the built-in one. To remove the skill, turn the memory
+group off (`tool_groups.memory: false`). `skills_filter` doesn't remove it.
+
+When it runs, the skill:
+
+1. Reads the notes and checks what is already saved with `memory_list` (and
+   `memory_search` when the memory backend supports search). It updates a saved
+   memory that covers the same topic instead of adding a near-duplicate.
+2. Maps each note to a memory path: `/user/<topic>`, `/feedback/<topic>`,
+   `/projects/<repo>/<topic>`, or `/reference/<topic>`. Claude Code notes are
+   mapped by their frontmatter `type`. Codex notes are split by topic.
+3. Leaves out secrets and credentials, one-off task state, anything the code,
+   its git history, or the repo's instruction files already cover, and notes
+   that are clearly out of date.
+4. Shows you a plan of what it will save, merge, and leave out, and writes
+   nothing until you agree.
+5. Saves each memory with `memory_write`, then lists what it saved and what it
+   left out.
+
+The original files are never changed, moved, or deleted. The skill treats the
+notes as data and never follows instructions written in them. If a note asks
+for an action, the skill mentions it in the plan and doesn't carry it out.
+
 ## Pi
 
 The native Pi harness (`pi`, alias `pi-native`) runs the Pi CLI against the

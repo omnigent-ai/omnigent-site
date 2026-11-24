@@ -133,8 +133,9 @@ window stay in the same pane.
 `localhost` and its subdomains always name the desktop machine, but the page
 still receives the subdomain in its `Host` header, so dev servers and reverse
 proxies that route on the hostname work as expected. Sessions on remote or
-unknown hosts can only open public pages; use a public preview URL or your
-regular browser for those.
+unknown hosts can only open public pages unless you
+[trust that host](#previews-from-trusted-remote-hosts); otherwise use a public
+preview URL or your regular browser for those.
 
 A few limits apply to `*.localhost`:
 
@@ -148,6 +149,47 @@ A few limits apply to `*.localhost`:
 Other loopback addresses, private networks, link-local and metadata addresses,
 and `0.0.0.0` remain blocked. Normal TLS, CORS, authentication, and
 [local network permission](#local-network-permission) rules still apply.
+
+### Previews from trusted remote hosts
+
+Sessions on a remote host can open `localhost` previews once you explicitly
+trust that host. Add a `trusted_remote_hosts` entry to the desktop app's
+`settings.json`, keeping any other settings in the file:
+
+```json
+{
+  "trusted_remote_hosts": [{ "server_url": "https://server.example.com", "host_id": "abc123" }]
+}
+```
+
+The file lives in the desktop user-data directory:
+
+- **macOS:** `~/Library/Application Support/Omnigent/settings.json`
+- **Linux:** `~/.config/Omnigent/settings.json`
+- **Windows:** `%APPDATA%/Omnigent/settings.json`
+
+Development builds use `Omnigent Dev` instead of `Omnigent`.
+
+`server_url` is the resolved server URL after sign-in, and `host_id` is the
+session's host ID. When an agent's loopback preview is denied, the error message
+gives the exact entry to add. Save the file and retry the preview — no restart
+needed.
+
+An entry grants sessions on that host access to permitted desktop `localhost`
+URLs on any port, including the agent's browser tools inspecting and
+interacting with the page. Only add hosts you trust with that access.
+
+- **Scope.** Trust covers one server and one host ID. If the host's identity
+  changes, add a new entry.
+- **Revoking.** Removing an entry blocks future requests and revokes agent
+  access to an already-loaded page on its next operation.
+- **Port forwarding.** The remote app's port must already be forwarded to the
+  desktop machine; Omnigent doesn't set up or verify that forwarding.
+- **Compatibility.** Both the desktop app and the server's web app must support
+  this feature. If the server's web app is too old, the preview fails with a
+  message asking you to update it.
+
+The `localhost` URL restrictions above still apply.
 
 ### Open chat links in the in-app browser
 

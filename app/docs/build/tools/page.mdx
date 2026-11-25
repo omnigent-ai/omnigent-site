@@ -125,6 +125,45 @@ tools:
       profile: my-profile
 ```
 
+### Example: image and video generation
+
+Media models often run as asynchronous jobs behind an MCP server: one tool submits a
+job, and another returns its result. The
+[`media` example agent](https://github.com/omnigent-ai/omnigent/tree/main/examples/media)
+uses [TensorScale](https://tensorscale.io/) to generate images and short videos this
+way. Its sidecar file limits the agent to four tools:
+
+```yaml
+# tools/mcp/tensorscale.yaml
+name: tensorscale
+transport: http
+url: https://mcp.tensorscale.io/mcp
+headers:
+  Authorization: Bearer ${TENSORSCALE_API_KEY}
+timeout: 280
+tools: [list_resolutions, text_to_image, text_to_video, get_task_status]
+```
+
+Run it from a clone of the Omnigent repository:
+
+```bash
+read -rs TENSORSCALE_API_KEY && export TENSORSCALE_API_KEY
+omnigent run examples/media/
+```
+
+When you connect a server like this:
+
+- **Allow the polling tool.** Without `get_task_status`, the agent can pay for a job
+  and never get the result.
+- **Tell the agent to submit once.** Generation is billed, so the example's prompt
+  polls the existing job instead of submitting again.
+- **Save results promptly.** TensorScale's links expire after 15 minutes, and chat
+  shows them as links instead of inline media.
+- **Use a dedicated key.** `omnigent run` puts the resolved key in the uploaded
+  bundle, which collaborators with Edit access can download. Registering the agent
+  with `omnigent server --agent` stores the `${TENSORSCALE_API_KEY}` placeholder
+  instead; see the example's README.
+
 ## Built-in tools
 
 Omnigent ships a set of built-in tools you can enable by name under `tools.builtins`,

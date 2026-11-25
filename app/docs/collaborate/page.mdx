@@ -221,6 +221,18 @@ expose MCP editing here, regardless of who is looking.
 When auth is disabled or the server runs in local single-user mode there is no
 ownership model, and the MCP controls are always available for editable agents.
 
+<h3 id="owner-only-pull-request-changes">Only the owner can change pull requests</h3>
+
+A session's [Pull Requests tab](/docs/interact/web-ui#github) acts through the
+code-host account on the session's host, which is the owner's. So only the
+session's owner (the owner grant on its root session) can link, unlink, edit,
+comment on, review, or merge its PRs, or switch the host's account.
+**Edit** and **Manage** collaborators and admins can still read the PRs, but
+they don't get the change controls, and the server refuses their change
+requests. To change a PR, collaborators open it on its code host and use their
+own account. See [Shared sessions](/docs/interact/web-ui#shared-sessions) for
+what collaborators see.
+
 ### Who said what
 
 When more than one authenticated person participates in a session, Omnigent

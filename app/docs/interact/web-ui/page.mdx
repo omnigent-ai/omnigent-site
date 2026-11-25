@@ -968,9 +968,10 @@ writes to GitHub.
 
 For GitHub PRs you can also act from the tab: edit the title and description,
 add or remove labels, request or withdraw reviewers, post comments, and merge
-or disable auto-merge. These actions need edit access to the session and run as
-the host's active `gh` account, or the account saved for that repository (in
-a sandbox, the sandbox's GitHub identity).
+or disable auto-merge. These actions run as the host's active `gh` account, or
+the account saved for that repository (in a sandbox, the sandbox's GitHub
+identity), so only the session's owner can take them — see
+[Shared sessions](#shared-sessions).
 GitLab merge requests and Azure DevOps pull requests stay read-only.
 
 ### Tracked pull requests
@@ -1002,7 +1003,7 @@ compact status on the right:
   for the checks behind it), `Draft`, `No checks`, or `Incomplete checks` when
   some checks couldn't be loaded.
 - A closed or merged PR shows its status instead of checks.
-- When an open, non-draft PR is ready to merge and you can edit the session, the
+- When an open, non-draft PR is ready to merge and you own the session, the
   row shows a **Merge** button. It asks you to confirm and pick a merge method
   before merging.
 
@@ -1101,7 +1102,7 @@ visible; other tabs and the closed panel stop polling. **Load more
 conversations** and **Load more replies** fetch older history on demand. Reply
 and new-conversation drafts survive tab and layout switches within the app, but
 not a browser reload. Reading threads requires the same file-sharing permission
-as the diff; posting requires edit permission on the session. Resolving or
+as the diff; posting requires being the session's owner. Resolving or
 reopening conversations isn't supported yet.
 
 ### Link or unlink a PR
@@ -1120,6 +1121,34 @@ or `N PRs` when several are tracked, and clicking it opens the **Pull Requests**
 
 An open draft PR shows a **Draft** status badge next to its title.
 
+### Shared sessions
+
+Every change made from the tab runs as the code-host account on the session's
+host, which belongs to the session's owner. So in a
+[shared session](/docs/collaborate), only the owner can link or unlink PRs or
+change them: editing the title, description, labels, or reviewers, posting
+comments or review replies, starting review conversations, uploading
+attachments, merging or disabling auto-merge, and switching the account or base
+remote. Ownership means the owner grant on the session's root session. **Edit**
+and **Manage** collaborators don't qualify, and neither do admins.
+
+Collaborators still see the session's PRs, their summary, checks, comments,
+commit history, line counts, review conversations, and diff, subject to the
+same [workspace-file sharing](/docs/collaborate#read-only-sharing-keeps-workspace-files-private)
+rules as before. They don't get the **Link a PR**, **Unlink PR**, or other
+change controls. Instead the tab shows `Only the session's owner can change its
+pull requests here. Open the pull request on GitHub to make changes.` (the
+provider's name replaces GitHub). The host's list of code-host accounts is
+hidden from everyone but the owner. **Read** viewers also don't see which
+account is selected.
+
+The server enforces this for API clients as well as the UI. A non-owner's
+change request is refused with `Only the session's owner can change its pull
+requests. Open the pull request on its code host to make changes there.` and
+never reaches the host. The same rule applies to an agent's
+`sys_session_link_pr` call that targets another session: that session must
+be one the agent's user owns.
+
 ### When the host is offline
 
 If the server stores session pull requests, the **Pull Requests** tab keeps
@@ -1135,7 +1164,8 @@ While the host is offline:
 
 - **Link a PR** is disabled (`Link a PR (needs the host online)`), because
   linking verifies the PR with the host's provider account.
-- **Unlink PR** still works. The server records the unlink.
+- **Unlink PR** still works for the session's owner. The server records the
+  unlink.
 - If the server hasn't imported the session's PRs from its host yet, the tab
   says the PRs haven't synced to the server yet instead of showing an empty
   list.

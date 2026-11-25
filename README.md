@@ -38,6 +38,7 @@ bun run lint:links
 - `public/images/` — `architecture.png`, `sandbox.png`, `logo.png`, `hero.png`.
 
 Edit the GitHub / Discord / package links in `components/links.js`.
+Edit the docs sidebar and Previous/Next order in `lib/docs-navigation.js`.
 
 ## Deploy
 

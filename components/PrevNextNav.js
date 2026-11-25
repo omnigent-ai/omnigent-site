@@ -2,221 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const ALL_PAGES = [
-  { href: "/docs", label: "Overview", section: "" },
-  {
-    href: "/quickstart/install",
-    label: "Install Omnigent",
-    section: "Get Started",
-  },
-  {
-    href: "/quickstart/coding-agent",
-    label: "Tutorial: Coding Agent",
-    section: "Get Started",
-  },
-  {
-    href: "/quickstart/polly",
-    label: "Tutorial: Polly (Multi-AI Coding)",
-    section: "Get Started",
-  },
-  {
-    href: "/quickstart/collaborate",
-    label: "Tutorial: Collaborate",
-    section: "Get Started",
-  },
-  {
-    href: "/quickstart/policies",
-    label: "Tutorial: Contextual Policies",
-    section: "Get Started",
-  },
-  {
-    href: "/docs/use/coding-agents",
-    label: "Coding Agents",
-    section: "Use Omnigent",
-  },
-  {
-    href: "/docs/use/builtin-agents",
-    label: "Built-in Multi-AI Agents",
-    section: "Use Omnigent",
-  },
-  {
-    href: "/docs/use/builtin-agents/polly",
-    label: "Polly",
-    section: "Use Omnigent",
-  },
-  {
-    href: "/docs/use/builtin-agents/debby",
-    label: "Debby",
-    section: "Use Omnigent",
-  },
-  {
-    href: "/docs/use/custom-agents",
-    label: "Custom Agents",
-    section: "Use Omnigent",
-  },
-  {
-    href: "/docs/build/models",
-    label: "Models & Credentials",
-    section: "Use Omnigent",
-  },
-  {
-    href: "/docs/build/routing",
-    label: "Smart Routing",
-    section: "Use Omnigent",
-  },
-  {
-    href: "/docs/build/prompts",
-    label: "Prompts & Skills",
-    section: "Use Omnigent",
-  },
-  {
-    href: "/docs/build/tools",
-    label: "MCP & Tools",
-    section: "Use Omnigent",
-  },
-  {
-    href: "/docs/build/scheduled-tasks",
-    label: "Scheduled Tasks",
-    section: "Use Omnigent",
-  },
-  {
-    href: "/docs/build/harnesses",
-    label: "Overview",
-    section: "Harnesses",
-  },
-  {
-    href: "/docs/build/harnesses/supported",
-    label: "Supported Harnesses",
-    section: "Harnesses",
-  },
-  {
-    href: "/docs/build/harnesses/configuration",
-    label: "Configuration",
-    section: "Harnesses",
-  },
-  {
-    href: "/docs/build/harnesses/community",
-    label: "Community Harnesses",
-    section: "Harnesses",
-  },
-  { href: "/docs/interact/terminal", label: "Terminal", section: "Interact" },
-  { href: "/docs/interact/web-ui", label: "Web UI", section: "Interact" },
-  { href: "/docs/interact/mobile", label: "Mobile", section: "Interact" },
-  { href: "/docs/interact/desktop", label: "Desktop App", section: "Interact" },
-  { href: "/docs/interact/slack", label: "Slack", section: "Interact" },
-  {
-    href: "/docs/collaborate",
-    label: "Pair Programming",
-    section: "Collaboration",
-  },
-  {
-    href: "/docs/deploy/overview",
-    label: "Shared Server",
-    section: "Collaboration",
-  },
-  {
-    href: "/docs/collaborate/auth",
-    label: "Auth & SSO",
-    section: "Collaboration",
-  },
-  {
-    href: "/docs/deploy/database",
-    label: "Database",
-    section: "Collaboration",
-  },
-  {
-    href: "/docs/deploy/credential-store",
-    label: "Credential Store",
-    section: "Collaboration",
-  },
-  {
-    href: "/docs/deploy/cloud-sandbox-host",
-    label: "Cloud Sandbox Host",
-    section: "Collaboration",
-  },
-  {
-    href: "/docs/deploy/community-sandbox-providers",
-    label: "Community Sandbox Providers",
-    section: "Collaboration",
-  },
-  {
-    href: "/docs/policies/overview",
-    label: "Overview",
-    section: "Contextual Policies",
-  },
-  {
-    href: "/docs/policies/builtin",
-    label: "Builtin Policies",
-    section: "Contextual Policies",
-  },
-  {
-    href: "/docs/policies/custom",
-    label: "Custom Policies",
-    section: "Contextual Policies",
-  },
-  {
-    href: "/docs/omnibox",
-    label: "Omnibox",
-    section: "Omnibox",
-  },
-  {
-    href: "/docs/reference/configuration",
-    label: "Server Settings",
-    section: "Reference",
-  },
-  {
-    href: "/docs/reference/configuration/kubernetes",
-    label: "Kubernetes Sandbox",
-    section: "Reference",
-  },
-  {
-    href: "/docs/reference/configuration/os-sandbox",
-    label: "OS Sandbox",
-    section: "Reference",
-  },
-  {
-    href: "/docs/reference/configuration/cloud-sandbox",
-    label: "Cloud Sandbox",
-    section: "Reference",
-  },
-  {
-    href: "/docs/reference/configuration/routing",
-    label: "Smart Routing",
-    section: "Reference",
-  },
-  {
-    href: "/reference",
-    label: "REST API",
-    section: "Reference",
-  },
-  {
-    href: "/docs/reference/routing-api",
-    label: "Routing Provider API",
-    section: "Reference",
-  },
-  {
-    href: "/docs/deploy/telemetry",
-    label: "Usage Telemetry",
-    section: "Reference",
-  },
-];
+import { docsPages } from "@/lib/docs-navigation";
 
 export default function PrevNextNav() {
   const path = usePathname();
-  const idx = ALL_PAGES.findIndex((p) => p.href === path);
+  const idx = docsPages.findIndex((p) => p.href === path);
   if (idx === -1) return null;
 
-  const prev = idx > 0 ? ALL_PAGES[idx - 1] : null;
-  const next = idx < ALL_PAGES.length - 1 ? ALL_PAGES[idx + 1] : null;
+  const prev = docsPages[idx - 1];
+  const next = docsPages[idx + 1];
 
   return (
-    <nav className="prev-next-nav" data-pagefind-ignore>
+    <nav
+      className="prev-next-nav"
+      aria-label="Documentation pages"
+      data-pagefind-ignore
+    >
       {prev ? (
         <Link href={prev.href} className="prev-next-link prev-next-link--prev">
           <span className="prev-next-dir">← Previous</span>
           <span className="prev-next-label">
-            {prev.section ? `${prev.section}: ${prev.label}` : prev.label}
+            {prev.section}: {prev.label}
           </span>
         </Link>
       ) : (
@@ -226,7 +32,7 @@ export default function PrevNextNav() {
         <Link href={next.href} className="prev-next-link prev-next-link--next">
           <span className="prev-next-dir">Next →</span>
           <span className="prev-next-label">
-            {next.section ? `${next.section}: ${next.label}` : next.label}
+            {next.section}: {next.label}
           </span>
         </Link>
       ) : (

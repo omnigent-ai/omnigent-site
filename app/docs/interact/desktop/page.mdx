@@ -133,8 +133,9 @@ window stay in the same pane.
 `localhost` and its subdomains always name the desktop machine, but the page
 still receives the subdomain in its `Host` header, so dev servers and reverse
 proxies that route on the hostname work as expected. Sessions on remote or
-unknown hosts can only open public pages; use a public preview URL or your
-regular browser for those.
+unknown hosts can only open public pages unless you
+[trust that host](#previews-from-trusted-remote-hosts); otherwise use a public
+preview URL or your regular browser.
 
 A few limits apply to `*.localhost`:
 
@@ -148,6 +149,56 @@ A few limits apply to `*.localhost`:
 Other loopback addresses, private networks, link-local and metadata addresses,
 and `0.0.0.0` remain blocked. Normal TLS, CORS, authentication, and
 [local network permission](#local-network-permission) rules still apply.
+
+### Previews from trusted remote hosts
+
+Sessions on a remote host can open the same localhost URLs once you explicitly
+trust that host. The first time one of these previews is blocked, the desktop
+app shows a native dialog asking whether to let sessions on that server's host
+open localhost pages. The dialog shows the server URL and host ID:
+
+- **Trust this host** saves the grant and retries the preview.
+- **Not now** blocks that host's previews until you restart the desktop app,
+  so an agent that keeps retrying can't keep asking.
+
+Trust lets that host's sessions, and their agents, open, inspect, and interact
+with any permitted localhost page on this computer, across ports. Only trust
+hosts you recognize. The remote app's port must already be forwarded to this
+computer; Omnigent doesn't set up or check the forwarding. The URL limits in
+[Preview local dev servers](#preview-local-dev-servers) still apply.
+
+To review or change grants, open **Settings → General → Trusted remote hosts**.
+It lists the hosts trusted for the server this window is connected to:
+
+- **Remove** revokes a grant. Future requests are blocked, and agent access
+  to a page that's already open ends on its next operation.
+- To add a host, enter its **Host ID** and click **Trust host**. The server
+  URL is filled in with the current server, and the app asks for the same
+  native confirmation.
+
+A grant is scoped to one server and one host ID. Host IDs stay the same across
+restarts and relaunches, so a grant normally never needs renewing. You only
+need a new one for a brand-new host registration, a deleted host config, or a
+reset host ID, because the old entry no longer matches.
+
+Grants are stored under `trusted_remote_hosts` in the desktop app's
+`settings.json`, and other settings in the file are preserved:
+
+```json
+{
+  "trusted_remote_hosts": [{ "server_url": "https://server.example.com", "host_id": "abc123" }]
+}
+```
+
+The file is in the desktop user-data directory: on macOS,
+`~/Library/Application Support/Omnigent/settings.json`; on Linux,
+`~/.config/Omnigent/settings.json`; on Windows, `%APPDATA%/Omnigent/settings.json`
+(`Omnigent Dev` in development builds). You can still edit it by hand: save the
+file and retry the preview, with no restart needed. When an agent's localhost
+preview is denied, the error message includes the exact entry to add.
+`server_url` is the resolved server URL after sign-in. Both the desktop app and
+the server's web app must support this feature; older web apps can't use the
+grant.
 
 ### Open chat links in the in-app browser
 

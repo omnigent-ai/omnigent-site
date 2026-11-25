@@ -293,5 +293,10 @@
     "title": "Releases",
     "description": "What's new in each version of Omnigent — release highlights, version by version.",
     "eyebrow": "Releases"
+  },
+  "/blog/generate-images-and-video-with-mcp": {
+    "title": "Generate images and video from an Omnigent chat",
+    "description": "Connect a media MCP server to an Omnigent agent with one YAML file, then ask for images and short videos in plain language.",
+    "eyebrow": "Blog"
   }
 }

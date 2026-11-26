@@ -1,0 +1,98 @@
+import { pageMeta } from "@/lib/og";
+
+export const metadata = pageMeta(
+  "Generate images and video from an Omnigent chat",
+  "Connect a media MCP server to an Omnigent agent with one YAML file, then ask for images and short videos in plain language.",
+  {
+    eyebrow: "Blog",
+    path: "/blog/generate-images-and-video-with-mcp",
+  },
+);
+
+export const meta = {
+  title: "Generate images and video from an Omnigent chat",
+  date: "2026-11-25",
+  category: "Tools",
+  author: "Yuan Tang",
+  format: "feature-note",
+  heroArt: "/images/blog/generate-images-and-video-with-mcp.png",
+};
+
+<BlogPostHeader slug="generate-images-and-video-with-mcp" />
+
+The new `media` example agent turns a short request into an image or a five-second
+video. It's one agent and one MCP file, with no custom code, and it shows a pattern
+you can reuse for any slow, billed tool.
+
+<video
+  src="/images/blog/generate-images-and-video-with-mcp-demo.mp4"
+  poster="/images/blog/generate-images-and-video-with-mcp-poster.png"
+  autoPlay
+  loop
+  muted
+  playsInline
+  aria-label="In the Omnigent web UI, a user picks the media agent and asks for an image of a red paper boat. The agent submits one job, polls for it, and replies with a link, expiry time and cost. The user then asks for a video in the same chat and gets a second link. The resulting image and video are shown after each reply."
+  style={{ width: "100%", borderRadius: "8px", margin: "1rem 0" }}
+/>
+
+_Recorded in Omnigent 0.22.0 with parts sped up. The image and clip were downloaded
+from the agent's links and edited in, and job IDs are masked._
+
+In this recording the agent worked for seven seconds on the image and nine on the
+video, and reported costs of $0.005 and $0.04.
+
+## One file to connect it
+
+The example uses [TensorScale](https://tensorscale.io/), which serves image and video
+models through an MCP server. (Disclosure: I'm affiliated
+with TensorScale.) Omnigent discovers the file automatically:
+
+```yaml
+# tools/mcp/tensorscale.yaml
+name: tensorscale
+transport: http
+url: https://mcp.tensorscale.io/mcp
+headers:
+  Authorization: Bearer ${TENSORSCALE_API_KEY}
+timeout: 280
+tools: [list_resolutions, text_to_image, text_to_video, get_task_status]
+```
+
+The `tools` list does real work here. The server offers many more tools, including
+ones that spend credits, and the agent sees only these four.
+
+## Submit once, then poll
+
+Media jobs are asynchronous: `text_to_image` returns a `task_id`, and
+`get_task_status` returns the link. Because every submission is billed, the agent's
+prompt says to submit once, poll that task, and ask before trying again. The same
+rules suit any tool that is slow and costs money.
+
+## Try it
+
+You need a Claude provider, a TensorScale API key and a clone of the Omnigent
+repository:
+
+```bash
+read -rs TENSORSCALE_API_KEY && export TENSORSCALE_API_KEY
+omnigent run examples/media/
+```
+
+Then ask for something:
+
+> Make an image of a red paper boat on a calm lake at sunrise.
+
+> Now make a video of the boat drifting across the lake.
+
+Save each file promptly, because the links expire after 15 minutes. Results appear as
+links rather than inline media, and the example can't save files to your workspace.
+
+To use another media provider, replace the MCP file and update the tool names in the
+prompt. See the
+[`media` example](https://github.com/omnigent-ai/omnigent/tree/main/examples/media)
+for the full agent and notes on keeping the key safe, and
+[MCP & Tools](/docs/build/tools#mcp-servers) for how MCP servers are configured.
+
+---
+
+**Enjoying Omnigent?** If this is useful to you, [give us a star on GitHub ⭐](https://github.com/omnigent-ai/omnigent). Come say hi on [Discord](https://discord.gg/omnigent), or [check the latest release](https://omnigent.ai/releases).

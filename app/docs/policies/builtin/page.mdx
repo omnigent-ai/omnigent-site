@@ -33,6 +33,7 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `gcalendar_policy`                | Controls Google Calendar. Defaults to read-only.                                                                                                                                                                                                                                                                                                                                                                                                                                       | None                                                                                                                                                                                                                                    |
 | `gdrive_policy`                   | Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to agent-created files by default. Optionally enforces Bell-LaPadula "no write-down": once the session reads a confidential file, its writes are confined to that set.                                                                                                                                                                                                                                       | `read_all`, `allow_create`, `write_files`, `read_files`, `comment_files`, `confidential_files` (string[]), `write_down_action` (`"DENY"` or `"ASK"`, default `"DENY"`)                                                                  |
 | `github_policy`                   | Controls GitHub read/write access across MCP tools and shell commands. Irreversible destructive operations (deletes) are denied by default even on allowed repos, unless `allow_destructive` is set. `git push` force flags (`--force`, `-f`, `--force-with-lease`, `--force-if-includes`), bundled short flags containing `f` (e.g. `-uf`), and `+refspec` force prefixes are denied by default regardless of the repo/branch allowlists, unless `deny_force_push` is set to `false`. | `read_all`, `write_repos`, `write_branches`, `allow_destructive` (bool, default `false`), `deny_force_push` (bool, default `true`)                                                                                                      |
+| `gitlab_policy`                   | Controls GitLab access through `glab` issue and merge-request commands and `git clone`, `fetch`, `pull`, and `push` shell commands. Git transfers are classified only when they target an explicit HTTPS project URL; named remotes (`origin`), omitted destinations, SSH URLs, and local paths ASK. Pushes must name fully qualified destination refs (for example `HEAD:refs/heads/feature`) and are checked against `write_repos` and `write_branches`. Force pushes, tag pushes, and remote ref deletions are denied by default. Bulk pushes (`--all`, `--mirror`, `--prune`, `--tags`, `--follow-tags`) ASK even when those guards are disabled. See [Restrict GitLab pushes to one branch](#restrict-gitlab-pushes-to-one-branch). | `hosts` (string[], default `["gitlab.com"]`), `read_all` (bool, default `true`), `read_repos`, `write_repos`, `write_branches` (string[], exact and case-sensitive; empty permits any branch), `allow_destructive` (bool, default `false`), `deny_tag_push` (bool, default `true`), `deny_force_push` (bool, default `true`), `shell_tools`, `deny_reason` |
 | `gmail_policy`                    | Controls Gmail. Defaults to read + draft, no send.                                                                                                                                                                                                                                                                                                                                                                                                                                     | `allow_read`, `allow_send`, `allow_drafts`                                                                                                                                                                                              |
 | `intent_based_authorization`      | Records the first user message as the session's intent, then ASKs before any tool call that has no plausible connection to that intent. Requires an `llm:` config block; fails open when none is available.                                                                                                                                                                                                                                                                            | None                                                                                                                                                                                                                                    |
 | `max_tool_calls_per_session`      | DENYs after a total tool-call limit is reached.                                                                                                                                                                                                                                                                                                                                                                                                                                        | `limit` (int, default `100`)                                                                                                                                                                                                            |
@@ -100,6 +101,46 @@ policies:
 
 Because the confidential set is declared explicitly rather than inferred from a
 per-document classification label, the rule works on any Google Drive tenant.
+
+#### Restrict GitLab pushes to one branch
+
+`gitlab_policy` checks `git push` against the project and branch allowlists, but
+only when the command names its destination fully: an explicit HTTPS project URL
+and a `refs/heads/...` destination ref. Bare `feature`, `HEAD:feature`, and
+`HEAD:heads/feature` ASK, because their meaning can depend on existing refs or
+configuration.
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  gitlab_access:
+    type: function
+    handler: omnigent.policies.builtins.gitlab.gitlab_policy
+    factory_params:
+      hosts:
+        - gitlab.example.com
+      read_all: false
+      read_repos:
+        - https://gitlab.example.com/team/app
+      write_repos:
+        - https://gitlab.example.com/team/app
+      # Exact, case-sensitive branch names. Omit or leave empty to allow any branch.
+      write_branches:
+        - feature
+```
+
+With this configuration:
+
+- `git push https://gitlab.example.com/team/app HEAD:refs/heads/feature` is allowed by this policy.
+- A push to `refs/heads/main` on the same project is denied.
+- `git push origin feature` ASKs, because `origin` is a named remote.
+- Force pushes, tag pushes, and remote ref deletions are denied. Set
+  `deny_force_push: false`, `deny_tag_push: false`, or `allow_destructive: true`
+  to send them through the project and branch checks instead.
+
+`allow_destructive` only covers Git ref deletions. `glab issue`, `mr`, and `repo`
+deletions are always denied. `write_branches` doesn't apply to issue writes or
+tags.
 
 #### Catch a stuck agent
 

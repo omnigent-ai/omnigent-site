@@ -695,6 +695,22 @@ you've unpinned are skipped so the numbers stay contiguous. Hover a tab to see i
 The digits only act while the tab strip is focused, so typing numbers in the
 composer, the editor, or a terminal is unaffected.
 
+### Search text and go to a file
+
+When the workspace sidebar shows as tabs (the `workspace_sidebar_v2`
+[release feature](/docs/deploy/overview#release-features), in the desktop
+app or a desktop browser, not on touch devices), two shortcuts search the open session's files:
+
+| Action                                  | macOS | Windows/Linux      |
+| --------------------------------------- | ----- | ------------------ |
+| Search text in the open session's files | `⌃⌘O` | `Ctrl+Alt+O`       |
+| Go to a file in the open session        | `⌃⌘P` | `Ctrl+Alt+Shift+P` |
+
+The search-text shortcut opens the same search as the sidebar's
+**New tab → Search text**. Both shortcuts match the physical key position (where
+O and P sit on a US QWERTY keyboard), not the character typed. On Windows/Linux, typing a character with **AltGr**
+(for example `ó` with AltGr+O on a Polish layout) doesn't fire them.
+
 ### Other global shortcuts
 
 | Action                                       | Shortcut                                       |

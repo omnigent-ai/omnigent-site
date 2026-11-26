@@ -33,6 +33,7 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `gcalendar_policy`                | Controls Google Calendar. Defaults to read-only.                                                                                                                                                                                                                                                                                                                                                                                                                                       | None                                                                                                                                                                                                                                    |
 | `gdrive_policy`                   | Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to agent-created files by default. Optionally enforces Bell-LaPadula "no write-down": once the session reads a confidential file, its writes are confined to that set.                                                                                                                                                                                                                                       | `read_all`, `allow_create`, `write_files`, `read_files`, `comment_files`, `confidential_files` (string[]), `write_down_action` (`"DENY"` or `"ASK"`, default `"DENY"`)                                                                  |
 | `github_policy`                   | Controls GitHub read/write access across MCP tools and shell commands. Irreversible destructive operations (deletes) are denied by default even on allowed repos, unless `allow_destructive` is set. `git push` force flags (`--force`, `-f`, `--force-with-lease`, `--force-if-includes`), bundled short flags containing `f` (e.g. `-uf`), and `+refspec` force prefixes are denied by default regardless of the repo/branch allowlists, unless `deny_force_push` is set to `false`. | `read_all`, `write_repos`, `write_branches`, `allow_destructive` (bool, default `false`), `deny_force_push` (bool, default `true`)                                                                                                      |
+| `gitlab_policy`                   | Controls GitLab project access through `git` and `glab` shell commands: explicit HTTPS Git downloads and pushes, issue and merge-request reads, issue writes, and explicit merge-request creation and metadata updates. Unresolved operations ASK. MR merges (`merge` / `accept`) and rebases are never allowed automatically. Force pushes, tag pushes, and remote ref deletions are denied by default. See [GitLab merge requests](#let-an-agent-open-gitlab-merge-requests). | `hosts` (string[], default `["gitlab.com"]`), `read_all` (bool, default `true`), `read_repos`, `write_repos`, `write_branches` (string[]), `allow_destructive` (bool, default `false`), `deny_tag_push` (bool, default `true`), `deny_force_push` (bool, default `true`), `shell_tools`, `deny_reason` |
 | `gmail_policy`                    | Controls Gmail. Defaults to read + draft, no send.                                                                                                                                                                                                                                                                                                                                                                                                                                     | `allow_read`, `allow_send`, `allow_drafts`                                                                                                                                                                                              |
 | `intent_based_authorization`      | Records the first user message as the session's intent, then ASKs before any tool call that has no plausible connection to that intent. Requires an `llm:` config block; fails open when none is available.                                                                                                                                                                                                                                                                            | None                                                                                                                                                                                                                                    |
 | `max_tool_calls_per_session`      | DENYs after a total tool-call limit is reached.                                                                                                                                                                                                                                                                                                                                                                                                                                        | `limit` (int, default `100`)                                                                                                                                                                                                            |
@@ -100,6 +101,66 @@ policies:
 
 Because the confidential set is declared explicitly rather than inferred from a
 per-document classification label, the rule works on any Google Drive tenant.
+
+#### Let an agent open GitLab merge requests
+
+`gitlab_policy` can let an agent create and update merge requests in projects
+listed in `write_repos` without asking. MR writes in other projects are denied.
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  gitlab_access:
+    type: function
+    handler: omnigent.policies.builtins.gitlab.gitlab_policy
+    factory_params:
+      hosts:
+        - gitlab.example.com
+      read_all: false
+      read_repos:
+        - https://gitlab.example.com/team/app
+      write_repos:
+        - https://gitlab.example.com/team/app
+```
+
+With this configuration, this same-project MR creation is allowed:
+
+```sh
+glab mr create -R https://gitlab.example.com/team/app -H https://gitlab.example.com/team/app -s feature -b main -t Fix -d Details --remove-source-branch=false --allow-collaboration=false
+```
+
+- **Creating** (`glab mr create` / `new`) is allowed only with every input
+  spelled out. `--repo` / `-R` and `--head` / `-H` must name the same server
+  and project. You also need literal `--source-branch` / `-s` and
+  `--target-branch` / `-b` names, a non-empty `--title` / `-t` and
+  `--description` / `-d`, and both `--remove-source-branch=false` and
+  `--allow-collaboration=false`. These two overrides stop project defaults from
+  deleting the source branch or granting more permissions on it. `--yes`,
+  draft/WIP state, and labels are supported. Missing inputs, a different or
+  inferred head project, `--push`, `--fill`, auto-merge, branch creation,
+  attachments, templates, and `--target-project` overrides ASK.
+- **Updating** (`glab mr update`) needs one numeric MR ID, an explicit `--repo`,
+  and at least one supported change: title, description, labels/unlabels,
+  draft/WIP/ready state, or `--target-branch`. Update has no `-b` alias.
+  Empty text, editor input (`-`), and file-based input ASK.
+- **Quick actions**: if any line of a description starts with `/` (after
+  optional whitespace), the command ASKs, because GitLab may read that line as a
+  quick action. The check also catches lines inside code blocks and unknown
+  slash commands.
+- **Branches**: creating or updating an MR doesn't change branch contents, so
+  `write_branches` doesn't restrict it. This includes choosing a target branch
+  that can't receive automatic pushes.
+- **Merging and rebasing** (`glab mr merge` / `accept`, `glab mr rebase`)
+  are never allowed automatically. They ASK because an MR ID alone doesn't
+  establish the target branch, or the source project and branch (which may be
+  in a fork). Merges in projects outside `write_repos` are denied.
+- **Source-branch removal**: an explicit `--remove-source-branch` on create or
+  merge is denied by default. `allow_destructive: true` turns that denial into an
+  ASK, not an automatic allow. On update, `--remove-source-branch` toggles the
+  stored setting, so it always ASKs.
+
+Direct `glab issue`, `mr`, and `repo` delete actions are denied even when
+`allow_destructive` is `true`.
 
 #### Catch a stuck agent
 

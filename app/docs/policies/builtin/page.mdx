@@ -33,6 +33,7 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `gcalendar_policy`                | Controls Google Calendar. Defaults to read-only.                                                                                                                                                                                                                                                                                                                                                                                                                                       | None                                                                                                                                                                                                                                    |
 | `gdrive_policy`                   | Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to agent-created files by default. Optionally enforces Bell-LaPadula "no write-down": once the session reads a confidential file, its writes are confined to that set.                                                                                                                                                                                                                                       | `read_all`, `allow_create`, `write_files`, `read_files`, `comment_files`, `confidential_files` (string[]), `write_down_action` (`"DENY"` or `"ASK"`, default `"DENY"`)                                                                  |
 | `github_policy`                   | Controls GitHub read/write access across MCP tools and shell commands. Irreversible destructive operations (deletes) are denied by default even on allowed repos, unless `allow_destructive` is set. `git push` force flags (`--force`, `-f`, `--force-with-lease`, `--force-if-includes`), bundled short flags containing `f` (e.g. `-uf`), and `+refspec` force prefixes are denied by default regardless of the repo/branch allowlists, unless `deny_force_push` is set to `false`. | `read_all`, `write_repos`, `write_branches`, `allow_destructive` (bool, default `false`), `deny_force_push` (bool, default `true`)                                                                                                      |
+| `gitlab_policy`                   | Controls a bounded set of `glab` shell commands per GitLab project: issue and MR reads, issue creation, and issue comments. Writes outside `write_repos` are denied; reads outside `read_repos` are denied when `read_all` is `false`. Commands must name the project with `--repo`/`-R`. Git remote operations, MR writes, `glab api`, and other commands ASK; `glab` deletions are denied. See [Scope GitLab access](#scope-gitlab-access).                                          | `hosts` (string[], default `["gitlab.com"]`), `read_all` (bool, default `true`), `read_repos`, `write_repos`, `shell_tools`, `deny_reason`                                                                                              |
 | `gmail_policy`                    | Controls Gmail. Defaults to read + draft, no send.                                                                                                                                                                                                                                                                                                                                                                                                                                     | `allow_read`, `allow_send`, `allow_drafts`                                                                                                                                                                                              |
 | `intent_based_authorization`      | Records the first user message as the session's intent, then ASKs before any tool call that has no plausible connection to that intent. Requires an `llm:` config block; fails open when none is available.                                                                                                                                                                                                                                                                            | None                                                                                                                                                                                                                                    |
 | `max_tool_calls_per_session`      | DENYs after a total tool-call limit is reached.                                                                                                                                                                                                                                                                                                                                                                                                                                        | `limit` (int, default `100`)                                                                                                                                                                                                            |
@@ -100,6 +101,89 @@ policies:
 
 Because the confidential set is declared explicitly rather than inferred from a
 per-document classification label, the rule works on any Google Drive tenant.
+
+#### Scope GitLab access
+
+`gitlab_policy` inspects the `command` argument of shell tool calls and decides
+which GitLab projects an agent can read, create issues in, and comment on
+issues in. It is opt-in and uses the normal ALLOW, DENY, and ASK approval flow.
+Project paths can include nested groups (`team/subgroup/project`) and match
+case-insensitively.
+
+| Automatically classified command | Scope                                                         |
+| -------------------------------- | ------------------------------------------------------------- |
+| `glab issue list`, `view`        | Read issue lists and individual issues                        |
+| `glab mr list`, `view`, `diff`   | Read merge requests and their changes                         |
+| `glab issue create`              | Create an issue with explicit `--title` and `--description`   |
+| `glab issue note`                | Comment on a numeric issue ID with an explicit `--message`    |
+
+The aliases `ls`, `show`, `new`, and `comment` get the same checks. A command
+is only decided automatically when `--repo` / `-R` names a full HTTPS project
+URL or a `host/group/project` selector on a configured host. Views, diffs, and
+comments also need a numeric issue or merge-request ID. Missing selectors, bare
+project paths, positional URLs, unknown options, and interactive input (for
+example `-d -`) ASK. Common list filters, pagination, JSON output, view
+comments, issue labels, and confidentiality are supported; other options ASK.
+
+- **Writes** (issue create and comment) outside `write_repos` are DENYed.
+- **Reads** outside `read_repos` are DENYed when `read_all` is `false`;
+  otherwise supported reads on any configured host are allowed.
+- A bare entry such as `team/app` applies to that project on every configured
+  host; an HTTPS URL pins it to one server. Invalid configuration fails when the
+  policy loads.
+- Recognized `glab issue`, `mr`, and `repo` deletions are DENYed.
+- Git remote operations, `git config`, Git global options, merge-request
+  writes, forks, `glab api` requests (including reads), and other `glab`
+  commands ASK. Local Git commands (`status`, `diff`, `log`, `show`, `add`,
+  `commit`, `branch`, `tag`, `rev-parse`) run normally when invoked without Git
+  global options. Their subcommand options are not inspected.
+- Attaching this policy alongside another forge's policy also makes Git
+  remote operations ASK.
+
+| Parameter     | Type     | Default                               | Description                                                 |
+| ------------- | -------- | ------------------------------------- | ----------------------------------------------------------- |
+| `hosts`       | string[] | `["gitlab.com"]`                      | Trusted GitLab HTTPS authorities, including explicit ports  |
+| `read_all`    | boolean  | `true`                                | Allow supported reads across projects on configured hosts   |
+| `read_repos`  | string[] | `[]`                                  | Readable projects when `read_all` is `false`                |
+| `write_repos` | string[] | `[]`                                  | Projects that allow issue creation and issue comments       |
+| `shell_tools` | string[] | every harness shell tool              | Tools whose `command` argument is inspected                 |
+| `deny_reason` | string   | `GitLab operation blocked by policy.` | Prefix for DENY explanations                                |
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  gitlab_access:
+    type: function
+    handler: omnigent.policies.builtins.gitlab.gitlab_policy
+    factory_params:
+      hosts:
+        - gitlab.example.com
+      read_all: false
+      read_repos:
+        - https://gitlab.example.com/team/app
+      write_repos:
+        - https://gitlab.example.com/team/app
+```
+
+With this configuration,
+`glab issue create -R https://gitlab.example.com/team/app -t Fix -d Details` is
+allowed, the same write to `team/other` is denied, and `git push` or
+`glab mr create` asks for approval.
+
+The policy is conservative about shell syntax. Single quotes, backslashes,
+carets, percent signs, smart quotes, embedded `!`, shell expansion, unquoted
+redirection, and GitLab/Git CLI environment assignments (such as `GITLAB_HOST=`)
+ASK, even inside literal issue text. Use plain double quotes for text that
+contains spaces. Inside double quotes, `<` and `>` are ordinary text. Shell
+wrappers (`bash -c`, `env`) and chained commands are inspected segment by
+segment, and DENY takes precedence over ASK. Unrecognized command forms that
+mention `git` or `glab` ASK. This is not a full cmd.exe or PowerShell parser.
+
+The policy only reads command text. It doesn't contact GitLab, and it trusts
+your existing CLI configuration and executables. GitLab MCP tools, direct HTTP
+clients, and scripts that call GitLab are outside its coverage, so add other
+controls for those paths. GitLab account permissions still apply after the
+policy allows a command.
 
 #### Catch a stuck agent
 

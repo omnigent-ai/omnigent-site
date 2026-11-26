@@ -43,6 +43,9 @@ Some settings are read only from `~/.omnigent/config.yaml`. A project's
 - **Per-harness `command` and `args`** under the `harness:` key. A project can
   still select the default harness (`harness: <id>` or `harness.default`). See
   [Override the harness binary and launch args](/docs/build/harnesses/configuration#override-the-harness-binary-and-launch-args).
+- **`mcp`** and per-harness **`harness.<id>.mcp`**: which file-configured MCP
+  servers launched Claude Code and Codex sessions inherit. See
+  [Limit inherited MCP servers](/docs/build/harnesses/configuration#limit-inherited-mcp-servers).
 
 `omni config list` flags project-file values it ignores: user-level-only keys
 appear as `# ignored user-level-only setting(s): ... (set with --global)`, and

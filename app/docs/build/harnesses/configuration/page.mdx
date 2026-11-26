@@ -1196,5 +1196,94 @@ removed in a future release. No other native command has a `--command` flag.
 
 </div>
 
+## Limit inherited MCP servers
+
+By default, Claude Code and Codex sessions that Omnigent launches load the same
+MCP servers as the CLI does on its own. To limit the inherited file-configured
+servers to Omnigent's tools plus servers you name, set `mcp.inherit: false` in
+your user-level `~/.omnigent/config.yaml`:
+
+```yaml
+mcp:
+  inherit: false
+  allow: [github] # optional; Omnigent's own `omnigent` server is always kept
+harness:
+  codex-native:
+    mcp:
+      inherit: true # optional per-harness override
+```
+
+- `inherit` (default `true`): `false` turns on strict mode, where only
+  `omnigent` and the servers in `allow` load.
+- `allow` (optional list of server names): the servers to keep in strict mode.
+  The `omnigent` server is always allowed, so `inherit: false` with no `allow`
+  keeps only Omnigent's tools.
+- `harness.<id>.mcp`: overrides the top-level `mcp` fields for one harness. The
+  per-harness keys are `claude-native`, `claude-sdk` (or `claude`),
+  `codex-native`, and `codex`.
+
+This applies to `omni claude`, `omni codex`, and Claude Code / Codex SDK
+sessions started on this machine, including new sessions and cold resumes. It
+needs no server flag and has no web UI setting. Your own Claude Code and Codex
+config files aren't modified, and a project's `.omnigent/config.yaml` can't
+change this setting.
+
+### How each CLI is restricted
+
+- **Claude Code** receives an `allowedMcpServers` setting. Claude Code combines
+  allowlists across its settings sources, so Omnigent also adds a
+  `deniedMcpServers` entry for every other name in the `allowedMcpServers` lists
+  of your user, project, local, and managed Claude settings. Project and local
+  settings are read from the launch directory, its Git root, and, for a linked
+  worktree, the main checkout. Servers in `managed-mcp.json` and
+  `managedMcpServers` in managed settings (and their drop-ins) that aren't
+  allowed are denied by name, since Claude Code doesn't apply the allowlist to
+  them. For host-launched native Claude sessions, settings are read for the
+  launched CLI's working directory and environment, including a configured
+  `env -C` or `CLAUDE_CONFIG_DIR` wrapper.
+- **Codex** receives `-c mcp_servers.<name>.enabled=false` for every other
+  server it would load from the system, user, trusted project, command-line, and
+  managed config layers.
+
+### When a strict launch stops
+
+Strict mode stops the launch instead of starting a session that could load
+servers outside the allowlist. The error names the file to fix, for example:
+*"Strict MCP mode stopped this claude-native launch: ... Fix that file, or set
+harness.claude-native.mcp.inherit: true in &lt;path to your config.yaml&gt;."* A launch
+stops when:
+
+- A Claude settings file or Codex config layer exists but can't be read or
+  parsed, or a `-c mcp_servers` override isn't a TOML table.
+- Claude settings contain any `serverCommand` entry. Claude Code then admits
+  stdio servers by command alone, which would bypass the names or reject
+  Omnigent's relay.
+- Claude settings contain a `serverUrl` entry and an allowed server uses HTTP or
+  SSE, even if the URL pattern differs. Claude Code then admits remote servers
+  by URL alone and ignores their names.
+- A file-managed Claude setting sets `allowManagedMcpServersOnly: true`, because
+  Claude Code can then ignore the invocation allowlist.
+- The Codex managed config sets `enabled = true` for a server outside the
+  allowlist, since that layer outranks the override. Remove that setting or add
+  the server to `allow`.
+- A host-launched Claude session uses an `env` wrapper form whose launch
+  environment can't be resolved.
+
+A malformed `inherit` or `allow` value is ignored with a warning, so
+`inherit: false` with an invalid `allow` keeps only `omnigent`. An unreadable
+`config.yaml` inherits every server.
+
+### Limits
+
+- Claude Code plugin MCP servers can't be allowlisted by name, so strict mode
+  always blocks them.
+- Codex plugin MCP servers aren't discovered, so strict mode doesn't disable
+  them.
+- Only managed settings files and their drop-ins are inspected. Claude remote,
+  MDM, and Windows registry managed-policy sources are not.
+- Arbitrary Claude launcher scripts can change the launch context or discard
+  the injected settings, and strict discovery doesn't inspect them. Run Claude
+  directly or through a supported `env` wrapper when you rely on the allowlist.
+
 To add a runtime that Omnigent does not include, see
 [Community Harnesses](/docs/build/harnesses/community).

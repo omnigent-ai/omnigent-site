@@ -32,6 +32,11 @@ On a machine where Claude Code reads an enterprise `managed-mcp.json`, Claude
 Code sessions get Omnigent's tools only through an `omnigent` entry in that file.
 See [Enterprise `managed-mcp.json`](/docs/build/harnesses/configuration#enterprise-managed-mcpjson).
 
+By default, Claude Code and Codex sessions that Omnigent launches also load the
+MCP servers configured for those CLIs. To keep only Omnigent's tools plus
+servers you name, see
+[Limit inherited MCP servers](/docs/build/harnesses/configuration#limit-inherited-mcp-servers).
+
 ### Custom servers
 
 For MCP servers not in the bundled set, declare them in your agent YAML. Transport is

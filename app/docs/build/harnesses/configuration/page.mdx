@@ -659,6 +659,22 @@ for agy are available inside Omnigent sessions without extra setup.
 - Server `env` blocks are copied exactly as written, so the session copy can
   hold credentials. Omnigent writes it readable by its owner only (`0600`).
 
+### Agent instructions
+
+The agent's `prompt` / `instructions` and Omnigent's framework instructions are
+delivered to agy as an always-on rule. Before agy starts, Omnigent writes them
+to `config/rules/omnigent_instructions.md` in the session's isolated agy Gemini
+directory, with `trigger: always_on` frontmatter. Your own agy rules stay
+alongside it. The rule is rewritten on every launch: a web-started session, a
+re-created terminal, `omni agy`, and `omni agy --resume`. When the session runs
+a sub-agent, that sub-agent's instructions are used.
+
+Fetching your instructions is best effort. If `omni agy` can't load them, it
+prints *Could not load your agent's startup instructions* and starts with
+Omnigent's framework instructions only. Launch again to apply your own.
+Web-started sessions fall back the same way when the server can't be reached
+or returns a 5xx or 429 error.
+
 ### Permission prompts
 
 Antigravity permission prompts appear in Chat and **Inbox**. You can approve

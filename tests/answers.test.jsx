@@ -22,6 +22,7 @@ import Hub, { metadata as hubMetadata } from "../app/answers/page";
 import Footer from "../components/Footer";
 import JsonLd from "../components/JsonLd";
 import sitemap from "../app/sitemap";
+import { docsPages } from "../lib/docs-navigation";
 import { discoverPages } from "../lib/routes";
 import { buildLlmsFiles } from "../scripts/generate-llms-files.mjs";
 import { convertMdx } from "../scripts/llms/mdx-to-markdown.mjs";
@@ -334,9 +335,8 @@ test("footer links the answers hub; nav and sidebar do not", async () => {
   expect(renderToStaticMarkup(<Footer />)).toContain(
     '<a href="/answers">Answers</a>',
   );
-  for (const file of ["components/Nav.js", "components/DocsSidebarFull.js"]) {
-    expect(readFileSync(file, "utf8")).not.toContain("/answers");
-  }
+  expect(readFileSync("components/Nav.js", "utf8")).not.toContain("/answers");
+  expect(docsPages.map(({ href }) => href)).not.toContain("/answers");
 });
 
 for (const override of ["https://preview.example", "https://tunnel.example"]) {

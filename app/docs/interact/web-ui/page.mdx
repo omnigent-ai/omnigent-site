@@ -972,6 +972,9 @@ or disable auto-merge. These actions need edit access to the session and run as
 the host's active `gh` account, or the account saved for that repository (in
 a sandbox, the sandbox's GitHub identity).
 GitLab merge requests and Azure DevOps pull requests stay read-only.
+A server admin can also make pull requests on specific code hosts read-only with
+[`read_only_code_hosts`](/docs/reference/configuration#read-only-code-hosts).
+They still load in the tab, but the server refuses changes to them.
 
 ### Tracked pull requests
 

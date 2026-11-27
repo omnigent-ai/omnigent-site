@@ -33,6 +33,7 @@ All builtin policies live under `omnigent.policies.builtins`.
 | `gcalendar_policy`                | Controls Google Calendar. Defaults to read-only.                                                                                                                                                                                                                                                                                                                                                                                                                                       | None                                                                                                                                                                                                                                    |
 | `gdrive_policy`                   | Controls Google Drive, Docs, Sheets, and Slides access. Writes restricted to agent-created files by default. Optionally enforces Bell-LaPadula "no write-down": once the session reads a confidential file, its writes are confined to that set.                                                                                                                                                                                                                                       | `read_all`, `allow_create`, `write_files`, `read_files`, `comment_files`, `confidential_files` (string[]), `write_down_action` (`"DENY"` or `"ASK"`, default `"DENY"`)                                                                  |
 | `github_policy`                   | Controls GitHub read/write access across MCP tools and shell commands. Irreversible destructive operations (deletes) are denied by default even on allowed repos, unless `allow_destructive` is set. `git push` force flags (`--force`, `-f`, `--force-with-lease`, `--force-if-includes`), bundled short flags containing `f` (e.g. `-uf`), and `+refspec` force prefixes are denied by default regardless of the repo/branch allowlists, unless `deny_force_push` is set to `false`. | `read_all`, `write_repos`, `write_branches`, `allow_destructive` (bool, default `false`), `deny_force_push` (bool, default `true`)                                                                                                      |
+| `gitlab_policy`                   | Controls GitLab project access through shell commands: explicit HTTPS `git clone`/`fetch`/`pull`/`push`, a set of `glab issue` and `glab mr` actions, and bounded [`glab api` requests](#scope-gitlab-api-requests). Supported writes outside `write_repos` are denied; unresolved operations (missing explicit project, unknown options, MR merge/rebase, unmodelled API routes) ASK. Force pushes, tag pushes, remote ref deletions, and API branch deletions are denied by default. Deleting GitLab issues, merge requests, or projects is always denied. | `hosts` (string[], default `["gitlab.com"]`), `read_all` (bool, default `true`), `read_repos`, `write_repos`, `write_branches`, `allow_destructive` (bool, default `false`), `deny_tag_push` (bool, default `true`), `deny_force_push` (bool, default `true`), `shell_tools` |
 | `gmail_policy`                    | Controls Gmail. Defaults to read + draft, no send.                                                                                                                                                                                                                                                                                                                                                                                                                                     | `allow_read`, `allow_send`, `allow_drafts`                                                                                                                                                                                              |
 | `intent_based_authorization`      | Records the first user message as the session's intent, then ASKs before any tool call that has no plausible connection to that intent. Requires an `llm:` config block; fails open when none is available.                                                                                                                                                                                                                                                                            | None                                                                                                                                                                                                                                    |
 | `max_tool_calls_per_session`      | DENYs after a total tool-call limit is reached.                                                                                                                                                                                                                                                                                                                                                                                                                                        | `limit` (int, default `100`)                                                                                                                                                                                                            |
@@ -100,6 +101,84 @@ policies:
 
 Because the confidential set is declared explicitly rather than inferred from a
 per-document classification label, the rule works on any Google Drive tenant.
+
+#### Scope GitLab API requests
+
+`gitlab_policy` classifies `glab api` shell commands against the same project
+allowlists it uses for Git transfers and `glab issue`/`glab mr` actions. A
+request is decided automatically only when it pins everything explicitly:
+
+- exactly one `--hostname`, which must be one of the configured `hosts`
+  (no scheme or port);
+- one endpoint rooted at `projects/:project`;
+- `--placeholder project=group/project` naming the project as a literal path.
+  The current checkout is never used to infer the project. Numeric project IDs
+  and fully qualified endpoint URLs ASK.
+
+For branch names containing slashes, use the `repository/branches/:ref` route
+with `--placeholder ref=feature/topic`. Only the `project` and `ref`
+placeholders are supported.
+
+```sh
+glab api projects/:project --hostname gitlab.example.com --placeholder project=team/app
+```
+
+These routes under `projects/:project` are supported (`N` is a positive numeric
+issue, MR, or note ID):
+
+| Method and route suffix                                                           | Decision                                                                                                                 |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `GET` (no suffix)                                                                 | Read project metadata                                                                                                    |
+| `GET issues`, `issues/N`, `merge_requests`, `merge_requests/N`                    | Read lists and individual objects                                                                                        |
+| `GET issues/N/notes`, `merge_requests/N/notes`, and a numeric note member         | Read notes                                                                                                               |
+| `GET merge_requests/N/changes`, `merge_requests/N/diffs`, `merge_requests/N/raw_diffs` | Read MR changes                                                                                                     |
+| `GET repository/branches` and a literal branch member or `:ref`                   | Read branches                                                                                                            |
+| `POST issues`                                                                     | Write with explicit title/description, optional labels and typed `confidential`                                          |
+| `POST issues/N/notes`, `merge_requests/N/notes`                                   | Write with explicit `body` text                                                                                          |
+| `POST merge_requests`                                                             | Same-project creation with explicit branches, title/description, and typed false removal/collaboration overrides         |
+| `PUT merge_requests/N`                                                            | Update title, description, `labels`/`add_labels`/`remove_labels`, or target branch; optional typed false source removal |
+| `PUT merge_requests/N/merge`, `merge_requests/N/rebase`                           | ASK (affected branches are unresolved); a known forbidden merge project is denied                                        |
+| `DELETE repository/branches/<branch>` or `:ref`                                   | Denied by default; with `allow_destructive: true`, checked against `write_repos` and exact `write_branches`              |
+
+Reads follow `read_all` / `read_repos`; writes require the project to be in
+`write_repos`. Field rules:
+
+- Pass literal strings with `-f` / `--raw-field key=value` and booleans with
+  `-F` / `--field key=true` or `key=false`. Other typed values, duplicate or
+  structured keys, and unknown fields ASK.
+- Fields imply `POST` unless a method is given, so read filters need `-X GET`.
+  Supported read filters: `page`, `per_page`, `state`, `search`, `labels`,
+  `source_branch`, `target_branch`, `order_by`, `sort`.
+- `--include`, `--silent`, and `--output json` / `ndjson` are supported.
+  Headers, `--paginate`, GraphQL, `--form`, `--input` bodies, and unknown
+  routes or methods ASK.
+- API MR creation requires `-F remove_source_branch=false` and
+  `-F allow_collaboration=false`. Project-ID overrides such as
+  `target_project_id` ASK.
+- Empty text, invalid branch names, and description or note lines starting with
+  `/` (potential GitLab quick actions) ASK.
+- Requesting MR source-branch removal (`true`) is denied by default and ASKs
+  when `allow_destructive` is set.
+
+On configured API hosts, project, issue, and MR `DELETE` requests are always
+denied, even with `allow_destructive`. Bulk merged-branch deletion is denied by
+default and still ASKs with `allow_destructive`. A branch deletion with extra
+fields, or for a branch name containing a dot, also ASKs.
+
+```yaml
+# Omnigent config (policies block)
+policies:
+  gitlab_access:
+    type: function
+    handler: omnigent.policies.builtins.gitlab.gitlab_policy
+    factory_params:
+      hosts: ["gitlab.example.com"]
+      write_repos: ["team/app"]
+      # API branch deletions and pushes must target these exact names.
+      write_branches: ["feature/topic"]
+      # Let explicit API branch deletions through the write checks above.
+      allow_destructive: true
+```
 
 #### Catch a stuck agent
 

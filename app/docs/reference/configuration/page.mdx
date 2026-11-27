@@ -222,6 +222,65 @@ this interval only when automations v2 is enabled. If automations v2 is off, or
 the server doesn't support sub-hour schedules and the value is under 60, new
 templates poll hourly.
 
+## Read-only code hosts
+
+| Setting | Value                                                     |
+| ------- | --------------------------------------------------------- |
+| Key     | `read_only_code_hosts`                                    |
+| Scope   | Server config (`omni server --config`)                    |
+| Type    | List of host name patterns, e.g. `["*.code.example.com"]` |
+| Default | `[]` — pull requests on every code host are writable      |
+
+Lists code hosts whose pull requests the server serves for reading only. A
+session's pull requests on a matching host still load in the
+[Pull Requests tab](/docs/interact/web-ui#github), including the summary,
+checks, comments, and diff. Changes to them, such as editing, commenting,
+reviewing, merging, and uploading attachments, are refused before they reach the
+session's host:
+
+```yaml
+read_only_code_hosts:
+  - "*.code.example.com"
+  - git.example.org
+```
+
+The setting is read when the server starts, so a change takes a restart.
+
+**Patterns.** Each entry is a host name, matched case-insensitively against the
+pull request URL's host (the port is ignored). `*` matches any run of
+characters, and every other character, `?` and `[` included, matches only
+itself. So `*.code.example.com` matches `one.code.example.com` and
+`a.b.code.example.com`, but not `code.example.com` itself. Surrounding
+whitespace is trimmed and duplicates are dropped. An entry that isn't a
+non-blank string, or that contains a `/` (a URL such as
+`https://code.example.com` or a path such as `code.example.com/team`), is
+ignored with a warning. If the value isn't a list, the whole setting is ignored
+with a warning.
+
+A URL is checked both as written and as the host it resolves to. For example, a
+legacy `*.visualstudio.com` Azure DevOps URL also matches `dev.azure.com`. While
+any pattern is set, the server also refuses a change:
+
+- To a pull request URL whose host it can't determine.
+- That names no pull request, unless the server has stored the session's pull
+  requests and the session's first one is on a writable host. Otherwise, the
+  session's host would choose the pull request.
+
+**What stays available.** For a pull request on a read-only host, the PR
+overview the server returns is marked `read_only: true`. Its write capabilities
+are turned off, including any capability the server doesn't recognize. Read
+capabilities, account switching, and base-remote selection are kept, and
+choosing which account the host uses for the repository still works.
+
+**Refusals.** A refused REST call returns `403` with the message
+`Changes to pull requests on this code host are turned off.` A refused
+workspace API call fails with `FAILED_PRECONDITION` and a `PullRequestFailure`
+reason of `read_only_code_host`.
+
+The setting limits only the server's pull request routes. An agent in the
+session that runs `gh` or another provider tool directly isn't restricted by
+it. To restrict agent tool calls, use [policies](/docs/policies/overview).
+
 ## Managed sandboxes
 
 - [Kubernetes sandbox configuration](/docs/reference/configuration/kubernetes)
